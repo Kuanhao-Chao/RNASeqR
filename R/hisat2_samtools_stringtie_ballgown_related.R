@@ -12,37 +12,37 @@ CreateHisat2Index <- function (path.prefix, gene.name, sample.pattern, splice.si
       cat(paste0("\n************** Creating Hisat2 Index **************\n"))
       if (isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$fa.file.logic.df)){
         current.path <- getwd()
-        setwd(paste0(pkg.global.path.prefix$data_path, "gene_data/indexes/"))
+        setwd(paste0(path.prefix, "gene_data/indexes/"))
         if (isTRUE(splice.site.info)) {
-          cat(c("Input command :", paste("extract_splice_sites.py", paste0(pkg.global.path.prefix$data_path, 'gene_data/ref_genes/', gene.name, '.gtf'), '>', paste0(gene.name, '.ss')), "\n"))
-          system2(command = 'extract_splice_sites.py', args = c(paste0(pkg.global.path.prefix$data_path, 'gene_data/ref_genes/', gene.name, '.gtf'), '>', paste0(gene.name, '.ss')))
+          cat(c("Input command :", paste("extract_splice_sites.py", paste0(path.prefix, 'gene_data/ref_genes/', gene.name, '.gtf'), '>', paste0(gene.name, '.ss')), "\n"))
+          system2(command = 'extract_splice_sites.py', args = c(paste0(path.prefix, 'gene_data/ref_genes/', gene.name, '.gtf'), '>', paste0(gene.name, '.ss')))
           cat("\n")
         }
         if (isTRUE(exon.info)) {
-          cat(c("Input command :", paste("extract_exons.py", paste0(pkg.global.path.prefix$data_path, 'gene_data/ref_genes/', gene.name, '.gtf'), '>', paste0(gene.name, '.exon')), "\n"))
-          system2(command = 'extract_exons.py', args = c(paste0(pkg.global.path.prefix$data_path, 'gene_data/ref_genes/', gene.name, '.gtf'), '>', paste0(gene.name, '.exon')))
+          cat(c("Input command :", paste("extract_exons.py", paste0(path.prefix, 'gene_data/ref_genes/', gene.name, '.gtf'), '>', paste0(gene.name, '.exon')), "\n"))
+          system2(command = 'extract_exons.py', args = c(paste0(path.prefix, 'gene_data/ref_genes/', gene.name, '.gtf'), '>', paste0(gene.name, '.exon')))
           cat("\n")
         }
 
         if (isTRUE(splice.site.info) && isTRUE(exon.info)) {
-          cat(c("Input command :", paste("hisat2-build", paste('--ss', paste0(gene.name, '.ss'), '--exon', paste0(gene.name, '.exon'), paste0(pkg.global.path.prefix$data_path, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')), "\n")))
-          system2(command = 'hisat2-build', args = c('--ss', paste0(gene.name, '.ss'), '--exon', paste0(gene.name, '.exon'), paste0(pkg.global.path.prefix$data_path, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')))
+          cat(c("Input command :", paste("hisat2-build", paste('--ss', paste0(gene.name, '.ss'), '--exon', paste0(gene.name, '.exon'), paste0(path.prefix, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')), "\n")))
+          system2(command = 'hisat2-build', args = c('--ss', paste0(gene.name, '.ss'), '--exon', paste0(gene.name, '.exon'), paste0(path.prefix, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')))
           cat("\n")
         } else if (isTRUE(splice.site.info) && !isTRUE(exon.info)) {
-          cat(c("Input command :", paste("hisat2-build", paste('--ss', paste0(gene.name, '.ss'), paste0(pkg.global.path.prefix$data_path, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')), "\n")))
-          system2(command = 'hisat2-build', args = c('--ss', paste0(gene.name, '.ss'), paste0(pkg.global.path.prefix$data_path, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')))
+          cat(c("Input command :", paste("hisat2-build", paste('--ss', paste0(gene.name, '.ss'), paste0(path.prefix, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')), "\n")))
+          system2(command = 'hisat2-build', args = c('--ss', paste0(gene.name, '.ss'), paste0(path.prefix, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')))
           cat("\n")
         } else if (!isTRUE(splice.site.info) && isTRUE(exon.info)) {
-          cat(c("Input command :", paste("hisat2-build", paste('--exon', paste0(gene.name, '.exon'), paste0(pkg.global.path.prefix$data_path, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')), "\n")))
-          system2(command = 'hisat2-build', args = c('--exon', paste0(gene.name, '.exon'), paste0(pkg.global.path.prefix$data_path, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')))
+          cat(c("Input command :", paste("hisat2-build", paste('--exon', paste0(gene.name, '.exon'), paste0(path.prefix, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')), "\n")))
+          system2(command = 'hisat2-build', args = c('--exon', paste0(gene.name, '.exon'), paste0(path.prefix, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')))
           cat("\n")
         } else {
-          cat(c("Input command :", paste("hisat2-build", paste(paste0(pkg.global.path.prefix$data_path, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')), "\n")))
-          system2(command = 'hisat2-build', args = c(paste0(pkg.global.path.prefix$data_path, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')))
+          cat(c("Input command :", paste("hisat2-build", paste(paste0(path.prefix, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')), "\n")))
+          system2(command = 'hisat2-build', args = c(paste0(path.prefix, 'gene_data/ref_genome/', gene.name, '.fa'), paste0(gene.name, '_tran')))
           cat("\n")
         }
         on.exit(setwd(current.path))
-        cat(paste0("'", pkg.global.path.prefix$data_path, "gene_data/indexes/", gene.name, "_tran.*.ht2' has been created.\n\n"))
+        cat(paste0("'", path.prefix, "gene_data/indexes/", gene.name, "_tran.*.ht2' has been created.\n\n"))
       } else {
         stop(c(paste0("(\u2718) '", gene.name, ".gtf' "), "or", paste0(" '", gene.name, ".fa'"), "is missing.\n\n"))
       }
@@ -58,7 +58,7 @@ Hisat2AlignmentDefault <- function(path.prefix, gene.name, sample.pattern, num.p
     if (check.results$ht2.files.number.df != 0 && check.results$fastq.gz.files.number.df != 0){
       # Map reads to each alignment
       current.path <- getwd()
-      setwd(paste0(pkg.global.path.prefix$data_path, "gene_data/"))
+      setwd(paste0(path.prefix, "gene_data/"))
       # Determine 'r'/'R'/''
       deleteback <- gsub("[1-2]*.fastq.gz$", replace = "", check.results$fastq.gz.files.df)
       sample.table.r.value <- gsub(paste0("[A-Z, a-z]*[0-9]*_"), replace = "", deleteback)
@@ -98,7 +98,7 @@ Hisat2ReportAssemble <- function(path.prefix, gene.name, sample.pattern){
   check.results <- ProgressGenesFiles(path.prefix, gene.name, sample.pattern, print=FALSE)
   cat(paste0("\n************** Reporting hisat2 alignment **************\n"))
   if (isTRUE(check.results$phenodata.file.df) && check.results$phenodata.invalid.column.number.df == 0 && check.results$bam.files.number.df != 0){
-    file.read <- paste0(pkg.global.path.prefix$data_path, "Rscript_out/RNASEQ_PIPELINE.Rout")
+    file.read <- paste0(path.prefix, "Rscript_out/RNASEQ_PIPELINE.Rout")
     sample.name <- sort(gsub(paste0(".bam$"), replace = "", check.results$bam.files.df))
     iteration.num <- length(sample.name)
     load.data <- readChar(file.read, file.info(file.read)$size)
@@ -125,13 +125,13 @@ Hisat2ReportAssemble <- function(path.prefix, gene.name, sample.pattern){
       add.column <- c(add.column, overall.alignment.result.cut[i])
       report.data.frame[[(sample.name[i])]] <- add.column
     }
-    dir.create(paste0(pkg.global.path.prefix$data_path, "RNAseq_results/Alignment_Report/"))
-    write.csv(report.data.frame, file = paste0(pkg.global.path.prefix$data_path, "RNAseq_results/Alignment_Report/Alignment_report.csv"))
-    png(paste0(pkg.global.path.prefix$data_path, "RNAseq_results/Alignment_Report/Alignment_report.png"), width = iteration.num*100 + 200, height = 40*4)
+    dir.create(paste0(path.prefix, "RNAseq_results/Alignment_Report/"))
+    write.csv(report.data.frame, file = paste0(path.prefix, "RNAseq_results/Alignment_Report/Alignment_report.csv"))
+    png(paste0(path.prefix, "RNAseq_results/Alignment_Report/Alignment_report.png"), width = iteration.num*100 + 200, height = 40*4)
     p <- gridExtra::grid.table(report.data.frame)
     print(p)
     dev.off()
-    cat(c("Results are in", paste0("'", pkg.global.path.prefix$data_path, "RNAseq_results/Alignment_Report/'"), "\n\n"))
+    cat(c("Results are in", paste0("'", path.prefix, "RNAseq_results/Alignment_Report/'"), "\n\n"))
   }
 }
 
@@ -143,7 +143,7 @@ SamtoolsToBam <- function(path.prefix, gene.name, sample.pattern, num.parallel.t
     if (check.results$sam.files.number.df != 0){
       # Map reads to each alignment
       current.path <- getwd()
-      setwd(paste0(pkg.global.path.prefix$data_path, "gene_data/"))
+      setwd(paste0(path.prefix, "gene_data/"))
       sample.table <- table(gsub(paste0(".sam$"), replace = "", check.results$sam.files.df))
       iteration.num <- length(sample.table)
       sample.name <- names(sample.table)
@@ -169,7 +169,7 @@ StringTieAssemble <- function(path.prefix, gene.name, sample.pattern, num.parall
     cat(paste0("\n************** Stringtie assembling **************\n"))
     if (check.results$bam.files.number.df != 0 && isTRUE(check.results$gtf.file.logic.df)){
       current.path <- getwd()
-      setwd(paste0(pkg.global.path.prefix$data_path, "gene_data/"))
+      setwd(paste0(path.prefix, "gene_data/"))
       sample.name <- sort(gsub(paste0(".bam$"), replace = "", check.results$bam.files.df))
       iteration.num <- length(sample.name)
       for( i in 1:iteration.num){
@@ -187,14 +187,14 @@ StringTieAssemble <- function(path.prefix, gene.name, sample.pattern, num.parall
 }
 
 #' stringtie merge transcripts from all samples
-StringTieMergeTrans <- function(gene.name = "NO_DATA", sample.pattern = "NO_DATA", num.parallel.threads = 8) {
+StringTieMergeTrans <- function(path.prefix, gene.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, gene.name, sample.pattern, print=TRUE)
     cat(paste0("\n************** Stringtie merging transcripts **************\n"))
     if ( isTRUE(check.results$gtf.file.logic.df) && check.results$gtf.files.number.df != 0){
       current.path <- getwd()
-      setwd(paste0(pkg.global.path.prefix$data_path, "gene_data/"))
-      dir.create(file.path(paste0(pkg.global.path.prefix$data_path, 'gene_data/merged/')), showWarnings = FALSE)
+      setwd(paste0(path.prefix, "gene_data/"))
+      dir.create(file.path(paste0(path.prefix, 'gene_data/merged/')), showWarnings = FALSE)
       sample.table <- table(check.results$gtf.files.df)
       iteration.num <- length(sample.table)
       sample.name <- names(sample.table)
@@ -224,7 +224,7 @@ StringTieToBallgown <- function(path.prefix, gene.name, sample.pattern, num.para
     cat(paste0("\n************** Stringtie creating table counts for Ballgown **************\n"))
     if ((check.results$bam.files.number.df != 0) && isTRUE(check.results$stringtie_merged.gtf.file.df)){
       current.path <- getwd()
-      setwd(paste0(pkg.global.path.prefix$data_path, "gene_data/"))
+      setwd(paste0(path.prefix, "gene_data/"))
       sample.table <- table(gsub(paste0(".bam$"), replace = "", check.results$bam.files.df))
       iteration.num <- length(sample.table)
       sample.name <- names(sample.table)
@@ -250,7 +250,7 @@ GffcompareRefSample <- function(path.prefix, gene.name, sample.pattern) {
     cat(paste0("\n************** Gffcompare comparing transcripts between merged and reference **************\n"))
     if ( isTRUE(check.results$stringtie_merged.gtf.file.df) && isTRUE(check.results$gtf.file.logic.df)){
       current.path <- getwd()
-      setwd(paste0(pkg.global.path.prefix$data_path, "gene_data/"))
+      setwd(paste0(path.prefix, "gene_data/"))
       whole.command <- paste("-r", paste0("ref_genes/", gene.name, ".gtf"), "-G -o merged/merged merged/stringtie_merged.gtf")
       cat(c("Input command :", paste("gffcompare", whole.command), "\n"))
       system2(command = "gffcompare", args = whole.command)
@@ -273,12 +273,12 @@ BallgownPreprocess <- function(path.prefix, gene.name, sample.pattern) {
     # sorting 'pheno_data'
     cat(paste0("************** Ballgown data preprocessing **************\n"))
     cat("\u25CF 1. Printing origin phenodata.csv : \n")
-    pheno_data <- read.csv(paste0(pkg.global.path.prefix$data_path, "gene_data/phenodata.csv"))
+    pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
     print(pheno_data)
     cat('\n')
     sample.table <- as.data.frame(table(pheno_data[covariate]))
     if (length(row.names(sample.table)) == 2) {
-      dir.create(paste0(pkg.global.path.prefix$data_path, "RNAseq_results/DEG_results/"))
+      dir.create(paste0(path.prefix, "RNAseq_results/DEG_results/"))
       cat("\u25CF 2. Sorting phenodata.csv : \n")
       pheno_data.arrange <- dplyr::arrange(pheno_data, unlist(pheno_data[covariate]))
       print(pheno_data.arrange)
@@ -290,9 +290,9 @@ BallgownPreprocess <- function(path.prefix, gene.name, sample.pattern) {
       # make ballgown object
 
       cat("\u25CF 3. Making ballgown object : \n")
-      pkg.ballgown.data$bg_chrX <- ballgown(dataDir = paste0(pkg.global.path.prefix$data_path, "gene_data/ballgown"), samplePattern = sample.pattern, pData = pheno_data, meas = 'all')
+      pkg.ballgown.data$bg_chrX <- ballgown(dataDir = paste0(path.prefix, "gene_data/ballgown"), samplePattern = sample.pattern, pData = pheno_data, meas = 'all')
       bg <- pkg.ballgown.data$bg_chrX
-      save(bg, file = paste0(pkg.global.path.prefix$data_path, "gene_data/ballgown/ballgown.rda"))
+      save(bg, file = paste0(path.prefix, "gene_data/ballgown/ballgown.rda"))
       cat('\n')
       ls(envir=parent.frame())
       pkg.ballgown.data$bg_chrX_filt <- ballgown::subset(pkg.ballgown.data$bg_chrX, cond = 'rowVars(ballgown::texpr(pkg.ballgown.data$bg_chrX)) >1', genomesubset=TRUE)
@@ -343,7 +343,7 @@ BallgownPreprocess <- function(path.prefix, gene.name, sample.pattern) {
       results_transcripts[["pval"]] <- results_transcripts.pval
       results_transcripts[["qval"]] <- results_transcripts.qval
       cat("     \u25CF writing data.frame into 'FPKM_DEG_result.csv' ......'\n\n")
-      write.csv(results_transcripts, paste0(pkg.global.path.prefix$data_path, "RNAseq_results/DEG_results/FPKM_DEG_result.csv"), row.names=FALSE)
+      write.csv(results_transcripts, paste0(path.prefix, "RNAseq_results/DEG_results/FPKM_DEG_result.csv"), row.names=FALSE)
       cat("\u25CF 5. Printing DEG dataset : \n")
       print(head(results_transcripts))
       cat("\n")
@@ -363,10 +363,10 @@ CheckBallgownObject <- function() {
 #' load ballgown object
 #' @export
 LoadBallgownObject <- function() {
-  if(isTRUE(file.exists(paste0(pkg.global.path.prefix$data_path, "gene_data/ballgown/ballgown.rda")))) {
-    load(paste0(pkg.global.path.prefix$data_path, "gene_data/ballgown/ballgown.rda"))
+  if(isTRUE(file.exists(paste0(path.prefix, "gene_data/ballgown/ballgown.rda")))) {
+    load(paste0(path.prefix, "gene_data/ballgown/ballgown.rda"))
     pkg.ballgown.data$bg_chrX <- bg
   } else {
-    stop(paste0("(\u2718) '", paste0(pkg.global.path.prefix$data_path, "gene_data/ballgown/ballgown.rda"), "' haven't created yet. Please run \"BallgownPreprocess(gene.name, sample.pattern, covariate)\" first.\n\n"))
+    stop(paste0("(\u2718) '", paste0(path.prefix, "gene_data/ballgown/ballgown.rda"), "' haven't created yet. Please run \"BallgownPreprocess(gene.name, sample.pattern, covariate)\" first.\n\n"))
   }
 }

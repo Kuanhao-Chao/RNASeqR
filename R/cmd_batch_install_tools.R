@@ -1,4 +1,9 @@
-#' install all the tools and create a binary library.
+#' Install all the tools and create a binary library
+#'
+#' Creates 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/', 'Rscript_out/' directories. 'Hisat2', 'Stringtie', 'Samtools',
+#' 'Gffcompare' will be installed under 'RNAseq_bin/'
+#'
+#' @param RNASeqWorkFlowParam
 #' @export
 InstallToolsCMD <- function(RNASeqWorkFlowParam) {
   # check input param

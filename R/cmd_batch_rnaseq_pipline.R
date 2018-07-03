@@ -14,8 +14,8 @@ RNAseqPipelineCMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8) {
     if (isTRUE(CheckToolAll(print=TRUE))) {
       cat("(\u2714) : Successful in RNAseq-pipeline precheck. \n\n")
       fileConn<-file(paste0(path.prefix, "Rscript/RNASEQ_PIPELINE.R"))
-      first <- "library(RNASeq)"
-      second <- paste0('RNAseqPipeline(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", num.parallel.threads = "', num.parallel.threads, '", indexes.optional = ', indexes.optional, ')')
+      first <- "library(RNASeqWorkflow)"
+      second <- paste0('RNAseqPipeline(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
       writeLines(c(first, second), fileConn)
       close(fileConn)
       system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "/Rscript/RNASEQ_PIPELINE.R ", path.prefix, "/Rscript_out/RNASEQ_PIPELINE.Rout"), stdout = "", wait = FALSE)
@@ -28,7 +28,7 @@ RNAseqPipelineCMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8) {
 #' rna seq pipline
 #' @export
 RNAseqPipeline <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, num.parallel.threads = 8, indexes.optional) {
-  ExportPath()
+  ExportPath(path.prefix)
   check.results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=FALSE)
   if (isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$fa.file.logic.df) && (check.results$fastq.gz.files.number.df != 0)) {
     if (check.results$ht2.files.number.df == 0 && indexes.optional) {
@@ -45,7 +45,6 @@ RNAseqPipeline <- function(path.prefix, input.path.prefix, gene.name, sample.pat
     if (isTRUE(finals$gtf.file.logic.df) && isTRUE(finals$fa.file.logic.df) &&
         finals$fastq.gz.files.number.df != 0 &&
         isTRUE(finals$phenodata.file.df) &&
-        finals$phenodata.invalid.column.number.df == 0 &&
         finals$ht2.files.number.df != 0 &&
         finals$sam.files.number.df != 0 &&
         finals$bam.files.number.df != 0 &&
