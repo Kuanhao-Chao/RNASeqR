@@ -154,7 +154,7 @@ MkdirAll <- function(path.prefix) {
 
 #' check 'gene_data' and subdirectory files exit
 #' @export
-ProgressGenesFiles <- function(gene.name, sample.pattern, print = TRUE) {
+ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = TRUE) {
   if (print) {
     cat(paste0("************** Current progress of RNA-seq files in '", paste0(path.prefix, "gene_data/'"), " **************\n"))
   }
