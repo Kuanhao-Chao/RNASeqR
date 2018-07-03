@@ -194,40 +194,7 @@ ProgressGenesFiles <- function(gene.name, sample.pattern, print = TRUE) {
   }
   # 4. Check phenodata file
   phenodata.file <- file.exists(paste0(path.prefix, "gene_data", '/phenodata.csv'))
-
-  pheno_data <- read.csv(paste0(path.prefix, "gene_data", "/phenodata.csv"))
-  sample.table <- as.data.frame(table(pheno_data[1]))
-  compare.sample.table <- as.data.frame(table(pheno_data[2]))
-  extract.fastq.gz.sample.names <- unique(gsub("_[1-2]*.fastq.gz", "", fastq.gz.files))
-  if(length(extract.fastq.gz.sample.names) == length(row.names(sample.table))){
-    # check the number of sample(rows) in 'phenodata.csv' is same as the number of unique samples in 'fastq.gz.files'
-    if(identical(sort(extract.fastq.gz.sample.names), sort(as.character(sample.table[1][,1])))){
-      # check all the name in bath 'phenodata.csv' and 'fastq.gz.files' are same
-      if (length(row.names(compare.sample.table)) == 2) {
-        ## only two groups are allowed
-        invalid.column.number <- 0
-        adjustvars <- c()
-        for( i in 1:length(pheno_data) ){
-          if(length(pheno_data[i][is.na(pheno_data[i]) == TRUE]) != 0) {
-            invalid.column.number <- invalid.column.number + 1
-            cat(paste0("(\u2718) : There are missing values in column '", names(pheno_data[i]), "'\n" ))
-          }
-          if(i > 2){
-            adjustvars <- append(adjustvars, names(pheno_data[i]))
-          }
-        }
-        if (invalid.column.number != 0) {
-          cat(paste0("(\u2718) : ", invalid.column.number, " columns are invalid. Please fix 'phenodata.csv'\n\n" ))
-          adjustvars <- c()
-        }
-      }
-    } else {
-      cat(paste0("(\u2718) : Sample names in 'phenodata.csv' and 'XXX.fastq.gz' are different. Please check 'phenodata.csv' matches the 'XXX.fastq.gz'\n\n" ))
-    }
-  } else {
-    cat(paste0("(\u2718) : The sample's numbers in 'phenodata.csv' and 'XXX.fastq.gz' are different. Please check 'phenodata.csv' matches the 'XXX.fastq.gz'\n\n" ))
-  }
-  if (isTRUE(gtf.file)) {
+  if (isTRUE(phenodata.file)) {
     if(print){
       cat(c("(\u2714) :", paste0("'",path.prefix, "gene_data", '/phenodata.csv', "'"), "is exit\n\n"))
     }
@@ -326,8 +293,6 @@ ProgressGenesFiles <- function(gene.name, sample.pattern, print = TRUE) {
               fastq.gz.files.number.df = fastq.gz.files.number,
               fastq.gz.files.df = fastq.gz.files,
               phenodata.file.df = phenodata.file,
-              phenodata.invalid.column.number.df = invalid.column.number,
-              phenodata.adjustvars.df = adjustvars,
               ht2.files.number.df = ht2.files.number,
               ht2.files.df = ht2.files,
               sam.files.number.df = sam.files.number,
