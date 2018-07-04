@@ -1,5 +1,4 @@
 #' inner function : Copy input files directory
-#' @export
 CopyInputDir <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, optional = indexes.optional) {
   current.path <- getwd()
   setwd(paste0(path.prefix, "gene_data/"))
@@ -145,7 +144,6 @@ CheckDirAll <- function(path.prefix, print = TRUE) {
 }
 
 #' Create sample gene and binary directory
-#' @export
 MkdirAll <- function(path.prefix) {
   MkdirGeneDir(path.prefix)
   MkdirRNAseq_bin(path.prefix)
@@ -153,7 +151,6 @@ MkdirAll <- function(path.prefix) {
 }
 
 #' check 'gene_data' and subdirectory files exit
-#' @export
 ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = TRUE) {
   if (print) {
     cat(paste0("************** Current progress of RNA-seq files in '", paste0(path.prefix, "gene_data/'"), " **************\n"))
@@ -309,7 +306,6 @@ ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = T
 }
 
 #' Add '~/RNAseq_bin/ to R environment "PATH"
-#' @export
 ExportPath <- function(path.prefix) {
   cat("************** Adding PATH to R environment ************\n")
   old.path <- Sys.getenv("PATH")

@@ -2,10 +2,15 @@
 % Please edit documentation in R/cmd_batch_install_tools.R
 \name{InstallAll}
 \alias{InstallAll}
-\title{Install Hisat2, StringTie, Gffcompare, Samtools}
+\title{Install 'Hisat2', 'StringTie', 'Gffcompare', 'Samtools'}
 \usage{
 InstallAll(path.prefix, os.type)
 }
+\arguments{
+\item{path.prefix}{directory that will store all the files created throughout the pipeline}
+
+\item{os.type}{the operating system type of the current workstation. Only 'linux' and 'osx'are valid}
+}
 \description{
-Install Hisat2, StringTie, Gffcompare, Samtools
+This function is not designed to run directly. Please run 'InstallToolsCMD()' to accomplish the whole installing process.
 }

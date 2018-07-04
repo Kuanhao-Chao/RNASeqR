@@ -20,15 +20,15 @@
 #' @exportClass RNASeqWorkFlowParam
 #' @author Kuan-Hao, Chao
 #' @examples
-#'   data(workflowParam)
-#'   class(workflowParam) #"RNASeqWorkFlowParam"
-#'   workflowParam@@path.prefix
-#'   workflowParam@@input.path.prefix
-#'   workflowParam@@gene.name
-#'   workflowParam@@sample.pattern
-#'   workflowParam@@experiment.type
-#'   workflowParam@@main.variable
-#'   workflowParam@@additional.variable
+#' data(workflowParam)
+#' class(workflowParam) #"RNASeqWorkFlowParam"
+#' workflowParam@@path.prefix
+#' workflowParam@@input.path.prefix
+#' workflowParam@@gene.name
+#' workflowParam@@sample.pattern
+#' workflowParam@@experiment.type
+#' workflowParam@@main.variable
+#' workflowParam@@additional.variable
 setClass("RNASeqWorkFlowParam",
          representation(
            os.type = "character",
@@ -67,7 +67,7 @@ setClass("RNASeqWorkFlowParam",
 #' @export
 #' @example
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", gene.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            experiment.type = , main.variable = NA, additional.variable = NA)
+#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, gene.name = NA, sample.pattern = NA,
                                 experiment.type = NA, main.variable = NA, additional.variable = NA) {
   # check input parameters
@@ -107,6 +107,8 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, gene.n
   bool.input.dir.indexes <- input.dir.files.list$optional.indexes.bool
   # 7. check 'experiment.type'
   bool.experiment.type <- CheckExperimentType(experiment.type = experiment.type)
+
+  # below still need to fix
   # 8. check 'phenodata'
   bool.phenodata <- CheckPhenodata(input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=TRUE)
   # 9. check 'main variable'

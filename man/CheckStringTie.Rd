@@ -2,12 +2,10 @@
 % Please edit documentation in R/cmd_batch_install_tools.R
 \name{CheckStringTie}
 \alias{CheckStringTie}
-\title{Check s'tringtie'
-Check whether 'stringtie' is installed on the workstation}
+\title{Check s'tringtie'}
 \usage{
 CheckStringTie(print = TRUE)
 }
 \description{
-Check s'tringtie'
 Check whether 'stringtie' is installed on the workstation
 }

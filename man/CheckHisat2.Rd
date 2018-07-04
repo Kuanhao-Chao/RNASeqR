@@ -2,12 +2,10 @@
 % Please edit documentation in R/cmd_batch_install_tools.R
 \name{CheckHisat2}
 \alias{CheckHisat2}
-\title{Check 'hisat2'
-Check whether 'hisat2' is installed on the workstation}
+\title{Check 'hisat2'}
 \usage{
 CheckHisat2(print = TRUE)
 }
 \description{
-Check 'hisat2'
 Check whether 'hisat2' is installed on the workstation
 }

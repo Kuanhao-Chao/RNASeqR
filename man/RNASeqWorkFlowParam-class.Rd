@@ -35,15 +35,15 @@ An S4 class for storing RNA-Seq workflow parameters of this package
 }}
 
 \examples{
-  data(workflowParam)
-  class(workflowParam) #"RNASeqWorkFlowParam"
-  workflowParam@path.prefix
-  workflowParam@input.path.prefix
-  workflowParam@gene.name
-  workflowParam@sample.pattern
-  workflowParam@experiment.type
-  workflowParam@main.variable
-  workflowParam@additional.variable
+data(workflowParam)
+class(workflowParam) #"RNASeqWorkFlowParam"
+workflowParam@path.prefix
+workflowParam@input.path.prefix
+workflowParam@gene.name
+workflowParam@sample.pattern
+workflowParam@experiment.type
+workflowParam@main.variable
+workflowParam@additional.variable
 }
 \author{
 Kuan-Hao, Chao

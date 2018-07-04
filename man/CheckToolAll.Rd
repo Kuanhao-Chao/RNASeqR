@@ -2,10 +2,10 @@
 % Please edit documentation in R/cmd_batch_install_tools.R
 \name{CheckToolAll}
 \alias{CheckToolAll}
-\title{Check whether programs are installed}
+\title{Check necessary programs for this pipeline}
 \usage{
 CheckToolAll(print = TRUE)
 }
 \description{
-Check whether programs are installed
+Check whether Hisat2, Stringtie, Samtools, Gffcompare are installed on the workstation
 }

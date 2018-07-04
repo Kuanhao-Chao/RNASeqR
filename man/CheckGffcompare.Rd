@@ -2,12 +2,10 @@
 % Please edit documentation in R/cmd_batch_install_tools.R
 \name{CheckGffcompare}
 \alias{CheckGffcompare}
-\title{Check Gffcompare
-Check whether Gffcompare is installed on the workstation}
+\title{Check Gffcompare}
 \usage{
 CheckGffcompare(print = TRUE)
 }
 \description{
-Check Gffcompare
 Check whether Gffcompare is installed on the workstation
 }

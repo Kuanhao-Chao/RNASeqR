@@ -1,6 +1,15 @@
-#' Create 'RNAseqPipline.R' that user can
+#' Run RNA seq pipeline (alignment, assembly, expressive expression) in background.
+#'
+#' To run RNA seq pipeline in background, you have to run 'RNASeqWorkFlowParam()' beforehands.
+#'
+#' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
+#'
 #' @export
-RNAseqPipelineCMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8) {
+#' @example
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", gene.name = "hg19", sample.pattern = "SRR[0-9]",
+#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+#' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
+RNAseqPipeline_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8) {
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
   gene.name <- RNASeqWorkFlowParam@gene.name
@@ -55,6 +64,8 @@ RNAseqPipeline <- function(path.prefix, input.path.prefix, gene.name, sample.pat
       cat(paste0("\n**************************************\n"))
       cat(paste0("************** Success! **************\n"))
       cat(paste0("**************************************\n"))
+    } else {
+      stop(paste0("(\u2718) Output files ERROR \n"))
     }
   }
   else{

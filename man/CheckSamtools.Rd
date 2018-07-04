@@ -2,12 +2,10 @@
 % Please edit documentation in R/cmd_batch_install_tools.R
 \name{CheckSamtools}
 \alias{CheckSamtools}
-\title{Check Samtools
-Check whether Samtools is installed on the workstation}
+\title{Check Samtools}
 \usage{
 CheckSamtools(print = TRUE)
 }
 \description{
-Check Samtools
 Check whether Samtools is installed on the workstation
 }
