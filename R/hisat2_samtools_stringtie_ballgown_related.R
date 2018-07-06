@@ -94,10 +94,12 @@ Hisat2AlignmentDefault <- function(path.prefix, gene.name, sample.pattern, num.p
 #'
 #' @importFrom stringr str_extract
 #' @importFrom gridExtra grid.table
+#'
+#' @export
 Hisat2ReportAssemble <- function(path.prefix, gene.name, sample.pattern){
   check.results <- ProgressGenesFiles(path.prefix, gene.name, sample.pattern, print=FALSE)
   cat(paste0("\n************** Reporting hisat2 alignment **************\n"))
-  if (isTRUE(check.results$phenodata.file.df) && check.results$phenodata.invalid.column.number.df == 0 && check.results$bam.files.number.df != 0){
+  if (isTRUE(check.results$phenodata.file.df) && check.results$bam.files.number.df != 0){
     file.read <- paste0(path.prefix, "Rscript_out/RNASEQ_PIPELINE.Rout")
     sample.name <- sort(gsub(paste0(".bam$"), replace = "", check.results$bam.files.df))
     iteration.num <- length(sample.name)
@@ -267,7 +269,8 @@ GffcompareRefSample <- function(path.prefix, gene.name, sample.pattern) {
 #' @import ballgown
 #' @import genefilter
 #' @importFrom dplyr arrange
-BallgownPreprocess <- function(path.prefix, gene.name, sample.pattern) {
+#' @export
+BallgownPreprocess <- function(path.prefix, gene.name, sample.pattern, experiment.type, main.variable, additional.variable) {
   results <- ProgressGenesFiles(path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print = FALSE)
   if (isTRUE(results$phenodata.file.df) && results$ballgown.dirs.number.df != 0){
     # sorting 'pheno_data'
@@ -276,7 +279,7 @@ BallgownPreprocess <- function(path.prefix, gene.name, sample.pattern) {
     pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
     print(pheno_data)
     cat('\n')
-    sample.table <- as.data.frame(table(pheno_data[covariate]))
+    sample.table <- as.data.frame(table(pheno_data[main.variable]))
     if (length(row.names(sample.table)) == 2) {
       dir.create(paste0(path.prefix, "RNAseq_results/DEG_results/"))
       cat("\u25CF 2. Sorting phenodata.csv : \n")

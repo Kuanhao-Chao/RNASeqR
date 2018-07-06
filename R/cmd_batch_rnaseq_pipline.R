@@ -1,6 +1,9 @@
-#' Run RNA seq pipeline (alignment, assembly, expressive expression) in background.
+#' Run RNA seq raw read processing (alignment, assembly, expressive expression) in background.
 #'
-#' To run RNA seq pipeline in background, you have to run 'RNASeqWorkFlowParam()' beforehands.
+#' To process RNA seq raw read in background, you have to run 'RNASeqWorkFlowParam()' to create S4 object beforehands.
+#' If you want to process RNA seq raw read in R shell, please see 'RNAseqRawReadProcess()' function.
+#' This function do 4 things : 1. Hisat2 : raw reads align to reference genome. 2. Stringtie : Alignments assembly into transcript. 3. Stringtie : Expressive gene and transcript quantification
+#' 4. Compare aligned genome with reference genome
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
 #'
@@ -9,7 +12,7 @@
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", gene.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
-RNAseqPipeline_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8) {
+RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8) {
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
   gene.name <- RNASeqWorkFlowParam@gene.name
@@ -24,7 +27,7 @@ RNAseqPipeline_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8) {
       cat("(\u2714) : Successful in RNAseq-pipeline precheck. \n\n")
       fileConn<-file(paste0(path.prefix, "Rscript/RNASEQ_PIPELINE.R"))
       first <- "library(RNASeqWorkflow)"
-      second <- paste0('RNAseqPipeline(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
+      second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
       writeLines(c(first, second), fileConn)
       close(fileConn)
       system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "/Rscript/RNASEQ_PIPELINE.R ", path.prefix, "/Rscript_out/RNASEQ_PIPELINE.Rout"), stdout = "", wait = FALSE)
@@ -36,7 +39,7 @@ RNAseqPipeline_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8) {
 
 #' rna seq pipline
 #' @export
-RNAseqPipeline <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, num.parallel.threads = 8, indexes.optional) {
+RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, num.parallel.threads = 8, indexes.optional) {
   ExportPath(path.prefix)
   check.results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=FALSE)
   if (isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$fa.file.logic.df) && (check.results$fastq.gz.files.number.df != 0)) {

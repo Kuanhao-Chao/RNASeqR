@@ -44,7 +44,6 @@ PreDECountTable <- function(path.prefix, sample.pattern, print=TRUE) {
   } else {
     on.exit(setwd(current.path))
     stop("(\u2718)  Python is not available on this device. Please install python to run python script 'prepDE.py'\n\n")
-    return(FALSE)
   }
 }
 

@@ -2,10 +2,13 @@
 % Please edit documentation in R/cmd_batch_rnaseq_pipline.R
 \name{RNAseqPipeline_CMD}
 \alias{RNAseqPipeline_CMD}
-\title{Run RNA seq pipeline with default parameter}
+\title{Run RNA seq pipeline (alignment, assembly, expressive expression) in background.}
 \usage{
 RNAseqPipeline_CMD(RNASeqWorkFlowParam, num.parallel.threads = 8)
 }
+\arguments{
+\item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}
+}
 \description{
-Run RNA seq pipeline with default parameter
+To run RNA seq pipeline in background, you have to run 'RNASeqWorkFlowParam()' beforehands.
 }

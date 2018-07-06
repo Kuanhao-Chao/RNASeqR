@@ -4,7 +4,7 @@
 #' If you want to set up the environment for the following RNA seq pipeline in R shell, please see 'RNAseqEnvironmentSet()' function.
 #' This function do 4 things : 1. Create file directories. 2. Install necessary tools. 3. Export 'RNAseq_bin/' to the R environment. 4. Check command of tools.
 #' First it will create 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
-#' 'Gffcompare' will be installed under 'RNAseq_bin/'. 'RNAseq_bin/' will be added to the R environment and tools validity will be checked. Any ERROR occurs will be reported.
+#' 'Gffcompare' will be installed under 'RNAseq_bin/'. 'RNAseq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported.
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
 #'
