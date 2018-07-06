@@ -76,6 +76,12 @@ MkdirGeneDir <- function(path.prefix) {
   } else {
     cat(paste0("(\u2718) : Fail to create '", path.prefix, "gene_data/raw_gtf/'.\n     Please check whether the directory is already exit.\n\n"))
   }
+  samples.gene_abundance.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/gene_abundance')), showWarnings = FALSE) == 0
+  if (!isTRUE(samples.gene_abundance.dir)) {
+    cat(paste0("(\u2714) : Create '", path.prefix, "gene_data/gene_abundance/'.\n\n"))
+  } else {
+    cat(paste0("(\u2718) : Fail to create '", path.prefix, "gene_data/gene_abundance/'.\n     Please check whether the directory is already exit.\n\n"))
+  }
 }
 
 #' Make RNAseq_bin/ directory
