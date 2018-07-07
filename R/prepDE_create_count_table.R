@@ -2,34 +2,29 @@
 #'
 #' @importFrom reticulate py_config py_available
 #' @export
-PreDECountTable <- function(path.prefix, sample.pattern, print=TRUE) {
+PreDECountTable <- function(path.prefix, sample.pattern, python.variable, print=TRUE) {
   # ftp server : ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.1.0-source.zip
-  if (!dir.exists(paste0(path.prefix, "gene_data/ballgown/raw_count/"))){
-    dir.create(paste0(path.prefix, "gene_data/ballgown/raw_count/"))
-  }
   cat("************** Installing prepDE.py ************\n")
-  cat(paste0(path.prefix, "gene_data/ballgown/raw_count\n"))
+  cat(paste0(path.prefix, "gene_data/reads_count_matrix\n"))
   current.path <- getwd()
-  setwd(paste0(path.prefix, "gene_data/ballgown/raw_count/"))
-  system2(command = 'curl', args = c('https://ccb.jhu.edu/software/stringtie/dl/prepDE.py', '--output', paste0(path.prefix, "gene_data/ballgown/raw_count/prepDE.py")), stdout = "", wait = TRUE)
-  cat(paste0("'", path.prefix, "gene_data/ballgown/raw_count/prepDE.py' has been installed.\n\n"))
+  setwd(paste0(path.prefix, "gene_data/reads_count_matrix/"))
+  system2(command = 'curl', args = c('https://ccb.jhu.edu/software/stringtie/dl/prepDE.py', '--output', paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py")), stdout = "", wait = TRUE)
+  cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/prepDE.py' has been installed.\n\n"))
   cat("************** Creating 'sample_lst.txt' file ************\n")
   sample.files <- list.files(paste0(path.prefix, "gene_data/ballgown/"), pattern = sample.pattern)
-  write.content <- print(paste0(sample.files[1], " ", path.prefix, "gene_data/ballgown/", sample.files[1] ,"/", sample.files[1], ".gtf"))
+  write.content <- print(paste0(sample.files[1], " ", path.prefix, "gene_data/raw_gtf/", sample.files[1] ,"/", sample.files[1], ".gtf"))
   for(i in 2:length(sample.files)){
-    #print(paste0(sample.files[i], " ", path.prefix, "gene_data/ballgown/", sample.files[i],"/", sample.files[i], ".gtf"))
-    write.content <- c(write.content, paste0(sample.files[i], " ", path.prefix, "gene_data/ballgown/", sample.files[i],"/", sample.files[i], ".gtf"))
+    write.content <- c(write.content, paste0(sample.files[i], " ", path.prefix, "gene_data/raw_gtf/", sample.files[i],"/", sample.files[i], ".gtf"))
   }
-  write.file<-file(paste0(path.prefix, "gene_data/ballgown/raw_count/sample_lst.txt"))
+  write.file<-file(paste0(path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"))
   writeLines(write.content, write.file)
   close(write.file)
-  cat(paste0("'", path.prefix, "gene_data/ballgown/raw_count/sample_lst.txt' has been created\n\n"))
+  cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/sample_lst.txt' has been created\n\n"))
   cat("************** Creating gene and transcript raw count file ************\n")
-  #print(paste0(path.prefix, "gene_data/ballgown/raw_count/prepDE.py -i ",  path.prefix, "gene_data/ballgown/raw_count/sample_lst.txt"))
   # have to check python !!!
-  if(reticulate::py_available(initialize = "TRUE")){
+  if(python.variable$check.answer){
     cat("(\u2714) : Python is available on your device!\n")
-    python.version <- as.numeric(reticulate::py_config()$version)
+    python.version <- python.variable$python.version
     cat(paste0("       Python version : ", reticulate::py_config()$version, "\n"))
     if(python.version >= 3) {
       cat("(\u270D) : Converting 'prepDE.py' from python2 to python3 \n\n")
@@ -37,8 +32,8 @@ PreDECountTable <- function(path.prefix, sample.pattern, print=TRUE) {
     } else if (python.version < 3 && python.version >= 2 ){
     }
     system2(command = 'python', args = paste0(path.prefix, "gene_data/ballgown/raw_count/prepDE.py -i ",  path.prefix, "gene_data/ballgown/raw_count/sample_lst.txt"))
-    cat(paste0("'", path.prefix, "gene_data/ballgown/raw_count/gene_count_matrix.csv' has been created\n"))
-    cat(paste0("'", path.prefix, "gene_data/ballgown/raw_count/transcript_count_matrix.csv' has been created\n\n"))
+    cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv' has been created\n"))
+    cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv' has been created\n\n"))
     on.exit(setwd(current.path))
     return(TRUE)
   } else {
@@ -54,8 +49,8 @@ PreDECountTable <- function(path.prefix, sample.pattern, print=TRUE) {
 DEGedgeRPlot <- function(path.prefix) {
   if(file.exists(paste0(path.prefix, "gene_data/ballgown/raw_count/gene_count_matrix.csv"))){
     # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/DEG_results/edgeR"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/DEG_results/edgeR"))
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/DE_results/edgeR"))){
+      dir.create(paste0(path.prefix, "RNAseq_results/DE_results/edgeR"))
     }
     cat(paste0("************** Plotting MDS plot (edgeR) **************\n"))
     # likelihood ratio test and quasi-likelihood F-test
@@ -68,7 +63,7 @@ DEGedgeRPlot <- function(path.prefix) {
     deglist.object <- edgeR::DGEList(counts=count.table[-1], group = group, genes = gene.data.frame)
     # Normalization
     deglist.object <- edgeR::calcNormFactors(deglist.object, method="TMM")
-    png(paste0(path.prefix, "RNAseq_results/DEG_results/edgeR/MDS_plot.png"))
+    png(paste0(path.prefix, "RNAseq_results/DE_results/edgeR/MDS_plot.png"))
     my_colors=c(rgb(255, 47, 35,maxColorValue = 255),
                 rgb(50, 147, 255,maxColorValue = 255))
 
@@ -93,7 +88,7 @@ DEGedgeRPlot <- function(path.prefix) {
     dgList <- edgeR::estimateGLMTrendedDisp(dgList, design=designMat)
     dgList <- edgeR::estimateGLMTagwiseDisp(dgList, design=designMat)
     cat(paste0("************** Plotting BCV (Biological Coefficient Of Variation) plot (edgeR) **************\n"))
-    png(paste0(path.prefix, "RNAseq_results/DEG_results/edgeR/BCV_plot.png"))
+    png(paste0(path.prefix, "RNAseq_results/DE_results/edgeR/BCV_plot.png"))
     p <- edgeR::plotBCV(dgList)
     print(p)
     dev.off()
@@ -105,7 +100,7 @@ DEGedgeRPlot <- function(path.prefix) {
     deGenes <- edgeR::decideTestsDGE(lrt, p=0.001)
     deGenes <- rownames(lrt)[as.logical(deGenes)]
     cat(paste0("************** Plotting smear plot (edgeR) **************\n"))
-    png(paste0(path.prefix, "RNAseq_results/DEG_results/edgeR/Smear_plot.png"))
+    png(paste0(path.prefix, "RNAseq_results/DE_results/edgeR/Smear_plot.png"))
     p <- edgeR::plotSmear(lrt, de.tags=deGenes)
     print(p)
     abline(h=c(-1, 1), col=2)
@@ -123,8 +118,8 @@ DEGedgeRPlot <- function(path.prefix) {
 DEDESeq2Plot <- function() {
   if(file.exists(paste0(path.prefix, "gene_data/ballgown/raw_count/gene_count_matrix.csv"))){
     # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/DEG_results/DESeq2"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/DEG_results/DESeq2"))
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/DE_results/DESeq2"))){
+      dir.create(paste0(path.prefix, "RNAseq_results/DE_results/DESeq2"))
     }
     pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
     count.table <- read.csv(paste0(path.prefix, "gene_data/ballgown/raw_count/gene_count_matrix.csv"))
@@ -162,7 +157,7 @@ DEDESeq2Plot <- function() {
     table(resLFC1$padj < 0.1)
     # MA plot with DESeq2
     cat(paste0("************** Plotting MA plot (DESeq2) **************\n"))
-    png(paste0(path.prefix, "RNAseq_results/DEG_results/DESeq2/MA_plot.png"))
+    png(paste0(path.prefix, "RNAseq_results/DE_results/DESeq2/MA_plot.png"))
     p <- DESeq2::plotMA(res, ylim=c(-5,5))
     print(p)
     dev.off()
@@ -172,7 +167,7 @@ DEDESeq2Plot <- function() {
     df <- as.data.frame(colData(vsd)[,c("covariate")])
     rownames(df) <- as.character(pheno_data$ids)
     cat(paste0("************** Plotting heatmap plot (DESeq2) **************\n"))
-    png(paste0(path.prefix, "RNAseq_results/DEG_results/DESeq2/Heatmap_plot.png"))
+    png(paste0(path.prefix, "RNAseq_results/DE_results/DESeq2/Heatmap_plot.png"))
     pheatmap::pheatmap(mat, annotation_col=df)
     dev.off()
     #

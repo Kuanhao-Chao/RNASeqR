@@ -265,18 +265,17 @@ GffcompareRefSample <- function(path.prefix, gene.name, sample.pattern) {
   }
 }
 
-
-
-
-raw_count <- read.csv("/home/kuan-hao/howard/gene_data/ballgown/raw_count/gene_count_matrix.csv")
-gene_abundance_fpkm <- read.table("/home/kuan-hao/howard/gene_data/gene_abundance/ERR188044/ERR188044.tsv", sep = "\t", header = TRUE)
-gene_abundance_fpkm_not_0<- gene_abundance_fpkm$FPKM[gene_abundance_fpkm$FPKM != 0]
-length(gene_abundance_fpkm_not_0)
-raw_count$g
-
-colnames(raw_count) <- c("Gene.ID", "ERR188044","ERR188104","ERR188234","ERR188245","ERR188257","ERR188273","ERR188337","ERR188383","ERR188401","ERR188428","ERR188454","ERR204916")
-new_raw_count <- data.frame(raw_count$Gene.ID, raw_count$ERR188044)
-colnames(new_raw_count) <- c("Gene.ID", "raw_count")
-merged.data <- merge(gene_abundance_fpkm, new_raw_count, by = "Gene.ID")
-
-length(raw_count$ERR188044)
+#
+#
+#
+# raw_count <- read.csv("/home/kuan-hao/howard/gene_data/ballgown/raw_count/gene_count_matrix.csv")
+# gene_abundance_fpkm <- read.table("/home/kuan-hao/howard/gene_data/gene_abundance/ERR188044/ERR188044.tsv", sep = "\t", header = TRUE)
+# gene_abundance_fpkm_not_0<- gene_abundance_fpkm$FPKM[gene_abundance_fpkm$FPKM != 0]
+# length(gene_abundance_fpkm_not_0)
+# raw_count$g
+#
+# colnames(raw_count) <- c("Gene.ID", "ERR188044","ERR188104","ERR188234","ERR188245","ERR188257","ERR188273","ERR188337","ERR188383","ERR188401","ERR188428","ERR188454","ERR204916")
+# new_raw_count <- data.frame(raw_count$Gene.ID, raw_count$ERR188044)
+# colnames(new_raw_count) <- c("Gene.ID", "raw_count")
+# merged.data <- merge(gene_abundance_fpkm, new_raw_count, by = "Gene.ID")
+# length(row.names(gene_abundance_fpkm))
