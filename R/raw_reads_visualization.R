@@ -1,6 +1,6 @@
 #' Two group box plot
-#' @importFrom ggplot2
-#' @importFrom reshape2
+#' @import ggplot2
+#' @importFrom reshape2 melt
 #' @export
 RawReadsBoxPlot <- function(path.prefix) {
   cat(paste0("************** Plotting Gene & Transcript Raw Reads Box plot **************\n"))

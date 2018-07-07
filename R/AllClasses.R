@@ -110,9 +110,13 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, gene.n
 
   # below still need to fix
   # 8. check 'phenodata'
-  bool.phenodata <- CheckPhenodata(input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=TRUE)
+  phenodata.return <- CheckPhenodata(input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=TRUE)
+  bool.phenodata <- phenodata.return$check.answer
   # 9. check 'main variable'
-  bool.check.main.var <- TRUE
+  bool.check.main.var <- CheckMainVar(input.path.prefix = input.path.prefix, main.variable = main.variable, experiment.type = experiment.type,
+                                      treatment.num = phenodata.return$treatment.num, tissue.num = phenodata.return$tissue.num, cell_type.num = phenodata.return$cell_type.num,
+                                      genotype.num = phenodata.return$genotype.num, time.num = phenodata.return$time.num, dosage.time = phenodata.return$dosage.time,
+                                      print=TRUE)
   # 10. check 'additional.variable'
   bool.check.add.var <- TRUE
 
@@ -397,7 +401,7 @@ CheckOperatingSystem <- function(print = TRUE){
   return(os)
 }
 
-#' inside function : check valifity of phenodata
+#' inner function : check validity of phenodata
 #' must have column : "ids" + "2 column"
 #' other column : "treatment", "tissue", "cell_type", "genotype", "time", "dosage"
 CheckPhenodata <- function(input.path.prefix = NA_character_, gene.name = NA_character_, sample.pattern = NA_character_, print=TRUE) {
@@ -412,8 +416,8 @@ CheckPhenodata <- function(input.path.prefix = NA_character_, gene.name = NA_cha
   columns.any.NA <- apply(pheno_data, 2, function(x) any(is.na(x)))
   # Files must have these columns in order
   must_have_column <- c("ids", "treatment", "tissue", "cell_type", "genotype", "time", "dosage")
-  # check column names
-  cat("\u25CF Checking column names of 'phenodata.csv'\n")
+  # check column names are matched
+  cat("     \u25CF Checking column names of 'phenodata.csv'\n")
   for ( i in 1:7 ) {
     if (pheno_data_cols[i] != must_have_column[i]) {
       bool.check.valid <- FALSE
@@ -422,24 +426,10 @@ CheckPhenodata <- function(input.path.prefix = NA_character_, gene.name = NA_cha
       stop("Column names ERROR")
     }
   }
-  # check each column : if there is any NA
-  columns.any.NA <- apply(pheno_data, 2, function(x) any(is.na(x)))
-  # check each column : if all is not NA
-  columns.all.not.NA <- apply(pheno_data, 2, function(x) all(!is.na(x)))
-  # check each column : if there is all NA
-  columns.all.NA <- apply(pheno_data, 2, function(x) all(is.na(x)))
-  # first and second (ids and treatment) must can't have NA value : it should be false!
-  cat("\u25CF Checking 'ids' and 'treatment' of 'phenodata.csv'\n")
-  if (columns.any.NA[[1]] || columns.any.NA[[2]]) {
-    if (columns.any.NA[[1]]) {
-      cat(paste0("(\u2718) : There are NA values in 'ids' column. Please check the files.\n" ))
-    }
-    if (columns.any.NA[[2]]) {
-      cat(paste0("(\u2718) : There are NA values in or in 'treatment' column. Please check the files.\n" ))
-    }
-    stop("Necessary column NA ERROR")
-  }
+  cat("         (\u2714) : column names are valid. ('ids', 'treatment', 'tissue', 'cell_type', 'genotype', 'time', 'dosage')\n")
+
   # "id" : must be distinct, same as input_files raw reads name !
+  cat("     \u25CF Checking whether \"raw_fastq.gz files\" matches \"'ids' of phenodata.csv\" \n")
   raw.fastq <- list.files(path = paste0(input.path.prefix, 'input_files/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   extract.fastq.gz.sample.names <- unique(gsub("_[1-2]*.fastq.gz", "", raw.fastq))
   bool.length <- length(extract.fastq.gz.sample.names) == length(pheno_data$ids)
@@ -448,29 +438,108 @@ CheckPhenodata <- function(input.path.prefix = NA_character_, gene.name = NA_cha
     cat(paste0("(\u2718) : 'ids' column doesn't match the smaple_id in 'input_files/raw_fastq.gz'. Please check the file.\n" ))
     stop("Ids column ERROR")
   }
+  ids.list <- paste(sort(extract.fastq.gz.sample.names), collapse = " ")
+  cat("         (\u2714) : Column 'ids' of phenodata.csv is valid. \n")
+  cat(paste0("            sample ids are : \"", ids.list,"\""))
+  # first and second (ids and treatment) must can't have NA value : it should be false!
+  # check each column : if there is any NA
+  columns.any.NA <- apply(pheno_data, 2, function(x) any(is.na(x)))
+  # check each column : if all is not NA
+  columns.all.not.NA <- apply(pheno_data, 2, function(x) all(!is.na(x)))
+  # check each column : if there is all NA
+  columns.all.NA <- apply(pheno_data, 2, function(x) all(is.na(x)))
+  cat("     \u25CF Checking 'ids' and 'treatment' of 'phenodata.csv' (can't have NA)\n")
+  if (columns.any.NA[[1]] || columns.any.NA[[2]]) {
+    if (columns.any.NA[[1]]) {
+      cat(paste0("         (\u2718) : There are NA values in 'ids' column. Please check the files.\n" ))
+    }
+    if (columns.any.NA[[2]]) {
+      cat(paste0("         (\u2718) : There are NA values in or in 'treatment' column. Please check the files.\n" ))
+    }
+    stop("Necessary column NA ERROR")
+  }
   # 'tissue', 'cell_type', 'genotype', 'time', 'dosage' : if there is any one value that is not NA in each column, then that columns must can't have NA vlue
   # condition : must 'all NA' or 'all have value'
-  cat("\u25CF Checking 'tissue', 'cell_type', 'genotype', 'time', 'dosage' of 'phenodata.csv'\n")
-  if ( !columns.all.NA[[3]] && !columns.all.not.NA[[3]] || !columns.all.NA[[4]] && !columns.all.not.NA[[4]] ||
-       !columns.all.NA[[5]] && !columns.all.not.NA[[5]] || !columns.all.NA[[6]] && !columns.all.not.NA[[6]] ||
-       !columns.all.NA[[7]] && !columns.all.not.NA[[7]] ) {
+  cat("     \u25CF Checking 'tissue', 'cell_type', 'genotype', 'time', 'dosage' of 'phenodata.csv'\n")
+  if ( (!columns.all.NA[[3]] && !columns.all.not.NA[[3]]) || (!columns.all.NA[[4]] && !columns.all.not.NA[[4]]) ||
+       (!columns.all.NA[[5]] && !columns.all.not.NA[[5]]) || (!columns.all.NA[[6]] && !columns.all.not.NA[[6]]) ||
+       (!columns.all.NA[[7]] && !columns.all.not.NA[[7]]) ) {
     if (!columns.all.NA[[3]] && !columns.all.not.NA[[3]]) {
-      cat(paste0("(\u2718) : Invalid column value in 'tissue'. Please check the files.\n" ))
+      cat(paste0("         (\u2718) : Invalid column value in 'tissue'. Please check the files.\n" ))
     }
     if (!columns.all.NA[[4]] && !columns.all.not.NA[[4]]) {
-      cat(paste0("(\u2718) : Invalid column value in 'cell_type'. Please check the files.\n" ))
+      cat(paste0("         (\u2718) : Invalid column value in 'cell_type'. Please check the files.\n" ))
     }
     if (!columns.all.NA[[5]] && !columns.all.not.NA[[5]]) {
-      cat(paste0("(\u2718) : Invalid column value in 'genotype'. Please check the files.\n" ))
+      cat(paste0("         (\u2718) : Invalid column value in 'genotype'. Please check the files.\n" ))
     }
     if (!columns.all.NA[[6]] && !columns.all.not.NA[[6]]) {
-      cat(paste0("(\u2718) : Invalid column value in 'time'. Please check the files.\n" ))
+      cat(paste0("         (\u2718) : Invalid column value in 'time'. Please check the files.\n" ))
     }
     if (!columns.all.NA[[7]] && !columns.all.not.NA[[7]]) {
-      cat(paste0("(\u2718) : Invalid column value in 'dosage'. Please check the files.\n" ))
+      cat(paste0("         (\u2718) : Invalid column value in 'dosage'. Please check the files.\n" ))
     }
     stop("Optional column NA ERROR")
   }
-  return(bool.check.valid)
+  # calculate groups number of all samples
+  cat("     \u25CF Calculating groups numbers of each column in 'phenodata.csv'\n")
+  ids.table <- table(pheno_data$ids)
+  treatment.table <- table(pheno_data$treatment)
+  tissue.table <- table(pheno_data$tissue)
+  cell_type.table <- table(pheno_data$cell_type)
+  genotype.table <- table(pheno_data$genotype)
+  time.table <- table(pheno_data$time)
+  dosage.table <- table(pheno_data$dosage)
+  cat(paste0("         \u25CF There are ", length(ids.table), " sample ids\n"))
+  cat(paste0("         \u25CF Groups\n"))
+  cat(paste0("            \u25CF treatment : ", length(treatment.table), "\n"))
+  cat(paste0("            \u25CF tissue : ", length(tissue.table), "\n"))
+  cat(paste0("            \u25CF cell_type : ", length(cell_type.table), "\n"))
+  cat(paste0("            \u25CF genotype : ", length(genotype.table), "\n"))
+  cat(paste0("            \u25CF time : ", length(time.table), "\n"))
+  cat(paste0("            \u25CF dosage : ", length(dosage.table), "\n"))
+  return.value <- list("check.answer" = bool.check.valid, "ids.num" = length(ids.table),
+                       "treatment.num" = length(treatment.table), "tissue.num" = length(tissue.table),
+                       "cell_type.num" = length(cell_type.table), "genotype.num" = length(genotype.table),
+                       "time.num" = length(time.table), "dosage.time" = length(dosage.table))
+  return(return.value)
 }
 
+#' inner function : check
+CheckMainVar <- function(input.path.prefix = NA_character_, main.variable = NA_character_, experiment.type = NA_character_,
+                         treatment.num = NA_character_, tissue.num = NA_character_, cell_type.num = NA_character_,
+                         genotype.num = NA_character_, time.num = NA_character_, dosage.time = NA_character_, print=TRUE) {
+  cat(c("************** Checking main.variable ************\n"))
+  if (main.variable == "ids") {
+    cat(paste0("(\u2718) : 'main.variable' can't be 'ids'.\n" ))
+    stop("Main variable ERROR")
+  } else if (main.variable == "treatment" || main.variable == "tissue" || main.variable == "cell_type" ||
+             main.variable == "genotype" || main.variable == "time" || main.variable == "dosage") {
+    # now pheno_data is valid
+    pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
+    main.variable.group.num <- length(table(pheno_data[main.variable]))
+    cat(paste0("     \u25CF        input 'main.variable' : \"", main.variable, "\"\n"))
+    cat(paste0("     \u25CF 'main.variable' group number : ", main.variable.group.num, "\n"))
+    cat(paste0("     \u25CF      input 'experiment.type' : \"", experiment.type, "\"\n"))
+    if (experiment.type == "two.group") {
+      if (main.variable.group.num != 2) {
+        cat(paste0("(\u2718) : 'main.variable' group number must be 2 !! Not matching experiment.type. Experiment input invalid.\n" ))
+        stop("experiment.type & main.variable.group.num not matching ERROR")
+      }
+    } else if (experiment.type == "multi.group.pairs") {
+      if (main.variable.group.num <= 2) {
+        cat(paste0("(\u2718) : 'main.variable' group number must be 3 or more !! Not matching experiment.type. Experiment input invalid.\n" ))
+        stop("experiment.type & main.variable.group.num not matching ERROR")
+      }
+    } else if (experiment.type == "multi.group.anova") {
+      if (main.variable.group.num <= 2) {
+        cat(paste0("(\u2718) : 'main.variable' group number must be 3 or more !! Not matching experiment.type. Experiment input invalid.\n" ))
+        stop("experiment.type & main.variable.group.num not matching ERROR")
+      }
+    }
+  } else {
+    cat(paste0("(\u2718) : 'main.variable' is not matching any column name of 'phenodata.csv'. Please check your input. \n" ))
+    cat("      'main.variable' must be 'treatment', 'tissue', 'cell_type', 'genotype', 'time' or 'dosage'. \n")
+    stop("Main variable ERROR")
+  }
+}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClasses.R
 \name{CheckPhenodata}
 \alias{CheckPhenodata}
-\title{inside function : check valifity of phenodata
+\title{inner function : check validity of phenodata
 must have column : "ids" + "2 column"
 other column : "treatment", "tissue", "cell_type", "genotype", "time", "dosage"}
 \usage{
@@ -10,7 +10,7 @@ CheckPhenodata(input.path.prefix = NA_character_, gene.name = NA_character_,
   sample.pattern = NA_character_, print = TRUE)
 }
 \description{
-inside function : check valifity of phenodata
+inner function : check validity of phenodata
 must have column : "ids" + "2 column"
 other column : "treatment", "tissue", "cell_type", "genotype", "time", "dosage"
 }
