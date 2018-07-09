@@ -146,6 +146,30 @@ MkdirRNAseq_results <- function(path.prefix){
   } else {
     cat(paste0("(\u2718) : Fail to create '", path.prefix, "RNAseq_results/DE_results/raw_reads/transcript'.\n     Please check whether the directory is already exit.\n"))
   }
+  RNAseq_results_quality_control.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/')), showWarnings = FALSE) == 0
+  if (!isTRUE(RNAseq_results_quality_control.dir)) {
+    cat(paste0("(\u2714) : Create '", path.prefix, "RNAseq_results/QA_results/'.\n"))
+  } else {
+    cat(paste0("(\u2718) : Fail to create '", path.prefix, "RNAseq_results/QA_results'.\n     Please check whether the directory is already exit.\n"))
+  }
+  RNAseq_results_quality_control.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/')), showWarnings = FALSE) == 0
+  if (!isTRUE(RNAseq_results_quality_control.dir)) {
+    cat(paste0("(\u2714) : Create '", path.prefix, "RNAseq_results/QA_results/'.\n"))
+  } else {
+    cat(paste0("(\u2718) : Fail to create '", path.prefix, "RNAseq_results/QA_results'.\n     Please check whether the directory is already exit.\n"))
+  }
+  RNAseq_results_quality_control_Rqc.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/Rqc')), showWarnings = FALSE) == 0
+  if (!isTRUE(RNAseq_results_quality_control_Rqc.dir)) {
+    cat(paste0("(\u2714) : Create '", path.prefix, "RNAseq_results/QA_results/Rqc'.\n"))
+  } else {
+    cat(paste0("(\u2718) : Fail to create '", path.prefix, "RNAseq_results/QA_results/Rqc'.\n     Please check whether the directory is already exit.\n"))
+  }
+  RNAseq_results_quality_control_systemPipeR.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/systemPipeR')), showWarnings = FALSE) == 0
+  if (!isTRUE(RNAseq_results_quality_control_systemPipeR.dir)) {
+    cat(paste0("(\u2714) : Create '", path.prefix, "RNAseq_results/QA_results/systemPipeR'.\n"))
+  } else {
+    cat(paste0("(\u2718) : Fail to create '", path.prefix, "RNAseq_results/QA_results/systemPipeR'.\n     Please check whether the directory is already exit.\n"))
+  }
 }
 
 #' Check sample gene and binary directory

@@ -118,10 +118,10 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, gene.n
                                       genotype.num = phenodata.return$genotype.num, time.num = phenodata.return$time.num, dosage.time = phenodata.return$dosage.time,
                                       print=TRUE)
   # 10. check 'additional.variable'
-  bool.check.add.var <- TRUE
+  bool.check.add.var <- CheckAddVar(additional.variable = additional.variable, main.variable = main.variable)
 
   if ((characters.os.type == "linux" || characters.os.type == "osx") && bool.python.avail && bool.prefix.path &&
-      bool.input.path.prefix && bool.input.dir.files && bool.experiment.type && bool.phenodata && bool.check.add.var) {
+      bool.input.path.prefix && bool.input.dir.files && bool.experiment.type && bool.phenodata && bool.check.main.var && bool.check.add.var) {
     cat(paste0("\n**************************************\n"))
     cat(paste0("************** Success! **************\n"))
     cat(paste0("**************************************\n"))
@@ -160,7 +160,7 @@ CheckInputParam <- function(path.prefix = NA, input.path.prefix = NA, gene.name 
     }
     stop("Input parameters ERROR")
   } else {
-    cat(paste0("(\u2714) : Input parameters are all valid!! \n\n"))
+    cat(paste0("(\u2714) : Input parameters are all valid valid !! \n\n"))
   }
 }
 
@@ -347,7 +347,7 @@ CheckExperimentType <- function(experiment.type = NA_character_, print = TRUE) {
     cat("(\u2718) : 'experiment.type' can only be 'two.group' or 'pair-wise.group' or 'multi.group'.\n\n")
     stop("Experiment.type ERROR")
   } else {
-    cat(paste0("(\u2714) : 'experiment.type' is ", experiment.type, "\n\n"))
+    cat(paste0("(\u2714) : 'experiment.type' is \"", experiment.type, "\"\n\n"))
     return(TRUE)
   }
 }
@@ -440,7 +440,7 @@ CheckPhenodata <- function(input.path.prefix = NA_character_, gene.name = NA_cha
   }
   ids.list <- paste(sort(extract.fastq.gz.sample.names), collapse = " ")
   cat("         (\u2714) : Column 'ids' of phenodata.csv is valid. \n")
-  cat(paste0("            sample ids are : \"", ids.list,"\""))
+  cat(paste0("            sample ids are : \"", ids.list,"\"\n"))
   # first and second (ids and treatment) must can't have NA value : it should be false!
   # check each column : if there is any NA
   columns.any.NA <- apply(pheno_data, 2, function(x) any(is.na(x)))
@@ -497,7 +497,7 @@ CheckPhenodata <- function(input.path.prefix = NA_character_, gene.name = NA_cha
   cat(paste0("            \u25CF cell_type : ", length(cell_type.table), "\n"))
   cat(paste0("            \u25CF genotype : ", length(genotype.table), "\n"))
   cat(paste0("            \u25CF time : ", length(time.table), "\n"))
-  cat(paste0("            \u25CF dosage : ", length(dosage.table), "\n"))
+  cat(paste0("            \u25CF dosage : ", length(dosage.table), "\n\n"))
   return.value <- list("check.answer" = bool.check.valid, "ids.num" = length(ids.table),
                        "treatment.num" = length(treatment.table), "tissue.num" = length(tissue.table),
                        "cell_type.num" = length(cell_type.table), "genotype.num" = length(genotype.table),
@@ -505,7 +505,7 @@ CheckPhenodata <- function(input.path.prefix = NA_character_, gene.name = NA_cha
   return(return.value)
 }
 
-#' inner function : check
+#' inner function : check main variable
 CheckMainVar <- function(input.path.prefix = NA_character_, main.variable = NA_character_, experiment.type = NA_character_,
                          treatment.num = NA_character_, tissue.num = NA_character_, cell_type.num = NA_character_,
                          genotype.num = NA_character_, time.num = NA_character_, dosage.time = NA_character_, print=TRUE) {
@@ -537,9 +537,34 @@ CheckMainVar <- function(input.path.prefix = NA_character_, main.variable = NA_c
         stop("experiment.type & main.variable.group.num not matching ERROR")
       }
     }
+    cat(paste0("     (\u2714) : valid 'main variable'\n\n"))
+    return(TRUE)
   } else {
     cat(paste0("(\u2718) : 'main.variable' is not matching any column name of 'phenodata.csv'. Please check your input. \n" ))
     cat("      'main.variable' must be 'treatment', 'tissue', 'cell_type', 'genotype', 'time' or 'dosage'. \n")
     stop("Main variable ERROR")
+  }
+}
+
+#" inner function : check additional variable
+CheckAddVar <- function(additional.variable = NA_character_, main.variable = NA_character_) {
+  cat(c("************** Checking additional.variable ************\n"))
+  if (additional.variable == "ids") {
+    cat(paste0("(\u2718) : 'additional.variable' can't be 'ids'.\n" ))
+    stop("Main variable ERROR")
+  } else if (additional.variable == "treatment" || additional.variable == "tissue" || additional.variable == "cell_type" ||
+             additional.variable == "genotype" || additional.variable == "time" || additional.variable == "dosage") {
+    if (additional.variable != main.variable) {
+      cat(paste0("     \u25CF  input 'additional.variable' : \"", additional.variable, "\"\n"))
+      cat(paste0("     (\u2714) : valid 'additional variable'\n\n"))
+      return(TRUE)
+    } else {
+      cat(paste0("(\u2718) : 'additional.variable' can't be 'main.variable'.\n" ))
+      stop("Main variable Additional variable same ERROR")
+    }
+  } else {
+    cat(paste0("(\u2718) : 'additional.variable' is not matching any column name of 'phenodata.csv'. Please check your input. \n" ))
+    cat("      'additional.variable' must be 'treatment', 'tissue', 'cell_type', 'genotype', 'time' or 'dosage'. \n")
+    stop("Additional variable ERROR")
   }
 }

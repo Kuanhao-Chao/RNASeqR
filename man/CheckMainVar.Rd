@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClasses.R
 \name{CheckMainVar}
 \alias{CheckMainVar}
-\title{inner function : check}
+\title{inner function : check main variable}
 \usage{
 CheckMainVar(input.path.prefix = NA_character_,
   main.variable = NA_character_, experiment.type = NA_character_,
@@ -11,5 +11,5 @@ CheckMainVar(input.path.prefix = NA_character_,
   time.num = NA_character_, dosage.time = NA_character_, print = TRUE)
 }
 \description{
-inner function : check
+inner function : check main variable
 }
