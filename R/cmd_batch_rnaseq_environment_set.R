@@ -24,18 +24,14 @@ RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam) {
   MkdirAll(path.prefix)
   r_script.dir <- dir.create(file.path(paste0(path.prefix, 'Rscript/')), showWarnings = FALSE) == 0
   r_script.out.dir <- dir.create(file.path(paste0(path.prefix, 'Rscript_out/')), showWarnings = FALSE) == 0
-  fileConn<-file(paste0(path.prefix, "Rscript/RNAseqEnvironmentSet.R"))
+  fileConn<-file(paste0(path.prefix, "Rscript/Environment_Set.R"))
   first <- "library(RNASeqWorkflow)"
   second <- paste0("RNAseqEnvironmentSet(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', gene.name = '", gene.name, "', sample.pattern = '", sample.pattern, "', indexes.optional = ",indexes.optional, ", os.type = '", os.type, "')")
   writeLines(c(first, second), fileConn)
   close(fileConn)
-  system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/RNAseqEnvironmentSet.R ", path.prefix, "Rscript_out/RNAseqEnvironmentSet.Rout"), stdout = "", wait = FALSE)
-  cat(paste0("\u2605 Tools are installing in the background. Check current progress in '", path.prefix, "Rscript_out/RNAseqEnvironmentSet.Rout'\n\n"))
-}
-
-#' inner function : start running in the background
-RNAseqEnvironmentSet_CMD_run <- function() {
-  system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/RNAseqEnvironmentSet.R ", path.prefix, "Rscript_out/RNAseqEnvironmentSet.Rout"), stdout = "", wait = FALSE)
+  cat(paste0("\u2605 '", path.prefix, "Rscript/Environment_Set.R' has been created.\n"))
+  system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Environment_Set.R ", path.prefix, "Rscript_out/Environment_Set.Rout"), stdout = "", wait = FALSE)
+  cat(paste0("\u2605 Tools are installing in the background. Check current progress in '", path.prefix, "Rscript_out/Environment_Set.Rout'\n\n"))
 }
 
 #' Set up the environment for the RNA seq pipeline in R shell

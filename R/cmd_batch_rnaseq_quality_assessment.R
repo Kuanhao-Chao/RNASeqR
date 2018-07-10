@@ -11,6 +11,7 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam) {
   third <- paste0("QualityControlRqc(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
   writeLines(c(first, second, third), fileConn)
   close(fileConn)
+  cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Control.R' has been created.\n"))
   system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Quality_Control.R ", path.prefix, "Rscript_out/Quality_Control.Rout"), stdout = "", wait = FALSE)
   cat(paste0("\u2605 Tools are installing in the background. Check current progress in '", path.prefix, "Rscript_out/Quality_Control.Rout'\n\n"))
 }
