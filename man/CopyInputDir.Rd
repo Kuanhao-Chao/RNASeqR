@@ -5,7 +5,7 @@
 \title{inner function : Copy input files directory}
 \usage{
 CopyInputDir(path.prefix, input.path.prefix, gene.name, sample.pattern,
-  optional = indexes.optional)
+  indexes.optional = indexes.optional)
 }
 \description{
 inner function : Copy input files directory

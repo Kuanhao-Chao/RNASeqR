@@ -1,3 +1,20 @@
+#'
+#' @export
+RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam) {
+  # check input param
+  path.prefix <- RNASeqWorkFlowParam@path.prefix
+  input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
+  sample.pattern <- RNASeqWorkFlowParam@sample.pattern
+  fileConn<-file(paste0(path.prefix, "Rscript/Quality_Control.R"))
+  first <- "library(RNASeqWorkflow)"
+  second <- "library(ggplot2)"
+  third <- paste0("QualityControlRqc(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
+  writeLines(c(first, second, third), fileConn)
+  close(fileConn)
+  system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Quality_Control.R ", path.prefix, "Rscript_out/Quality_Control.Rout"), stdout = "", wait = FALSE)
+  cat(paste0("\u2605 Tools are installing in the background. Check current progress in '", path.prefix, "Rscript_out/Quality_Control.Rout'\n\n"))
+}
+
 #' Quality control
 #' @import Rqc
 #' @import ggplot2

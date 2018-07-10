@@ -25,13 +25,13 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
     ExportPath(path.prefix = path.prefix)
     if (isTRUE(CheckToolAll(print=TRUE))) {
       cat("(\u2714) : Successful in RNAseq-pipeline precheck. \n\n")
-      fileConn<-file(paste0(path.prefix, "Rscript/RNASEQ_PIPELINE.R"))
+      fileConn<-file(paste0(path.prefix, "Rscript/RNASEQ_RAW_READ_PROCESS.R"))
       first <- "library(RNASeqWorkflow)"
       second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
       writeLines(c(first, second), fileConn)
       close(fileConn)
-      system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "/Rscript/RNASEQ_PIPELINE.R ", path.prefix, "/Rscript_out/RNASEQ_PIPELINE.Rout"), stdout = "", wait = FALSE)
-      cat(paste0("\u2605 RNAseq alignment, assembly, mergence, comparison, reads preprocess are doing in the background. Check current progress in '", path.prefix, "/Rscript_out/RNASEQ_PIPELINE.Rout'\n\n"))
+      system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/RNASEQ_RAW_READ_PROCESS.R ", path.prefix, "Rscript_out/RNASEQ_RAW_READ_PROCESS.Rout"), stdout = "", wait = FALSE)
+      cat(paste0("\u2605 RNAseq alignment, assembly, mergence, comparison, reads preprocess are doing in the background. Check current progress in '", path.prefix, "Rscript_out/RNASEQ_PIPELINE.Rout'\n\n"))
     }
   }
 }

@@ -1,5 +1,5 @@
 #' inner function : Copy input files directory
-CopyInputDir <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, optional = indexes.optional) {
+CopyInputDir <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, indexes.optional = indexes.optional) {
   current.path <- getwd()
   setwd(paste0(path.prefix, "gene_data/"))
   cat(c("************** Copying", paste0("'", input.path.prefix, "input_files/'"), "************\n"))
@@ -16,7 +16,7 @@ CopyInputDir <- function(path.prefix, input.path.prefix, gene.name, sample.patte
   file.copy(paste0(input.path.prefix, "input_files/phenodata.csv"), paste0(getwd(), "/phenodata.csv"))
   cat(c("          To :"), paste0(getwd(), "/phenodata.csv\n"))
   on.exit(setwd(current.path))
-  if (isTRUE(optional)) {
+  if (isTRUE(indexes.optional)) {
     cat(c("Copying From :", paste0(input.path.prefix, "input_files/", "indexes/"),  "\n"))
     file.copy(paste0(input.path.prefix, "input_files/", "indexes/"), paste0(getwd(), "/"), overwrite = TRUE, recursive = TRUE)
     cat(c("          To :", paste0(getwd(),"/indexes/"), "\n\n"))
@@ -145,12 +145,6 @@ MkdirRNAseq_results <- function(path.prefix){
     cat(paste0("(\u2714) : Create '", path.prefix, "RNAseq_results/DE_results/raw_reads/transcript'.\n"))
   } else {
     cat(paste0("(\u2718) : Fail to create '", path.prefix, "RNAseq_results/DE_results/raw_reads/transcript'.\n     Please check whether the directory is already exit.\n"))
-  }
-  RNAseq_results_quality_control.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results_quality_control.dir)) {
-    cat(paste0("(\u2714) : Create '", path.prefix, "RNAseq_results/QA_results/'.\n"))
-  } else {
-    cat(paste0("(\u2718) : Fail to create '", path.prefix, "RNAseq_results/QA_results'.\n     Please check whether the directory is already exit.\n"))
   }
   RNAseq_results_quality_control.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/')), showWarnings = FALSE) == 0
   if (!isTRUE(RNAseq_results_quality_control.dir)) {
