@@ -405,6 +405,8 @@ CheckOperatingSystem <- function(print = TRUE){
 #' must have column : "ids" + "2 column"
 #' other column : "treatment", "tissue", "cell_type", "genotype", "time", "dosage"
 CheckPhenodata <- function(input.path.prefix = NA_character_, gene.name = NA_character_, sample.pattern = NA_character_, print=TRUE) {
+  # have to sort the column !! and sort them in the correct order
+
   cat(c("************** Checking phenodata  ************\n"))
   bool.check.valid <- TRUE
   pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
@@ -553,11 +555,16 @@ CheckAddVar <- function(additional.variable = NA_character_, main.variable = NA_
     cat(paste0("(\u2718) : 'additional.variable' can't be 'ids'.\n" ))
     stop("Main variable ERROR")
   } else if (additional.variable == "treatment" || additional.variable == "tissue" || additional.variable == "cell_type" ||
-             additional.variable == "genotype" || additional.variable == "time" || additional.variable == "dosage") {
+             additional.variable == "grenotype" || additional.variable == "time" || additional.variable == "dosage") {
     if (additional.variable != main.variable) {
-      cat(paste0("     \u25CF  input 'additional.variable' : \"", additional.variable, "\"\n"))
-      cat(paste0("     (\u2714) : valid 'additional variable'\n\n"))
-      return(TRUE)
+      # check additional variable column : if all is not NA
+      if (all(!is.na(pheno_data[additional.variable]))) {
+        cat(paste0("     \u25CF  input 'additional.variable' : \"", additional.variable, "\"\n"))
+        cat(paste0("     (\u2714) : valid 'additional variable'\n\n"))
+        return(TRUE)
+      }
+      cat(paste0("(\u2718) : There are 'NA' in 'additional.variable' column.\n" ))
+      stop("Additional variable NA ERROR")
     } else {
       cat(paste0("(\u2718) : 'additional.variable' can't be 'main.variable'.\n" ))
       stop("Main variable Additional variable same ERROR")

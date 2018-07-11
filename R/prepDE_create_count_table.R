@@ -12,9 +12,9 @@ PreDECountTable <- function(path.prefix, sample.pattern, python.variable, print=
   cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/prepDE.py' has been installed.\n\n"))
   cat("************** Creating 'sample_lst.txt' file ************\n")
   sample.files <- list.files(paste0(path.prefix, "gene_data/ballgown/"), pattern = sample.pattern)
-  write.content <- print(paste0(sample.files[1], " ", path.prefix, "gene_data/raw_gtf/", sample.files[1] ,"/", sample.files[1], ".gtf"))
+  write.content <- print(paste0(sample.files[1], " ", path.prefix, "gene_data/ballgown/", sample.files[1] ,"/", sample.files[1], ".gtf"))
   for(i in 2:length(sample.files)){
-    write.content <- c(write.content, paste0(sample.files[i], " ", path.prefix, "gene_data/raw_gtf/", sample.files[i],"/", sample.files[i], ".gtf"))
+    write.content <- c(write.content, paste0(sample.files[i], " ", path.prefix, "gene_data/ballgown/",  sample.files[i], "/",sample.files[i], ".gtf"))
   }
   write.file<-file(paste0(path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"))
   writeLines(write.content, write.file)
@@ -28,10 +28,10 @@ PreDECountTable <- function(path.prefix, sample.pattern, python.variable, print=
     cat(paste0("       Python version : ", reticulate::py_config()$version, "\n"))
     if(python.version >= 3) {
       cat("(\u270D) : Converting 'prepDE.py' from python2 to python3 \n\n")
-      system2(command = '2to3', arg = paste0("-w ", path.prefix, "gene_data/ballgown/raw_count/prepDE.py"))
+      system2(command = '2to3', arg = paste0("-w ", path.prefix, "gene_data/reads_count_matrix/prepDE.py"))
     } else if (python.version < 3 && python.version >= 2 ){
     }
-    system2(command = 'python', args = paste0(path.prefix, "gene_data/ballgown/raw_count/prepDE.py -i ",  path.prefix, "gene_data/ballgown/raw_count/sample_lst.txt"))
+    system2(command = 'python', args = paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py -i ",  path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"))
     cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv' has been created\n"))
     cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv' has been created\n\n"))
     on.exit(setwd(current.path))
@@ -113,29 +113,50 @@ DEGedgeRPlot <- function(path.prefix) {
 #' DEG analysis with DESeq2
 #'
 #' @import DESeq2
+#' @import apeglm
+#' @import IHW
+#' @import ashr
+#' @import ggplot2
 #' @importFrom pheatmap pheatmap
 #' @export
-DEDESeq2Plot <- function() {
-  if(file.exists(paste0(path.prefix, "gene_data/ballgown/raw_count/gene_count_matrix.csv"))){
-    # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/DE_results/DESeq2"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/DE_results/DESeq2"))
-    }
+DEDESeq2Plot <- function(main.variable, additional.variable, dds.pval) {
     pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
-    count.table <- read.csv(paste0(path.prefix, "gene_data/ballgown/raw_count/gene_count_matrix.csv"))
-    group <- pheno_data$sex
-    gene.data.frame <- data.frame(gene.id=count.table$gene_id)
+    # gene analysis
+    gene.count.table <- read.csv(paste0(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
+    gene.data.frame <- data.frame(gene.id=gene.count.table$gene_id)
+    gene.count.table <- gene.count.table[-1]
+    rownames(gene.count.table) <- gene.data.frame$gene.id
+    colData.main.variable <- pheno_data[main.variable][[1]]
+    colData.additional.variable <- pheno_data[additional.variable][[1]]
+    colData.row.names <- pheno_data["ids"][[1]]
+
 
     # Deseq data
-    colData <- as.data.frame(as.character(group))
-    colnames(colData) = c("covariate")
-    ddsMat <- DESeq2::DESeqDataSetFromMatrix(countData = count.table[-1],
+    colData <- data.frame("main.variable" = as.character(main.variable.group), "additional.variable" = as.character(colData.additional.variable))
+    rownames(colData) <- as.character(colData.row.names)
+    # check rownames of colData matches colnames of gene.count.table
+    if (all(rownames(colData) == colnames(gene.count.table[-1]))) {
+      stop("ColData CountTable not match ERRPR")
+    }
+    # creat DESeqDataSet
+    dds <- DESeq2::DESeqDataSetFromMatrix(countData = gene.count.table,
                                              colData = colData,
-                                             design = ~covariate)
+                                             design =  ~ main.variable  )
+    print(dds)
 
-    # transformation
-    vsd <- DESeq2::varianceStabilizingTransformation(ddsMat)
-    DESeq2::plotPCA(vsd, "covariate")
+    # write colData, gene.count.table
+
+    # Filtering
+    keep <- rowSums(counts(dds)) >= length(row.names(pheno_data))
+    dds <- dds[keep, ]
+
+    # set the control group
+    # dds$main.variable <- relevel(dds$main.variable, ref = control.group)
+
+
+    # # transformation
+    # vsd <- DESeq2::varianceStabilizingTransformation(ddsMat)
+    # DESeq2::plotPCA(vsd, "main.variable")
 
     # plot pca by ggplot2
     # data <- plotPCA(vsd, intgroup = c( "covariate"), returnData=TRUE)
@@ -145,22 +166,65 @@ DEDESeq2Plot <- function() {
     # ylab(paste0("PC2: ",percentVar[2],"% variance"))
 
     ## differential
-    ddsMat <- DESeq2::DESeq(ddsMat)
+    dds <- DESeq2::DESeq(dds)
     # building result table
-    res <- DESeq2::results(ddsMat)
-    mcols(res, use.names=TRUE)
+    res <- DESeq2::results(dds)
+    print(res)
+    # group.name.list <- row.names(table(as.character(main.variable.group)))
+    # diff.res <- DESeq2::results(dds, contrast = c("main.variable", group.name.list[2], group.name.list[1]))
 
-    res.05 <- DESeq2::results(ddsMat, alpha=.05)
+    # Log fold change shrinkage for visualization and ranking
+    diff.res.name <- resultsNames(dds)
+    resLFC <- lfcShrink(dds, coef = diff.res.name[2], type = "apeglm")
+
+    #p-value and adjusted q-value
+    resOrdered <- res[order(res$pvalue),]
+    print(summary(resOrdered))
+    cat(summary(resOrdered))
+    # number of adjusted p-values less than 0.1
+    dds.pval
+    sum(diff.res$padj < dds.pval, na.rm=TRUE)
+
+    res.05 <- DESeq2::results(dds, alpha=dds.pval)
+    print(summary(res.05))
+
     table(res.05$padj < .05)
 
-    resLFC1 <- DESeq2::results(ddsMat, lfcThreshold=1)
-    table(resLFC1$padj < 0.1)
+    # independent hypothesis weighting
+    resIHW <- results(ddsMat, filterFun = ihw)
+    summary(resIHW)
+
+    # resLFC1 <- DESeq2::results(ddsMat, lfcThreshold=1)
+    # table(resLFC1$padj < 0.1)
+
     # MA plot with DESeq2
     cat(paste0("************** Plotting MA plot (DESeq2) **************\n"))
     png(paste0(path.prefix, "RNAseq_results/DE_results/DESeq2/MA_plot.png"))
     p <- DESeq2::plotMA(res, ylim=c(-5,5))
     print(p)
     dev.off()
+
+    # with normalized
+    p <- DESeq2::plotMA(resLFC, ylim=c(-5,5))
+
+    idx <- identify(diff.res$baseMean, diff.res$log2FoldChange)
+    rownames(diff.res)[idx]
+
+    # Alternative shrinkage estimators
+    diff.res.name
+    resLFC <- lfcShrink(ddsMat, coef = diff.res.name[2], type = "apeglm")
+    resLFC <- lfcShrink(ddsMat, coef = diff.res.name[2], type = "normal")
+    resLFC <- lfcShrink(ddsMat, coef = diff.res.name[2], type = "ashr")
+
+    # Plot counts
+    d <- plotCounts(ddsMat, gene = which.min(diff.res$padj), intgroup = "main.variable")
+    ggplot(d, aes(x=main.variable, y=count)) +
+      geom_point(position = position_jitter(w=0.1, h=0)) +
+      scale_y_log10(breaks=c(25, 100, 400))
+
+    mcols(diff.res)$description
+
+    dds <- estimateSizeFactors()
 
     mat <- assay(vsd)[ head(order(res$padj),30), ]
     mat <- mat - rowMeans(mat)
@@ -176,5 +240,4 @@ DEDESeq2Plot <- function() {
     #     treatres <- glmTreat(fit, coef = ncol(designMat), lfc = 1)
     #     tt.treat <- topTags(treatres, n = nrow(y), sort.by = "none")
     #     table(DESeq2 = resLFC1$padj < 0.1, edgeR = tt.treat$table$FDR < 0.1)
-  }
 }

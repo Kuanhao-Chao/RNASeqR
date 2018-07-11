@@ -14,4 +14,7 @@ Imports:
   ggplot2,
   Rqc,
   systemPipeR,
-  systemPipeRdata
+  systemPipeRdata,
+  apeglm,
+  IHW,
+  ashr
