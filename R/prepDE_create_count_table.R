@@ -191,7 +191,7 @@ DEDESeq2Plot <- function(main.variable, additional.variable, dds.pval) {
     table(res.05$padj < .05)
 
     # independent hypothesis weighting
-    resIHW <- results(ddsMat, filterFun = ihw)
+    resIHW <- results(dds, filterFun = ihw)
     summary(resIHW)
 
     # resLFC1 <- DESeq2::results(ddsMat, lfcThreshold=1)
@@ -207,14 +207,16 @@ DEDESeq2Plot <- function(main.variable, additional.variable, dds.pval) {
     # with normalized
     p <- DESeq2::plotMA(resLFC, ylim=c(-5,5))
 
-    idx <- identify(diff.res$baseMean, diff.res$log2FoldChange)
-    rownames(diff.res)[idx]
+    # idx <- identify(diff.res$baseMean, diff.res$log2FoldChange)
+    # rownames(diff.res)[idx]
 
     # Alternative shrinkage estimators
-    diff.res.name
-    resLFC <- lfcShrink(ddsMat, coef = diff.res.name[2], type = "apeglm")
-    resLFC <- lfcShrink(ddsMat, coef = diff.res.name[2], type = "normal")
-    resLFC <- lfcShrink(ddsMat, coef = diff.res.name[2], type = "ashr")
+
+    par(mfrown=c(1, 3), mar=c(4,4,2,1))
+    resLFC <- lfcShrink(dds, coef = 2, type = "apeglm")
+    plotMA(resLFC, main="apeglm")
+    resNorm <- lfcShrink(dds, coef = diff.res.name[2], type = "normal")
+    resAsh <- lfcShrink(dds, coef = diff.res.name[2], type = "ashr")
 
     # Plot counts
     d <- plotCounts(ddsMat, gene = which.min(diff.res$padj), intgroup = "main.variable")
