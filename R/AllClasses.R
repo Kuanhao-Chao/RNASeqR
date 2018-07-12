@@ -118,7 +118,7 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, gene.n
                                       genotype.num = phenodata.return$genotype.num, time.num = phenodata.return$time.num, dosage.time = phenodata.return$dosage.time,
                                       print=TRUE)
   # 10. check 'additional.variable'
-  bool.check.add.var <- CheckAddVar(additional.variable = additional.variable, main.variable = main.variable)
+  bool.check.add.var <- CheckAddVar(input.path.prefix = input.path.prefix, additional.variable = additional.variable, main.variable = main.variable)
 
   if ((characters.os.type == "linux" || characters.os.type == "osx") && bool.python.avail && bool.prefix.path &&
       bool.input.path.prefix && bool.input.dir.files && bool.experiment.type && bool.phenodata && bool.check.main.var && bool.check.add.var) {
@@ -549,15 +549,16 @@ CheckMainVar <- function(input.path.prefix = NA_character_, main.variable = NA_c
 }
 
 #" inner function : check additional variable
-CheckAddVar <- function(additional.variable = NA_character_, main.variable = NA_character_) {
+CheckAddVar <- function(input.path.prefix = NA_character_, additional.variable = NA_character_, main.variable = NA_character_) {
   cat(c("************** Checking additional.variable ************\n"))
   if (additional.variable == "ids") {
     cat(paste0("(\u2718) : 'additional.variable' can't be 'ids'.\n" ))
     stop("Main variable ERROR")
   } else if (additional.variable == "treatment" || additional.variable == "tissue" || additional.variable == "cell_type" ||
-             additional.variable == "grenotype" || additional.variable == "time" || additional.variable == "dosage") {
+             additional.variable == "genotype" || additional.variable == "time" || additional.variable == "dosage") {
     if (additional.variable != main.variable) {
       # check additional variable column : if all is not NA
+      pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
       if (all(!is.na(pheno_data[additional.variable]))) {
         cat(paste0("     \u25CF  input 'additional.variable' : \"", additional.variable, "\"\n"))
         cat(paste0("     (\u2714) : valid 'additional variable'\n\n"))

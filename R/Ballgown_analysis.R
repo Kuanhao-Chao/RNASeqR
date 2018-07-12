@@ -19,6 +19,7 @@ BallgownPreprocess <- function(path.prefix, gene.name, sample.pattern, experimen
     if (length(row.names(sample.table)) == 2) {
       dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/"))
       dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/"))
+      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/"))
       cat("\u25CF 2. Sorting phenodata.csv : \n")
       pheno_data.arrange <- dplyr::arrange(pheno_data, unlist(pheno_data[main.variable]))
       print(pheno_data.arrange)
@@ -100,87 +101,18 @@ BallgownPreprocess <- function(path.prefix, gene.name, sample.pattern, experimen
   }
 }
 
-#' inner function : DEG volcanplot
-BallgownVolcanoPlot <- function(ballgown.pval=0.05, ballgown.log2FC=1) {
-  if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
-    # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))
-    }
-    cat(paste0("************** Plotting Volcano plot **************\n"))
-    FPKM_dataset <- read.csv(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))
-    ## Volcano plot
-    # Make a basic volcano plot
-    png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/Volcano_plot.png"), width = 800, height = 800)
-    par(mar=c(5,7,10,5), cex=0.6, cex.main=6, cex.axis=2, cex.lab=2)
-    topT <- as.data.frame(FPKM_dataset)
-    with(topT, plot(log2FC, -log10(pval), pch=20, main="Volcano Plot", xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~Q~value), xlim=c(-15,15), ylim = c(0,12)))
-    # user4 input pvalue log2FC
-    # pval to qvalue
-    with(subset(topT, pval<ballgown.pval & abs(log2FC)>=ballgown.log2FC), points(log2FC, -log10(pval), pch=20, cex=2.0, col="red"))
-    with(subset(topT, pval<ballgown.pval & log2FC<= -1*ballgown.log2FC), points(log2FC, -log10(pval), pch=20, cex=2.0, col="green"))
-    # hight = -log10(pavl) = height
-    abline(v=c(-1*ballgown.log2FC,ballgown.log2FC), h=-1*log10(ballgown.pval), col="black", lty='dashed')
-    #abline(v=0, col="black", lty=3, lwd=1.0)
-    #abline(v=-2, col="black", lty=4, lwd=2.0)
-    #abline(v=2, col="black", lty=4, lwd=2.0)
-    #abline(h=-log10(max(topT$pval[topT$pval<0.05], na.rm=TRUE)), col="black", lty=4, lwd=2.0)
-
-    # this is to add the DEG name on the picture
-    #library(calibrate)
-    #with(subset(results_transcripts, pval<.05 & abs(log2FC)>2), textxy(log2FC, -log10(pval), labs=geneNames, cex=.8))
-    dev.off()
-  } else {
-    stop("(\u2718) 'ballgown_FPKM_result.csv' haven't created yet.\n\n")
-  }
-}
-
-#' DEGMAPlot
-#'
-#' @import ggplot2
-#' @export
-BallgownMAPlot <- function(ballgown.qval = 0.05) {
-  if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
-    # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))
-    }
-    cat(paste0("************** Plotting MA plot **************\n"))
-    FPKM_dataset <- read.csv(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))
-    ## Ma plot
-    png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/MA_plot.png"), width = 800, height = 800)
-    p <- ggplot(FPKM_dataset, aes(x = log2(FPKM.all.mean), y = log2FC, colour = qval<ballgown.qval)) +
-      xlab("Log2(FPKM.all.mean)") +
-      ylab("Log2FC") +
-      theme(plot.title = element_text(size = 40, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 15), axis.title.y = element_text(size = 15), plot.margin = margin(20,20,20,20)) +
-      labs(title = "MA Plot") +
-      scale_color_manual(values=c("#999999", "#FF0000")) +
-      geom_point() +
-      geom_hline(yintercept=0, color="blue") +
-      ylim(-6, 6)
-    print(p)
-    dev.off()
-  } else {
-    stop("(\u2718) 'ballgown_FPKM_result.csv' haven't created yet.\n\n")
-  }
-}
-
 #' Frequency plot
 #'
 #' @importFrom rafalib mypar shist
-#' @export
-DEGFrequencyPlot <- function() {
+BallgownFrequencyPlot <- function() {
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images"))
-    }
     cat(paste0("************** Plotting  Frequency plot **************\n"))
     FPKM_dataset <- read.csv(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))
     # frequency plot
-    png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/Frequency_plot.png"), width = 800, height = 800)
+    png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/Frequency_plot.png"))
     pms <- FPKM_dataset
-    rafalib::mypar(1, 1, mar=c(5,7,10,5), cex=0.6, cex.main=6, cex.axis=2, cex.lab=2)
+    rafalib::mypar(1, 1)
     pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
     sample.table <- as.data.frame(table(pheno_data[2]))
     rafalib::shist(log2(pms[, 5]), unit = 0.1, type = "n", xlab = "log (base 2) FPKM",
@@ -206,14 +138,10 @@ DEGFrequencyPlot <- function() {
 
 #' DEGTranscriptRelatedPlot
 #'
-#' @export
-DEGTranscriptRelatedPlot <- function(){
+BallgownTranscriptRelatedPlot <- function(){
   # draw for distribution of transcript count per gene
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images"))
-    }
     if (is.null(pkg.ballgown.data$bg_chrX)) {
       LoadBallgownObject()
     } else {
@@ -248,13 +176,9 @@ DEGTranscriptRelatedPlot <- function(){
 }
 
 #'
-#' @export
-DEGFPKMBoxPlot <- function() {
+BallgownBoxViolinPlot <- function() {
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images"))
-    }
     if (is.null(pkg.ballgown.data$bg_chrX)) {
       LoadBallgownObject()
     } else {
@@ -267,8 +191,23 @@ DEGFPKMBoxPlot <- function() {
                   rgb(50, 147, 255,maxColorValue = 255))
       fpkm = data.frame(texpr(pkg.ballgown.data$bg_chrX,meas="FPKM"))
       fpkm = log2(fpkm+1)
-      png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/FPKM_box_plot.png"))
-      boxplot(fpkm, col=my_colors[as.numeric(pheno.data[,2])], las=2, ylab='log2(FPKM+1)')
+      fpkm <- reshape2::melt(fpkm)
+      colnames(fpkm) <- c("samples", "FPKM")
+      png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/Box_plot.png"))
+      p1 <- ggplot(data = fpkm,  aes(x=samples, y=FPKM), las = 2) + geom_boxplot(fill=my_colors[as.numeric(pheno.data[,2])]) +
+        xlab("Samples") + ylab("Log2(FPKM+1)") + ggtitle("Transcript FPKM Box Plot") +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
+        theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
+      print(p1)
+      dev.off()
+
+      png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/Violin_plot.png"))
+      p2 <- ggplot(data = fpkm,  aes(x=samples, y=FPKM, color=samples), las = 2) + geom_violin() +
+        scale_color_manual(values=my_colors[as.numeric(pheno.data[,2])]) + stat_summary(fun.y=mean, geom="point", shape=23, size=2) +
+        xlab("Samples") + ylab("Log2(FPKM+1)") + ggtitle("Transcript FPKM Violin Plot") +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
+        theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
+      print(p2)
       dev.off()
     }
   } else {
@@ -280,14 +219,10 @@ DEGFPKMBoxPlot <- function() {
 #'
 #' @importFrom FactoMineR PCA
 #' @importFrom factoextra get_eigenvalue fviz_eig fviz_pca_ind
-#' @export
-DEGPCAPlot <- function(){
+BallgownPCAPlot <- function(){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images"))
-    }
     if (is.null(pkg.ballgown.data$bg_chrX)) {
       LoadBallgownObject()
     } else {
@@ -310,7 +245,9 @@ DEGPCAPlot <- function(){
       fpkm.pca = FactoMineR::PCA(fpkm.trans.sort, ncp=2, quali.sup=length(fpkm.trans.sort), graph = FALSE)
       eig.val <- factoextra::get_eigenvalue(fpkm.pca)
       png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/PCA/Dimension_pca_plot.png"))
-      p1 <- factoextra::fviz_eig(fpkm.pca, addlabels = TRUE, ylim = c(0, 50), title = "PCA Dimensions")
+      p1 <- factoextra::fviz_eig(fpkm.pca, addlabels = TRUE, ylim = c(0, 50), main = "PCA Dimensions") +
+        labs(title ="PCA Dimensions") +
+        theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
       print(p1)
       dev.off()
       #var$coord: coordinates of variables to create a scatter plot
@@ -319,7 +256,6 @@ DEGPCAPlot <- function(){
       #var <- get_pca_var(res.pca)
       png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/PCA/PCA_plot_factoextra.png"))
       p2 <- factoextra::fviz_pca_ind(fpkm.pca,
-                                     title = "Principal Component Analysis",
                                      xlab = paste0("PC1(", round(data.frame(eig.val)$variance.percent[1], 2), "%)"), ylab = paste0("PC2(", round(data.frame(eig.val)$variance.percent[2],2), "%)"),
                                      legend.title = "Treatment variable", legend.position = "top",
                                      pointshape = 21,
@@ -331,7 +267,9 @@ DEGPCAPlot <- function(){
                                      addEllipses=TRUE
                                      #palette = c("#00AFBB", "#E7B800"),
                                      #                 addEllipses = TRUE, # Concentration ellipses
-      )
+                                     ) +
+        labs(title ="Principal Component Analysis") +
+        theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
       print(p2)
       dev.off()
 
@@ -364,13 +302,9 @@ DEGPCAPlot <- function(){
 #' @importFrom corrplot corrplot
 #' @importFrom PerformanceAnalytics chart.Correlation
 #' @importFrom reshape2 melt
-#' @export
-DEGCorrelationPlot <- function(){
+BallgownCorrelationPlot <- function(){
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images"))
-    }
     cat(paste0("************** Plotting Correlation plot **************\n"))
     if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/Correlation/"))){
       dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/Correlation/"))
@@ -420,16 +354,76 @@ DEGCorrelationPlot <- function(){
   }
 }
 
+
+#' inner function : DEG volcanplot
+BallgownVolcanoPlot <- function(ballgown.pval=0.05, ballgown.log2FC=1) {
+  if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
+    # load gene name for further usage
+    cat(paste0("************** Plotting Volcano plot **************\n"))
+    FPKM_dataset <- read.csv(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))
+    ## Volcano plot
+    # Make a basic volcano plot
+    png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/Volcano_plot.png"))
+    par(mar=c(5,7,5,5), cex=0.6, cex.main=2, cex.axis=1.5, cex.lab=1.5)
+    topT <- as.data.frame(FPKM_dataset)
+    with(topT, plot(log2FC, -log10(pval), pch=20, main="Volcano Plot", xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~Q~value), xlim=c(-15,15), ylim = c(0,12)))
+    # user4 input pvalue log2FC
+    # pval to qvalue
+    with(subset(topT, pval<ballgown.pval & abs(log2FC)>=ballgown.log2FC), points(log2FC, -log10(pval), pch=20, cex=1, col="red"))
+    with(subset(topT, pval<ballgown.pval & log2FC<= -1*ballgown.log2FC), points(log2FC, -log10(pval), pch=20, cex=1, col="green"))
+    # hight = -log10(pavl) = height
+    abline(v=c(-1*ballgown.log2FC,ballgown.log2FC), h=-1*log10(ballgown.pval), col="black", lty='dashed')
+    #abline(v=0, col="black", lty=3, lwd=1.0)
+    #abline(v=-2, col="black", lty=4, lwd=2.0)
+    #abline(v=2, col="black", lty=4, lwd=2.0)
+    #abline(h=-log10(max(topT$pval[topT$pval<0.05], na.rm=TRUE)), col="black", lty=4, lwd=2.0)
+
+    # this is to add the DEG name on the picture
+    #library(calibrate)
+    #with(subset(results_transcripts, pval<.05 & abs(log2FC)>2), textxy(log2FC, -log10(pval), labs=geneNames, cex=.8))
+    dev.off()
+  } else {
+    stop("(\u2718) 'ballgown_FPKM_result.csv' haven't created yet.\n\n")
+  }
+}
+
+#' DEGMAPlot
+#'
+#' @import ggplot2
+#' @export
+BallgownMAPlot <- function(ballgown.qval = 0.05) {
+  if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
+    # load gene name for further usage
+    cat(paste0("************** Plotting MA plot **************\n"))
+    FPKM_dataset <- read.csv(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))
+    ## Ma plot
+    png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/MA_plot.png"))
+    p <- ggplot(FPKM_dataset, aes(x = log2(FPKM.all.mean), y = log2FC, colour = qval<ballgown.qval)) +
+      xlab("Log2(FPKM.all.mean)") +
+      ylab("Log2FC") +
+      theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
+      labs(title = "MA Plot") +
+      scale_color_manual(values=c("#999999", "#FF0000")) +
+      geom_point() +
+      geom_hline(yintercept=0, color="blue") +
+      ylim(-6, 6)
+    print(p)
+    dev.off()
+  } else {
+    stop("(\u2718) 'ballgown_FPKM_result.csv' haven't created yet.\n\n")
+  }
+}
+
 #'
 #' @export
-DEGPlotAll <- function() {
-  DEGVolcanoPlot()
-  DEGMAPlot()
-  DEGFrequencyPlot()
-  DEGTranscriptRelatedPlot()
-  DEGFPKMBoxPlot()
-  DEGPCAPlot()
-  DEGCorrelationPlot()
+BallgownPlotAll <- function(ballgown.log2FC = 1, ballgown.pval = 0.05, ballgown.qval = 0.05) {
+  BallgownFrequencyPlot()
+  BallgownTranscriptRelatedPlot()
+  BallgownBoxViolinPlot()
+  BallgownPCAPlot()
+  BallgownCorrelationPlot()
+  BallgownVolcanoPlot(ballgown.pval=0.05, ballgown.log2FC=1)
+  BallgownMAPlot(ballgown.qval = 0.05)
 }
 
 
@@ -440,11 +434,17 @@ CheckBallgownObject <- function() {
   print(pkg.ballgown.data$bg_chrX_filt)
 }
 
-#' load ballgown object
+#'
 #' @export
+BallgownProcess <- function() {
+  BallgownPreprocess()
+  BallgownPlotAll()
+}
+
+#' load ballgown object
 LoadBallgownObject <- function() {
-  if(isTRUE(file.exists(paste0(path.prefix, "gene_data/ballgown/ballgown.rda")))) {
-    load(paste0(path.prefix, "gene_data/ballgown/ballgown.rda"))
+  if(isTRUE(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/ballgown.rda")))) {
+    load(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/ballgown.rda"))
     pkg.ballgown.data$bg_chrX <- bg
   } else {
     stop(paste0("(\u2718) '", paste0(path.prefix, "gene_data/ballgown/ballgown.rda"), "' haven't created yet. Please run \"BallgownPreprocess(gene.name, sample.pattern, main.variable)\" first.\n\n"))
