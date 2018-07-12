@@ -575,3 +575,15 @@ CheckAddVar <- function(additional.variable = NA_character_, main.variable = NA_
     stop("Additional variable ERROR")
   }
 }
+
+CheckS4Object <- function(RNASeqWorkFlowParam, print = TRUE) {
+  if (isS4(RNASeqWorkFlowParam) && class(RNASeqWorkFlowParam)[1] == "RNASeqWorkFlowParam") {
+    cat(c("************** Checking validity of S4 input ************\n"))
+    if (print) {
+      cat(paste0("     (\u2714) : input is valid 'RNASeqWorkFlowParam' instance! \n\n"))
+    }
+  } else {
+    cat(paste0("(\u2718) : input is not a valid 'RNASeqWorkFlowParam' instance!.\n" ))
+    stop("Invalid 'RNASeqWorkFlowParam' input ERROR")
+  }
+}

@@ -4,7 +4,7 @@
 \alias{DEDESeq2Plot}
 \title{DEG analysis with DESeq2}
 \usage{
-DEDESeq2Plot()
+DEDESeq2Plot(main.variable, additional.variable, dds.pval)
 }
 \description{
 DEG analysis with DESeq2

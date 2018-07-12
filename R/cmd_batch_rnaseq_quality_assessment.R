@@ -2,6 +2,7 @@
 #' @export
 RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam) {
   # check input param
+  CheckS4Object(RNASeqWorkFlowParam)
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern

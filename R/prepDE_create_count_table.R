@@ -49,8 +49,8 @@ PreDECountTable <- function(path.prefix, sample.pattern, python.variable, print=
 DEGedgeRPlot <- function(path.prefix) {
   if(file.exists(paste0(path.prefix, "gene_data/ballgown/raw_count/gene_count_matrix.csv"))){
     # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/DE_results/edgeR"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/DE_results/edgeR"))
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/results/edgeR"))){
+      dir.create(paste0(path.prefix, "RNAseq_results/results/edgeR"))
     }
     cat(paste0("************** Plotting MDS plot (edgeR) **************\n"))
     # likelihood ratio test and quasi-likelihood F-test
@@ -63,7 +63,7 @@ DEGedgeRPlot <- function(path.prefix) {
     deglist.object <- edgeR::DGEList(counts=count.table[-1], group = group, genes = gene.data.frame)
     # Normalization
     deglist.object <- edgeR::calcNormFactors(deglist.object, method="TMM")
-    png(paste0(path.prefix, "RNAseq_results/DE_results/edgeR/MDS_plot.png"))
+    png(paste0(path.prefix, "RNAseq_results/results/edgeR/MDS_plot.png"))
     my_colors=c(rgb(255, 47, 35,maxColorValue = 255),
                 rgb(50, 147, 255,maxColorValue = 255))
 
@@ -88,7 +88,7 @@ DEGedgeRPlot <- function(path.prefix) {
     dgList <- edgeR::estimateGLMTrendedDisp(dgList, design=designMat)
     dgList <- edgeR::estimateGLMTagwiseDisp(dgList, design=designMat)
     cat(paste0("************** Plotting BCV (Biological Coefficient Of Variation) plot (edgeR) **************\n"))
-    png(paste0(path.prefix, "RNAseq_results/DE_results/edgeR/BCV_plot.png"))
+    png(paste0(path.prefix, "RNAseq_results/results/edgeR/BCV_plot.png"))
     p <- edgeR::plotBCV(dgList)
     print(p)
     dev.off()
@@ -100,7 +100,7 @@ DEGedgeRPlot <- function(path.prefix) {
     deGenes <- edgeR::decideTestsDGE(lrt, p=0.001)
     deGenes <- rownames(lrt)[as.logical(deGenes)]
     cat(paste0("************** Plotting smear plot (edgeR) **************\n"))
-    png(paste0(path.prefix, "RNAseq_results/DE_results/edgeR/Smear_plot.png"))
+    png(paste0(path.prefix, "RNAseq_results/results/edgeR/Smear_plot.png"))
     p <- edgeR::plotSmear(lrt, de.tags=deGenes)
     print(p)
     abline(h=c(-1, 1), col=2)
@@ -129,7 +129,6 @@ DEDESeq2Plot <- function(main.variable, additional.variable, dds.pval) {
     colData.main.variable <- pheno_data[main.variable][[1]]
     colData.additional.variable <- pheno_data[additional.variable][[1]]
     colData.row.names <- pheno_data["ids"][[1]]
-
 
     # Deseq data
     colData <- data.frame("main.variable" = as.character(main.variable.group), "additional.variable" = as.character(colData.additional.variable))
@@ -175,7 +174,7 @@ DEDESeq2Plot <- function(main.variable, additional.variable, dds.pval) {
 
     # Log fold change shrinkage for visualization and ranking
     diff.res.name <- resultsNames(dds)
-    resLFC <- lfcShrink(dds, coef = diff.res.name[2], type = "apeglm")
+    resLFC <- DESeq2::lfcShrink(dds, coef = diff.res.name[2], type = "apeglm")
 
     #p-value and adjusted q-value
     resOrdered <- res[order(res$pvalue),]
@@ -199,7 +198,7 @@ DEDESeq2Plot <- function(main.variable, additional.variable, dds.pval) {
 
     # MA plot with DESeq2
     cat(paste0("************** Plotting MA plot (DESeq2) **************\n"))
-    png(paste0(path.prefix, "RNAseq_results/DE_results/DESeq2/MA_plot.png"))
+    png(paste0(path.prefix, "RNAseq_results/results/DESeq2/MA_plot.png"))
     p <- DESeq2::plotMA(res, ylim=c(-5,5))
     print(p)
     dev.off()
@@ -213,9 +212,10 @@ DEDESeq2Plot <- function(main.variable, additional.variable, dds.pval) {
     # Alternative shrinkage estimators
 
     par(mfrown=c(1, 3), mar=c(4,4,2,1))
-    resLFC <- lfcShrink(dds, coef = 2, type = "apeglm")
-    plotMA(resLFC, main="apeglm")
+    resLFC <- DESeq2::lfcShrink(dds, coef = diff.res.name[2], type = "apeglm")
+    DESeq2::plotMA(resLFC, main="apeglm")
     resNorm <- lfcShrink(dds, coef = diff.res.name[2], type = "normal")
+    DESeq2::plotMA(resLFC, main="apeglm")
     resAsh <- lfcShrink(dds, coef = diff.res.name[2], type = "ashr")
 
     # Plot counts
@@ -233,7 +233,7 @@ DEDESeq2Plot <- function(main.variable, additional.variable, dds.pval) {
     df <- as.data.frame(colData(vsd)[,c("covariate")])
     rownames(df) <- as.character(pheno_data$ids)
     cat(paste0("************** Plotting heatmap plot (DESeq2) **************\n"))
-    png(paste0(path.prefix, "RNAseq_results/DE_results/DESeq2/Heatmap_plot.png"))
+    png(paste0(path.prefix, "RNAseq_results/results/DESeq2/Heatmap_plot.png"))
     pheatmap::pheatmap(mat, annotation_col=df)
     dev.off()
     #

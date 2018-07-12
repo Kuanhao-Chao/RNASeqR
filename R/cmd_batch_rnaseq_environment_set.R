@@ -15,6 +15,7 @@
 #' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
 RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam) {
   # check input param
+  CheckS4Object(RNASeqWorkFlowParam)
   os.type <- RNASeqWorkFlowParam@os.type
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
