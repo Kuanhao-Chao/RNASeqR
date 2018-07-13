@@ -17,4 +17,5 @@ Imports:
   systemPipeRdata,
   apeglm,
   IHW,
-  ashr
+  ashr,
+  genefilter

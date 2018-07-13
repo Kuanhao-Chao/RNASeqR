@@ -1,4 +1,3 @@
-
 #' Run ballgown analysis
 #'
 #' @import ballgown
@@ -36,7 +35,7 @@ BallgownPreprocess <- function(path.prefix, gene.name, sample.pattern, experimen
       save(bg, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/ballgown.rda"))
       cat('\n')
       cat("\u25CF 4. Filtering ballgown object (variance less than 1): \n")
-      pkg.ballgown.data$bg_chrX_filt <- ballgown::subset(pkg.ballgown.data$bg_chrX, cond = 'rowVars(texpr(pkg.ballgown.data$bg_chrX)) >1', genomesubset=TRUE)
+      pkg.ballgown.data$bg_chrX_filt <- ballgown::subset(pkg.ballgown.data$bg_chrX, cond = 'genefilter::rowVars(texpr(pkg.ballgown.data$bg_chrX)) >1', genomesubset=TRUE)
       bg_filter <- pkg.ballgown.data$bg_chrX_filt
       save(bg_filter, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/ballgown_filter.rda"))
       cat('\n')
@@ -356,7 +355,7 @@ BallgownCorrelationPlot <- function(){
 
 
 #' inner function : DEG volcanplot
-BallgownVolcanoPlot <- function(ballgown.pval=0.05, ballgown.log2FC=1) {
+BallgownVolcanoPlot <- function(ballgown.pval, ballgown.log2FC) {
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
     cat(paste0("************** Plotting Volcano plot **************\n"))
@@ -391,7 +390,7 @@ BallgownVolcanoPlot <- function(ballgown.pval=0.05, ballgown.log2FC=1) {
 #'
 #' @import ggplot2
 #' @export
-BallgownMAPlot <- function(ballgown.qval = 0.05) {
+BallgownMAPlot <- function(ballgown.qval) {
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
     cat(paste0("************** Plotting MA plot **************\n"))
@@ -416,14 +415,14 @@ BallgownMAPlot <- function(ballgown.qval = 0.05) {
 
 #'
 #' @export
-BallgownPlotAll <- function(ballgown.log2FC = 1, ballgown.pval = 0.05, ballgown.qval = 0.05) {
+BallgownPlotAll <- function(ballgown.log2FC, ballgown.pval, ballgown.qval) {
   BallgownFrequencyPlot()
   BallgownTranscriptRelatedPlot()
   BallgownBoxViolinPlot()
   BallgownPCAPlot()
   BallgownCorrelationPlot()
-  BallgownVolcanoPlot(ballgown.pval=0.05, ballgown.log2FC=1)
-  BallgownMAPlot(ballgown.qval = 0.05)
+  BallgownVolcanoPlot(ballgown.pval, ballgown.log2FC)
+  BallgownMAPlot(ballgown.qval)
 }
 
 
@@ -434,12 +433,6 @@ CheckBallgownObject <- function() {
   print(pkg.ballgown.data$bg_chrX_filt)
 }
 
-#'
-#' @export
-BallgownProcess <- function() {
-  BallgownPreprocess()
-  BallgownPlotAll()
-}
 
 #' load ballgown object
 LoadBallgownObject <- function() {
