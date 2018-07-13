@@ -8,9 +8,9 @@
 #' @slot input.path.prefix user has to prepared valid 'input_files/' under this directory
 #' @slot gene.name gene name defined in this RNA-Seq workflow (ex. gene.name.fa, gene.name.gtf)
 #' @slot sample.pattern  sample pattern describing the name of raw fastq.gz files
-#' @slot experiment.type set the type of the RNA-Seq analysis workflow. Character of one of "two.group", "multi.group.pairs", "multi.group.anova"
-#' @slot main.variable main sample grouping variable
-#' @slot additional.variable additional sample information
+#' @slot independent.variable set the type of the RNA-Seq analysis workflow. Character of one of "two.group", "multi.group.pairs", "multi.group.anova"
+#' @slot control.group main sample grouping variable
+#' @slot experiment.group additional sample information
 #' @slot indexes.optional logical value whether indexes/ is exit in 'input_files/'
 #'
 #' @name RNASeqWorkFlowParam-class
@@ -26,9 +26,9 @@
 #' workflowParam@@input.path.prefix
 #' workflowParam@@gene.name
 #' workflowParam@@sample.pattern
-#' workflowParam@@experiment.type
-#' workflowParam@@main.variable
-#' workflowParam@@additional.variable
+#' workflowParam@@independent.variable
+#' workflowParam@@control.group
+#' workflowParam@@experiment.group
 setClass("RNASeqWorkFlowParam",
          representation(
            os.type = "character",
@@ -37,9 +37,9 @@ setClass("RNASeqWorkFlowParam",
            input.path.prefix = "character",
            gene.name = "character",
            sample.pattern = "character",
-           experiment.type = "character",
-           main.variable = "character",
-           additional.variable = "character",
+           independent.variable = "character",
+           control.group = "character",
+           experiment.group = "character",
            indexes.optional = "logical"
          )
 )
@@ -53,9 +53,9 @@ setClass("RNASeqWorkFlowParam",
 #' @param input.path.prefix user has to prepared valid 'input_files/' under this directory
 #' @param gene.name gene name defined in this RNA-Seq workflow (ex. gene.name.fa, gene.name.gtf)
 #' @param sample.pattern  sample pattern describing the name of raw fastq.gz files
-#' @param experiment.type set the type of the RNA-Seq analysis workflow. Character of one of "two.group", "pair-wise.group", "multi.group"
-#' @param main.variable main sample grouping variable
-#' @param additional.variable additional sample information
+#' @param independent.variable set the type of the RNA-Seq analysis workflow. Character of one of "two.group", "pair-wise.group", "multi.group"
+#' @param control.group main sample grouping variable
+#' @param experiment.group additional sample information
 #'
 #' @return an object of class \code{RNASeqWorkFlowParam}
 #'
@@ -67,12 +67,12 @@ setClass("RNASeqWorkFlowParam",
 #' @export
 #' @example
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", gene.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+#'                            independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
 RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, gene.name = NA, sample.pattern = NA,
-                                experiment.type = NA, main.variable = NA, additional.variable = NA) {
+                                independent.variable = NA, control.group = NA, experiment.group = NA) {
   # check input parameters
   CheckInputParam(path.prefix, input.path.prefix, gene.name, sample.pattern,
-                  experiment.type, main.variable, additional.variable)
+                  independent.variable, control.group, experiment.group)
   # 1. check operating system
   characters.os.type <- CheckOperatingSystem(print = TRUE)
   # 2. check python version
@@ -105,38 +105,35 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, gene.n
   input.dir.files.list <- CheckInputDirFiles(input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print = TRUE)
   bool.input.dir.files <- input.dir.files.list$check.answer
   bool.input.dir.indexes <- input.dir.files.list$optional.indexes.bool
-  # 7. check 'experiment.type'
-  bool.experiment.type <- CheckExperimentType(experiment.type = experiment.type)
+  # 7. check 'independent.variable'
+  bool.independent.variable <- CheckIndependentVariable(independent.variable = independent.variable, input.path.prefix = input.path.prefix)
 
   # below still need to fix
   # 8. check 'phenodata'
-  phenodata.return <- CheckPhenodata(input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=TRUE)
-  bool.phenodata <- phenodata.return$check.answer
+  bool.phenodata <- CheckPhenodata(input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, independent.variable = independent.variable, print=TRUE)
   # 9. check 'main variable'
-  bool.check.main.var <- CheckMainVar(input.path.prefix = input.path.prefix, main.variable = main.variable, experiment.type = experiment.type,
-                                      treatment.num = phenodata.return$treatment.num, tissue.num = phenodata.return$tissue.num, cell_type.num = phenodata.return$cell_type.num,
-                                      genotype.num = phenodata.return$genotype.num, time.num = phenodata.return$time.num, dosage.time = phenodata.return$dosage.time,
-                                      print=TRUE)
-  # 10. check 'additional.variable'
-  bool.check.add.var <- CheckAddVar(input.path.prefix = input.path.prefix, additional.variable = additional.variable, main.variable = main.variable)
+  bool.control.group <- CheckControlGroup(input.path.prefix = input.path.prefix, independent.variable = independent.variable, control.group = control.group)
+
+  # 10. check 'experiment.group'
+  bool.check.experiment.group <- CheckExperimentGroup(input.path.prefix = input.path.prefix, independent.variable = independent.variable, control.group = control.group, experiment.group = experiment.group)
 
   if ((characters.os.type == "linux" || characters.os.type == "osx") && bool.python.avail && bool.prefix.path &&
-      bool.input.path.prefix && bool.input.dir.files && bool.experiment.type && bool.phenodata && bool.check.main.var && bool.check.add.var) {
+      bool.input.path.prefix && bool.input.dir.files && bool.independent.variable && bool.phenodata && bool.control.group && bool.check.experiment.group) {
     cat(paste0("\n**************************************\n"))
     cat(paste0("************** Success! **************\n"))
     cat(paste0("**************************************\n"))
     new("RNASeqWorkFlowParam",os.type = characters.os.type, python.variable = python.version.list, path.prefix = path.prefix,
         input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern,
-        experiment.type = experiment.type, main.variable = main.variable, additional.variable = additional.variable,
+        independent.variable = independent.variable, control.group = control.group, experiment.group = experiment.group,
         indexes.optional = bool.input.dir.indexes)
   }
 }
 
 #' inner function : check whether input values are NA
 CheckInputParam <- function(path.prefix = NA, input.path.prefix = NA, gene.name = NA, sample.pattern = NA,
-                            experiment.type = NA, main.variable = NA, additional.variable = NA) {
+                            independent.variable = NA, control.group = NA, experiment.group = NA) {
   cat(c("************** Checking input parameters ************\n"))
-  if (is.na(path.prefix) || is.na(input.path.prefix) || is.na(gene.name) || is.na(sample.pattern) || is.na(experiment.type) || is.na(main.variable) || is.na(additional.variable)) {
+  if (is.na(path.prefix) || is.na(input.path.prefix) || is.na(gene.name) || is.na(sample.pattern) || is.na(independent.variable) || is.na(control.group) || is.na(experiment.group)) {
     if (is.na(path.prefix)) {
       cat("(\u2718) : 'path.prefix' is missing.\n\n")
     }
@@ -149,14 +146,14 @@ CheckInputParam <- function(path.prefix = NA, input.path.prefix = NA, gene.name 
     if (is.na(sample.pattern)) {
       cat("(\u2718) : 'sample.pattern' is missing.\n\n")
     }
-    if (is.na(experiment.type)) {
-      cat("(\u2718) : 'experiment.type' is missing.\n\n")
+    if (is.na(independent.variable)) {
+      cat("(\u2718) : 'independent.variable' is missing.\n\n")
     }
-    if (is.na(main.variable)) {
-      cat("(\u2718) : 'main.variable' is missing.\n\n")
+    if (is.na(control.group)) {
+      cat("(\u2718) : 'control.group' is missing.\n\n")
     }
-    if (is.na(additional.variable)) {
-      cat("(\u2718) : 'additional.variable' is missing.\n\n")
+    if (is.na(experiment.group)) {
+      cat("(\u2718) : 'experiment.group' is missing.\n\n")
     }
     stop("Input parameters ERROR")
   } else {
@@ -199,7 +196,7 @@ CheckInputPrefixPath <- function(input.path.prefix = NA_character_, print = TRUE
       if (print) {
         cat(c("************** Setting input prefix path ************\n"))
         cat(paste0("(\u270e) : 'input_files' is found under '", input.path.prefix, "' directory.\n"))
-        cat(paste0("       Validity of 'input_files/' will be checked.\n\n"))
+        cat(paste0("       \u25CF Validity of 'input_files/' will be checked.\n\n"))
       }
       return(TRUE)
     } else {
@@ -339,17 +336,26 @@ CheckInputDirFiles <- function(input.path.prefix = NA_character_, gene.name = NA
 }
 
 #' inner function : check experiment type
-CheckExperimentType <- function(experiment.type = NA_character_, print = TRUE) {
+CheckIndependentVariable <- function(independent.variable = NA_character_, input.path.prefix = NA_character_, print = TRUE) {
   if (print) {
-    cat(c("************** Checking experiment.type ************\n"))
+    cat(c("************** Checking independent.variable ************\n"))
   }
-  if ((experiment.type != "two.group") &&  (experiment.type != "pair-wise.group") && (experiment.type != "multi.group")) {
-    cat("(\u2718) : 'experiment.type' can only be 'two.group' or 'pair-wise.group' or 'multi.group'.\n\n")
-    stop("Experiment.type ERROR")
-  } else {
-    cat(paste0("(\u2714) : 'experiment.type' is \"", experiment.type, "\"\n\n"))
-    return(TRUE)
+  pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
+  # Covert all column to character
+  pheno_data <- data.frame(lapply(pheno_data, as.character), stringsAsFactors=FALSE)
+  if (!(independent.variable %in% colnames(pheno_data))) {
+    cat(paste0("(\u2718) : 'independent.variable' : '", independent.variable, "' can't find in the column of phenodata.csv.\n\n"))
+    stop("'independent.variable' invalid ERROR")
   }
+  cat(paste0("(\u2714) : 'independent.variable' : '", independent.variable, "' is in the column of phenodata.csv. \n"))
+  cat(paste0("      \u25CF Checking whether '", independent.variable, "' is a two-group 'independent.variable' ...\n\n"))
+  length.independent.variable <- length(table(pheno_data[independent.variable]))
+  if (!(length.independent.variable == 2)) {
+    cat(paste0("(\u2718) : 'independent.variable' : '", independent.variable, "' is a ", length.independent.variable,"-group 'independent.variable'. Not 2-group.\n\n"))
+    stop("'independent.variable' none-two-group ERROR")
+  }
+  cat(paste0("(\u2714) : 'independent.variable' : '", independent.variable, "' is a valid ", length.independent.variable,"-group 'independent.variable'.\n\n"))
+  return(TRUE)
 }
 
 #' inner fucntion : check python version
@@ -362,7 +368,7 @@ CheckPython <- function(print = TRUE) {
   if(reticulate::py_available(initialize = "TRUE")){
     cat("(\u2714) : Python is available on your device!\n")
     python.version <- as.numeric(reticulate::py_config()$version)
-    cat(paste0("       Python version : ", reticulate::py_config()$version, "\n\n"))
+    cat(paste0("       \u25CF Python version : ", reticulate::py_config()$version, "\n\n"))
     if(python.version >= 3) {
       return.value <- list("check.answer" = TRUE, "python.version" = 3)
     } else if (python.version < 3 && python.version >= 2 ){
@@ -404,176 +410,83 @@ CheckOperatingSystem <- function(print = TRUE){
 #' inner function : check validity of phenodata
 #' must have column : "ids" + "2 column"
 #' other column : "treatment", "tissue", "cell_type", "genotype", "time", "dosage"
-CheckPhenodata <- function(input.path.prefix = NA_character_, gene.name = NA_character_, sample.pattern = NA_character_, print=TRUE) {
+CheckPhenodata <- function(input.path.prefix = NA_character_, gene.name = NA_character_, sample.pattern = NA_character_, independent.variable = NA_character_, print=TRUE) {
   # have to sort the column !! and sort them in the correct order
-
   cat(c("************** Checking phenodata  ************\n"))
-  bool.check.valid <- TRUE
   pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
   # Covert all column to character
   pheno_data <- data.frame(lapply(pheno_data, as.character), stringsAsFactors=FALSE)
-  # Columns that read from the file
-  pheno_data_cols<- colnames(pheno_data)
-  # Make all the column
-  columns.any.NA <- apply(pheno_data, 2, function(x) any(is.na(x)))
-  # Files must have these columns in order
-  must_have_column <- c("ids", "treatment", "tissue", "cell_type", "genotype", "time", "dosage")
-  # check column names are matched
-  cat("     \u25CF Checking column names of 'phenodata.csv'\n")
-  for ( i in 1:7 ) {
-    if (pheno_data_cols[i] != must_have_column[i]) {
-      bool.check.valid <- FALSE
-      cat(paste0("(\u2718) : Your ", i, " column name is '",pheno_data_cols[i], "' not correpond to the expected '", must_have_column[i],"'.\n" ))
-      cat("       Expected column names : \" 'ids', 'treatment', 'tissue', 'cell_type', 'genotype', 'time', 'dosage' \".\n\n")
-      stop("Column names ERROR")
-    }
+  # Checl 'ids' is in the 'phenodata.csv'
+  if (!("ids" %in% colnames(pheno_data))) {
+    cat(paste0("(\u2718) : 'ids' can't find in the column of phenodata.csv.\n\n"))
+    stop("'ids' invalid ERROR")
   }
-  cat("         (\u2714) : column names are valid. ('ids', 'treatment', 'tissue', 'cell_type', 'genotype', 'time', 'dosage')\n")
-
+  pheno_data.ids.list <- pheno_data["ids"]
   # "id" : must be distinct, same as input_files raw reads name !
-  cat("     \u25CF Checking whether \"raw_fastq.gz files\" matches \"'ids' of phenodata.csv\" \n")
+  cat("\u25B6 Checking whether \"raw_fastq.gz files\" matches \"'ids' of phenodata.csv\" \n")
   raw.fastq <- list.files(path = paste0(input.path.prefix, 'input_files/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   extract.fastq.gz.sample.names <- unique(gsub("_[1-2]*.fastq.gz", "", raw.fastq))
   bool.length <- length(extract.fastq.gz.sample.names) == length(pheno_data$ids)
   bool.identical <- identical(sort(extract.fastq.gz.sample.names), sort(pheno_data$ids))
   if (!bool.length || !bool.identical) {
     cat(paste0("(\u2718) : 'ids' column doesn't match the smaple_id in 'input_files/raw_fastq.gz'. Please check the file.\n" ))
-    stop("Ids column ERROR")
+    stop("'ids' mismatch ERROR")
   }
   ids.list <- paste(sort(extract.fastq.gz.sample.names), collapse = " ")
-  cat("         (\u2714) : Column 'ids' of phenodata.csv is valid. \n")
-  cat(paste0("            sample ids are : \"", ids.list,"\"\n"))
-  # first and second (ids and treatment) must can't have NA value : it should be false!
-  # check each column : if there is any NA
-  columns.any.NA <- apply(pheno_data, 2, function(x) any(is.na(x)))
-  # check each column : if all is not NA
-  columns.all.not.NA <- apply(pheno_data, 2, function(x) all(!is.na(x)))
-  # check each column : if there is all NA
-  columns.all.NA <- apply(pheno_data, 2, function(x) all(is.na(x)))
-  cat("     \u25CF Checking 'ids' and 'treatment' of 'phenodata.csv' (can't have NA)\n")
-  if (columns.any.NA[[1]] || columns.any.NA[[2]]) {
-    if (columns.any.NA[[1]]) {
-      cat(paste0("         (\u2718) : There are NA values in 'ids' column. Please check the files.\n" ))
-    }
-    if (columns.any.NA[[2]]) {
-      cat(paste0("         (\u2718) : There are NA values in or in 'treatment' column. Please check the files.\n" ))
-    }
-    stop("Necessary column NA ERROR")
+  cat("(\u2714) : Column 'ids' of phenodata.csv is valid. \n")
+  cat(paste0("      \u25CF sample ids are : \"", ids.list,"\"\n"))
+
+  if (!(independent.variable %in% colnames(pheno_data))) {
+    cat(paste0("(\u2718) : 'independent.variable' : '", independent.variable, "' can't find in the column of phenodata.csv.\n\n"))
+    stop("'independent.variable' invalid ERROR")
   }
-  # 'tissue', 'cell_type', 'genotype', 'time', 'dosage' : if there is any one value that is not NA in each column, then that columns must can't have NA vlue
-  # condition : must 'all NA' or 'all have value'
-  cat("     \u25CF Checking 'tissue', 'cell_type', 'genotype', 'time', 'dosage' of 'phenodata.csv'\n")
-  if ( (!columns.all.NA[[3]] && !columns.all.not.NA[[3]]) || (!columns.all.NA[[4]] && !columns.all.not.NA[[4]]) ||
-       (!columns.all.NA[[5]] && !columns.all.not.NA[[5]]) || (!columns.all.NA[[6]] && !columns.all.not.NA[[6]]) ||
-       (!columns.all.NA[[7]] && !columns.all.not.NA[[7]]) ) {
-    if (!columns.all.NA[[3]] && !columns.all.not.NA[[3]]) {
-      cat(paste0("         (\u2718) : Invalid column value in 'tissue'. Please check the files.\n" ))
-    }
-    if (!columns.all.NA[[4]] && !columns.all.not.NA[[4]]) {
-      cat(paste0("         (\u2718) : Invalid column value in 'cell_type'. Please check the files.\n" ))
-    }
-    if (!columns.all.NA[[5]] && !columns.all.not.NA[[5]]) {
-      cat(paste0("         (\u2718) : Invalid column value in 'genotype'. Please check the files.\n" ))
-    }
-    if (!columns.all.NA[[6]] && !columns.all.not.NA[[6]]) {
-      cat(paste0("         (\u2718) : Invalid column value in 'time'. Please check the files.\n" ))
-    }
-    if (!columns.all.NA[[7]] && !columns.all.not.NA[[7]]) {
-      cat(paste0("         (\u2718) : Invalid column value in 'dosage'. Please check the files.\n" ))
-    }
-    stop("Optional column NA ERROR")
+  cat(paste0("(\u2714) : 'independent.variable' : '", independent.variable, "' is in the column of phenodata.csv. \n\n"))
+  cat(paste0("\u25B6 Checking whether '", independent.variable, "' is a two-group 'independent.variable' ...\n"))
+  length.independent.variable <- length(table(pheno_data[independent.variable]))
+  if (!(length.independent.variable == 2)) {
+    cat(paste0("(\u2718) : 'independent.variable' : '", independent.variable, "' is a ", length.independent.variable,"-group 'independent.variable'. Not 2-group.\n\n"))
+    stop("'independent.variable' none-two-group ERROR")
   }
-  # calculate groups number of all samples
-  cat("     \u25CF Calculating groups numbers of each column in 'phenodata.csv'\n")
-  ids.table <- table(pheno_data$ids)
-  treatment.table <- table(pheno_data$treatment)
-  tissue.table <- table(pheno_data$tissue)
-  cell_type.table <- table(pheno_data$cell_type)
-  genotype.table <- table(pheno_data$genotype)
-  time.table <- table(pheno_data$time)
-  dosage.table <- table(pheno_data$dosage)
-  cat(paste0("         \u25CF There are ", length(ids.table), " sample ids\n"))
-  cat(paste0("         \u25CF Groups\n"))
-  cat(paste0("            \u25CF treatment : ", length(treatment.table), "\n"))
-  cat(paste0("            \u25CF tissue : ", length(tissue.table), "\n"))
-  cat(paste0("            \u25CF cell_type : ", length(cell_type.table), "\n"))
-  cat(paste0("            \u25CF genotype : ", length(genotype.table), "\n"))
-  cat(paste0("            \u25CF time : ", length(time.table), "\n"))
-  cat(paste0("            \u25CF dosage : ", length(dosage.table), "\n\n"))
-  return.value <- list("check.answer" = bool.check.valid, "ids.num" = length(ids.table),
-                       "treatment.num" = length(treatment.table), "tissue.num" = length(tissue.table),
-                       "cell_type.num" = length(cell_type.table), "genotype.num" = length(genotype.table),
-                       "time.num" = length(time.table), "dosage.time" = length(dosage.table))
-  return(return.value)
+  cat("(\u2714) : Column 'independent.variable' : '",independent.variable, "' of phenodata.csv is valid. \n")
+  cat(paste0("        \u25CF 'independent.variable' : '", independent.variable, "'\n\n"))
+  return(TRUE)
 }
 
-#' inner function : check main variable
-CheckMainVar <- function(input.path.prefix = NA_character_, main.variable = NA_character_, experiment.type = NA_character_,
-                         treatment.num = NA_character_, tissue.num = NA_character_, cell_type.num = NA_character_,
-                         genotype.num = NA_character_, time.num = NA_character_, dosage.time = NA_character_, print=TRUE) {
-  cat(c("************** Checking main.variable ************\n"))
-  if (main.variable == "ids") {
-    cat(paste0("(\u2718) : 'main.variable' can't be 'ids'.\n" ))
-    stop("Main variable ERROR")
-  } else if (main.variable == "treatment" || main.variable == "tissue" || main.variable == "cell_type" ||
-             main.variable == "genotype" || main.variable == "time" || main.variable == "dosage") {
-    # now pheno_data is valid
-    pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
-    main.variable.group.num <- length(table(pheno_data[main.variable]))
-    cat(paste0("     \u25CF        input 'main.variable' : \"", main.variable, "\"\n"))
-    cat(paste0("     \u25CF 'main.variable' group number : ", main.variable.group.num, "\n"))
-    cat(paste0("     \u25CF      input 'experiment.type' : \"", experiment.type, "\"\n"))
-    if (experiment.type == "two.group") {
-      if (main.variable.group.num != 2) {
-        cat(paste0("(\u2718) : 'main.variable' group number must be 2 !! Not matching experiment.type. Experiment input invalid.\n" ))
-        stop("experiment.type & main.variable.group.num not matching ERROR")
-      }
-    } else if (experiment.type == "multi.group.pairs") {
-      if (main.variable.group.num <= 2) {
-        cat(paste0("(\u2718) : 'main.variable' group number must be 3 or more !! Not matching experiment.type. Experiment input invalid.\n" ))
-        stop("experiment.type & main.variable.group.num not matching ERROR")
-      }
-    } else if (experiment.type == "multi.group.anova") {
-      if (main.variable.group.num <= 2) {
-        cat(paste0("(\u2718) : 'main.variable' group number must be 3 or more !! Not matching experiment.type. Experiment input invalid.\n" ))
-        stop("experiment.type & main.variable.group.num not matching ERROR")
-      }
-    }
-    cat(paste0("     (\u2714) : valid 'main variable'\n\n"))
-    return(TRUE)
-  } else {
-    cat(paste0("(\u2718) : 'main.variable' is not matching any column name of 'phenodata.csv'. Please check your input. \n" ))
-    cat("      'main.variable' must be 'treatment', 'tissue', 'cell_type', 'genotype', 'time' or 'dosage'. \n")
-    stop("Main variable ERROR")
+#' inner function
+CheckControlGroup <- function(input.path.prefix, independent.variable, control.group) {
+  cat(c("************** Checking 'control.group'  ************\n"))
+  pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
+  # Covert all column to character
+  pheno_data <- data.frame(lapply(pheno_data, as.character), stringsAsFactors=FALSE)
+  # Check 'control.group' is on group of 'independent.variable'
+  if (!(control.group %in% as.character(data.frame(table(pheno_data[independent.variable]))$Var1))) {
+    cat(paste0("(\u2718) : 'control.group' : '", control.group, "' is not a group of in 'independent.variable'.\n\n"))
+    stop("'control.group' invalid ERROR")
   }
+  cat(paste0("(\u2714) :    'control.group' : '", control.group, "' is a group of in 'independent.variable'.\n\n"))
+  return(TRUE)
 }
 
-#" inner function : check additional variable
-CheckAddVar <- function(input.path.prefix = NA_character_, additional.variable = NA_character_, main.variable = NA_character_) {
-  cat(c("************** Checking additional.variable ************\n"))
-  if (additional.variable == "ids") {
-    cat(paste0("(\u2718) : 'additional.variable' can't be 'ids'.\n" ))
-    stop("Main variable ERROR")
-  } else if (additional.variable == "treatment" || additional.variable == "tissue" || additional.variable == "cell_type" ||
-             additional.variable == "genotype" || additional.variable == "time" || additional.variable == "dosage") {
-    if (additional.variable != main.variable) {
-      # check additional variable column : if all is not NA
-      pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
-      if (all(!is.na(pheno_data[additional.variable]))) {
-        cat(paste0("     \u25CF  input 'additional.variable' : \"", additional.variable, "\"\n"))
-        cat(paste0("     (\u2714) : valid 'additional variable'\n\n"))
-        return(TRUE)
-      }
-      cat(paste0("(\u2718) : There are 'NA' in 'additional.variable' column.\n" ))
-      stop("Additional variable NA ERROR")
-    } else {
-      cat(paste0("(\u2718) : 'additional.variable' can't be 'main.variable'.\n" ))
-      stop("Main variable Additional variable same ERROR")
+#' inner function
+CheckExperimentGroup <- function(input.path.prefix, independent.variable, control.group, experiment.group) {
+  cat(c("************** Checking 'experiment.group'  ************\n"))
+  pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
+  # Covert all column to character
+  pheno_data <- data.frame(lapply(pheno_data, as.character), stringsAsFactors=FALSE)
+  if (!(experiment.group %in% as.character(data.frame(table(pheno_data[independent.variable]))$Var1))) {
+    cat(paste0("(\u2718) : 'experiment.group' : '", experiment.group, "' is not a group of in 'independent.variable'.\n\n"))
+    stop("'experiment.group' invalid ERROR")
+  }
+  exp.in <- experiment.group %in% as.character(data.frame(table(pheno_data[independent.variable]))$Var1)
+  cont.in <- control.group %in% as.character(data.frame(table(pheno_data[independent.variable]))$Var1)
+  if (exp.in && cont.in) {
+    cat(paste0("(\u2714) :    'control.group' : '", control.group, "' is a group of in 'independent.variable'.\n"))
+    cat(paste0("(\u2714) : 'experiment.group' : '", experiment.group, "' is a group of in 'independent.variable'.\n\n"))
+    if (experiment.group == control.group) {
+      cat(paste0("(\u2718) : 'control.group' and 'experiment.group' are same.\n\n"))
+      stop("'control.group' &'experiment.group' same ERROR")
     }
-  } else {
-    cat(paste0("(\u2718) : 'additional.variable' is not matching any column name of 'phenodata.csv'. Please check your input. \n" ))
-    cat("      'additional.variable' must be 'treatment', 'tissue', 'cell_type', 'genotype', 'time' or 'dosage'. \n")
-    stop("Additional variable ERROR")
+  return(TRUE)
   }
 }
 

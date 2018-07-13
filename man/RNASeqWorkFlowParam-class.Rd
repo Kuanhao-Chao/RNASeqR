@@ -25,11 +25,11 @@ An S4 class for storing RNA-Seq workflow parameters of this package
 
 \item{\code{sample.pattern}}{sample pattern describing the name of raw fastq.gz files}
 
-\item{\code{experiment.type}}{set the type of the RNA-Seq analysis workflow. Character of one of "two.group", "multi.group.pairs", "multi.group.anova"}
+\item{\code{independent.variable}}{set the type of the RNA-Seq analysis workflow. Character of one of "two.group", "multi.group.pairs", "multi.group.anova"}
 
-\item{\code{main.variable}}{main sample grouping variable}
+\item{\code{control.group}}{main sample grouping variable}
 
-\item{\code{additional.variable}}{additional sample information}
+\item{\code{experiment.group}}{additional sample information}
 
 \item{\code{indexes.optional}}{logical value whether indexes/ is exit in 'input_files/'}
 }}
@@ -41,9 +41,9 @@ workflowParam@path.prefix
 workflowParam@input.path.prefix
 workflowParam@gene.name
 workflowParam@sample.pattern
-workflowParam@experiment.type
-workflowParam@main.variable
-workflowParam@additional.variable
+workflowParam@independent.variable
+workflowParam@control.group
+workflowParam@experiment.group
 }
 \author{
 Kuan-Hao, Chao

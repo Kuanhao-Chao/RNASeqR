@@ -4,8 +4,7 @@
 \alias{BallgownPreprocess}
 \title{Run ballgown analysis}
 \usage{
-BallgownPreprocess(path.prefix, gene.name, sample.pattern, experiment.type,
-  main.variable, additional.variable)
+BallgownPreprocess(path.prefix, gene.name, sample.pattern, independent.variable)
 }
 \description{
 Run ballgown analysis

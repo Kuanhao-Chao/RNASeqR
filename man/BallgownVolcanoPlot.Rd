@@ -4,7 +4,7 @@
 \alias{BallgownVolcanoPlot}
 \title{inner function : DEG volcanplot}
 \usage{
-BallgownVolcanoPlot(ballgown.pval, ballgown.log2FC)
+BallgownVolcanoPlot(path.prefix, ballgown.pval, ballgown.log2FC)
 }
 \description{
 inner function : DEG volcanplot

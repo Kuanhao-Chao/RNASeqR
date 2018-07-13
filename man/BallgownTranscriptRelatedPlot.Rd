@@ -4,7 +4,7 @@
 \alias{BallgownTranscriptRelatedPlot}
 \title{DEGTranscriptRelatedPlot}
 \usage{
-BallgownTranscriptRelatedPlot()
+BallgownTranscriptRelatedPlot(path.prefix)
 }
 \description{
 DEGTranscriptRelatedPlot

@@ -4,7 +4,7 @@
 \alias{BallgownFrequencyPlot}
 \title{Frequency plot}
 \usage{
-BallgownFrequencyPlot()
+BallgownFrequencyPlot(path.prefix)
 }
 \description{
 Frequency plot

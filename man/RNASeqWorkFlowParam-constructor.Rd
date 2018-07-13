@@ -6,8 +6,8 @@
 \title{Constructor function for RNASeqWorkFlowParam objects}
 \usage{
 RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA,
-  gene.name = NA, sample.pattern = NA, experiment.type = NA,
-  main.variable = NA, additional.variable = NA)
+  gene.name = NA, sample.pattern = NA, independent.variable = NA,
+  control.group = NA, experiment.group = NA)
 }
 \arguments{
 \item{path.prefix}{the directory holding installations and analysis results}
@@ -18,11 +18,11 @@ RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA,
 
 \item{sample.pattern}{sample pattern describing the name of raw fastq.gz files}
 
-\item{experiment.type}{set the type of the RNA-Seq analysis workflow. Character of one of "two.group", "pair-wise.group", "multi.group"}
+\item{independent.variable}{set the type of the RNA-Seq analysis workflow. Character of one of "two.group", "pair-wise.group", "multi.group"}
 
-\item{main.variable}{main sample grouping variable}
+\item{control.group}{main sample grouping variable}
 
-\item{additional.variable}{additional sample information}
+\item{experiment.group}{additional sample information}
 }
 \value{
 an object of class \code{RNASeqWorkFlowParam}

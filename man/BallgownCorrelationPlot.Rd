@@ -4,7 +4,7 @@
 \alias{BallgownCorrelationPlot}
 \title{Plot correlation plo}
 \usage{
-BallgownCorrelationPlot()
+BallgownCorrelationPlot(path.prefix)
 }
 \description{
 Plot correlation plo

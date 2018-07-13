@@ -5,8 +5,8 @@
 \title{inner function : check whether input values are NA}
 \usage{
 CheckInputParam(path.prefix = NA, input.path.prefix = NA, gene.name = NA,
-  sample.pattern = NA, experiment.type = NA, main.variable = NA,
-  additional.variable = NA)
+  sample.pattern = NA, independent.variable = NA, control.group = NA,
+  experiment.group = NA)
 }
 \description{
 inner function : check whether input values are NA
