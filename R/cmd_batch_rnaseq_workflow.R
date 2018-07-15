@@ -22,7 +22,7 @@ RNAseqWorkFlow <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, ballgo
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Control.R"))
   first <- "library(RNASeqWorkflow)"
   second <- "library(ggplot2)"
-  third <- paste0("QualityControlRqc(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
+  third <- paste0("QualityAssessment(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
   writeLines(c(first, second, third), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Control.R' has been created.\n"))
@@ -32,15 +32,15 @@ RNAseqWorkFlow <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, ballgo
   second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
   writeLines(c(first, second), fileConn)
   close(fileConn)
-  cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Control.R' has been created.\n"))
+  cat(paste0("\u2605 '", path.prefix, "Rscript/Raw_Read_Process.R' has been created.\n"))
   # If precheck doesn't have .ht2 files is fine
   fileConn<-file(paste0(path.prefix, "Rscript/Ballgown_Process.R"))
   first <- "library(RNASeqWorkflow)"
   second <- paste0("RNAseqBallgownProcess(path.prefix = '", path.prefix, "', gene.name = '", gene.name, "', sample.pattern = '", sample.pattern, "', independent.variable = '",independent.variable, "', ballgown.log2FC = ", ballgown.log2FC, ", ballgown.pval = ", ballgown.pval, ", ballgown.qval = ", ballgown.qval, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
+  cat(paste0("\u2605 '", path.prefix, "Rscript/Ballgown_Process.R' has been created.\n"))
 
-  cat(paste0("\u2605 '", path.prefix, "Rscript/Raw_Read_Process.R' has been created.\n"))
   fileConn<-file(paste0(path.prefix, "Rscript/RNASEQ_WORKFLOW.R"))
   first <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Environment_Set.R ", path.prefix, "Rscript_out/Environment_Set.Rout"), "\", stdout = \"\", wait = TRUE )")
   second <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Quality_Control.R ", path.prefix, "Rscript_out/Quality_Control.Rout"), "\", stdout = \"\", wait = TRUE )")

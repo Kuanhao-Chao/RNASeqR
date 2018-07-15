@@ -74,13 +74,13 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, gene.n
   CheckInputParam(path.prefix, input.path.prefix, gene.name, sample.pattern,
                   independent.variable, control.group, experiment.group)
   # 1. check operating system
-  characters.os.type <- CheckOperatingSystem(print = TRUE)
+  characters.os.type <- CheckOperatingSystem()
   # 2. check python version
-  python.version.list <- CheckPython(print = TRUE)
+  python.version.list <- CheckPython()
   bool.python.avail <- python.version.list$check.answer
   numeric.python.version <- python.version.list$python.version
   # 3. check validity of path.prefix
-  bool.prefix.path <- CheckPrefixPath(path.prefix = path.prefix, print = TRUE)
+  bool.prefix.path <- CheckPrefixPath(path.prefix = path.prefix)
   if (bool.prefix.path){
     # add '/' to the path.prefix
     if (substr(path.prefix, nchar(path.prefix), nchar(path.prefix)) != '/') {
@@ -88,7 +88,7 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, gene.n
     }
   }
   # 4. check input.path.prefix
-  bool.input.path.prefix <- CheckInputPrefixPath(input.path.prefix = input.path.prefix, print = TRUE)
+  bool.input.path.prefix <- CheckInputPrefixPath(input.path.prefix = input.path.prefix)
   if (bool.input.path.prefix){
     # add '/' to the path.prefix
     if (substr(input.path.prefix, nchar(input.path.prefix), nchar(input.path.prefix)) != '/') {
@@ -102,7 +102,7 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, gene.n
     stop("sample.pattern with extension error.")
   }
   # 6. check 'input_files/' necessary files with 'gene.name', 'sample.pattern'
-  input.dir.files.list <- CheckInputDirFiles(input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print = TRUE)
+  input.dir.files.list <- CheckInputDirFiles(input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern)
   bool.input.dir.files <- input.dir.files.list$check.answer
   bool.input.dir.indexes <- input.dir.files.list$optional.indexes.bool
   # 7. check 'independent.variable'
@@ -110,7 +110,7 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, gene.n
 
   # below still need to fix
   # 8. check 'phenodata'
-  bool.phenodata <- CheckPhenodata(input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, independent.variable = independent.variable, print=TRUE)
+  bool.phenodata <- CheckPhenodata(input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, independent.variable = independent.variable)
   # 9. check 'main variable'
   bool.control.group <- CheckControlGroup(input.path.prefix = input.path.prefix, independent.variable = independent.variable, control.group = control.group)
 
@@ -162,30 +162,26 @@ CheckInputParam <- function(path.prefix = NA, input.path.prefix = NA, gene.name 
 }
 
 #' inner function : check prefix.path
-CheckPrefixPath <- function(path.prefix = NA_character_, print = TRUE) {
+CheckPrefixPath <- function(path.prefix = NA_character_) {
   # Check the prefix exist
   if (isTRUE(dir.exists(path.prefix))){
-    if (print) {
-      cat(c("************** Setting prefix path ************\n"))
-      if (substr(path.prefix, nchar(path.prefix), nchar(path.prefix)) != '/') {
-        path.prefix <- paste0(path.prefix, '/')
-      }
-      cat(paste0("(\u270e) : The following files will be installed under '", path.prefix, "'\n\n"))
+    cat(c("************** Setting prefix path ************\n"))
+    if (substr(path.prefix, nchar(path.prefix), nchar(path.prefix)) != '/') {
+      path.prefix <- paste0(path.prefix, '/')
     }
+    cat(paste0("(\u270e) : The following files will be installed under '", path.prefix, "'\n\n"))
     return(TRUE)
   } else if (is.na(path.prefix)) {
     cat("(\u2718) : Please give value to prefix path.\n\n")
-    stop("Prefix path NA ERROR")
-    return(FALSE)
+    stop("'prefix.path' NA ERROR")
   } else {
     cat(paste0("(\u2718) : Prefix path '", path.prefix, "' is invalid. Please try another one.\n\n"))
-    stop("Prefix path invalid ERROR")
-    return(FALSE)
+    stop("'prefix.path' invalid ERROR")
   }
 }
 
 #' inner function : check prefix.path
-CheckInputPrefixPath <- function(input.path.prefix = NA_character_, print = TRUE) {
+CheckInputPrefixPath <- function(input.path.prefix = NA_character_) {
   # Check the prefix exist
   if (isTRUE(dir.exists(input.path.prefix))){
     if (substr(input.path.prefix, nchar(input.path.prefix), nchar(input.path.prefix)) != '/') {
@@ -193,34 +189,27 @@ CheckInputPrefixPath <- function(input.path.prefix = NA_character_, print = TRUE
     }
     path.prefix.input_files <- paste0(input.path.prefix, "input_files/")
     if (isTRUE(dir.exists(path.prefix.input_files))){
-      if (print) {
-        cat(c("************** Setting input prefix path ************\n"))
-        cat(paste0("(\u270e) : 'input_files' is found under '", input.path.prefix, "' directory.\n"))
-        cat(paste0("       \u25CF Validity of 'input_files/' will be checked.\n\n"))
-      }
+      cat(c("************** Setting input prefix path ************\n"))
+      cat(paste0("(\u270e) : 'input_files' is found under '", input.path.prefix, "' directory.\n"))
+      cat(paste0("       \u25CF Validity of 'input_files/' will be checked.\n\n"))
       return(TRUE)
     } else {
       cat(paste0("(\u2718) : 'input_files/' is not found under '", input.path.prefix, "'. Please make sure the spelling is correct or try another input.path.prefix.\n\n"))
-      stop("Input prefix path invalid ERROR")
-      return(FALSE)
+      stop("'input.prefix' path invalid ERROR")
     }
   } else if (is.na(input.path.prefix)) {
     cat("(\u2718) : Please give value to input prefix path.\n\n")
-    stop("Input prefix path NA ERROR")
-    return(FALSE)
+    stop("'input.prefix' path NA ERROR")
   } else {
     cat(paste0("(\u2718) : Input prefix path '", input.path.prefix, "' is invalid. Please try another one.\n\n"))
-    stop("Input prefix path invalid ERROR")
-    return(FALSE)
+    stop("'input.prefix' path invalid ERROR")
   }
 }
 
 
 #' inner function : check input.path.prefix
-CheckInputDirFiles <- function(input.path.prefix = NA_character_, gene.name = NA_character_, sample.pattern = NA_character_, print=TRUE) {
-  if (print) {
-    cat(c("************** Checking hierarchy of", paste0("'", input.path.prefix, 'input_files/\''), "************\n"))
-  }
+CheckInputDirFiles <- function(input.path.prefix = NA_character_, gene.name = NA_character_, sample.pattern = NA_character_) {
+  cat(c("************** Checking hierarchy of", paste0("'", input.path.prefix, 'input_files/\''), "************\n"))
   # only check whether exist
   gtf.file <- file.exists(paste0(input.path.prefix, "input_files/",gene.name, ".gtf"))
   # only check whether exist
@@ -263,70 +252,52 @@ CheckInputDirFiles <- function(input.path.prefix = NA_character_, gene.name = NA
     grab.gtf.file <- Sys.glob(file.path(path = paste0(input.path.prefix, 'input_files'), "*.gtf"))
     cat(paste0("(\u2718) : '", gene.name, ".gtf (user input)' and '", grab.gtf.file, " (find in directory)' ", " are mismatched.\n"))
   } else {
-    if (print) {
-      cat(paste0("(\u2714) : '", gene.name, ".gtf'", " is in 'input_files'\n"))
-    }
+    cat(paste0("(\u2714) : '", gene.name, ".gtf'", " is in 'input_files'\n"))
   }
   if (!isTRUE(fa.file)) {
     grab.fa.file <- Sys.glob(file.path(path = paste0(input.path.prefix, 'input_files'), "*.fa"))
     cat(paste0("(\u2718) : '", gene.name, ".fa (user input)' and '", grab.fa.file, " (find in directory)' ", " are mismatched.\n"))
   } else {
-    if (print) {
-      cat(paste0("(\u2714) : '", gene.name, ".fa'", " is in 'input_files'\n"))
-    }
+    cat(paste0("(\u2714) : '", gene.name, ".fa'", " is in 'input_files'\n"))
   }
   if (!isTRUE(raw.fastq.dir)) {
     cat(c("(\u2718) : 'raw_fastq.gz/' is missing.\n"))
   } else {
-    if (print) {
-      cat(paste0("(\u2714) : 'raw_fastq.gz/' is in 'input_files'\n"))
-    }
+    cat(paste0("(\u2714) : 'raw_fastq.gz/' is in 'input_files'\n"))
   }
   if (isTRUE(raw.fastq.dir) && raw.fastq.number == 0) {
     cat(paste0("(\u2718) : Sample pattern \"", sample.pattern ,"\" is not found in 'raw_fastq.gz/'.\n"))
   } else if (isTRUE(raw.fastq.dir) && raw.fastq.number >= 0) {
-    if (print){
-      for (i in raw.fastq) {
-        cat(paste0("(\u2714) : 'raw_fastq.gz/", i, "'"), "is in 'input_files/'\n")
-      }
+    for (i in raw.fastq) {
+      cat(paste0("(\u2714) : 'raw_fastq.gz/", i, "'"), "is in 'input_files/'\n")
     }
   }
   if (!isTRUE(phenodata.file)) {
     cat(paste0("(\u2718) : '", "phenodata.csv is missing.\n"))
   } else {
-    if (print) {
-      cat(paste0("(\u2714) : '", "phenodata.csv is in 'input_files'\n"))
-    }
+    cat(paste0("(\u2714) : '", "phenodata.csv is in 'input_files'\n"))
   }
   if (!isTRUE(ht2.dir)) {
     ## not exist
-    if (print) {
-      cat(c("(\u26A0) : 'indexes/' is optional. You can download the corresponding 'XXX.ht2' from 'https://ccb.jhu.edu/software/hisat2/index.shtml' to speed up the process.\n"))
-    }
+    cat(c("(\u26A0) : 'indexes/' is optional. You can download the corresponding 'XXX.ht2' from 'https://ccb.jhu.edu/software/hisat2/index.shtml' to speed up the process.\n"))
   } else {
-    if (print) {
-      ## exist
-      cat(paste0("(\u2714) : 'indexes/' is in 'input_files'\n"))
-    }
+    ## exist
+    cat(paste0("(\u2714) : 'indexes/' is in 'input_files'\n"))
   }
   if (isTRUE(ht2.dir) && ht2.files.number == 0) {
     cat(c("(\u26A0) : 'indexes/' directory has been created but there are no samples in 'indexes/' or files' names", paste0("\"^", gene.name, "_tran.[0-9]*.ht2$\""), "in 'indexes/' are not found.\n      No files will be copied.\n      (1). Check whether files name", paste0("'", gene.name, "_tran.[0-9]*.ht2'"), "matches the files in 'indexes' directory.\n      (2). If you don't have", paste0("'", gene.name, "_tran.[0-9].ht2'"), "files, remove 'indexes' directory\n\n"))
     stop("'input_files/indexes/' ERROR")
   } else if (isTRUE(ht2.dir) && ht2.files.number >= 0) {
     optional.indexes.bool <- TRUE
-    if (print){
-      for (i in ht2.files) {
-        cat(paste0("(\u2714) : 'indexes/", i, "'"), "is in 'input_files/'\n")
-      }
+    for (i in ht2.files) {
+      cat(paste0("(\u2714) : 'indexes/", i, "'"), "is in 'input_files/'\n")
     }
   }
   if (isTRUE(gtf.file) && isTRUE(raw.fastq.dir) && isTRUE(raw.fastq.dir) && raw.fastq.number != 0 && isTRUE(phenodata.file)) {
-    if (print) {
-      cat(c(paste0("\n(\u2714) : '", input.path.prefix,"input_files/", "'"), "is valid !\n"))
-      if (isTRUE(ht2.dir) && ht2.files.number != 0) {
-        cat(paste0("(\u2714) : optional directory 'indexes/' is valid !\n\n"))
-        optional.indexes.bool <- TRUE
-      }
+    cat(c(paste0("\n(\u2714) : '", input.path.prefix,"input_files/", "'"), "is valid !\n"))
+    if (isTRUE(ht2.dir) && ht2.files.number != 0) {
+      cat(paste0("(\u2714) : optional directory 'indexes/' is valid !\n\n"))
+      optional.indexes.bool <- TRUE
     }
     return.value <- list("check.answer" = TRUE, "optional.indexes.bool" = optional.indexes.bool)
     return(return.value)
@@ -336,10 +307,8 @@ CheckInputDirFiles <- function(input.path.prefix = NA_character_, gene.name = NA
 }
 
 #' inner function : check experiment type
-CheckIndependentVariable <- function(independent.variable = NA_character_, input.path.prefix = NA_character_, print = TRUE) {
-  if (print) {
-    cat(c("************** Checking independent.variable ************\n"))
-  }
+CheckIndependentVariable <- function(independent.variable = NA_character_, input.path.prefix = NA_character_) {
+  cat(c("************** Checking independent.variable ************\n"))
   pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
   # Covert all column to character
   pheno_data <- data.frame(lapply(pheno_data, as.character), stringsAsFactors=FALSE)
@@ -360,10 +329,8 @@ CheckIndependentVariable <- function(independent.variable = NA_character_, input
 
 #' inner fucntion : check python version
 #' @importFrom reticulate py_config py_available
-CheckPython <- function(print = TRUE) {
-  if (print) {
-    cat(c("************** Checking python version ************\n"))
-  }
+CheckPython <- function() {
+  cat(c("************** Checking python version ************\n"))
   # have to check python !!!
   if(reticulate::py_available(initialize = "TRUE")){
     cat("(\u2714) : Python is available on your device!\n")
@@ -381,10 +348,8 @@ CheckPython <- function(print = TRUE) {
 }
 
 #' inner function : get operating system
-CheckOperatingSystem <- function(print = TRUE){
-  if (print) {
-    cat(c("************** Checking operating system type ************\n"))
-  }
+CheckOperatingSystem <- function(){
+  cat(c("************** Checking operating system type ************\n"))
   sysinf <- Sys.info()
   if (!is.null(sysinf)){
     os <- sysinf['sysname']
@@ -410,7 +375,7 @@ CheckOperatingSystem <- function(print = TRUE){
 #' inner function : check validity of phenodata
 #' must have column : "ids" + "2 column"
 #' other column : "treatment", "tissue", "cell_type", "genotype", "time", "dosage"
-CheckPhenodata <- function(input.path.prefix = NA_character_, gene.name = NA_character_, sample.pattern = NA_character_, independent.variable = NA_character_, print=TRUE) {
+CheckPhenodata <- function(input.path.prefix = NA_character_, gene.name = NA_character_, sample.pattern = NA_character_, independent.variable = NA_character_) {
   # have to sort the column !! and sort them in the correct order
   cat(c("************** Checking phenodata  ************\n"))
   pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
@@ -490,12 +455,10 @@ CheckExperimentGroup <- function(input.path.prefix, independent.variable, contro
   }
 }
 
-CheckS4Object <- function(RNASeqWorkFlowParam, print = TRUE) {
+CheckS4Object <- function(RNASeqWorkFlowParam) {
   if (isS4(RNASeqWorkFlowParam) && class(RNASeqWorkFlowParam)[1] == "RNASeqWorkFlowParam") {
     cat(c("************** Checking validity of S4 input ************\n"))
-    if (print) {
-      cat(paste0("     (\u2714) : input is valid 'RNASeqWorkFlowParam' instance! \n\n"))
-    }
+    cat(paste0("     (\u2714) : input is valid 'RNASeqWorkFlowParam' instance! \n\n"))
   } else {
     cat(paste0("(\u2718) : input is not a valid 'RNASeqWorkFlowParam' instance!.\n" ))
     stop("Invalid 'RNASeqWorkFlowParam' input ERROR")

@@ -9,7 +9,7 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam) {
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Control.R"))
   first <- "library(RNASeqWorkflow)"
   second <- "library(ggplot2)"
-  third <- paste0("QualityControlRqc(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
+  third <- paste0("QualityAssessment(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
   writeLines(c(first, second, third), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Control.R' has been created.\n"))
@@ -22,8 +22,9 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam) {
 #' @import ggplot2
 #' @import systemPipeR
 #' @import systemPipeRdata
+#' @import ShortRead
 #' @export
-QualityControlRqc <- function(path.prefix, input.path.prefix, sample.pattern) {
+QualityAssessment <- function(path.prefix, input.path.prefix, sample.pattern) {
   cat(paste0("\n************** Quality Assessment **************\n"))
   folder <- paste0(path.prefix, "gene_data/raw_fastq.gz/")
 
@@ -33,7 +34,7 @@ QualityControlRqc <- function(path.prefix, input.path.prefix, sample.pattern) {
   qa <- rqcQA(files, workers=1)
   cat(paste0("          \u25CF  Creating 'rqc_report.html' ...  Please wait \u231B\u231B\u231B\n"))
   reportFile <- rqcReport(qa)
-  file.rename(from = reportFile, to = paste0(path.prefix, "RNAseq_results/QA_results/Rqc/rqc_report.html"))
+  file.rename(from = reportFile, to = paste0(path.prefix, "RNAseq_results/QA_results/Rqc/Rqc_report.html"))
   cat(paste0("          (\u2714) : Rqc assessment success ~~\n\n"))
 
   cat(paste0("     \u25CF  R package \"systemPipeR\" quality assessment\n"))
@@ -57,4 +58,13 @@ QualityControlRqc <- function(path.prefix, input.path.prefix, sample.pattern) {
   cat(paste0("          \u25CF  Removing 'rnaseq' directory...  Please wait \u231B\u231B\u231B\n"))
   unlink(paste0(path.prefix, "RNAseq_results/QA_results/systemPipeR/rnaseq"), recursive = TRUE)
   cat(paste0("          (\u2714) : systemPipeR assessment success ~~\n\n"))
+
+  cat(paste0("     \u25CF  R package \"ShortRead\" quality assessment\n"))
+  raw.fastq <- list.files(path = paste0(input.path.prefix, 'input_files/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  cat(paste0("          \u25CF  Running 'qa()' ...  Please wait \u231B\u231B\u231B\n"))
+  qaSummary <- qa(fls, type="fastq")
+  cat(paste0("          \u25CF  Creating 'ShortRead_report.html' ...  Please wait \u231B\u231B\u231B\n"))
+  resultFile <- report(qaSummary)
+  file.rename(from = resultFile, to = paste0(path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html"))
+  cat(paste0("          (\u2714) : ShortRead assessment success ~~\n\n"))
 }
