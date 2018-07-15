@@ -4,7 +4,7 @@
 \alias{CheckPython}
 \title{inner fucntion : check python version}
 \usage{
-CheckPython(print = TRUE)
+CheckPython()
 }
 \description{
 inner fucntion : check python version

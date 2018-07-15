@@ -60,9 +60,9 @@ QualityAssessment <- function(path.prefix, input.path.prefix, sample.pattern) {
   cat(paste0("          (\u2714) : systemPipeR assessment success ~~\n\n"))
 
   cat(paste0("     \u25CF  R package \"ShortRead\" quality assessment\n"))
-  raw.fastq <- list.files(path = paste0(input.path.prefix, 'input_files/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  raw.fastq <- list.files(path = paste0(input.path.prefix, 'input_files/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = TRUE, recursive = FALSE, ignore.case = FALSE)
   cat(paste0("          \u25CF  Running 'qa()' ...  Please wait \u231B\u231B\u231B\n"))
-  qaSummary <- qa(fls, type="fastq")
+  qaSummary <- qa(raw.fastq, type="fastq")
   cat(paste0("          \u25CF  Creating 'ShortRead_report.html' ...  Please wait \u231B\u231B\u231B\n"))
   resultFile <- report(qaSummary)
   file.rename(from = resultFile, to = paste0(path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html"))

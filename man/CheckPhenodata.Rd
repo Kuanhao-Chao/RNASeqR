@@ -7,8 +7,7 @@ must have column : "ids" + "2 column"
 other column : "treatment", "tissue", "cell_type", "genotype", "time", "dosage"}
 \usage{
 CheckPhenodata(input.path.prefix = NA_character_, gene.name = NA_character_,
-  sample.pattern = NA_character_, independent.variable = NA_character_,
-  print = TRUE)
+  sample.pattern = NA_character_, independent.variable = NA_character_)
 }
 \description{
 inner function : check validity of phenodata

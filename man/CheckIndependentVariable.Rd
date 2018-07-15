@@ -5,7 +5,7 @@
 \title{inner function : check experiment type}
 \usage{
 CheckIndependentVariable(independent.variable = NA_character_,
-  input.path.prefix = NA_character_, print = TRUE)
+  input.path.prefix = NA_character_)
 }
 \description{
 inner function : check experiment type

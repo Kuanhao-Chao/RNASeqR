@@ -95,6 +95,8 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, gene.n
       input.path.prefix <- paste0(input.path.prefix, '/')
     }
   }
+  # check sample.pattern is valid file name !!
+
   # 5. check sample.pattern that can't have '.fastq.gz'
   fast.gz.extend <- tools::file_ext(sample.pattern)
   if (fast.gz.extend == "gz" || fast.gz.extend == "fastq") {

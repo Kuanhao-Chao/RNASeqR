@@ -10,15 +10,18 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Imports:
-  ggplot2,
+Depends:
   Rqc,
   systemPipeR,
   systemPipeRdata,
-  ShortRead,
+  ShortRead
+Imports:
+  ggplot2,
   apeglm,
   IHW,
   ashr,
   genefilter,
-  ballgown
+  ballgown,
+  DESeq2,
+  edgeR
   

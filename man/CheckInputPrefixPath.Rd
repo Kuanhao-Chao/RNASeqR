@@ -4,7 +4,7 @@
 \alias{CheckInputPrefixPath}
 \title{inner function : check prefix.path}
 \usage{
-CheckInputPrefixPath(input.path.prefix = NA_character_, print = TRUE)
+CheckInputPrefixPath(input.path.prefix = NA_character_)
 }
 \description{
 inner function : check prefix.path
