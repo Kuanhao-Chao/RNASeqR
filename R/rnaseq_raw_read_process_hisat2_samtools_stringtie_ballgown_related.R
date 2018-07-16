@@ -92,8 +92,6 @@ Hisat2AlignmentDefault <- function(path.prefix, gene.name, sample.pattern, num.p
 
 #' Report Hisat2 assemble rate
 #'
-#' @importFrom stringr str_extract
-#' @importFrom gridExtra grid.table
 #'
 Hisat2ReportAssemble <- function(path.prefix, gene.name, sample.pattern){
   check.results <- ProgressGenesFiles(path.prefix, gene.name, sample.pattern, print=FALSE)

@@ -63,7 +63,6 @@ setClass("RNASeqWorkFlowParam",
 #'
 #' @rdname RNASeqWorkFlowParam-constructor
 #'
-#' @importFrom tools file_ext
 #' @export
 #' @example
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", gene.name = "hg19", sample.pattern = "SRR[0-9]",
@@ -330,7 +329,6 @@ CheckIndependentVariable <- function(independent.variable = NA_character_, input
 }
 
 #' inner fucntion : check python version
-#' @importFrom reticulate py_config py_available
 CheckPython <- function() {
   cat(c("************** Checking python version ************\n"))
   # have to check python !!!

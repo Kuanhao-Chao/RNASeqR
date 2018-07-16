@@ -21,23 +21,24 @@ QualityTrimming <- function(path.prefix) {
   lapply(raw.fastq, myFilterAndTrim)
 }
 
+
 myFilterAndTrim <- function(fl, path.prefix) {
   # adding print log
   ## open input stream
-  rfq <- readFastq(fl)
-  quality(rfq)
-  alphabet(quality(rfq))
+  rfq <- ShortRead::readFastq(fl)
+  ShortRead::quality(rfq)
+  ShortRead::alphabet(quality(rfq))
   ## trim and filter, e.g., reads cannot contain 'N'...
-  rfq.Na <- rfq[nFilter()(rfq)]  # see ?srFilter for pre-defined filters
+  rfq.Na <- rfq[ShortRead::nFilter()(rfq)]  # see ?srFilter for pre-defined filters
   ## trim as soon as 2 of 5 nucleotides has quality encoding less
   ## than "4" (phred score 20)
-  rfq.trim <- trimTailw(rfq.Na, 2, "4", 2)
+  rfq.trim <- ShortRead::trimTailw(rfq.Na, 2, "4", 2)
   ## drop reads that are less than 36nt
-  rfq.less <- rfq.trim[width(rfq.trim) >= 36]
+  rfq.less <- ShortRead::rfq.trim[width(rfq.trim) >= 36]
   ## append to destination
   trimmed.file.name <- basename(fl)
   destination_2 <- paste0(path.prefix,"/gene_data/raw_fastq.gz/trimmed_fastq.gz/", trimmed.file.name)
-  writeFastq(rfq.less, destination, "a")
+  ShortRead::writeFastq(rfq.less, destination, "a")
   # rfq1 = trimEnds(rfq, "4")
   # quality(rfq1)
   # repeat {

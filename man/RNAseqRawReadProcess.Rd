@@ -5,7 +5,7 @@
 \title{rna seq pipline}
 \usage{
 RNAseqRawReadProcess(path.prefix, input.path.prefix, gene.name, sample.pattern,
-  num.parallel.threads = 8, indexes.optional)
+  python.variable, num.parallel.threads = 8, indexes.optional)
 }
 \description{
 rna seq pipline
