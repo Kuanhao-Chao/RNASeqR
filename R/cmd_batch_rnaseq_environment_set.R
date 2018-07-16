@@ -22,6 +22,7 @@ RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam) {
   gene.name <- RNASeqWorkFlowParam@gene.name
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   indexes.optional <- RNASeqWorkFlowParam@indexes.optional
+  MkdirAll(path.prefix)
   fileConn<-file(paste0(path.prefix, "Rscript/Environment_Set.R"))
   first <- "library(RNASeqWorkflow)"
   second <- paste0("RNAseqEnvironmentSet(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', gene.name = '", gene.name, "', sample.pattern = '", sample.pattern, "', indexes.optional = ",indexes.optional, ", os.type = '", os.type, "')")
@@ -54,16 +55,15 @@ RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam) {
 #'                      sample.pattern = exp@@sample.pattern, indexes.optional = exp@@indexes.optional, os.type = exp@@os.type)
 #'
 RNAseqEnvironmentSet <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, indexes.optional, os.type) {
-  MkdirAll(path.prefix = path.prefix)
   CopyInputDir(path.prefix = path.prefix, input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, indexes.optional = indexes.optional)
   InstallAll(path.prefix = path.prefix, os.type = os.type)
   ExportPath(path.prefix = path.prefix)
   Check.tools.result <- CheckToolAll()
   if (Check.tools.result) {
     cat("\n")
-    cat(paste0("\n**************************************\n"))
-    cat(paste0("************** Success! **************\n"))
-    cat(paste0("**************************************\n"))
+    cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+    cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+    cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   }
 }
 

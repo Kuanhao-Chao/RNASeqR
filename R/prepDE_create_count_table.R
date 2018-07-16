@@ -1,7 +1,7 @@
 #' converting stringtie ballogwn preprocessed data to count table
 #'
 #' @export
-PreDECountTable <- function(path.prefix, sample.pattern, python.variable, print=TRUE) {
+PreDECountTable <- function(path.prefix, sample.pattern, python.variable.answer, python.variable.version, print=TRUE) {
   # ftp server : ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.1.0-source.zip
   cat("************** Installing prepDE.py ************\n")
   cat(paste0(path.prefix, "gene_data/reads_count_matrix\n"))
@@ -21,16 +21,15 @@ PreDECountTable <- function(path.prefix, sample.pattern, python.variable, print=
   cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/sample_lst.txt' has been created\n\n"))
   cat("************** Creating gene and transcript raw count file ************\n")
   # have to check python !!!
-  if(python.variable$check.answer){
+  if (python.variable.answer) {
     cat("(\u2714) : Python is available on your device!\n")
-    python.version <- python.variable$python.version
     cat(paste0("       Python version : ", reticulate::py_config()$version, "\n"))
-    if(python.version >= 3) {
+    if(python.variable.version >= 3) {
       cat("(\u270D) : Converting 'prepDE.py' from python2 to python3 \n\n")
       system2(command = '2to3', arg = paste0("-w ", path.prefix, "gene_data/reads_count_matrix/prepDE.py"))
-    } else if (python.version < 3 && python.version >= 2 ){
+    } else if (python.variable.version < 3 && python.variable.version >= 2 ){
     }
-    system2(command = 'python', args = paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py -i ",  path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"))
+    system2(command = 'python', args = paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py -i ",  path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"), wait = TRUE)
     cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv' has been created\n"))
     cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv' has been created\n\n"))
     on.exit(setwd(current.path))

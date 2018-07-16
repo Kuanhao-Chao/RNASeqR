@@ -10,9 +10,10 @@ RNAseqWorkFlow <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, ballgo
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   indexes.optional <- RNASeqWorkFlowParam@indexes.optional
   independent.variable <- RNASeqWorkFlowParam@independent.variable
+  python.variable <- RNASeqWorkFlowParam@python.variable
+  python.variable.answer <- python.variable$check.answer
+  python.variable.version <- python.variable$python.version
   MkdirAll(path.prefix)
-  r_script.dir <- dir.create(file.path(paste0(path.prefix, 'Rscript/')), showWarnings = FALSE) == 0
-  r_script.out.dir <- dir.create(file.path(paste0(path.prefix, 'Rscript_out/')), showWarnings = FALSE) == 0
   fileConn<-file(paste0(path.prefix, "Rscript/Environment_Set.R"))
   first <- "library(RNASeqWorkflow)"
   second <- paste0("RNAseqEnvironmentSet(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', gene.name = '", gene.name, "', sample.pattern = '", sample.pattern, "', indexes.optional = ",indexes.optional, ", os.type = '", os.type, "')")
@@ -29,18 +30,16 @@ RNAseqWorkFlow <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, ballgo
   # If precheck doesn't have .ht2 files is fine
   fileConn<-file(paste0(path.prefix, "Rscript/Raw_Read_Process.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", python.variable = "', python.variable, '", num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
+  second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", python.variable.answer = ', python.variable.answer, ', python.variable.version = ', python.variable.version, ', num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Raw_Read_Process.R' has been created.\n"))
-  # If precheck doesn't have .ht2 files is fine
   fileConn<-file(paste0(path.prefix, "Rscript/Ballgown_Process.R"))
   first <- "library(RNASeqWorkflow)"
   second <- paste0("RNAseqBallgownProcess(path.prefix = '", path.prefix, "', gene.name = '", gene.name, "', sample.pattern = '", sample.pattern, "', independent.variable = '",independent.variable, "', ballgown.log2FC = ", ballgown.log2FC, ", ballgown.pval = ", ballgown.pval, ", ballgown.qval = ", ballgown.qval, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Ballgown_Process.R' has been created.\n"))
-
   fileConn<-file(paste0(path.prefix, "Rscript/RNASEQ_WORKFLOW.R"))
   first <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Environment_Set.R ", path.prefix, "Rscript_out/Environment_Set.Rout"), "\", stdout = \"\", wait = TRUE )")
   second <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Quality_Control.R ", path.prefix, "Rscript_out/Quality_Control.Rout"), "\", stdout = \"\", wait = TRUE )")
