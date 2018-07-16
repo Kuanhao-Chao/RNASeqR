@@ -18,6 +18,7 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
   gene.name <- RNASeqWorkFlowParam@gene.name
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
+  python.variable <- RNASeqWorkFlowParam@python.variable
   indexes.optional <- RNASeqWorkFlowParam@indexes.optional
   # not print but if the prefix is invalid, then 'Prefix path '", path.prefix, "' is invalid. Please try another one.' will be printed.
   results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=TRUE)
@@ -28,7 +29,7 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
       cat("(\u2714) : Successful in RNAseq-pipeline precheck. \n\n")
       fileConn<-file(paste0(path.prefix, "Rscript/Raw_Read_Process.R"))
       first <- "library(RNASeqWorkflow)"
-      second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
+      second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", python.variable = "', python.variable, '", num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
       writeLines(c(first, second), fileConn)
       close(fileConn)
       cat(paste0("\u2605 '", path.prefix, "Rscript/Raw_Read_Process.R' has been created.\n"))
@@ -41,7 +42,7 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
 
 #' rna seq pipline
 #' @export
-RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, num.parallel.threads = 8, indexes.optional) {
+RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, python.variable, num.parallel.threads = 8, indexes.optional) {
   ExportPath(path.prefix)
   check.results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=FALSE)
   if (isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$fa.file.logic.df) && (check.results$fastq.gz.files.number.df != 0)) {
@@ -55,7 +56,11 @@ RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, gene.name, samp
     GffcompareRefSample(path.prefix, gene.name, sample.pattern)
     StringTieToBallgown(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
     finals <- ProgressGenesFiles(path.prefix, gene.name, sample.pattern, print=TRUE)
-
+    PreDECountTable(path.prefix= path.prefix, sample.pattern = sample.pattern, python.variable = python.variable, print=TRUE)
+    file.prepDE.py <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py"))
+    file.sample.lst.txt <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"))
+    file.gene_count_matrix <- file.exists(paste(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
+    file.transcript_count_matrix <- file.exists(paste(path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv"))
     if (isTRUE(finals$gtf.file.logic.df) && isTRUE(finals$fa.file.logic.df) &&
         finals$fastq.gz.files.number.df != 0 &&
         isTRUE(finals$phenodata.file.df) &&
@@ -65,7 +70,8 @@ RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, gene.name, samp
         finals$gtf.files.number.df != 0 &&
         isTRUE(finals$stringtie_merged.gtf.file.df) &&
         finals$gffcompare.related.dirs.number.df != 0 &&
-        finals$ballgown.dirs.number.df != 0) {
+        finals$ballgown.dirs.number.df != 0 &&
+        file.prepDE.py && file.sample.lst.txt && file.gene_count_matrix && file.transcript_count_matrix) {
       cat(paste0("\n**************************************\n"))
       cat(paste0("************** Success! **************\n"))
       cat(paste0("**************************************\n"))

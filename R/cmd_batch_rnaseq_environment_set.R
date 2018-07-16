@@ -58,7 +58,13 @@ RNAseqEnvironmentSet <- function(path.prefix, input.path.prefix, gene.name, samp
   CopyInputDir(path.prefix = path.prefix, input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, indexes.optional = indexes.optional)
   InstallAll(path.prefix = path.prefix, os.type = os.type)
   ExportPath(path.prefix = path.prefix)
-  CheckToolAll()
+  Check.tools.result <- CheckToolAll()
+  if (Check.tools.result) {
+    cat("\n")
+    cat(paste0("\n**************************************\n"))
+    cat(paste0("************** Success! **************\n"))
+    cat(paste0("**************************************\n"))
+  }
 }
 
 #' Create sample gene directory
@@ -93,6 +99,12 @@ MkdirGeneDir <- function(path.prefix) {
     cat(paste0("(\u2714) : Create '", path.prefix, "gene_data/raw_fastq.gz/'.\n"))
   } else {
     cat(paste0("(\u26A0) : Fail to create '", path.prefix, "gene_data/raw_fastq.gz/'.\n     Please check whether the directory is already exit.\n"))
+  }
+  samples.fastq.trim.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_fastq.gz/trimmed_fastq.gz/')), showWarnings = FALSE) == 0
+  if (!isTRUE(samples.fastq.trim.dir)) {
+    cat(paste0("(\u2714) : Create '", path.prefix, "gene_data/raw_fastq.gz/trimmed_fastq.gz/'.\n"))
+  } else {
+    cat(paste0("(\u26A0) : Fail to create '", path.prefix, "gene_data/raw_fastq.gz/trimmed_fastq.gz/'.\n     Please check whether the directory is already exit.\n"))
   }
   samples.sam.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_sam')), showWarnings = FALSE) == 0
   if (!isTRUE(samples.sam.dir)) {

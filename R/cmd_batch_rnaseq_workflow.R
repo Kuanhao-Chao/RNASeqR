@@ -29,7 +29,7 @@ RNAseqWorkFlow <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, ballgo
   # If precheck doesn't have .ht2 files is fine
   fileConn<-file(paste0(path.prefix, "Rscript/Raw_Read_Process.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
+  second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", python.variable = "', python.variable, '", num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Raw_Read_Process.R' has been created.\n"))

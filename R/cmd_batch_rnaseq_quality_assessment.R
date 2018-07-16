@@ -6,15 +6,15 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam) {
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
-  fileConn<-file(paste0(path.prefix, "Rscript/Quality_Control.R"))
+  fileConn<-file(paste0(path.prefix, "Rscript/Quality_Assessment.R"))
   first <- "library(RNASeqWorkflow)"
   second <- "library(ggplot2)"
   third <- paste0("QualityAssessment(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
   writeLines(c(first, second, third), fileConn)
   close(fileConn)
-  cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Control.R' has been created.\n"))
-  system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Quality_Control.R ", path.prefix, "Rscript_out/Quality_Control.Rout"), stdout = "", wait = FALSE)
-  cat(paste0("\u2605 Tools are installing in the background. Check current progress in '", path.prefix, "Rscript_out/Quality_Control.Rout'\n\n"))
+  cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Assessment.R' has been created.\n"))
+  system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Quality_Assessment.R ", path.prefix, "Rscript_out/Quality_Assessment.Rout"), stdout = "", wait = FALSE)
+  cat(paste0("\u2605 Tools are installing in the background. Check current progress in '", path.prefix, "Rscript_out/Quality_Assessment.Rout'\n\n"))
 }
 
 #' Quality control
@@ -67,4 +67,31 @@ QualityAssessment <- function(path.prefix, input.path.prefix, sample.pattern) {
   resultFile <- report(qaSummary)
   file.rename(from = resultFile, to = paste0(path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html"))
   cat(paste0("          (\u2714) : ShortRead assessment success ~~\n\n"))
+}
+
+CheckQAFiles <- function(path.prefix) {
+  file.rqc.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/Rqc/Rqc_report.html"))
+  file.systemPipeR.data <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/systemPipeR/data.list.txt"))
+  file.systemPipeR.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/systemPipeR/fastqReport.pdf"))
+  file.ShortRead.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html"))
+  if (file.rqc.result && file.systemPipeR.data && file.systemPipeR.result && file.ShortRead.result) {
+    cat("\n")
+    cat(paste0("\n**************************************\n"))
+    cat(paste0("************** Success! **************\n"))
+    cat(paste0("**************************************\n"))
+  } else {
+    if (!file.rqc.result) {
+      cat(paste0("'", path.prefix, "RNAseq_results/QA_results/Rqc/Rqc_report.html' is missing!\n"))
+    }
+    if (!file.systemPipeR.data) {
+      cat(paste0("'", path.prefix, "RNAseq_results/QA_results/systemPipeR/data.list.txt' is missing!\n"))
+    }
+    if (!file.systemPipeR.result){
+      cat(paste0("'", path.prefix, "RNAseq_results/QA_results/systemPipeR/fastqReport.pdf' is missing!\n"))
+    }
+    if (!file.ShortRead.result) {
+      cat(paste0("'", path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html' is missing!\n"))
+    }
+    stop("QA file missing ERROR")
+  }
 }

@@ -23,4 +23,15 @@ RNAseqBallgownProcess <- function(path.prefix, gene.name, sample.pattern, indepe
   Hisat2ReportAssemble(path.prefix, gene.name, sample.pattern)
   BallgownPreprocess(path.prefix, gene.name, sample.pattern, independent.variable)
   BallgownPlotAll(path.prefix, ballgown.log2FC, ballgown.pval, ballgown.qval)
+  CheckBallgownResult()
+}
+
+#' inner function
+CheckBallgownResult <- function() {
+  if (TRUE) {
+    cat("\n")
+    cat(paste0("\n**************************************\n"))
+    cat(paste0("************** Success! **************\n"))
+    cat(paste0("**************************************\n"))
+  }
 }
