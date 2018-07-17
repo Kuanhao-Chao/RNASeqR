@@ -20,10 +20,22 @@ RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, 
 #'
 #' @export
 RNAseqBallgownProcess <- function(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.log2FC, ballgown.pval, ballgown.qval) {
-  Hisat2ReportAssemble(path.prefix, gene.name, sample.pattern)
-  BallgownPreprocess(path.prefix, gene.name, sample.pattern, independent.variable)
-  BallgownPlotAll(path.prefix, ballgown.log2FC, ballgown.pval, ballgown.qval)
-  CheckBallgownResult()
+  if (file.exists(paste0(path.prefix, "Rscript_out/Environment_Set.Rout")) && file.exists(paste0(path.prefix, "Rscript_out/Raw_Read_Process.Rout"))) {
+    if (RoutCheck(paste0(path.prefix, "Rscript_out/Environment_Set.Rout"), "'Environment Setting'")) {
+      if (RoutCheck(paste0(path.prefix, "Rscript_out/Raw_Read_Process.Rout"), "'Raw Read Processing'")) {
+        Hisat2ReportAssemble(path.prefix, gene.name, sample.pattern)
+        BallgownPreprocess(path.prefix, gene.name, sample.pattern, independent.variable)
+        BallgownPlotAll(path.prefix, ballgown.log2FC, ballgown.pval, ballgown.qval)
+        CheckBallgownResult()
+      } else {
+        cat(paste0("'", path.prefix, "Rscript_out/Raw_Read_Process.Rout' is not created successfully.\n"))
+        stop("Raw_Read_Process.Rout missing ERROR")
+      }
+    }
+  } else {
+    cat(paste0("'", path.prefix, "Rscript_out/Environment_Set.Rout' is not created successfully.\n"))
+    stop("Environment_Set.Rout missing ERROR")
+  }
 }
 
 #' inner function

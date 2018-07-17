@@ -162,3 +162,19 @@ ExportPath <- function(path.prefix) {
   )
   cat("\u27a4\u27a4 R environment 'PATH' : ", Sys.getenv("PATH"), "\n\n")
 }
+
+#' CMD Rout Checker
+RoutCheck <- function(file.name, process) {
+  load.data <- readChar(file.name, file.info(file.name)$size)
+  first.split <- strsplit(load.data, "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n")
+  seconnd.split <- strsplit(first.split[[1]][2], "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605")
+  if (seconnd.split[[1]][2] == " Success!! ") {
+    process
+    cat(paste0("'", process, "' is finished successfully !!\n"))
+    cat(paste0("'", file.name, "' is created.\n"))
+    return(TRUE)
+  } else {
+    cat(paste0("'", process, "' is failed !!\n"))
+    stop(paste0(process, " process ERROR"))
+  }
+}

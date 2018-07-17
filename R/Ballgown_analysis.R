@@ -148,7 +148,7 @@ BallgownTranscriptRelatedPlot <- function(path.prefix){
       if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/Transcript_Related/"))){
         dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/Transcript_Related/"))
       }
-      transcript_gene_table <- indexes(pkg.ballgown.data$bg_chrX)$t2g
+      transcript_gene_table <- ballgown::indexes(pkg.ballgown.data$bg_chrX)$t2g
       counts=table(transcript_gene_table[,"g_id"])
       c_one = length(which(counts == 1))
       c_more_than_one = length(which(counts > 1))
@@ -161,7 +161,7 @@ BallgownTranscriptRelatedPlot <- function(path.prefix){
       cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/Transcript_Related/Distribution_transcript_count_per_gene_plot.png"), "' has been created. \n"))
 
       # draw the distribution of transcript length
-      full_table <- texpr(pkg.ballgown.data$bg_chrX, 'all')
+      full_table <- ballgown::texpr(pkg.ballgown.data$bg_chrX, 'all')
       t.mini.length = min(full_table$length[full_table$length > 0])
       t.max.length = max(full_table$length[full_table$length > 0])
       png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/Transcript_Related/Distribution_transcript_length_plot.png"))
@@ -190,7 +190,7 @@ BallgownBoxViolinPlot <- function(path.prefix) {
       # palette(tropical)
       my_colors=c(rgb(255, 47, 35,maxColorValue = 255),
                   rgb(50, 147, 255,maxColorValue = 255))
-      fpkm = data.frame(texpr(pkg.ballgown.data$bg_chrX,meas="FPKM"))
+      fpkm = data.frame(ballgown::texpr(pkg.ballgown.data$bg_chrX,meas="FPKM"))
       fpkm = log2(fpkm+1)
       fpkm <- reshape2::melt(fpkm)
       colnames(fpkm) <- c("samples", "FPKM")
@@ -232,7 +232,7 @@ BallgownPCAPlot <- function(path.prefix){
       if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/PCA/"))){
         dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/PCA/"))
       }
-      fpkm <- data.frame(texpr(pkg.ballgown.data$bg_chrX,meas="FPKM"))
+      fpkm <- data.frame(ballgown::texpr(pkg.ballgown.data$bg_chrX,meas="FPKM"))
       fpkm.trans <- data.frame(t(fpkm))
       fpkm.trans.row.names <- row.names(fpkm.trans)
       fpkm.trans.row.names.clean <- gsub("FPKM.", "", fpkm.trans.row.names)

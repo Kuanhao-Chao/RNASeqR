@@ -43,44 +43,51 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
 #' rna seq pipline
 #' @export
 RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, python.variable.answer, python.variable.version, num.parallel.threads = 8, indexes.optional) {
-  ExportPath(path.prefix)
-  check.results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=FALSE)
-  if (isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$fa.file.logic.df) && (check.results$fastq.gz.files.number.df != 0)) {
-    if (check.results$ht2.files.number.df == 0 && indexes.optional) {
-      CreateHisat2Index(gene.name, sample.pattern)
+  if (file.exists(paste0(path.prefix, "Rscript_out/Environment_Set.Rout"))) {
+    if (RoutCheck(paste0(path.prefix, "Rscript_out/Environment_Set.Rout"), "'Environment Setting'")) {
+      ExportPath(path.prefix)
+      check.results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=FALSE)
+      if (isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$fa.file.logic.df) && (check.results$fastq.gz.files.number.df != 0)) {
+        if (check.results$ht2.files.number.df == 0 && indexes.optional) {
+          CreateHisat2Index(gene.name, sample.pattern)
+        }
+        Hisat2AlignmentDefault(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
+        SamtoolsToBam(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
+        StringTieAssemble(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
+        StringTieMergeTrans(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
+        GffcompareRefSample(path.prefix, gene.name, sample.pattern)
+        StringTieToBallgown(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
+        finals <- ProgressGenesFiles(path.prefix, gene.name, sample.pattern, print=TRUE)
+        PreDECountTable(path.prefix= path.prefix, sample.pattern = sample.pattern, python.variable.answer = python.variable.answer, python.variable.version = python.variable.version, print=TRUE)
+        file.prepDE.py <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py"))
+        file.sample.lst.txt <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"))
+        file.gene_count_matrix <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
+        file.transcript_count_matrix <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv"))
+        if (isTRUE(finals$gtf.file.logic.df) && isTRUE(finals$fa.file.logic.df) &&
+            finals$fastq.gz.files.number.df != 0 &&
+            isTRUE(finals$phenodata.file.df) &&
+            finals$ht2.files.number.df != 0 &&
+            finals$sam.files.number.df != 0 &&
+            finals$bam.files.number.df != 0 &&
+            finals$gtf.files.number.df != 0 &&
+            isTRUE(finals$stringtie_merged.gtf.file.df) &&
+            finals$gffcompare.related.dirs.number.df != 0 &&
+            finals$ballgown.dirs.number.df != 0 &&
+            file.prepDE.py && file.sample.lst.txt && file.gene_count_matrix && file.transcript_count_matrix) {
+          cat("\n")
+          cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+          cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+          cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+        } else {
+          stop(paste0("(\u2718) Output files ERROR \n"))
+        }
+      }
+      else{
+        stop(paste0("(\u2718) Necessary files are lost.\n     Please check whether 'ref_genes/", gene.name, ".gtf' , 'ref_genome/", gene.name, ".fa' , 'samples_.fastq.gz/XXX_", gene.name, "_*.fastq.gz' are exit.\n\n" ))
+      }
     }
-    Hisat2AlignmentDefault(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
-    SamtoolsToBam(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
-    StringTieAssemble(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
-    StringTieMergeTrans(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
-    GffcompareRefSample(path.prefix, gene.name, sample.pattern)
-    StringTieToBallgown(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
-    finals <- ProgressGenesFiles(path.prefix, gene.name, sample.pattern, print=TRUE)
-    PreDECountTable(path.prefix= path.prefix, sample.pattern = sample.pattern, python.variable.answer = python.variable.answer, python.variable.version = python.variable.version, print=TRUE)
-    file.prepDE.py <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py"))
-    file.sample.lst.txt <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"))
-    file.gene_count_matrix <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
-    file.transcript_count_matrix <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv"))
-    if (isTRUE(finals$gtf.file.logic.df) && isTRUE(finals$fa.file.logic.df) &&
-        finals$fastq.gz.files.number.df != 0 &&
-        isTRUE(finals$phenodata.file.df) &&
-        finals$ht2.files.number.df != 0 &&
-        finals$sam.files.number.df != 0 &&
-        finals$bam.files.number.df != 0 &&
-        finals$gtf.files.number.df != 0 &&
-        isTRUE(finals$stringtie_merged.gtf.file.df) &&
-        finals$gffcompare.related.dirs.number.df != 0 &&
-        finals$ballgown.dirs.number.df != 0 &&
-        file.prepDE.py && file.sample.lst.txt && file.gene_count_matrix && file.transcript_count_matrix) {
-      cat("\n")
-      cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-      cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-      cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-    } else {
-      stop(paste0("(\u2718) Output files ERROR \n"))
-    }
-  }
-  else{
-    stop(paste0("(\u2718) Necessary files are lost.\n     Please check whether 'ref_genes/", gene.name, ".gtf' , 'ref_genome/", gene.name, ".fa' , 'samples_.fastq.gz/XXX_", gene.name, "_*.fastq.gz' are exit.\n\n" ))
+  } else {
+    cat(paste0("'", path.prefix, "Rscript_out/Environment_Set.Rout' is not created successfully.\n"))
+    stop("Environment_Set.Rout missing ERROR")
   }
 }
