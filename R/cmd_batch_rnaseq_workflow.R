@@ -20,13 +20,18 @@ RNAseqWorkFlow <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, ballgo
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Environment_Set.R' has been created.\n"))
-  fileConn<-file(paste0(path.prefix, "Rscript/Quality_Control.R"))
+  first <- "library(RNASeqWorkflow)"
+  second <- paste0("RNAseqQualityTrimming(path.prefix = '", path.prefix, "', sample.pattern = '", sample.pattern, "', trimming.score = ", trimming.score, ")")
+  writeLines(c(first, second), fileConn)
+  close(fileConn)
+  cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Trimming.R' has been created.\n"))
+  fileConn<-file(paste0(path.prefix, "Rscript/Quality_Assessmnet.R"))
   first <- "library(RNASeqWorkflow)"
   second <- "library(ggplot2)"
-  third <- paste0("QualityAssessment(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
+  third <- paste0("RNASeqQualityAssessment(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
   writeLines(c(first, second, third), fileConn)
   close(fileConn)
-  cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Control.R' has been created.\n"))
+  cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Assessmnet.R' has been created.\n"))
   # If precheck doesn't have .ht2 files is fine
   fileConn<-file(paste0(path.prefix, "Rscript/Raw_Read_Process.R"))
   first <- "library(RNASeqWorkflow)"

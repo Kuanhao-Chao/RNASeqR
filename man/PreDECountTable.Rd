@@ -4,7 +4,8 @@
 \alias{PreDECountTable}
 \title{converting stringtie ballogwn preprocessed data to count table}
 \usage{
-PreDECountTable(path.prefix, sample.pattern, python.variable, print = TRUE)
+PreDECountTable(path.prefix, sample.pattern, python.variable.answer,
+  python.variable.version, print = TRUE)
 }
 \description{
 converting stringtie ballogwn preprocessed data to count table
