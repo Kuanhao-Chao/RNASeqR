@@ -19,6 +19,8 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
   gene.name <- RNASeqWorkFlowParam@gene.name
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   python.variable <- RNASeqWorkFlowParam@python.variable
+  python.variable.answer <- python.variable$check.answer
+  python.variable.version <- python.variable$python.version
   indexes.optional <- RNASeqWorkFlowParam@indexes.optional
   # not print but if the prefix is invalid, then 'Prefix path '", path.prefix, "' is invalid. Please try another one.' will be printed.
   results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=TRUE)

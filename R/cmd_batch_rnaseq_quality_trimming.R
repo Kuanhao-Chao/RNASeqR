@@ -20,7 +20,7 @@ RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, trimming.score = 30) 
 RNAseqQualityTrimming <- function(path.prefix, sample.pattern, trimming.score = 30) {
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   if (dir.exists(paste0(path.prefix, "gene_data/raw_fastq.gz/trimmed_fastq.gz/")) && (length(raw.fastq) != 0)) {
-    raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = TRUE, recursive = FALSE, ignore.case = FALSE)
+    raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz'), pattern = sample.pattern, all.files = FALSE, full.names = TRUE, recursive = FALSE, ignore.case = FALSE)
     lapply(raw.fastq, myFilterAndTrim, path.prefix = path.prefix, trimming.score = trimming.score)
   } else {
     stop("RNAseqQualityTrimming environment ERROR")
@@ -30,20 +30,25 @@ RNAseqQualityTrimming <- function(path.prefix, sample.pattern, trimming.score = 
 
 myFilterAndTrim <- function(fl, path.prefix, trimming.score) {
   # adding print log
+
   ## open input stream
-  rfq <- ShortRead::readFastq(fl)
-  Biostrings::quality(rfq)
-  ShortRead::alphabet(Biostrings::quality(rfq))[1]
-  trimming.alph <- names(ShortRead::encoding(Biostrings::quality(rfq))[trimming.score+1])
-  ## trim and filter, e.g., reads cannot contain 'N'...
-  rfq.Na <- rfq[ShortRead::nFilter()(rfq)]  # see ?srFilter for pre-defined filters
-  ## trim as soon as 2 of 5 nucleotides has quality encoding less
-  ## than "4" (phred score 20)
-  rfq.trim <- ShortRead::trimTailw(rfq.Na, 2, trimming.alph, 2)
-  ## drop reads that are less than 50nt
-  rfq.less <- rfq.trim[BiocGenerics::width(rfq.trim) >= 50]
-  ## append to destination
-  trimmed.file.name <- basename(fl)
-  destination <- paste0(path.prefix,"/gene_data/raw_fastq.gz/trimmed_fastq.gz/", trimmed.file.name)
-  ShortRead::writeFastq(rfq.less, destination, "a")
+  stream <- open(ShortRead::FastqStreamer(fl))
+  on.exit(close(stream))
+  repeat {
+    fq <- ShortRead::yield(stream)
+    if (length(fq) == 0)
+      break
+    ## trim and filter, e.g., reads cannot contain 'N'...
+    trimming.alph <- names(ShortRead::encoding(Biostrings::quality(fq))[trimming.score+1])
+    rfq.Na <- fq[ShortRead::nFilter()(fq)]  # see ?srFilter for pre-defined filters
+    ## trim as soon as 2 of 5 nucleotides has quality encoding less
+    ## than "4" (phred score 20)
+    rfq.trim <- ShortRead::trimTailw(rfq.Na, 2, trimming.alph, 2)
+    ## drop reads that are less than 50nt
+    rfq.less <- rfq.trim[BiocGenerics::width(rfq.trim) >= 50]
+    ## append to destination
+    trimmed.file.name <- basename(fl)
+    destination <- paste0(path.prefix,"gene_data/raw_fastq.gz/trimmed_fastq.gz/", trimmed.file.name)
+    ShortRead::writeFastq(rfq.less, destination, "a")
+  }
 }
