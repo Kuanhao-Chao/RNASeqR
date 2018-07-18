@@ -1,6 +1,6 @@
 #'
 #'@export
-RNAseqWorkFlow <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, ballgown.log2FC = 1, ballgown.pval = 0.05, ballgown.qval = 0.05) {
+RNAseqWorkFlow <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, trimming.score = 30, ballgown.log2FC = 1, ballgown.pval = 0.05, ballgown.qval = 0.05) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam)
   os.type <- RNASeqWorkFlowParam@os.type
@@ -20,6 +20,7 @@ RNAseqWorkFlow <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, ballgo
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Environment_Set.R' has been created.\n"))
+  fileConn<-file(paste0(path.prefix, "Rscript/Quality_Trimming.R"))
   first <- "library(RNASeqWorkflow)"
   second <- paste0("RNAseqQualityTrimming(path.prefix = '", path.prefix, "', sample.pattern = '", sample.pattern, "', trimming.score = ", trimming.score, ")")
   writeLines(c(first, second), fileConn)
