@@ -23,7 +23,7 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/trimmed_fastq.gz'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   if (dir.exists(paste0(path.prefix, "gene_data/raw_fastq.gz/trimmed_fastq.gz")) && (length(trimmed.raw.fastq) != 0)) {
     cat(paste0("\n************** Quality Assessment **************\n"))
-    folder <- paste0(path.prefix, "gene_data/raw_fastq.gz/trimmed_fastq.gz")
+    folder <- paste0(path.prefix, "gene_data/raw_fastq.gz/")
     files <- list.files(folder, sample.pattern, full.names=TRUE)
     cat(paste0("     \u25CF  R package \"Rqc\" quality assessment\n"))
     cat(paste0("          \u25CF  Running 'rqcQA()' ...  Please wait \u231B\u231B\u231B\n"))
