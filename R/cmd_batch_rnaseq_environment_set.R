@@ -208,7 +208,7 @@ MkdirRNAseq_results <- function(path.prefix){
   }
   RNAseq_results_quality_control_shortread.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/ShortRead/')), showWarnings = FALSE) == 0
   if (!isTRUE(RNAseq_results_quality_control_shortread.dir)) {
-    cat(paste0("(\u2714) : Create '", path.prefix, "RNAseq_results/QA_results/ShortRead/'.\n"))
+    cat(paste0("(\u2714) : Create '", path.prefix, "RNAseq_results/QA_results/ShortRead/'.\n\n"))
   } else {
     cat(paste0("(\u26A0) : Fail to create '", path.prefix, "RNAseq_results/QA_results/ShortRead/'.\n     Please check whether the directory is already exit.\n"))
   }
@@ -219,14 +219,14 @@ MkdirRscript_Rscript_out <- function(path.prefix) {
   cat("************** Creating 'Rscript/' directory ************\n")
   RNAseq_rscript.dir <- dir.create(file.path(paste0(path.prefix, 'Rscript/')), showWarnings = FALSE) == 0
   if (!isTRUE(RNAseq_rscript.dir)) {
-    cat(paste0("(\u2714) : Create '", path.prefix, "Rscript/'.\n"))
+    cat(paste0("(\u2714) : Create '", path.prefix, "Rscript/'.\n\n"))
   } else {
     cat(paste0("(\u26A0) : Fail to create '", path.prefix, "Rscript/'.\n     Please check whether the directory is already exit.\n"))
   }
   cat("************** Creating 'Rscript_out/' directory ************\n")
   RNAseq_rscript_out.dir <- dir.create(file.path(paste0(path.prefix, 'Rscript_out/')), showWarnings = FALSE) == 0
   if (!isTRUE(RNAseq_rscript_out.dir)) {
-    cat(paste0("(\u2714) : Create '", path.prefix, "Rscript_out/'.\n"))
+    cat(paste0("(\u2714) : Create '", path.prefix, "Rscript_out/'.\n\n"))
   } else {
     cat(paste0("(\u26A0) : Fail to create '", path.prefix, "Rscript_out/'.\n     Please check whether the directory is already exit.\n"))
   }

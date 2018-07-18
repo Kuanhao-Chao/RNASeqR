@@ -16,6 +16,7 @@ RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, trimming.score = 30) 
 }
 
 
+#' @export
 RNAseqQualityTrimming <- function(path.prefix, sample.pattern, trimming.score = 30) {
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   if (dir.exists(paste0(path.prefix, "gene_data/raw_fastq.gz/trimmed_fastq.gz/")) && (length(raw.fastq) != 0)) {
@@ -33,7 +34,7 @@ myFilterAndTrim <- function(fl, path.prefix, trimming.score) {
   rfq <- ShortRead::readFastq(fl)
   Biostrings::quality(rfq)
   ShortRead::alphabet(Biostrings::quality(rfq))[1]
-  trimming.alph <- names(encoding(quality(rfq))[trimming.score+1])
+  trimming.alph <- names(ShortRead::encoding(Biostrings::quality(rfq))[trimming.score+1])
   ## trim and filter, e.g., reads cannot contain 'N'...
   rfq.Na <- rfq[ShortRead::nFilter()(rfq)]  # see ?srFilter for pre-defined filters
   ## trim as soon as 2 of 5 nucleotides has quality encoding less

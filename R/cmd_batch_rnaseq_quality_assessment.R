@@ -9,7 +9,7 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam) {
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Assessment.R"))
   first <- "library(RNASeqWorkflow)"
   second <- "library(ggplot2)"
-  third <- paste0("QualityAssessment(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
+  third <- paste0("RNAseqQualityAssessment(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
   writeLines(c(first, second, third), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Assessment.R' has been created.\n"))
@@ -40,8 +40,7 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
     systemPipeRdata::genWorkenvir(workflow="rnaseq")
     # create targets.txt
     cat(paste0("          \u25CF  Writing \"data.list.txt\""))
-    raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz'), pattern = sample.pattern, all.files = FALSE, full.names = TRUE, recursive = FALSE, ignore.case = FALSE)
-    raw.fastq.data.frame <- data.frame("FileName" = raw.fastq, "SampleName" = 1:length(raw.fastq), "SampleLong" = 1:length(raw.fastq), "Experiment" = 1:length(raw.fastq), "Date" = 1:length(raw.fastq))
+    raw.fastq.data.frame <- data.frame("FileName" = files, "SampleName" = 1:length(files), "SampleLong" = 1:length(files), "Experiment" = 1:length(files), "Date" = 1:length(files))
     write.table(raw.fastq.data.frame, "data.list.txt", sep="\t", row.names = FALSE, quote=FALSE)
     args <- systemPipeR::systemArgs(sysma="rnaseq/param/trim.param", mytargets="data.list.txt")
     cat(paste0("          \u25CF  Running 'seeFastq()' ...  Please wait \u231B\u231B\u231B\n"))
@@ -50,15 +49,16 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
     pdf(paste0(path.prefix, "RNAseq_results/QA_results/systemPipeR/fastqReport.pdf"), height=18, width=4*length(fqlist))
     systemPipeR::seeFastqPlot(fqlist)
     dev.off()
-    on.exit()
+    on.exit(setwd(current.path))
     cat(paste0("          \u25CF  Removing 'rnaseq' directory...  Please wait \u231B\u231B\u231B\n"))
     unlink(paste0(path.prefix, "RNAseq_results/QA_results/systemPipeR/rnaseq"), recursive = TRUE)
     cat(paste0("          (\u2714) : systemPipeR assessment success ~~\n\n"))
 
     cat(paste0("     \u25CF  R package \"ShortRead\" quality assessment\n"))
-    raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = TRUE, recursive = FALSE, ignore.case = FALSE)
+    files <- list.files(folder, sample.pattern, full.names=TRUE)
+
     cat(paste0("          \u25CF  Running 'qa()' ...  Please wait \u231B\u231B\u231B\n"))
-    qaSummary <- ShortRead::qa(raw.fastq, type="fastq")
+    qaSummary <- ShortRead::qa(files, type="fastq")
     cat(paste0("          \u25CF  Creating 'ShortRead_report.html' ...  Please wait \u231B\u231B\u231B\n"))
     resultFile <- ShortRead::report(qaSummary)
     file.rename(from = resultFile, to = paste0(path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html"))
