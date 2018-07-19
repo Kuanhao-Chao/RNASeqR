@@ -23,7 +23,7 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 #' Quality control
 #' @export
 RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.pattern) {
-  PreCheckRNAseqQualityAssessment(path.prefix, sample.pattern)
+  PreCheckRNAseqQualityAssessment(path.prefix = path.prefix, sample.pattern = sample.pattern)
   trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   cat(paste0("\n************** Quality Assessment **************\n"))
   folder <- paste0(path.prefix, "gene_data/raw_fastq.gz/")
@@ -66,7 +66,7 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   resultFile <- ShortRead::report(qaSummary)
   file.rename(from = resultFile, to = paste0(path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html"))
   cat(paste0("     (\u2714) : ShortRead assessment success ~~\n\n"))
-  PostCheckRNAseqQualityAssessment(path.prefix)
+  PostCheckRNAseqQualityAssessment(path.prefix = path.prefix)
 }
 
 
@@ -75,9 +75,9 @@ PreCheckRNAseqQualityAssessment <- function(path.prefix, sample.pattern) {
   trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   validity <- length(trimmed.raw.fastq) != 0
   if (!isTRUE(validity)) {
-    stop("RNAseqQualityAssessment environment ERROR")
+    stop("RNAseqQualityAssessment environment() ERROR")
   }
-  cat("     (\u2714) : RNAseqQualityAssessment pre-check is valid\n\n")
+  cat("     (\u2714) : RNAseqQualityAssessment() pre-check is valid\n\n")
 }
 
 PostCheckRNAseqQualityAssessment <- function(path.prefix) {
@@ -100,9 +100,9 @@ PostCheckRNAseqQualityAssessment <- function(path.prefix) {
     if (!file.ShortRead.result) {
       cat(paste0("'", path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html' is missing!\n"))
     }
-    stop("RNAseqQualityAssessment post-check ERROR")
+    stop("RNAseqQualityAssessment() post-check ERROR")
   } else {
-    cat("     (\u2714) : RNAseqQualityAssessment post-check is valid\n\n")
+    cat("     (\u2714) : RNAseqQualityAssessment() post-check is valid\n\n")
     cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
     cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
     cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))

@@ -20,7 +20,7 @@ RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, minLength = 50, nBase
 
 #' @export
 RNAseqQualityTrimming <- function(path.prefix, sample.pattern, minLength = 50, nBases = 2) {
-  PreCheckRNAseqQualityTrimming(path.prefix, sample.pattern)
+  PreCheckRNAseqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
   cat(paste0("\n************** Quality Trimming **************\n"))
   samples.fastq.untrim.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/')), showWarnings = FALSE) == 0
   if (!isTRUE(samples.fastq.untrim.dir)) {
@@ -32,7 +32,7 @@ RNAseqQualityTrimming <- function(path.prefix, sample.pattern, minLength = 50, n
   raw.fastq.unique <- unique(gsub("[1-2]*.fastq.gz$", replace = "", raw.fastq))
   lapply(raw.fastq.unique, myFilterAndTrim, path.prefix = path.prefix, minLength = minLength, nBases = nBases)
   cat("\n")
-  PostCheckRNAseqQualityTrimming(path.prefix, sample.pattern)
+  PostCheckRNAseqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }
 
 
@@ -66,9 +66,9 @@ PreCheckRNAseqQualityTrimming <- function(path.prefix, sample.pattern) {
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   validity <- length(raw.fastq) != 0
   if (!isTRUE(validity)) {
-    stop("CheckRNAseqQualityTrimming pre-check ERROR")
+    stop("CheckRNAseqQualityTrimming() pre-check ERROR")
   }
-  cat("     (\u2714) : RNAseqQualityTrimming pre-check is valid\n\n")
+  cat("     (\u2714) : RNAseqQualityTrimming() pre-check is valid\n\n")
 }
 
 PostCheckRNAseqQualityTrimming <- function(path.prefix, sample.pattern) {
@@ -77,9 +77,9 @@ PostCheckRNAseqQualityTrimming <- function(path.prefix, sample.pattern) {
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   validity <- (length(trimmed.raw.fastq) != 0) && (length(raw.fastq) != 0)
   if (!isTRUE(validity)) {
-    stop("RNAseqQualityTrimming post-check ERROR")
+    stop("RNAseqQualityTrimming() post-check ERROR")
   }
-  cat("     (\u2714) : RNAseqQualityTrimming post-check is valid\n\n")
+  cat("     (\u2714) : RNAseqQualityTrimming() post-check is valid\n\n")
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
