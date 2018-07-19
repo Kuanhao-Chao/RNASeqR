@@ -23,7 +23,7 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 #' Quality control
 #' @export
 RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.pattern) {
-  CheckRNAseqQualityAssessment(path.prefix, sample.pattern)
+  PreCheckRNAseqQualityAssessment(path.prefix, sample.pattern)
   trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   cat(paste0("\n************** Quality Assessment **************\n"))
   folder <- paste0(path.prefix, "gene_data/raw_fastq.gz/")
@@ -66,20 +66,28 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   resultFile <- ShortRead::report(qaSummary)
   file.rename(from = resultFile, to = paste0(path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html"))
   cat(paste0("     (\u2714) : ShortRead assessment success ~~\n\n"))
-  CheckQAFiles(path.prefix)
+  PostCheckRNAseqQualityAssessment(path.prefix)
 }
 
-CheckQAFiles <- function(path.prefix) {
+
+PreCheckRNAseqQualityAssessment <- function(path.prefix, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C 'RNAseqQualityAssessment()' environment pre-check ...\n")
+  trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  validity <- length(trimmed.raw.fastq) != 0
+  if (!isTRUE(validity)) {
+    stop("RNAseqQualityAssessment environment ERROR")
+  }
+  cat("     (\u2714) : RNAseqQualityAssessment pre-check is valid\n\n")
+}
+
+PostCheckRNAseqQualityAssessment <- function(path.prefix) {
+  cat("\u269C\u265C\u265C\u265C 'RNAseqQualityAssessment()' environment post-check ...\n")
   file.rqc.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/Rqc/Rqc_report.html"))
   file.systemPipeR.data <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/systemPipeR/data.list.txt"))
   file.systemPipeR.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/systemPipeR/fastqReport.pdf"))
   file.ShortRead.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html"))
-  if (file.rqc.result && file.systemPipeR.data && file.systemPipeR.result && file.ShortRead.result) {
-    cat("\n")
-    cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-    cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-    cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-  } else {
+  validity <- file.rqc.result && file.systemPipeR.data && file.systemPipeR.result && file.ShortRead.result
+  if (!isTRUE(validity)) {
     if (!file.rqc.result) {
       cat(paste0("'", path.prefix, "RNAseq_results/QA_results/Rqc/Rqc_report.html' is missing!\n"))
     }
@@ -92,16 +100,12 @@ CheckQAFiles <- function(path.prefix) {
     if (!file.ShortRead.result) {
       cat(paste0("'", path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html' is missing!\n"))
     }
-    stop("QA file missing ERROR")
+    stop("RNAseqQualityAssessment post-check ERROR")
+  } else {
+    cat("     (\u2714) : RNAseqQualityAssessment post-check is valid\n\n")
+    cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+    cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+    cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   }
 }
 
-CheckRNAseqQualityAssessment <- function(path.prefix, sample.pattern) {
-  cat("\u265C\u265C\u265C 'RNAseqQualityAssessment()' environment precheck ...\n")
-  trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
-  validity <- length(trimmed.raw.fastq) != 0
-  if (!isTRUE(validity)) {
-    stop("RNAseqQualityAssessment environment ERROR")
-  }
-  cat("     (\u2714) : RNAseqQualityAssessment environment is valid\n\n")
-}

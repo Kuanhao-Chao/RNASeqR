@@ -102,12 +102,6 @@ MkdirGeneDir <- function(path.prefix) {
   } else {
     cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "gene_data/raw_fastq.gz/'.\n     Please check whether the directory is already exit.\n"))
   }
-  samples.fastq.untrim.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/')), showWarnings = FALSE) == 0
-  if (!isTRUE(samples.fastq.untrim.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/'.\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/'.\n     Please check whether the directory is already exit.\n"))
-  }
   samples.sam.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_sam')), showWarnings = FALSE) == 0
   if (!isTRUE(samples.sam.dir)) {
     cat(paste0("     (\u2714) : Create '", path.prefix, "gene_data/raw_sam/'.\n"))
@@ -247,7 +241,7 @@ MkdirAll <- function(path.prefix) {
 CopyInputDir <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, indexes.optional = indexes.optional) {
   current.path <- getwd()
   setwd(paste0(path.prefix, "gene_data/"))
-  cat(c("************** Copying", paste0("'", input.path.prefix, "input_files/'"), "************\n"))
+  cat(c("************** Directory Copying ************\n"))
   cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", gene.name, ".gtf"), "\n"))
   file.copy(paste0(input.path.prefix, "input_files/", gene.name, ".gtf"), paste0(getwd(), "/ref_genes/", gene.name, ".gtf"))
   cat(c("     \u25CF           To :"), paste0(getwd(), "/ref_genes/", gene.name, ".gtf", "\n"))
@@ -263,7 +257,7 @@ CopyInputDir <- function(path.prefix, input.path.prefix, gene.name, sample.patte
   on.exit(setwd(current.path))
   if (isTRUE(indexes.optional)) {
     cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", "indexes/"),  "\n"))
-    file.copy(paste0(input.path.prefix, "input_files/", "indexes/"), paste0(getwd(), "/"), overwrite = TRUE, recursive = FALSE)
+    file.copy(paste0(input.path.prefix, "input_files/", "indexes/"), paste0(getwd(), "/"), overwrite = TRUE, recursive = TRUE)
     cat(c("     \u25CF           To :", paste0(getwd(),"/indexes/"), "\n\n"))
   } else {
     cat("\n")
@@ -420,9 +414,13 @@ InstallAll <- function(path.prefix, os.type) {
   cat(paste0("   \u261E\u261E  Compressed files will be in '", path.prefix, "RNAseq_bin/Download/'"), "\n")
   cat(paste0("   \u261E\u261E  Unpacked files will be in '", path.prefix, "RNAseq_bin/Unpacked/'"), "\n")
   cat(paste0("   \u261E\u261E  Binary files will be copied to '", path.prefix, "RNAseq_bin/'"), "\n\n")
+  cat("\u2618\u2618 Hisat2 processing ...\n")
   InstallHisat2Bianry(path.prefix, os.type)
+  cat("\u2618\u2618 Stringtie processing ...\n")
   InstallStringTieBinary(path.prefix, os.type)
+  cat("\u2618\u2618 Gffcompare processing ...\n")
   InstallGffcompareBinary(path.prefix, os.type)
+  cat("\u2618\u2618 Samtools processing ...\n")
   InstallSamtoolsBinary(path.prefix, os.type)
   #return(CheckToolAll(print=FALSE))
 }
@@ -432,10 +430,9 @@ InstallAll <- function(path.prefix, os.type) {
 #'
 #' Check whether 'hisat2' is installed on the workstation
 #'
-#' @export
 CheckHisat2 <- function(print=TRUE){
   if (print) {
-    cat("************** Checking hisat2 command ************\n")
+    cat(paste0("     \u25CF  Checking hisat2 command\n"))
   }
   hisat2.installed <- system('hisat2 --version', ignore.stdout = !print , ignore.stderr = !print)==0
   if( isTRUE(hisat2.installed)){
@@ -454,10 +451,9 @@ CheckHisat2 <- function(print=TRUE){
 #'
 #' Check whether 'stringtie' is installed on the workstation
 #'
-#' @export
 CheckStringTie <- function(print=TRUE){
   if (print){
-    cat("************** Checking stringtie command ************\n")
+    cat(paste0("     \u25CF  Checking stringtie command\n"))
   }
   stringtie.installed <- system( 'stringtie --version', ignore.stdout = !print, ignore.stderr = !print)==0
   if( isTRUE(stringtie.installed)){
@@ -476,10 +472,9 @@ CheckStringTie <- function(print=TRUE){
 #'
 #' Check whether Gffcompare is installed on the workstation
 #'
-#' @export
 CheckGffcompare <- function(print=TRUE) {
   if(print) {
-    cat("************** Checking gffcompare command ************\n")
+    cat(paste0("     \u25CF  Checking gffcompare command\n"))
   }
   gffcompare.old <- system( 'gffcompare --version', ignore.stdout = !print, ignore.stderr = !print)==0
   if( isTRUE(gffcompare.old)){
@@ -498,10 +493,9 @@ CheckGffcompare <- function(print=TRUE) {
 #'
 #' Check whether Samtools is installed on the workstation
 #'
-#' @export
 CheckSamtools <- function(print=TRUE){
   if (print) {
-    cat("************** Checking samtools command ************\n")
+    cat(paste0("     \u25CF  Checking samtools command\n"))
   }
   samtools.old <- system( 'samtools --version', ignore.stdout = !print, ignore.stderr = !print)==0
   if( isTRUE(samtools.old)){
@@ -522,6 +516,7 @@ CheckSamtools <- function(print=TRUE){
 #'
 #' @export
 CheckToolAll <- function(print=TRUE) {
+  cat("************** Checking Availability of Commands ************\n")
   hisat2.check <- CheckHisat2(print=print)
   stringtie.check <- CheckStringTie(print=print)
   gff.check <- CheckGffcompare(print=print)
@@ -532,4 +527,15 @@ CheckToolAll <- function(print=TRUE) {
     stop("(\u2718) Necessary program is missing.\n     1. Check 'INSTALL_TOOLS.Rout' whether tools are properly installed.\n     2. Run 'ExportPath()' to set the environment.\n\n")
     return(FALSE)
   }
+}
+
+
+PreRNAseqEnvironmentSet <- function(path.prefix, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C 'RNAseqQualityAssessment()' environment pre-check ...\n")
+  trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  validity <- length(trimmed.raw.fastq) != 0
+  if (!isTRUE(validity)) {
+    stop("RNAseqQualityAssessment environment ERROR")
+  }
+  cat("     (\u2714) : RNAseqQualityAssessment pre-check is valid\n\n")
 }
