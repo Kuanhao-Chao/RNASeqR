@@ -12,8 +12,8 @@
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", gene.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
-RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8) {
-  CheckS4Object(RNASeqWorkFlowParam)
+RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, run = TRUE, check.s4.print = TRUE) {
+  CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
   gene.name <- RNASeqWorkFlowParam@gene.name
@@ -23,21 +23,17 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
   python.variable.version <- python.variable$python.version
   indexes.optional <- RNASeqWorkFlowParam@indexes.optional
   # not print but if the prefix is invalid, then 'Prefix path '", path.prefix, "' is invalid. Please try another one.' will be printed.
-  results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=TRUE)
-  if (isTRUE(results$gtf.file.logic.df) && isTRUE(results$fa.file.logic.df) && results$fastq.gz.files.number.df != 0 && isTRUE(results$phenodata.file.df)) {
-    # If precheck doesn't have .ht2 files is fine
-    ExportPath(path.prefix = path.prefix)
-    if (isTRUE(CheckToolAll(print=TRUE))) {
-      cat("(\u2714) : Successful in RNAseq-pipeline precheck. \n\n")
-      fileConn<-file(paste0(path.prefix, "Rscript/Raw_Read_Process.R"))
-      first <- "library(RNASeqWorkflow)"
-      second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", python.variable.answer = ', python.variable.answer, ', python.variable.version = ', python.variable.version, ', num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
-      writeLines(c(first, second), fileConn)
-      close(fileConn)
-      cat(paste0("\u2605 '", path.prefix, "Rscript/Raw_Read_Process.R' has been created.\n"))
-      system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Raw_Read_Process.R ", path.prefix, "Rscript_out/Raw_Read_Process.Rout"), stdout = "", wait = FALSE)
-      cat(paste0("\u2605 RNAseq alignment, assembly, quantification, mergence, comparison, reads process are doing in the background. Check current progress in '", path.prefix, "Rscript_out/Raw_Read_Process.Rout'\n\n"))
-    }
+  # If precheck doesn't have .ht2 files is fine
+  # ExportPath(path.prefix = path.prefix)
+  fileConn<-file(paste0(path.prefix, "Rscript/Raw_Read_Process.R"))
+  first <- "library(RNASeqWorkflow)"
+  second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", python.variable.answer = ', python.variable.answer, ', python.variable.version = ', python.variable.version, ', num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
+  writeLines(c(first, second), fileConn)
+  close(fileConn)
+  cat(paste0("\u2605 '", path.prefix, "Rscript/Raw_Read_Process.R' has been created.\n"))
+  if (run) {
+    system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Raw_Read_Process.R ", path.prefix, "Rscript_out/Raw_Read_Process.Rout"), stdout = "", wait = FALSE)
+    cat(paste0("\u2605 RNAseq alignment, assembly, quantification, mergence, comparison, reads process are doing in the background. Check current progress in '", path.prefix, "Rscript_out/Raw_Read_Process.Rout'\n\n"))
   }
 }
 

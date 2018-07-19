@@ -4,7 +4,8 @@
 \alias{RNAseqEnvironmentSet_CMD}
 \title{Set up the environment for the following RNA seq pipeline in background.}
 \usage{
-RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam)
+RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam, run = TRUE,
+  check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}

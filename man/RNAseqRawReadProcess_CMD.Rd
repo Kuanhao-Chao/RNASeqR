@@ -4,7 +4,8 @@
 \alias{RNAseqRawReadProcess_CMD}
 \title{Run RNA seq raw read processing (alignment, assembly, expressive expression) in background.}
 \usage{
-RNAseqRawReadProcess_CMD(RNASeqWorkFlowParam, num.parallel.threads = 8)
+RNAseqRawReadProcess_CMD(RNASeqWorkFlowParam, num.parallel.threads = 8,
+  run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}

@@ -30,6 +30,8 @@ Imports:
   systemPipeRdata,
   systemPipeR,
   ShortRead,
+  dplyr,
+  QuasR,
   apeglm,
   IHW,
   ashr,
