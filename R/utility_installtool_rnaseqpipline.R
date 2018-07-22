@@ -57,8 +57,9 @@ ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = T
       cat(c("Total:", ht2.files.number, "files\n\n"))
     }
   } else {
-    cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/indexes/', gene.name, '_tran.*.ht2\''), "is not exit\n"))
-    cat("       Files haven't created yet. Run 'CreateHisat2Index()' to generate '*.ht2' files or download from 'https://ccb.jhu.edu/software/hisat2/index.shtml'\n\n")
+    if (print) {
+      cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/indexes/', gene.name, '_tran.*.ht2\''), "is not exit\n"))
+    }
   }
   sam.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_sam/'), pattern = paste0( "^[A-Z, a-z]*", "[0-9]*", "[A-Z, a-z]*", ".sam$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   sam.files.number <- length(sam.files)
@@ -70,8 +71,9 @@ ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = T
       cat(c("Total:", sam.files.number, "files\n\n"))
     }
   }else {
-    cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_sam/XXX.sam\''), "is not exit\n"))
-    cat("       Files haven't created yet. Run 'Hisat2AlignmentDefault()' to generate 'XXX.sam' files\n\n")
+    if (print) {
+      cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_sam/XXX.sam\''), "is not exit\n"))
+    }
   }
   bam.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_bam/'), pattern = paste0( "^[A-Z, a-z]*", "[0-9]*", "[A-Z, a-z]*", ".bam$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   bam.files.number <- length(bam.files)
@@ -83,8 +85,9 @@ ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = T
       cat(c("Total:", bam.files.number, "files\n\n"))
     }
   }else {
-    cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_sam/XXX.bam\''), "is not exit\n"))
-    cat("       Files haven't created yet. Run 'SamtoolsToBam()' to generate 'XXX.bam' files\n\n")
+    if (print) {
+      cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_sam/XXX.bam\''), "is not exit\n"))
+    }
   }
   gtf.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_gtf/'), pattern = paste0("^[A-Z, a-z]*", "[0-9]*", "[A-Z, a-z]*", ".gtf$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   gtf.files.number <- length(gtf.files)
@@ -96,8 +99,9 @@ ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = T
       cat(c("Total:", gtf.files.number, "files\n\n"))
     }
   }else {
-    cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/raw_gtf/XXX.gtf\''), "is not exit\n"))
-    cat("       Files haven't created yet. Run 'StringTieAssemble()' to generate 'XXX.gtf' files\n\n")
+    if (print) {
+      cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/raw_gtf/XXX.gtf\''), "is not exit\n"))
+    }
   }
   stringtie_merged.gtf.file <- file.exists(paste0(path.prefix, "gene_data", '/merged/stringtie_merged.gtf'))
   if (isTRUE(stringtie_merged.gtf.file)) {
@@ -105,8 +109,9 @@ ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = T
       cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", "/merged/stringtie_merged.gtf", "'"), "is exit\n\n"))
     }
   } else {
-    cat(c("(\u231B) :", paste0("'", path.prefix, "gene_data", "/merged/stringtie_merged.gtf", "'"), "is not exit\n"))
-    cat("       Files haven't created yet. Run 'StringTieMergeTrans()' to generate 'stringtie_merged.gtf' files\n\n")
+    if (print) {
+      cat(c("(\u231B) :", paste0("'", path.prefix, "gene_data", "/merged/stringtie_merged.gtf", "'"), "is not exit\n"))
+    }
   }
   gffcompare.related.dirs <- list.files(path = paste0(path.prefix, "gene_data", '/merged/'), pattern = "^merged.", all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   gffcompare.related.dirs.number <- length(gffcompare.related.dirs)
@@ -118,8 +123,9 @@ ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = T
       cat(c("Total:", gffcompare.related.dirs.number, "files\n\n"))
     }
   }else {
-    cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/merged/', "merged.", "XXX/"), "is not exit\n"))
-    cat("       Directories haven't created yet. Run 'GffcompareRefSample()' to generate", paste0("merged/", "merged.XXX/"), "files\n\n")
+    if (print) {
+      cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/merged/', "merged.", "XXX/"), "is not exit\n"))
+    }
   }
   ballgown.dirs <- list.files(path = paste0(path.prefix, "gene_data", '/ballgown/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   ballgown.dirs.number <- length(ballgown.dirs)
@@ -131,8 +137,9 @@ ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = T
       cat(c("Total:", ballgown.dirs.number, "directories\n\n"))
     }
   }else {
-    cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/ballgown/', gsub(".fastq.gz", replace = "", sample.pattern), "/"), "is not exit\n"))
-    cat("       Directories haven't created yet. Run 'StringTieToBallgown()' to generate", paste0("ballgown/", sample.pattern, "/"), "directories\n\n")
+    if (print) {
+      cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/ballgown/', gsub(".fastq.gz", replace = "", sample.pattern), "/"), "is not exit\n"))
+    }
   }
   return(list(gtf.file.logic.df = gtf.file, fa.file.logic.df = fa.file,
               fastq.gz.files.number.df = fastq.gz.files.number,
@@ -161,20 +168,4 @@ ExportPath <- function(path.prefix) {
     PATH = paste(old.path, paste0(path.prefix, "RNAseq_bin"), sep = ":")
   )
   cat("\u27a4\u27a4 R environment 'PATH' : ", Sys.getenv("PATH"), "\n\n")
-}
-
-#' CMD Rout Checker
-RoutCheck <- function(file.name, process) {
-  load.data <- readChar(file.name, file.info(file.name)$size)
-  first.split <- strsplit(load.data, "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n")
-  seconnd.split <- strsplit(first.split[[1]][2], "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605")
-  if (seconnd.split[[1]][2] == " Success!! ") {
-    process
-    cat(paste0("'", process, "' is finished successfully !!\n"))
-    cat(paste0("'", file.name, "' is created.\n"))
-    return(TRUE)
-  } else {
-    cat(paste0("'", process, "' is failed !!\n"))
-    stop(paste0(process, " process ERROR"))
-  }
 }

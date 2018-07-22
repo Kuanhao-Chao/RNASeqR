@@ -25,7 +25,7 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.pattern) {
   PreCheckRNAseqQualityAssessment(path.prefix = path.prefix, sample.pattern = sample.pattern)
   trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
-  cat(paste0("\n************** Quality Assessment **************\n"))
+  cat(paste0("************** Quality Assessment **************\n"))
   folder <- paste0(path.prefix, "gene_data/raw_fastq.gz/")
   files <- list.files(folder, sample.pattern, full.names=TRUE)
   cat(paste0("\u25CF 1. R package \"Rqc\" quality assessment\n"))

@@ -203,6 +203,18 @@ MkdirRNAseq_results <- function(path.prefix){
   } else {
     cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/QA_results/ShortRead/'.\n     Please check whether the directory is already exit.\n"))
   }
+  RNAseq_results_DE_dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Ballgown_analysis/Differential_Expression')), showWarnings = FALSE) == 0
+  if (!isTRUE(RNAseq_results_DE_dir)) {
+    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/'.\n\n"))
+  } else {
+    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/'.\n     Please check whether the directory is already exit.\n"))
+  }
+  RNAseq_results_DE_image_dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Ballgown_analysis/Differential_Expression/images')), showWarnings = FALSE) == 0
+  if (!isTRUE(RNAseq_results_DE_image_dir)) {
+    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images'.\n\n"))
+  } else {
+    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images'.\n     Please check whether the directory is already exit.\n"))
+  }
 }
 
 #' Make
@@ -529,9 +541,9 @@ PreRNAseqEnvironmentSet <- function(path.prefix, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C RNAseqEnvironmentSet()' environment pre-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
-    stop("RNAseqEnvironmentSet environment ERROR")
+    stop("RNAseqEnvironmentSet environment() ERROR")
   }
-  cat("     (\u2714) : RNAseqEnvironmentSet pre-check is valid\n\n")
+  cat("     (\u2714) : RNAseqEnvironmentSet() pre-check is valid\n\n")
 }
 
 PostRNAseqEnvironmentSet <- function(path.prefix, sample.pattern) {
@@ -543,9 +555,9 @@ PostRNAseqEnvironmentSet <- function(path.prefix, sample.pattern) {
   check.tool.result <- CheckToolAll()
   validity <- phenodata.csv && chrX.gtf && chrX.fa && check.tool.result && (length(raw.fastq) != 0)
   if (!isTRUE(validity)) {
-    stop("RNAseqQualityTrimming() post-check ERROR")
+    stop("RNAseqEnvironmentSet() post-check ERROR")
   }
-  cat("     (\u2714) : RNAseqQualityTrimming() post-check is valid\n\n")
+  cat("     (\u2714) : RNAseqEnvironmentSet() post-check is valid\n\n")
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))

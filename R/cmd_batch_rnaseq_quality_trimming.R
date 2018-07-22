@@ -1,13 +1,13 @@
 #'
 #' @export
-RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, minLength = 50, nBases = 2, run = TRUE, check.s4.print = TRUE) {
+RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, truncateStartBases = 0, truncateEndBases = 0, complexity = NULL, minLength = 50, nBases = 2, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Trimming.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNAseqQualityTrimming(path.prefix = '", path.prefix, "', sample.pattern = '", sample.pattern, "', minLength = ", minLength, ", nBases = ", nBases,  ")")
+  second <- paste0("RNAseqQualityTrimming(path.prefix = '", path.prefix, "', sample.pattern = '", sample.pattern, "', truncateStartBases = ", truncateStartBases, ", truncateEndBases = ", truncateEndBases, ", complexity = ", complexity, ", minLength = ", minLength, ", nBases = ", nBases,  ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Trimming.R' has been created.\n"))
@@ -19,9 +19,9 @@ RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, minLength = 50, nBase
 
 
 #' @export
-RNAseqQualityTrimming <- function(path.prefix, sample.pattern, minLength = 50, nBases = 2) {
+RNAseqQualityTrimming <- function(path.prefix, sample.pattern, truncateStartBases = 0, truncateEndBases = 0, complexity = NULL, minLength = 50, nBases = 2) {
   PreCheckRNAseqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
-  cat(paste0("\n************** Quality Trimming **************\n"))
+  cat(paste0("************** Quality Trimming **************\n"))
   samples.fastq.untrim.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/')), showWarnings = FALSE) == 0
   if (!isTRUE(samples.fastq.untrim.dir)) {
     cat(paste0("     (\u2714) : Create '", path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/'.\n"))
@@ -30,13 +30,14 @@ RNAseqQualityTrimming <- function(path.prefix, sample.pattern, minLength = 50, n
   }
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   raw.fastq.unique <- unique(gsub("[1-2]*.fastq.gz$", replace = "", raw.fastq))
-  lapply(raw.fastq.unique, myFilterAndTrim, path.prefix = path.prefix, minLength = minLength, nBases = nBases)
+  lapply(raw.fastq.unique, myFilterAndTrim, path.prefix = path.prefix, truncateStartBases = truncateStartBases,
+         truncateEndBases = truncateEndBases, complexity = complexity, minLength = minLength, nBases = nBases)
   cat("\n")
   PostCheckRNAseqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }
 
 
-myFilterAndTrim <- function(fl.name, path.prefix, minLength, nBases) {
+myFilterAndTrim <- function(fl.name, path.prefix, truncateStartBases, truncateEndBases, complexity, minLength, nBases) {
   # adding print log
   # file1 and file2 is original fastq.gz without trimmed
   cat(paste0("\u25CF \"", gsub("_", "", fl.name), "\" quality trimming\n"))
@@ -53,7 +54,7 @@ myFilterAndTrim <- function(fl.name, path.prefix, minLength, nBases) {
     #Sequence complexity (H) is calculated based on the dinucleotide composition using the formula (Shannon entropy):
     cat(paste0("     \u25CF Start trimming ...\n"))
     QuasR::preprocessReads(filename = file1.output, outputFilename = file1, filenameMate = file2.output, outputFilenameMate = file2,
-                           complexity = NULL, minLength = 50, nBases = 2)
+                           truncateStartBases = 0, truncateEndBases = 0, complexity = NULL, minLength = 50, nBases = 2)
     cat(paste0("     \u25CF \"", file1, "\" has been created.\n"))
     cat(paste0("     \u25CF \"", file2, "\" has been created.\n"))
   } else {

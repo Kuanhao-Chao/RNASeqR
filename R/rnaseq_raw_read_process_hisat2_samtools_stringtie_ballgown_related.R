@@ -54,7 +54,7 @@ CreateHisat2Index <- function (path.prefix, gene.name, sample.pattern, splice.si
 Hisat2AlignmentDefault <- function(path.prefix, gene.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckHisat2(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, gene.name, sample.pattern, print=TRUE)
-    cat(paste0("\n************** Hisat2 Aligning **************\n"))
+    cat(paste0("\n************** Hisat2 Alignment **************\n"))
     if (check.results$ht2.files.number.df != 0 && check.results$fastq.gz.files.number.df != 0){
       # Map reads to each alignment
       current.path <- getwd()
@@ -95,7 +95,7 @@ Hisat2AlignmentDefault <- function(path.prefix, gene.name, sample.pattern, num.p
 #'
 Hisat2ReportAssemble <- function(path.prefix, gene.name, sample.pattern){
   check.results <- ProgressGenesFiles(path.prefix, gene.name, sample.pattern, print=FALSE)
-  cat(paste0("\n************** Reporting hisat2 alignment **************\n"))
+  cat(paste0("\n************** Reporting Hisat2 Alignment **************\n"))
   if (isTRUE(check.results$phenodata.file.df) && check.results$bam.files.number.df != 0){
     file.read <- paste0(path.prefix, "Rscript_out/Raw_Read_Process.Rout")
     sample.name <- sort(gsub(paste0(".bam$"), replace = "", check.results$bam.files.df))
@@ -165,14 +165,14 @@ SamtoolsToBam <- function(path.prefix, gene.name, sample.pattern, num.parallel.t
 StringTieAssemble <- function(path.prefix, gene.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, gene.name, sample.pattern, print=TRUE)
-    cat(paste0("\n************** Stringtie assembling **************\n"))
-    if (check.results$bam.files.number.df != 0 && isTRUE(check.results$gtf.file.logic.df)){
+    cat(paste0("\n************** Stringtie assembly **************\n"))
+    if (check.results$bam.files.number.df != 0){
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/"))
       sample.name <- sort(gsub(paste0(".bam$"), replace = "", check.results$bam.files.df))
       iteration.num <- length(sample.name)
       for( i in 1:iteration.num){
-        whole.command <- paste("-p", num.parallel.threads, "-G",paste0("ref_genes/", gene.name, ".gtf"), "-A", paste0("gene_abundance/", sample.name[i],"/", sample.name[i], ".tsv"), "-o", paste0("raw_gtf/", sample.name[i], ".gtf"), "-l", sample.name[i], paste0("raw_bam/", sample.name[i], ".bam"))
+        whole.command <- paste("-p", num.parallel.threads, "-G",paste0("ref_genes/", gene.name, ".gtf"), "-o", paste0("raw_gtf/", sample.name[i], ".gtf"), "-l", sample.name[i], paste0("raw_bam/", sample.name[i], ".bam"))
         if (i != 1) cat("\n")
         cat(c("Input command :", paste("stringtie", whole.command), "\n"))
         system2(command = "stringtie", args = whole.command)
@@ -230,7 +230,7 @@ StringTieToBallgown <- function(path.prefix, gene.name, sample.pattern, num.para
       sample.value <- as.vector(sample.table)
       for( i in 1:iteration.num){
         # '-e' only estimate the abundance of given reference transcripts (requires -G)
-        whole.command <- paste("-e -B -p", num.parallel.threads, "-G", "merged/stringtie_merged.gtf", "-o", paste0("ballgown/", sample.name[i],"/", sample.name[i], ".gtf"), paste0("raw_bam/", sample.name[i], ".bam"))
+        whole.command <- paste("-e -B -p", num.parallel.threads, "-G", "merged/stringtie_merged.gtf", "-o", paste0("ballgown/", sample.name[i],"/", sample.name[i], ".gtf"), "-A", paste0("gene_abundance/", sample.name[i],"/", sample.name[i], ".tsv"), paste0("raw_bam/", sample.name[i], ".bam"))
         if (i != 1) cat("\n")
         cat(c("Input command :", paste("stringtie", whole.command), "\n"))
         system2(command = "stringtie", args = whole.command)
@@ -239,6 +239,31 @@ StringTieToBallgown <- function(path.prefix, gene.name, sample.pattern, num.para
       on.exit(setwd(current.path))
     } else {
       stop(c(paste0("(\u2718) 'stringtie_merged.gtf' "), "or", " 'XXX.bam' is missing.\n\n"))
+    }
+  }
+}
+
+#' stringtie re-estimate the abundance
+StringTieReEstimate <- function(path.prefix, gene.name, sample.pattern, num.parallel.threads = 8) {
+  if (isTRUE(CheckStringTie(print=FALSE))) {
+    check.results <- ProgressGenesFiles(path.prefix, gene.name, sample.pattern, print=TRUE)
+    cat(paste0("\n************** Stringtie re-setimate **************\n"))
+    if (check.results$stringtie_merged.gtf.file.df != 0 && isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$stringtie_merged.gtf.file.df) &&
+        check.results$bam.files.number.df != 0){
+      current.path <- getwd()
+      setwd(paste0(path.prefix, "gene_data/"))
+      sample.name <- sort(gsub(paste0(".bam$"), replace = "", check.results$bam.files.df))
+      iteration.num <- length(sample.name)
+      for( i in 1:iteration.num){
+        whole.command <- paste("-p", num.parallel.threads, "-e -B -G", paste0("merged/stringtie_merged.gtf"), "-o", paste0("ballgown/", sample.name[i], "/",  sample.name[i], ".gtf"), "-A", paste0("gene_abundance/", sample.name[i],"/", sample.name[i], ".tsv"), paste0("raw_bam/", sample.name[i], ".bam"))
+        if (i != 1) cat("\n")
+        cat(c("Input command :", paste("stringtie", whole.command), "\n"))
+        system2(command = "stringtie", args = whole.command)
+      }
+      cat("\n")
+      on.exit(setwd(current.path))
+    } else {
+      stop(c(paste0("(\u2718) '", gene.name, ".gtf' "), "or 'XXX.bam' is missing.\n\n"))
     }
   }
 }

@@ -1,5 +1,5 @@
 #' @export
-RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, ballgown.pval = 0.05, ballgown.qval = 0.05, run = TRUE, check.s4.print = TRUE) {
+RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, ballgown.pval = 0.05, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   path.prefix <- RNASeqWorkFlowParam@path.prefix
@@ -8,7 +8,7 @@ RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, 
   independent.variable <- RNASeqWorkFlowParam@independent.variable
   fileConn<-file(paste0(path.prefix, "Rscript/Ballgown_Process.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNAseqBallgownProcess(path.prefix = '", path.prefix, "', gene.name = '", gene.name, "', sample.pattern = '", sample.pattern, "', independent.variable = '",independent.variable, "', ballgown.log2FC = ", ballgown.log2FC, ", ballgown.pval = ", ballgown.pval, ", ballgown.qval = ", ballgown.qval, ")")
+  second <- paste0("RNAseqBallgownProcess(path.prefix = '", path.prefix, "', gene.name = '", gene.name, "', sample.pattern = '", sample.pattern, "', independent.variable = '",independent.variable, "', ballgown.log2FC = ", ballgown.log2FC, ", ballgown.pval = ", ballgown.pval, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Ballgown_Process.R' has been created.\n"))
@@ -20,21 +20,34 @@ RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, 
 
 #'
 #' @export
-RNAseqBallgownProcess <- function(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.log2FC, ballgown.pval, ballgown.qval) {
+RNAseqBallgownProcess <- function(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.log2FC, ballgown.pval) {
+  PreRNAseqBallgownProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)
   if (file.exists(paste0(path.prefix, "Rscript_out/Raw_Read_Process.Rout"))) {
     Hisat2ReportAssemble(path.prefix, gene.name, sample.pattern)
   }
   BallgownPreprocess(path.prefix, gene.name, sample.pattern, independent.variable)
-  BallgownPlotAll(path.prefix, ballgown.log2FC, ballgown.pval, ballgown.qval)
-  CheckBallgownResult()
+  BallgownPlotAll(path.prefix, ballgown.log2FC, ballgown.pval)
+  PostRNAseqBallgownProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }
 
-#' inner function
-CheckBallgownResult <- function() {
-  if (TRUE) {
-    cat("\n")
-    cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-    cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-    cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+
+PreRNAseqBallgownProcess <- function(path.prefix, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C RNAseqBallgownProcess()' environment pre-check ...\n")
+  validity <- TRUE
+  if (!isTRUE(validity)) {
+    stop("RNAseqBallgownProcess() environment ERROR")
   }
+  cat("     (\u2714) : RNAseqBallgownProcess() pre-check is valid\n\n")
+}
+
+PostRNAseqBallgownProcess <- function(path.prefix, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C RNAseqBallgownProcess()' environment post-check ...\n")
+  validity <- TRUE
+  if (!isTRUE(validity)) {
+    stop("RNAseqBallgownProcess() post-check ERROR")
+  }
+  cat("     (\u2714) : RNAseqBallgownProcess() post-check is valid\n\n")
+  cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
 }
