@@ -72,8 +72,9 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
 
 PreCheckRNAseqQualityAssessment <- function(path.prefix, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C 'RNAseqQualityAssessment()' environment pre-check ...\n")
-  trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
-  validity <- length(trimmed.raw.fastq) != 0
+  # 1. must have .fastq.gz files
+  raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  validity <- length(raw.fastq) != 0
   if (!isTRUE(validity)) {
     stop("RNAseqQualityAssessment environment() ERROR")
   }
@@ -82,6 +83,7 @@ PreCheckRNAseqQualityAssessment <- function(path.prefix, sample.pattern) {
 
 PostCheckRNAseqQualityAssessment <- function(path.prefix) {
   cat("\u269C\u265C\u265C\u265C 'RNAseqQualityAssessment()' environment post-check ...\n")
+  # Assessment results exist
   file.rqc.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/Rqc/Rqc_report.html"))
   file.systemPipeR.data <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/systemPipeR/data.list.txt"))
   file.systemPipeR.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/systemPipeR/fastqReport.pdf"))

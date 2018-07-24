@@ -60,7 +60,7 @@ RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, gene.name, samp
   file.sample.lst.txt <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"))
   file.gene_count_matrix <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
   file.transcript_count_matrix <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv"))
-  PostRNAseqRawReadProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)
+  PostRNAseqRawReadProcess(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern)
 }
 
 PreRNAseqRawReadProcess <- function(path.prefix, gene.name, sample.pattern) {
@@ -79,10 +79,19 @@ PreRNAseqRawReadProcess <- function(path.prefix, gene.name, sample.pattern) {
   cat("     (\u2714) : RNAseqRawReadProcess() pre-check is valid\n\n")
 }
 
-PostRNAseqRawReadProcess <- function(path.prefix, sample.pattern) {
+PostRNAseqRawReadProcess <- function(path.prefix, gene.name, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C RNAseqRawReadProcess()' environment post-check ...\n")
   # Still need to add condition
-  validity <- TRUE
+  gene_abundance <- dir.exists(paste0(path.prefix, "gene_data/gene_abundance/"))
+  check.results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=FALSE)
+  ht2.bool <- (check.results$ht2.files.number.df) != 0
+  sam.bool <- (check.results$sam.files.number.df) != 0
+  bam.bool <- (check.results$bam.files.number.df) != 0
+  gtf.bool <- (check.results$gtf.files.number.df) != 0
+  merged.bool <- check.results$stringtie_merged.gtf.file.df
+  gffcompare.bool <- (check.results$gffcompare.related.dirs.number.df) != 0
+  ballgown.bool <- (check.results$ballgown.dirs.number.df) != 0
+  validity <- gene_abundance && check.results && ht2.bool && sam.bool && bam.bool && gtf.bool && merged.bool && gffcompare.bool && ballgown.bool
   if (!isTRUE(validity)) {
     stop("RNAseqRawReadProcess() post-check ERROR")
   }

@@ -64,6 +64,7 @@ myFilterAndTrim <- function(fl.name, path.prefix, truncateStartBases, truncateEn
 
 PreCheckRNAseqQualityTrimming <- function(path.prefix, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C 'RNAseqQualityTrimming()' environment pre-check ...\n")
+  # have fastq.gz files
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   validity <- length(raw.fastq) != 0
   if (!isTRUE(validity)) {
@@ -74,6 +75,7 @@ PreCheckRNAseqQualityTrimming <- function(path.prefix, sample.pattern) {
 
 PostCheckRNAseqQualityTrimming <- function(path.prefix, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C 'RNAseqQualityTrimming()' environment post-check ...\n")
+  # have fastq.gz and trimmed fastq.gz files
   trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   validity <- (length(trimmed.raw.fastq) != 0) && (length(raw.fastq) != 0)

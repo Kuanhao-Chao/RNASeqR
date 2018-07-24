@@ -2,10 +2,10 @@
 % Please edit documentation in R/Ballgown_analysis.R
 \name{BallgownPCAPlot}
 \alias{BallgownPCAPlot}
-\title{DEGPCAPlot}
+\title{BallgownPCAPlot}
 \usage{
 BallgownPCAPlot(path.prefix)
 }
 \description{
-DEGPCAPlot
+BallgownPCAPlot
 }

@@ -4,7 +4,7 @@
 \alias{BallgownMAPlot}
 \title{DEGMAPlot}
 \usage{
-BallgownMAPlot(path.prefix, ballgown.qval)
+BallgownMAPlot(path.prefix, ballgown.pval)
 }
 \description{
 DEGMAPlot
