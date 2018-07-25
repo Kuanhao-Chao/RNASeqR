@@ -128,27 +128,66 @@ DEHeatmap <- function(path.prefix) {
 
 DEGOFunctionalAnalysis <- function(path.prefix) {
 
+  own_gene_list <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
+  universe_own_gene_list <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv")
+  d <- read.csv(own_gene_list)
+  d2 <- read.csv(universe_own_gene_list)
+
+  gene_list_SYMBOL <- d[d[,1] != ".",][,20]
+  gene_list_ENTREZID <- d[d[,1] != ".",][,20]
+  gene_name <- as.character(d[d[,1] != ".",][,1])
+
+  gene_list_SYMBOL_2 <- d2[d2[,1] != ".",][,20]
+  gene_list_ENTREZID_2 <- d2[d2[,1] != ".",][,20]
+  gene_name_2 <- as.character(d2[d2[,1] != ".",][,1])
+
+  names(gene_list_SYMBOL) <-gene_name
+  names(gene_list_SYMBOL_2) <-gene_name_2
+
+  gene_list_SYMBOL = sort(gene_list_SYMBOL, decreasing = TRUE)
+  gene_list_SYMBOL_2 = sort(gene_list_SYMBOL_2, decreasing = TRUE)
+
+  DE_with_valid_name <- d[d[,1] != ".", ]
+  DE_with_valid_name_2 <- d2[d2[,1] != ".", ]
+
   # GO classification
   # GO classification : groupGO designed for gene classification based on GO distribution.
-  data(geneList, package="DOSE")
-  gene <- names(geneList)[abs(geneList) > 2]
-  gene_2 <- names(geneList)
-  gene.df <- clusterProfiler::bitr(gene, fromType = "ENTREZID",
-                                   toType = c("ENSEMBL", "SYMBOL"),
+  gene.df <- clusterProfiler::bitr(gene_name, fromType = "SYMBOL",
+                                   toType = "ENTREZID",
                                    OrgDb = org.Hs.eg.db)
   head(gene.df)
 
-  ggo <- clusterProfiler::groupGO(gene     = gene,
+  gene.df_2 <- clusterProfiler::bitr(gene_name_2, fromType = "SYMBOL",
+                                     toType = "ENTREZID",
+                                     OrgDb = org.Hs.eg.db)
+  head(gene.df)
+
+
+  ENTREZID_IDs <- c()
+  ENTREZID_IDs <- lapply(gene_name, find_ENTREZID_ID)
+  names(gene_list_ENTREZID) <- ENTREZID_IDs
+
+  ENTREZID_IDs_2 <- c()
+  ENTREZID_IDs_2 <- lapply(gene_name_2, find_ENTREZID_ID_2)
+  names(gene_list_ENTREZID_2) <- ENTREZID_IDs_2
+
+  ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
                                   OrgDb    = org.Hs.eg.db,
                                   ont      = "CC",
                                   level    = 3,
                                   readable = TRUE)
-
   head(ggo)
 
+  ggo_2 <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID_2),
+                                    OrgDb    = org.Hs.eg.db,
+                                    ont      = "CC",
+                                    level    = 3,
+                                    readable = TRUE)
+  head(ggo_2)
+
   # GO over-representeation test
-  ego <- clusterProfiler::enrichGO(gene          = gene,
-                                   universe      = names(geneList),
+  ego <- clusterProfiler::enrichGO(gene          = names(gene_list_ENTREZID),
+                                   universe      = names(gene_list_ENTREZID_2),
                                    OrgDb         = org.Hs.eg.db,
                                    ont           = "CC",
                                    pAdjustMethod = "BH",
@@ -156,6 +195,7 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
                                    qvalueCutoff  = 0.05,
                                    readable      = TRUE)
   head(ego)
+
 
   ego2 <- clusterProfiler::enrichGO(gene          = gene.df$ENSEMBL,
                                     OrgDb         = org.Hs.eg.db,
@@ -179,26 +219,18 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
 }
 
 
-own_gene_list <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
-d <- read.csv(own_gene_list)
-gene_list_SYMBOL <- d[d[,1] != ".",][,20]
-gene_list_ENTREZID <- d[d[,1] != ".",][,20]
-gene_name <- as.character(d[d[,1] != ".",][,1])
-
-names(gene_list_SYMBOL) <-gene_name
-
-gene_list_SYMBOL = sort(gene_list_SYMBOL, decreasing = TRUE)
-
-DE_with_valid_name <- d[d[,1] != ".", ]
-
-ENTREZID_IDs <- c()
-ENTREZID_IDs <- lapply(gene_name, find_ENTREZID_ID)
 find_ENTREZID_ID <- function(sample.id) {
-  ENTREZID_IDs <- c(ENTREZID_IDs, eg[eg$SYMBOL == sample.id, ]["ENTREZID"][[1]][1])
+  ENTREZID_IDs <- c(ENTREZID_IDs, gene.df[gene.df$SYMBOL == sample.id, ]["ENTREZID"][[1]][1])
   return(ENTREZID_IDs)
 }
 
-names(gene_list_ENTREZID) <- ENTREZID_IDs
+find_ENTREZID_ID_2 <- function(sample.id) {
+  ENTREZID_IDs_2 <- c(ENTREZID_IDs_2, gene.df_2[gene.df_2$SYMBOL == sample.id, ]["ENTREZID"][[1]][1])
+  return(ENTREZID_IDs_2)
+}
+
+
+
 
 data(geneList, package="DOSE")
 gene <- names(geneList)[abs(geneList) > 2]
