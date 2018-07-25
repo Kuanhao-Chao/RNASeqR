@@ -3,6 +3,7 @@
 #' @export
 BallgownPreprocess <- function(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.pval, ballgown.log2FC) {
   # this ballgown function is only for two group
+  CheckOperatingSystem(FALSE)
   results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print = FALSE)
   if (isTRUE(results$phenodata.file.df) && results$ballgown.dirs.number.df != 0){
     # sorting 'pheno_data'

@@ -3,6 +3,7 @@
 RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, truncateStartBases = 0, truncateEndBases = 0, complexity = NULL, minLength = 50, nBases = 2, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
+  CheckOperatingSystem(FALSE)
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Trimming.R"))
@@ -20,6 +21,7 @@ RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, truncateStartBases = 
 
 #' @export
 RNAseqQualityTrimming <- function(path.prefix, sample.pattern, truncateStartBases = 0, truncateEndBases = 0, complexity = NULL, minLength = 50, nBases = 2) {
+  CheckOperatingSystem(FALSE)
   PreCheckRNAseqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
   cat(paste0("************** Quality Trimming **************\n"))
   samples.fastq.untrim.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/')), showWarnings = FALSE) == 0

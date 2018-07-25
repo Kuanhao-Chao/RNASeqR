@@ -16,6 +16,7 @@
 RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
+  CheckOperatingSystem(FALSE)
   os.type <- RNASeqWorkFlowParam@os.type
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
@@ -57,6 +58,7 @@ RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
 #'                      sample.pattern = exp@@sample.pattern, indexes.optional = exp@@indexes.optional, os.type = exp@@os.type)
 #'
 RNAseqEnvironmentSet <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, indexes.optional, os.type) {
+  CheckOperatingSystem(FALSE)
   PreRNAseqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
   CopyInputDir(path.prefix = path.prefix, input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, indexes.optional = indexes.optional)
   InstallAll(path.prefix = path.prefix, os.type = os.type)

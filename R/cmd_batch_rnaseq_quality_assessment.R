@@ -3,6 +3,7 @@
 RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
+  CheckOperatingSystem(FALSE)
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
@@ -23,6 +24,7 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 #' Quality control
 #' @export
 RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.pattern) {
+  CheckOperatingSystem(FALSE)
   PreCheckRNAseqQualityAssessment(path.prefix = path.prefix, sample.pattern = sample.pattern)
   trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   cat(paste0("************** Quality Assessment **************\n"))

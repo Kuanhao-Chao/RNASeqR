@@ -14,6 +14,7 @@
 #' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
 RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, run = TRUE, check.s4.print = TRUE) {
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
+  CheckOperatingSystem(FALSE)
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
   gene.name <- RNASeqWorkFlowParam@gene.name
@@ -41,6 +42,7 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
 #' rna seq pipline
 #' @export
 RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, python.variable.answer, python.variable.version, num.parallel.threads = 8, indexes.optional) {
+  CheckOperatingSystem(FALSE)
   ExportPath(path.prefix)
   PreRNAseqRawReadProcess(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern)
   check.results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=FALSE)

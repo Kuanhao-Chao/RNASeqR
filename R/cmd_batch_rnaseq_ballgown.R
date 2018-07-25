@@ -2,6 +2,7 @@
 RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, ballgown.pval = 0.05, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
+  CheckOperatingSystem(FALSE)
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   gene.name <- RNASeqWorkFlowParam@gene.name
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
@@ -21,6 +22,7 @@ RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, 
 #'
 #' @export
 RNAseqBallgownProcess <- function(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.log2FC, ballgown.pval) {
+  CheckOperatingSystem(FALSE)
   PreRNAseqBallgownProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)
   if (file.exists(paste0(path.prefix, "Rscript_out/Raw_Read_Process.Rout"))) {
     Hisat2ReportAssemble(path.prefix, gene.name, sample.pattern)

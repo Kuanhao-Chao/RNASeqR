@@ -126,3 +126,185 @@ DEHeatmap <- function(path.prefix) {
   }
 }
 
+DEGOFunctionalAnalysis <- function(path.prefix) {
+
+  # GO classification
+  # GO classification : groupGO designed for gene classification based on GO distribution.
+  data(geneList, package="DOSE")
+  gene <- names(geneList)[abs(geneList) > 2]
+  gene_2 <- names(geneList)
+  gene.df <- clusterProfiler::bitr(gene, fromType = "ENTREZID",
+                                   toType = c("ENSEMBL", "SYMBOL"),
+                                   OrgDb = org.Hs.eg.db)
+  head(gene.df)
+
+  ggo <- clusterProfiler::groupGO(gene     = gene,
+                                  OrgDb    = org.Hs.eg.db,
+                                  ont      = "CC",
+                                  level    = 3,
+                                  readable = TRUE)
+
+  head(ggo)
+
+  # GO over-representeation test
+  ego <- clusterProfiler::enrichGO(gene          = gene,
+                                   universe      = names(geneList),
+                                   OrgDb         = org.Hs.eg.db,
+                                   ont           = "CC",
+                                   pAdjustMethod = "BH",
+                                   pvalueCutoff  = 0.01,
+                                   qvalueCutoff  = 0.05,
+                                   readable      = TRUE)
+  head(ego)
+
+  ego2 <- clusterProfiler::enrichGO(gene          = gene.df$ENSEMBL,
+                                    OrgDb         = org.Hs.eg.db,
+                                    keyType       = 'ENSEMBL',
+                                    ont           = "CC",
+                                    pAdjustMethod = "BH",
+                                    pvalueCutoff  = 0.01,
+                                    qvalueCutoff  = 0.05)
+  head(ego2)
+
+  # GO Gene Set Enrichment Analysis
+  ego3 <- clusterProfiler::gseGO(geneList     = geneList,
+                                 OrgDb        = org.Hs.eg.db,
+                                 ont          = "CC",
+                                 nPerm        = 1000,
+                                 minGSSize    = 100,
+                                 maxGSSize    = 500,
+                                 pvalueCutoff = 0.05,
+                                 verbose      = FALSE)
+  head(ego3)
+}
+
+
+own_gene_list <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
+d <- read.csv(own_gene_list)
+gene_list_SYMBOL <- d[d[,1] != ".",][,20]
+gene_list_ENTREZID <- d[d[,1] != ".",][,20]
+gene_name <- as.character(d[d[,1] != ".",][,1])
+
+names(gene_list_SYMBOL) <-gene_name
+
+gene_list_SYMBOL = sort(gene_list_SYMBOL, decreasing = TRUE)
+
+DE_with_valid_name <- d[d[,1] != ".", ]
+
+ENTREZID_IDs <- c()
+ENTREZID_IDs <- lapply(gene_name, find_ENTREZID_ID)
+find_ENTREZID_ID <- function(sample.id) {
+  ENTREZID_IDs <- c(ENTREZID_IDs, eg[eg$SYMBOL == sample.id, ]["ENTREZID"][[1]][1])
+  return(ENTREZID_IDs)
+}
+
+names(gene_list_ENTREZID) <- ENTREZID_IDs
+
+data(geneList, package="DOSE")
+gene <- names(geneList)[abs(geneList) > 2]
+length(gene)
+
+# Cellular Component (CC)
+ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
+                                OrgDb    = org.Hs.eg.db,
+                                ont      = "CC",
+                                level    = 3,
+                                readable = TRUE)
+
+#Molecular Function (MF)
+ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
+                                OrgDb    = org.Hs.eg.db,
+                                ont      = "MF",
+                                level    = 3,
+                                readable = TRUE)
+
+# Biological Process (BP)
+ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
+                                OrgDb    = org.Hs.eg.db,
+                                ont      = "BP",
+                                level    = 3,
+                                readable = TRUE)
+
+# ‘kegg’, ‘ncbi-geneid’, ‘ncbi-proteinid’ or ‘uniprot’.
+# ‘kegg’ ID is entrezgene ID for eukaryote species and Locus ID for prokaryotes.
+eg2np <- clusterProfiler::bitr_kegg(eg$ENTREZID, fromType='kegg', toType='ncbi-proteinid', organism='hsa')
+head(eg2np)
+
+keytypes(org.Hs.eg.db)
+
+clusterProfiler::bitr_kegg("Z5100", fromType="kegg", toType='uniprot', organism='ece')
+
+# GO analyses (groupGO(), enrichGO() and gseGO()) support organisms that have an OrgDb object available.
+
+gene
+eg$ENTREZID
+data(geneList, package="DOSE")
+eg$ENTREZID <- names(gene_FC)
+gene.df <- clusterProfiler::bitr(gene, fromType = "ENTREZID",
+                toType = c("ENSEMBL", "SYMBOL"),
+                OrgDb = org.Hs.eg.db)
+head(gene.df)
+
+
+
+head(ggo)
+
+hub <- AnnotationHub()
+q <- query(hub, "Cricetulus")
+id <- q$ah_id[length(q)]
+Cgriseus <- hub[[id]]
+
+
+
+
+
+# GO classification
+# GO classification : groupGO designed for gene classification based on GO distribution.
+data(geneList, package="DOSE")
+gene <- names(geneList)[abs(geneList) > 2]
+gene_2 <- names(geneList)
+gene.df <- clusterProfiler::bitr(gene, fromType = "ENTREZID",
+                                 toType = c("ENSEMBL", "SYMBOL"),
+                                 OrgDb = org.Hs.eg.db)
+head(gene.df)
+
+ggo <- clusterProfiler::groupGO(gene     = gene,
+                                OrgDb    = org.Hs.eg.db,
+                                ont      = "CC",
+                                level    = 3,
+                                readable = TRUE)
+
+head(ggo)
+
+# GO over-representeation test
+ego <- clusterProfiler::enrichGO(gene          = gene,
+                                 universe      = names(geneList),
+                                 OrgDb         = org.Hs.eg.db,
+                                 ont           = "CC",
+                                 pAdjustMethod = "BH",
+                                 pvalueCutoff  = 0.01,
+                                 qvalueCutoff  = 0.05,
+                                 readable      = TRUE)
+head(ego)
+
+ego2 <- clusterProfiler::enrichGO(gene          = gene.df$ENSEMBL,
+                                  OrgDb         = org.Hs.eg.db,
+                                  keyType       = 'ENSEMBL',
+                                  ont           = "CC",
+                                  pAdjustMethod = "BH",
+                                  pvalueCutoff  = 0.01,
+                                  qvalueCutoff  = 0.05)
+head(ego2)
+
+# GO Gene Set Enrichment Analysis
+ego3 <- clusterProfiler::gseGO(geneList     = geneList,
+                               OrgDb        = org.Hs.eg.db,
+                               ont          = "CC",
+                               nPerm        = 1000,
+                               minGSSize    = 100,
+                               maxGSSize    = 500,
+                               pvalueCutoff = 0.05,
+                               verbose      = FALSE)
+head(ego3)
+
+

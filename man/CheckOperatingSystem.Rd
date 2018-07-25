@@ -4,7 +4,7 @@
 \alias{CheckOperatingSystem}
 \title{inner function : get operating system}
 \usage{
-CheckOperatingSystem()
+CheckOperatingSystem(print = TRUE)
 }
 \description{
 inner function : get operating system

@@ -3,6 +3,7 @@
 RNAseqWorkFlow <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, trimming.score = 30, ballgown.log2FC = 1, ballgown.pval = 0.05, ballgown.qval = 0.05, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
+  CheckOperatingSystem(FALSE)
   RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam, run = FALSE, check.s4.print = FALSE)
   RNAseqQualityAssessment_CMD(RNASeqWorkFlowParam, run = FALSE, check.s4.print = FALSE)
   RNAseqQualityTrimming_CMD(RNASeqWorkFlowParam, run = FALSE, check.s4.print = FALSE)

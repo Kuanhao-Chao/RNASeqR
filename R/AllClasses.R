@@ -348,8 +348,10 @@ CheckPython <- function() {
 }
 
 #' inner function : get operating system
-CheckOperatingSystem <- function(){
-  cat(c("************** Checking operating system type ************\n"))
+CheckOperatingSystem <- function(print = TRUE){
+  if (print) {
+    cat(c("************** Checking operating system type ************\n"))
+  }
   sysinf <- Sys.info()
   if (!is.null(sysinf)){
     os <- sysinf['sysname']
@@ -368,7 +370,9 @@ CheckOperatingSystem <- function(){
     cat("       This program supports only linux and osx.\n\n")
     stop("Operating system ERROR")
   }
-  cat(paste0("(\u2714) : Your system operating system is '", os, "'\n\n"))
+  if (print) {
+    cat(paste0("(\u2714) : Your system operating system is '", os, "'\n\n"))
+  }
   return(os)
 }
 
