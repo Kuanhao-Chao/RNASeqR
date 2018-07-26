@@ -141,11 +141,11 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
   ballgown.FPKM.path.univ <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv")
   DE.csv <- read.csv(ballgown.FPKM.path)
   Univ.csv <- read.csv(ballgown.FPKM.path.univ)
-
+  # DE gene
   gene_list_SYMBOL <- DE.csv[DE.csv$geneNames != ".",]$FC
   gene_list_ENTREZID <- DE.csv[DE.csv$geneNames != ".",]$FC
   gene_name <- as.character(DE.csv[DE.csv$geneNames != ".",]$geneNames)
-
+  # all ballgown gene
   gene_list_SYMBOL_univ <- Univ.csv[Univ.csv$geneNames != ".",]$FC
   gene_list_ENTREZID_univ <- Univ.csv[Univ.csv$geneNames != ".",]$FC
   gene_name_univ <- as.character(Univ.csv[Univ.csv$geneNames != ".",]$geneNames)
@@ -155,9 +155,6 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
 
   gene_list_SYMBOL = sort(gene_list_SYMBOL, decreasing = TRUE)
   gene_list_SYMBOL_univ = sort(gene_list_SYMBOL_univ, decreasing = TRUE)
-
-  DE_with_valid_name <- DE.csv[DE.csv$geneNames != ".", ]
-  DE_with_valid_name_univ <- Univ.csv[Univ.csv$geneNames != ".", ]
 
   # GO classification
   # GO classification : groupGO designed for gene classification based on GO distribution.
@@ -182,31 +179,31 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
   names(gene_list_ENTREZID_univ) <- ENTREZID_IDs_Univ
   gene_list_ENTREZID_univ = sort(gene_list_ENTREZID_univ, decreasing = TRUE)
 
-  # designed for gene classification on GO distribution at a specific level.
+  # designed for gene classification on GO distribution at a specific level. "MF", "BP", "CC"
   ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
                                   OrgDb    = org.Hs.eg.db,
                                   ont      = "CC",
                                   level    = 3,
                                   readable = TRUE)
-  head(ggo)
+  data.frame(ggo)
 
-  ggo_Univ <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID_univ),
-                                       OrgDb    = org.Hs.eg.db,
-                                       ont      = "CC",
-                                       level    = 3,
-                                       readable = TRUE)
-  head(ggo_Univ)
+  # ggo_Univ <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID_univ),
+  #                                      OrgDb    = org.Hs.eg.db,
+  #                                      ont      = "CC",
+  #                                      level    = 3,
+  #                                      readable = TRUE)
+  # head(ggo_Univ)
 
   # GO over-representeation test
   ego <- clusterProfiler::enrichGO(gene          = names(gene_list_ENTREZID),
-                                   universe      = names(gene_list_ENTREZID_univ),
+                                   # universe      = names(gene_list_ENTREZID_univ),
                                    OrgDb         = org.Hs.eg.db,
                                    ont           = "CC",
                                    pAdjustMethod = "BH",
                                    pvalueCutoff  = 0.01,
                                    qvalueCutoff  = 0.05,
                                    readable      = TRUE)
-  head(ego)
+  data.frame(ego)
 
   # GO Gene Set Enrichment Analysis
   ego3 <- clusterProfiler::gseGO(geneList     = gene_list_ENTREZID_univ,
@@ -221,13 +218,13 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
 }
 
 
-find_ENTREZID_ID_DE <- function(sample.id, gene.df.DE) {
-  ENTREZID_IDs.DE <- c(ENTREZID_IDs.DE, gene.df.DE[gene.df.DE$SYMBOL == sample.id, ]["ENTREZID"][[1]][1])
+find_ENTREZID_ID_DE <- function(symbol.id, gene.df.DE) {
+  ENTREZID_IDs.DE <- c(ENTREZID_IDs.DE, gene.df.DE[gene.df.DE$SYMBOL == symbol.id, ]["ENTREZID"][[1]][1])
   return(ENTREZID_IDs.DE)
 }
 
-find_ENTREZID_ID_Univ <- function(sample.id, gene.df.Univ) {
-  ENTREZID_IDs_Univ <- c(ENTREZID_IDs_Univ, gene.df.Univ[gene.df.Univ$SYMBOL == sample.id, ]["ENTREZID"][[1]][1])
+find_ENTREZID_ID_Univ <- function(symbol.id, gene.df.Univ) {
+  ENTREZID_IDs_Univ <- c(ENTREZID_IDs_Univ, gene.df.Univ[gene.df.Univ$SYMBOL == symbol.id, ]["ENTREZID"][[1]][1])
   return(ENTREZID_IDs_Univ)
 }
 
