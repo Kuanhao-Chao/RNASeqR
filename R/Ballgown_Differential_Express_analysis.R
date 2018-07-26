@@ -1,5 +1,5 @@
 #' BallgownPCAPlot
-DEBallgownPCAPlot <- function(path.prefix){
+DEBallgownPCAPlot <- function(path.prefix, independent.variable){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv"))){
     # load gene name for further usage
@@ -10,7 +10,7 @@ DEBallgownPCAPlot <- function(path.prefix){
     file.path <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
     data.read.csv <- read.csv(file = file.path)
     pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
-    sample.table <- as.data.frame(table(pheno_data[2]))
+    sample.table <- as.data.frame(table(pheno_data[independent.variable]))
     new.data.frame.index <- c()
     for(i in 1:length(row.names(sample.table))){
       current.sum <- 0
@@ -26,8 +26,14 @@ DEBallgownPCAPlot <- function(path.prefix){
         new.data.frame.index <- c(new.data.frame.index, column.number)
       }
     }
-    sub.data.frame<- data.read.csv[new.data.frame.index]
+    sub.data.frame <- data.read.csv[new.data.frame.index]
     fpkm.trans <- data.frame(t(sub.data.frame))
+    fpkm.trans.split <- strsplit(row.names(fpkm.trans), split = "[.]")
+    fpkm.trans.independent.variable <- c()
+    for( i in 1:length(fpkm.trans.split)){
+      fpkm.trans.independent.variable <- c(fpkm.trans.independent.variable, fpkm.trans.split[[i]][2])
+    }
+    fpkm.trans$attribute <- factor(fpkm.trans.independent.variable)
     fpkm.pca = FactoMineR::PCA(fpkm.trans, ncp=2, quali.sup=length(fpkm.trans), graph = FALSE)
     eig.val <- factoextra::get_eigenvalue(fpkm.pca)
     png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/PCA/Dimension_pca_plot.png"))
@@ -41,6 +47,9 @@ DEBallgownPCAPlot <- function(path.prefix){
     #var$cos2: represents the quality of representation for variables on the factor map. It’s calculated as the squared coordinates: var.cos2 = var.coord * var.coord.
     #var$contrib: contains the contributions (in percentage) of the variables to the principal components. The contribution of a variable (var) to a given principal component is (in percentage) : (var.cos2 * 100) / (total cos2 of the component).
     #var <- get_pca_var(res.pca)
+
+
+
     png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/PCA/PCA_plot_factoextra.png"))
     p2 <- factoextra::fviz_pca_ind(fpkm.pca,
                                    xlab = paste0("PC1(", round(data.frame(eig.val)$variance.percent[1], 2), "%)"), ylab = paste0("PC2(", round(data.frame(eig.val)$variance.percent[2],2), "%)"),
@@ -48,9 +57,9 @@ DEBallgownPCAPlot <- function(path.prefix){
                                    pointshape = 21,
                                    pointsize = 2.5,
                                    geom.ind = "point", # show points only (nbut not "text")
-                                   habillage = fpkm.trans.sort$attribute,
-                                   fill.ind = fpkm.trans.sort$attribute,
-                                   col.ind = fpkm.trans.sort$attribute, # color by groups
+                                   habillage = fpkm.trans$attribute,
+                                   fill.ind = fpkm.trans$attribute,
+                                   col.ind = fpkm.trans$attribute, # color by groups
                                    addEllipses=TRUE
                                    #palette = c("#00AFBB", "#E7B800"),
                                    #                 addEllipses = TRUE, # Concentration ellipses
@@ -62,9 +71,7 @@ DEBallgownPCAPlot <- function(path.prefix){
     cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/PCA/PCA_plot_factoextra.png"), "' has been created. \n"))
 
     png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/PCA/PCA_plot_self.png"))
-    # fpkm.trans.sort$attribute <- factor(fpkm.trans.sort$attribute)
-    #length(fpkm.trans.sort)
-    FPKM.res.PCA = FactoMineR::PCA(fpkm.trans.sort, scale.unit=TRUE, ncp=2, quali.sup=length(fpkm.trans.sort), graph = FALSE)
+    FPKM.res.PCA = FactoMineR::PCA(fpkm.trans, scale.unit=TRUE, ncp=2, quali.sup=length(fpkm.trans), graph = FALSE)
 
     my_colors=c(rgb(255, 47, 35,maxColorValue = 255),
                 rgb(50, 147, 255,maxColorValue = 255))
@@ -126,51 +133,56 @@ DEHeatmap <- function(path.prefix) {
   }
 }
 
+
+#'
+#' @export
 DEGOFunctionalAnalysis <- function(path.prefix) {
+  ballgown.FPKM.path <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
+  ballgown.FPKM.path.univ <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv")
+  DE.csv <- read.csv(ballgown.FPKM.path)
+  Univ.csv <- read.csv(ballgown.FPKM.path.univ)
 
-  own_gene_list <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
-  universe_own_gene_list <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv")
-  d <- read.csv(own_gene_list)
-  d2 <- read.csv(universe_own_gene_list)
+  gene_list_SYMBOL <- DE.csv[DE.csv$geneNames != ".",]$FC
+  gene_list_ENTREZID <- DE.csv[DE.csv$geneNames != ".",]$FC
+  gene_name <- as.character(DE.csv[DE.csv$geneNames != ".",]$geneNames)
 
-  gene_list_SYMBOL <- d[d[,1] != ".",][,20]
-  gene_list_ENTREZID <- d[d[,1] != ".",][,20]
-  gene_name <- as.character(d[d[,1] != ".",][,1])
-
-  gene_list_SYMBOL_2 <- d2[d2[,1] != ".",][,20]
-  gene_list_ENTREZID_2 <- d2[d2[,1] != ".",][,20]
-  gene_name_2 <- as.character(d2[d2[,1] != ".",][,1])
+  gene_list_SYMBOL_univ <- Univ.csv[Univ.csv$geneNames != ".",]$FC
+  gene_list_ENTREZID_univ <- Univ.csv[Univ.csv$geneNames != ".",]$FC
+  gene_name_univ <- as.character(Univ.csv[Univ.csv$geneNames != ".",]$geneNames)
 
   names(gene_list_SYMBOL) <-gene_name
-  names(gene_list_SYMBOL_2) <-gene_name_2
+  names(gene_list_SYMBOL_univ) <-gene_name_univ
 
   gene_list_SYMBOL = sort(gene_list_SYMBOL, decreasing = TRUE)
-  gene_list_SYMBOL_2 = sort(gene_list_SYMBOL_2, decreasing = TRUE)
+  gene_list_SYMBOL_univ = sort(gene_list_SYMBOL_univ, decreasing = TRUE)
 
-  DE_with_valid_name <- d[d[,1] != ".", ]
-  DE_with_valid_name_2 <- d2[d2[,1] != ".", ]
+  DE_with_valid_name <- DE.csv[DE.csv$geneNames != ".", ]
+  DE_with_valid_name_univ <- Univ.csv[Univ.csv$geneNames != ".", ]
 
   # GO classification
   # GO classification : groupGO designed for gene classification based on GO distribution.
-  gene.df <- clusterProfiler::bitr(gene_name, fromType = "SYMBOL",
-                                   toType = "ENTREZID",
-                                   OrgDb = org.Hs.eg.db)
-  head(gene.df)
+  gene.df.DE <- clusterProfiler::bitr(gene_name, fromType = "SYMBOL",
+                                      toType = c("ENTREZID", "ENSEMBL"),
+                                      OrgDb = org.Hs.eg.db)
+  head(gene.df.DE)
 
-  gene.df_2 <- clusterProfiler::bitr(gene_name_2, fromType = "SYMBOL",
-                                     toType = "ENTREZID",
-                                     OrgDb = org.Hs.eg.db)
-  head(gene.df)
+  gene.df.Univ <- clusterProfiler::bitr(gene_name_univ, fromType = "SYMBOL",
+                                        toType = c("ENTREZID", "ENSEMBL"),
+                                        OrgDb = org.Hs.eg.db)
+  head(gene.df.Univ)
 
 
-  ENTREZID_IDs <- c()
-  ENTREZID_IDs <- lapply(gene_name, find_ENTREZID_ID)
-  names(gene_list_ENTREZID) <- ENTREZID_IDs
+  ENTREZID_IDs.DE <- c()
+  ENTREZID_IDs.DE <- lapply(gene_name, find_ENTREZID_ID_DE, gene.df.DE = gene.df.DE)
+  names(gene_list_ENTREZID) <- ENTREZID_IDs.DE
+  gene_list_ENTREZID = sort(gene_list_ENTREZID, decreasing = TRUE)
 
-  ENTREZID_IDs_2 <- c()
-  ENTREZID_IDs_2 <- lapply(gene_name_2, find_ENTREZID_ID_2)
-  names(gene_list_ENTREZID_2) <- ENTREZID_IDs_2
+  ENTREZID_IDs_Univ <- c()
+  ENTREZID_IDs_Univ <- lapply(gene_name_univ, find_ENTREZID_ID_Univ, gene.df.Univ = gene.df.Univ)
+  names(gene_list_ENTREZID_univ) <- ENTREZID_IDs_Univ
+  gene_list_ENTREZID_univ = sort(gene_list_ENTREZID_univ, decreasing = TRUE)
 
+  # designed for gene classification on GO distribution at a specific level.
   ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
                                   OrgDb    = org.Hs.eg.db,
                                   ont      = "CC",
@@ -178,16 +190,16 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
                                   readable = TRUE)
   head(ggo)
 
-  ggo_2 <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID_2),
-                                    OrgDb    = org.Hs.eg.db,
-                                    ont      = "CC",
-                                    level    = 3,
-                                    readable = TRUE)
-  head(ggo_2)
+  ggo_Univ <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID_univ),
+                                       OrgDb    = org.Hs.eg.db,
+                                       ont      = "CC",
+                                       level    = 3,
+                                       readable = TRUE)
+  head(ggo_Univ)
 
   # GO over-representeation test
   ego <- clusterProfiler::enrichGO(gene          = names(gene_list_ENTREZID),
-                                   universe      = names(gene_list_ENTREZID_2),
+                                   universe      = names(gene_list_ENTREZID_univ),
                                    OrgDb         = org.Hs.eg.db,
                                    ont           = "CC",
                                    pAdjustMethod = "BH",
@@ -196,18 +208,8 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
                                    readable      = TRUE)
   head(ego)
 
-
-  ego2 <- clusterProfiler::enrichGO(gene          = gene.df$ENSEMBL,
-                                    OrgDb         = org.Hs.eg.db,
-                                    keyType       = 'ENSEMBL',
-                                    ont           = "CC",
-                                    pAdjustMethod = "BH",
-                                    pvalueCutoff  = 0.01,
-                                    qvalueCutoff  = 0.05)
-  head(ego2)
-
   # GO Gene Set Enrichment Analysis
-  ego3 <- clusterProfiler::gseGO(geneList     = geneList,
+  ego3 <- clusterProfiler::gseGO(geneList     = gene_list_ENTREZID_univ,
                                  OrgDb        = org.Hs.eg.db,
                                  ont          = "CC",
                                  nPerm        = 1000,
@@ -219,124 +221,22 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
 }
 
 
-find_ENTREZID_ID <- function(sample.id) {
-  ENTREZID_IDs <- c(ENTREZID_IDs, gene.df[gene.df$SYMBOL == sample.id, ]["ENTREZID"][[1]][1])
-  return(ENTREZID_IDs)
+find_ENTREZID_ID_DE <- function(sample.id, gene.df.DE) {
+  ENTREZID_IDs.DE <- c(ENTREZID_IDs.DE, gene.df.DE[gene.df.DE$SYMBOL == sample.id, ]["ENTREZID"][[1]][1])
+  return(ENTREZID_IDs.DE)
 }
 
-find_ENTREZID_ID_2 <- function(sample.id) {
-  ENTREZID_IDs_2 <- c(ENTREZID_IDs_2, gene.df_2[gene.df_2$SYMBOL == sample.id, ]["ENTREZID"][[1]][1])
-  return(ENTREZID_IDs_2)
+find_ENTREZID_ID_Univ <- function(sample.id, gene.df.Univ) {
+  ENTREZID_IDs_Univ <- c(ENTREZID_IDs_Univ, gene.df.Univ[gene.df.Univ$SYMBOL == sample.id, ]["ENTREZID"][[1]][1])
+  return(ENTREZID_IDs_Univ)
 }
 
 
-
-
-data(geneList, package="DOSE")
-gene <- names(geneList)[abs(geneList) > 2]
-length(gene)
-
-# Cellular Component (CC)
-ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
-                                OrgDb    = org.Hs.eg.db,
-                                ont      = "CC",
-                                level    = 3,
-                                readable = TRUE)
-
-#Molecular Function (MF)
-ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
-                                OrgDb    = org.Hs.eg.db,
-                                ont      = "MF",
-                                level    = 3,
-                                readable = TRUE)
-
-# Biological Process (BP)
-ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
-                                OrgDb    = org.Hs.eg.db,
-                                ont      = "BP",
-                                level    = 3,
-                                readable = TRUE)
-
-# ‘kegg’, ‘ncbi-geneid’, ‘ncbi-proteinid’ or ‘uniprot’.
-# ‘kegg’ ID is entrezgene ID for eukaryote species and Locus ID for prokaryotes.
-eg2np <- clusterProfiler::bitr_kegg(eg$ENTREZID, fromType='kegg', toType='ncbi-proteinid', organism='hsa')
-head(eg2np)
-
-keytypes(org.Hs.eg.db)
-
-clusterProfiler::bitr_kegg("Z5100", fromType="kegg", toType='uniprot', organism='ece')
-
-# GO analyses (groupGO(), enrichGO() and gseGO()) support organisms that have an OrgDb object available.
-
-gene
-eg$ENTREZID
-data(geneList, package="DOSE")
-eg$ENTREZID <- names(gene_FC)
-gene.df <- clusterProfiler::bitr(gene, fromType = "ENTREZID",
-                toType = c("ENSEMBL", "SYMBOL"),
-                OrgDb = org.Hs.eg.db)
-head(gene.df)
-
-
-
-head(ggo)
-
-hub <- AnnotationHub()
-q <- query(hub, "Cricetulus")
-id <- q$ah_id[length(q)]
-Cgriseus <- hub[[id]]
-
-
-
-
-
-# GO classification
-# GO classification : groupGO designed for gene classification based on GO distribution.
-data(geneList, package="DOSE")
-gene <- names(geneList)[abs(geneList) > 2]
-gene_2 <- names(geneList)
-gene.df <- clusterProfiler::bitr(gene, fromType = "ENTREZID",
-                                 toType = c("ENSEMBL", "SYMBOL"),
-                                 OrgDb = org.Hs.eg.db)
-head(gene.df)
-
-ggo <- clusterProfiler::groupGO(gene     = gene,
-                                OrgDb    = org.Hs.eg.db,
-                                ont      = "CC",
-                                level    = 3,
-                                readable = TRUE)
-
-head(ggo)
-
-# GO over-representeation test
-ego <- clusterProfiler::enrichGO(gene          = gene,
-                                 universe      = names(geneList),
-                                 OrgDb         = org.Hs.eg.db,
-                                 ont           = "CC",
-                                 pAdjustMethod = "BH",
-                                 pvalueCutoff  = 0.01,
-                                 qvalueCutoff  = 0.05,
-                                 readable      = TRUE)
-head(ego)
-
-ego2 <- clusterProfiler::enrichGO(gene          = gene.df$ENSEMBL,
-                                  OrgDb         = org.Hs.eg.db,
-                                  keyType       = 'ENSEMBL',
-                                  ont           = "CC",
-                                  pAdjustMethod = "BH",
-                                  pvalueCutoff  = 0.01,
-                                  qvalueCutoff  = 0.05)
-head(ego2)
-
-# GO Gene Set Enrichment Analysis
-ego3 <- clusterProfiler::gseGO(geneList     = geneList,
-                               OrgDb        = org.Hs.eg.db,
-                               ont          = "CC",
-                               nPerm        = 1000,
-                               minGSSize    = 100,
-                               maxGSSize    = 500,
-                               pvalueCutoff = 0.05,
-                               verbose      = FALSE)
-head(ego3)
-
+#'
+#' @export
+DEBallgownPlotAll <- function(path.prefix, independent.variable) {
+  cat(paste0("************** Ballgown result visualization **************\n"))
+  DEBallgownPCAPlot(path.prefix, independent.variable)
+  DEHeatmap(path.prefix)
+}
 

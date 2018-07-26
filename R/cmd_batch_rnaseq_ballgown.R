@@ -19,7 +19,6 @@ RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, 
   }
 }
 
-#'
 #' @export
 RNAseqBallgownProcess <- function(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.log2FC, ballgown.pval) {
   CheckOperatingSystem(FALSE)
@@ -27,8 +26,9 @@ RNAseqBallgownProcess <- function(path.prefix, gene.name, sample.pattern, indepe
   if (file.exists(paste0(path.prefix, "Rscript_out/Raw_Read_Process.Rout"))) {
     Hisat2ReportAssemble(path.prefix, gene.name, sample.pattern)
   }
-  BallgownPreprocess(path.prefix, gene.name, sample.pattern, independent.variable)
-  BallgownPlotAll(path.prefix, ballgown.log2FC, ballgown.pval)
+  BallgownPreprocess(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.pval, ballgown.log2FC)
+  BallgownPlotAll(path.prefix, independent.variable, ballgown.log2FC, ballgown.pval)
+  DEBallgownPlotAll(path.prefix, independent.variable)
   PostRNAseqBallgownProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }
 

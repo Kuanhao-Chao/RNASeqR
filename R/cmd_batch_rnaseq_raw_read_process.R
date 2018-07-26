@@ -93,7 +93,7 @@ PostRNAseqRawReadProcess <- function(path.prefix, gene.name, sample.pattern) {
   merged.bool <- check.results$stringtie_merged.gtf.file.df
   gffcompare.bool <- (check.results$gffcompare.related.dirs.number.df) != 0
   ballgown.bool <- (check.results$ballgown.dirs.number.df) != 0
-  validity <- gene_abundance && check.results && ht2.bool && sam.bool && bam.bool && gtf.bool && merged.bool && gffcompare.bool && ballgown.bool
+  validity <- gene_abundance && ht2.bool && sam.bool && bam.bool && gtf.bool && merged.bool && gffcompare.bool && ballgown.bool
   if (!isTRUE(validity)) {
     stop("RNAseqRawReadProcess() post-check ERROR")
   }

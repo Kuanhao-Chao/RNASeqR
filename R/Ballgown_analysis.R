@@ -235,7 +235,7 @@ BallgownBoxViolinPlot <- function(path.prefix) {
 
 #' BallgownPCAPlot
 #'
-BallgownPCAPlot <- function(path.prefix){
+BallgownPCAPlot <- function(path.prefix, independent.variable){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
@@ -246,20 +246,51 @@ BallgownPCAPlot <- function(path.prefix){
       if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/PCA/"))){
         dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/PCA/"))
       }
-      fpkm <- data.frame(ballgown::texpr(pkg.ballgown.data$bg_chrX,meas="FPKM"))
-      fpkm.trans <- data.frame(t(fpkm))
-      fpkm.trans.row.names <- row.names(fpkm.trans)
-      fpkm.trans.row.names.clean <- gsub("FPKM.", "", fpkm.trans.row.names)
-      row.names(fpkm.trans) <- fpkm.trans.row.names.clean
-
-      fpkm.trans.sort <- fpkm.trans[ order(row.names(fpkm.trans)), ]
+      cat(paste0("\u25CF Plotting PCA related plot\n"))
+      file.path <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv")
+      data.read.csv <- read.csv(file = file.path)
       pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
-      pheno_data.sort <- pheno_data[order(pheno_data$id),]
-      fpkm.trans.sort$attribute <- pheno_data.sort[,2]
-      # scale.unit = TRUE ==> the data are scaled to unit variance before the analysis.
-      # fpkm.pca <- PCA(fpkm.trans.sort[,-ncol(fpkm.trans.sort)], scale.unit = TRUE, ncp = 2, graph = FALSE)
-      fpkm.pca = FactoMineR::PCA(fpkm.trans.sort, ncp=2, quali.sup=length(fpkm.trans.sort), graph = FALSE)
+      sample.table <- as.data.frame(table(pheno_data[independent.variable]))
+      new.data.frame.index <- c()
+      for(i in 1:length(row.names(sample.table))){
+        current.sum <- 0
+        if (i-1 == 0 ) current.sum = 0
+        else {
+          for(z in 1:(i-1)) {
+            current.sum <- current.sum + sample.table$Freq[z]
+          }
+        }
+        for(j in 1:sample.table$Freq[i]){
+          column.number <- 4+j+current.sum + i -1
+          vector <- c(vector, column.number)
+          new.data.frame.index <- c(new.data.frame.index, column.number)
+        }
+      }
+      sub.data.frame <- data.read.csv[new.data.frame.index]
+      fpkm.trans <- data.frame(t(sub.data.frame))
+      fpkm.trans.split <- strsplit(row.names(fpkm.trans), split = "[.]")
+      fpkm.trans.independent.variable <- c()
+      for( i in 1:length(fpkm.trans.split)){
+        fpkm.trans.independent.variable <- c(fpkm.trans.independent.variable, fpkm.trans.split[[i]][2])
+      }
+      fpkm.trans$attribute <- factor(fpkm.trans.independent.variable)
+      fpkm.pca = FactoMineR::PCA(fpkm.trans, ncp=2, quali.sup=length(fpkm.trans), graph = FALSE)
       eig.val <- factoextra::get_eigenvalue(fpkm.pca)
+      # change to read in  "ballgown_FPKM_result.csv" data
+      # fpkm <- data.frame(ballgown::texpr(pkg.ballgown.data$bg_chrX,meas="FPKM"))
+      # fpkm.trans <- data.frame(t(fpkm))
+      # fpkm.trans.row.names <- row.names(fpkm.trans)
+      # fpkm.trans.row.names.clean <- gsub("FPKM.", "", fpkm.trans.row.names)
+      # row.names(fpkm.trans) <- fpkm.trans.row.names.clean
+      #
+      # fpkm.trans.sort <- fpkm.trans[order(row.names(fpkm.trans)),]
+      # pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
+      # pheno_data.sort <- pheno_data[order(pheno_data$id),]
+      # fpkm.trans.sort$attribute <- pheno_data.sort[independent.variable][[1]]
+      # # scale.unit = TRUE ==> the data are scaled to unit variance before the analysis.
+      # # fpkm.pca <- PCA(fpkm.trans.sort[,-ncol(fpkm.trans.sort)], scale.unit = TRUE, ncp = 2, graph = FALSE)
+      # fpkm.pca = FactoMineR::PCA(fpkm.trans.sort, ncp=2, quali.sup=length(fpkm.trans.sort), graph = FALSE)
+      # eig.val <- factoextra::get_eigenvalue(fpkm.pca)
       png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/PCA/Dimension_pca_plot.png"))
       p1 <- factoextra::fviz_eig(fpkm.pca, addlabels = TRUE, ylim = c(0, 50), main = "PCA Dimensions") +
         labs(title ="PCA Dimensions") +
@@ -278,9 +309,9 @@ BallgownPCAPlot <- function(path.prefix){
                                      pointshape = 21,
                                      pointsize = 2.5,
                                      geom.ind = "point", # show points only (nbut not "text")
-                                     habillage = fpkm.trans.sort$attribute,
-                                     fill.ind = fpkm.trans.sort$attribute,
-                                     col.ind = fpkm.trans.sort$attribute, # color by groups
+                                     habillage = fpkm.trans$attribute,
+                                     fill.ind = fpkm.trans$attribute,
+                                     col.ind = fpkm.trans$attribute, # color by groups
                                      addEllipses=TRUE
                                      #palette = c("#00AFBB", "#E7B800"),
                                      #                 addEllipses = TRUE, # Concentration ellipses
@@ -294,7 +325,7 @@ BallgownPCAPlot <- function(path.prefix){
       png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/PCA/PCA_plot_self.png"))
       # fpkm.trans.sort$attribute <- factor(fpkm.trans.sort$attribute)
       #length(fpkm.trans.sort)
-      FPKM.res.PCA = FactoMineR::PCA(fpkm.trans.sort, scale.unit=TRUE, ncp=2, quali.sup=length(fpkm.trans.sort), graph = FALSE)
+      FPKM.res.PCA = FactoMineR::PCA(fpkm.trans, scale.unit=TRUE, ncp=2, quali.sup=length(fpkm.trans), graph = FALSE)
 
       my_colors=c(rgb(255, 47, 35,maxColorValue = 255),
                   rgb(50, 147, 255,maxColorValue = 255))
@@ -435,12 +466,12 @@ BallgownMAPlot <- function(path.prefix, ballgown.pval) {
 
 #'
 #' @export
-BallgownPlotAll <- function(path.prefix, ballgown.log2FC, ballgown.pval) {
+BallgownPlotAll <- function(path.prefix, independent.variable, ballgown.log2FC, ballgown.pval) {
   cat(paste0("************** Ballgown result visualization **************\n"))
   BallgownFrequencyPlot(path.prefix)
   BallgownTranscriptRelatedPlot(path.prefix)
   BallgownBoxViolinPlot(path.prefix)
-  BallgownPCAPlot(path.prefix)
+  BallgownPCAPlot(path.prefix, independent.variable)
   BallgownCorrelationPlot(path.prefix)
   BallgownVolcanoPlot(path.prefix, ballgown.pval, ballgown.log2FC)
   BallgownMAPlot(path.prefix, ballgown.pval)

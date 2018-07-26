@@ -4,7 +4,7 @@
 \alias{DEBallgownPCAPlot}
 \title{BallgownPCAPlot}
 \usage{
-DEBallgownPCAPlot(path.prefix)
+DEBallgownPCAPlot(path.prefix, independent.variable)
 }
 \description{
 BallgownPCAPlot

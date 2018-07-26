@@ -205,15 +205,21 @@ MkdirRNAseq_results <- function(path.prefix){
   } else {
     cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/QA_results/ShortRead/'.\n     Please check whether the directory is already exit.\n"))
   }
+  RNAseq_results_ballgown_dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Ballgown_analysis/')), showWarnings = FALSE) == 0
+  if (!isTRUE(RNAseq_results_ballgown_dir)) {
+    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Ballgown_analysis/'.\n"))
+  } else {
+    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Ballgown_analysis/'.\n     Please check whether the directory is already exit.\n"))
+  }
   RNAseq_results_DE_dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Ballgown_analysis/Differential_Expression')), showWarnings = FALSE) == 0
   if (!isTRUE(RNAseq_results_DE_dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/'.\n\n"))
+    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/'.\n"))
   } else {
     cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/'.\n     Please check whether the directory is already exit.\n"))
   }
   RNAseq_results_DE_image_dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Ballgown_analysis/Differential_Expression/images')), showWarnings = FALSE) == 0
   if (!isTRUE(RNAseq_results_DE_image_dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images'.\n\n"))
+    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images'.\n"))
   } else {
     cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images'.\n     Please check whether the directory is already exit.\n"))
   }
