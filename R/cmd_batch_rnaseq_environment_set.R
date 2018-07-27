@@ -223,6 +223,12 @@ MkdirRNAseq_results <- function(path.prefix){
   } else {
     cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images'.\n     Please check whether the directory is already exit.\n"))
   }
+  RNAseq_results_ballgown_DE_GO_dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Ballgown_analysis/Differential_Expression/GO')), showWarnings = FALSE) == 0
+  if (!isTRUE(RNAseq_results_ballgown_DE_GO_dir)) {
+    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO'.\n"))
+  } else {
+    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO'.\n     Please check whether the directory is already exit.\n"))
+  }
 }
 
 #' Make

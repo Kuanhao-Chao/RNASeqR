@@ -1,3 +1,13 @@
+find_ENTREZID_ID_DE <- function(symbol.id, gene.df.DE) {
+  ENTREZID_IDs.DE <- c(ENTREZID_IDs.DE, gene.df.DE[gene.df.DE$SYMBOL == symbol.id, ]["ENTREZID"][[1]][1])
+  return(ENTREZID_IDs.DE)
+}
+
+find_ENTREZID_ID_Univ <- function(symbol.id, gene.df.Univ) {
+  ENTREZID_IDs_Univ <- c(ENTREZID_IDs_Univ, gene.df.Univ[gene.df.Univ$SYMBOL == symbol.id, ]["ENTREZID"][[1]][1])
+  return(ENTREZID_IDs_Univ)
+}
+
 #' BallgownPCAPlot
 DEBallgownPCAPlot <- function(path.prefix, independent.variable){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/
@@ -149,31 +159,29 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
   gene_list_SYMBOL_univ <- Univ.csv[Univ.csv$geneNames != ".",]$FC
   gene_list_ENTREZID_univ <- Univ.csv[Univ.csv$geneNames != ".",]$FC
   gene_name_univ <- as.character(Univ.csv[Univ.csv$geneNames != ".",]$geneNames)
-
+  # Rename gene_list_SYMBOL
   names(gene_list_SYMBOL) <-gene_name
   names(gene_list_SYMBOL_univ) <-gene_name_univ
-
+  # Sort gene_list_SYMBOL
   gene_list_SYMBOL = sort(gene_list_SYMBOL, decreasing = TRUE)
   gene_list_SYMBOL_univ = sort(gene_list_SYMBOL_univ, decreasing = TRUE)
 
   # GO classification
   # GO classification : groupGO designed for gene classification based on GO distribution.
+  # IDs conversion
   gene.df.DE <- clusterProfiler::bitr(gene_name, fromType = "SYMBOL",
                                       toType = c("ENTREZID", "ENSEMBL"),
                                       OrgDb = org.Hs.eg.db)
-  head(gene.df.DE)
-
   gene.df.Univ <- clusterProfiler::bitr(gene_name_univ, fromType = "SYMBOL",
                                         toType = c("ENTREZID", "ENSEMBL"),
                                         OrgDb = org.Hs.eg.db)
-  head(gene.df.Univ)
-
-
+  # Get ENTREZID for DE and Univ
+  # DE
   ENTREZID_IDs.DE <- c()
   ENTREZID_IDs.DE <- lapply(gene_name, find_ENTREZID_ID_DE, gene.df.DE = gene.df.DE)
   names(gene_list_ENTREZID) <- ENTREZID_IDs.DE
   gene_list_ENTREZID = sort(gene_list_ENTREZID, decreasing = TRUE)
-
+  # Univ
   ENTREZID_IDs_Univ <- c()
   ENTREZID_IDs_Univ <- lapply(gene_name_univ, find_ENTREZID_ID_Univ, gene.df.Univ = gene.df.Univ)
   names(gene_list_ENTREZID_univ) <- ENTREZID_IDs_Univ
@@ -181,29 +189,79 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
 
   # designed for gene classification on GO distribution at a specific level. "MF", "BP", "CC"
   ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
-                                  OrgDb    = org.Hs.eg.db,
-                                  ont      = "CC",
-                                  level    = 3,
+                                  OrgDb    = org.Hs.eg.db,   # variable
+                                  ont      = "CC",           # variable
+                                  level    = 3,              # Not sure
                                   readable = TRUE)
-  data.frame(ggo)
-
-  # ggo_Univ <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID_univ),
-  #                                      OrgDb    = org.Hs.eg.db,
-  #                                      ont      = "CC",
-  #                                      level    = 3,
-  #                                      readable = TRUE)
-  # head(ggo_Univ)
+  ggo.data.frame <- data.frame(ggo)
+  write.csv(ggo.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO/go_classification.csv"))
+  png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO/go_classification.png"))
+  p1 <- barplot(ggo, drop=TRUE, showCategory=12)
+  print(p1)
+  dev.off()
 
   # GO over-representeation test
   ego <- clusterProfiler::enrichGO(gene          = names(gene_list_ENTREZID),
-                                   # universe      = names(gene_list_ENTREZID_univ),
-                                   OrgDb         = org.Hs.eg.db,
-                                   ont           = "CC",
-                                   pAdjustMethod = "BH",
-                                   pvalueCutoff  = 0.01,
-                                   qvalueCutoff  = 0.05,
+                                   universe      = names(gene_list_ENTREZID_univ),
+                                   OrgDb         = org.Hs.eg.db,                   # variable
+                                   ont           = "CC",                           # variable
+                                   pAdjustMethod = "BH",                           # variable
+                                   pvalueCutoff  = 0.01,                           # variable : "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
+                                   qvalueCutoff  = 0.05,                           # variable
                                    readable      = TRUE)
-  data.frame(ego)
+  ego.data.frame <- data.frame(ego)
+  write.csv(ego.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO/go_overrepresentation_test.csv"))
+  # bar plot
+  png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO/go_overrepresentation_bar_plot.png"))
+  p1 <- barplot(ego, showCategory=8)
+  print(p1)
+  dev.off()
+  # dot plot
+  png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO/go_overrepresentation_dot_plot.png"))
+  p1 <- clusterProfiler::dotplot(ego)
+  print(p1)
+  dev.off()
+
+  clusterProfiler::emapplot(ego)
+  ## categorySize can be scaled by 'pvalue' or 'geneNum'
+  clusterProfiler::cnetplot(ego, categorySize="pvalue", foldChange=geneList)
+  clusterProfiler::goplot(ego)
+
+
+  data(geneList, package="DOSE")
+  gene <- names(geneList)[abs(geneList) > 2]
+  gene.df <- bitr(gene, fromType = "ENTREZID",
+                  toType = c("ENSEMBL", "SYMBOL"),
+                  OrgDb = org.Hs.eg.db)
+  head(gene.df)
+
+  ego <- clusterProfiler::enrichGO(gene          = gene,
+                  universe      = names(geneList),
+                  OrgDb         = org.Hs.eg.db,
+                  ont           = "CC",
+                  pAdjustMethod = "BH",
+                  pvalueCutoff  = 0.01,
+                  qvalueCutoff  = 0.05,
+                  readable      = TRUE)
+  head(ego)
+
+  ego2 <- clusterProfiler::enrichGO(gene         = gene.df$ENSEMBL,
+                   OrgDb         = org.Hs.eg.db,
+                   keyType       = 'ENSEMBL',
+                   ont           = "CC",
+                   pAdjustMethod = "BH",
+                   pvalueCutoff  = 0.01,
+                   qvalueCutoff  = 0.05)
+  ego2 <- setReadable(ego2, OrgDb = org.Hs.eg.db)
+
+  barplot(ego2, showCategory=8)
+  clusterProfiler::dotplot(ego2)
+  clusterProfiler::emapplot(ego2)
+  ## categorySize can be scaled by 'pvalue' or 'geneNum'
+  clusterProfiler::cnetplot(ego2, categorySize="pvalue", foldChange=geneList)
+  clusterProfiler::goplot(ego2)
+
+
 
   # GO Gene Set Enrichment Analysis
   ego3 <- clusterProfiler::gseGO(geneList     = gene_list_ENTREZID_univ,
@@ -212,21 +270,20 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
                                  nPerm        = 1000,
                                  minGSSize    = 100,
                                  maxGSSize    = 500,
-                                 pvalueCutoff = 0.05,
+                                 pvalueCutoff = 0.1,
+                                 verbose      = FALSE)
+  ego3 <- clusterProfiler::gseGO(geneList     = geneList,
+                                 OrgDb        = org.Hs.eg.db,
+                                 ont          = "CC",
+                                 nPerm        = 1000,
+                                 minGSSize    = 100,
+                                 maxGSSize    = 500,
+                                 pvalueCutoff = 0.1,
                                  verbose      = FALSE)
   head(ego3)
 }
 
 
-find_ENTREZID_ID_DE <- function(symbol.id, gene.df.DE) {
-  ENTREZID_IDs.DE <- c(ENTREZID_IDs.DE, gene.df.DE[gene.df.DE$SYMBOL == symbol.id, ]["ENTREZID"][[1]][1])
-  return(ENTREZID_IDs.DE)
-}
-
-find_ENTREZID_ID_Univ <- function(symbol.id, gene.df.Univ) {
-  ENTREZID_IDs_Univ <- c(ENTREZID_IDs_Univ, gene.df.Univ[gene.df.Univ$SYMBOL == symbol.id, ]["ENTREZID"][[1]][1])
-  return(ENTREZID_IDs_Univ)
-}
 
 
 #'
