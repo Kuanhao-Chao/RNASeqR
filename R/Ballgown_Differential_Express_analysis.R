@@ -146,7 +146,7 @@ DEHeatmap <- function(path.prefix) {
 
 #'
 #' @export
-DEGOFunctionalAnalysis <- function(path.prefix) {
+DEGOAnalysis <- function(path.prefix) {
   ballgown.FPKM.path <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
   ballgown.FPKM.path.univ <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv")
   DE.csv <- read.csv(ballgown.FPKM.path)
@@ -201,8 +201,8 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
   dev.off()
 
   # GO over-representeation test
-  ego <- clusterProfiler::enrichGO(gene          = names(gene_list_ENTREZID),
-                                   universe      = names(gene_list_ENTREZID_univ),
+  ego <- clusterProfiler::enrichGO(gene          = gene,
+                                   universe      = geneList,
                                    OrgDb         = org.Hs.eg.db,                   # variable
                                    ont           = "CC",                           # variable
                                    pAdjustMethod = "BH",                           # variable
@@ -216,15 +216,22 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
   p1 <- barplot(ego, showCategory=8)
   print(p1)
   dev.off()
+
   # dot plot
   png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO/go_overrepresentation_dot_plot.png"))
   p1 <- clusterProfiler::dotplot(ego)
   print(p1)
   dev.off()
 
+  # have to check before run
+  # no enriched term found
   clusterProfiler::emapplot(ego)
+
   ## categorySize can be scaled by 'pvalue' or 'geneNum'
+  # the data frame should contain at least two columns
   clusterProfiler::cnetplot(ego, categorySize="pvalue", foldChange=geneList)
+
+  # keys must be supplied in a character vector with no NAs
   clusterProfiler::goplot(ego)
 
 
@@ -245,21 +252,40 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
                   readable      = TRUE)
   head(ego)
 
-  ego2 <- clusterProfiler::enrichGO(gene         = gene.df$ENSEMBL,
+  data(geneList, package="DOSE")
+  gene <- names(geneList)[abs(geneList) > 2]
+  gene.df <- clusterProfiler::bitr(gene, fromType = "ENTREZID",
+                  toType = c("ENSEMBL", "SYMBOL"),
+                  OrgDb = org.Hs.eg.db)
+
+
+  ego_v1 <- clusterProfiler::enrichGO(gene          = gene,
+                  universe      = names(geneList),
+                  OrgDb         = org.Hs.eg.db,
+                  ont           = "CC",
+                  pAdjustMethod = "BH",
+                  pvalueCutoff  = 0.01,
+                  qvalueCutoff  = 1,
+                  readable      = TRUE)
+  data.frame(ego_v1)
+
+  ego2_v2 <- clusterProfiler::enrichGO(gene         = gene.df$ENSEMBL,
                    OrgDb         = org.Hs.eg.db,
                    keyType       = 'ENSEMBL',
                    ont           = "CC",
                    pAdjustMethod = "BH",
                    pvalueCutoff  = 0.01,
                    qvalueCutoff  = 0.05)
-  ego2 <- setReadable(ego2, OrgDb = org.Hs.eg.db)
 
-  barplot(ego2, showCategory=8)
-  clusterProfiler::dotplot(ego2)
-  clusterProfiler::emapplot(ego2)
+  ego2_v2 <- setReadable(ego2_v2, OrgDb = org.Hs.eg.db)
+  data.frame(ego2_v2)
+
+  barplot(ego_v1, showCategory=8)
+  clusterProfiler::dotplot(ego2_v2)
+  clusterProfiler::emapplot(ego2_v2)
   ## categorySize can be scaled by 'pvalue' or 'geneNum'
-  clusterProfiler::cnetplot(ego2, categorySize="pvalue", foldChange=geneList)
-  clusterProfiler::goplot(ego2)
+  clusterProfiler::cnetplot(ego2_v2, categorySize="pvalue", foldChange=geneList)
+  clusterProfiler::goplot(ego2_v2)
 
 
 
@@ -283,6 +309,52 @@ DEGOFunctionalAnalysis <- function(path.prefix) {
   head(ego3)
 }
 
+DEKEGGAnalysis <- function() {
+  # to search available KEGG database
+  clusterProfiler::search_kegg_organism('ece', by='kegg_code')
+
+  ecoli <- clusterProfiler::search_kegg_organism('Escherichia coli', by='scientific_name')
+  dim(ecoli)
+  head(ecoli)
+
+  # KEGG over-representation test
+  kk <- clusterProfiler::enrichKEGG(gene         = gene,
+                   organism     = 'hsa',
+                   pvalueCutoff = 0.05)
+  head(kk)
+  clusterProfiler::browseKEGG(kk, 'hsa04110')
+  library("pathview")
+  hsa04110 <- pathview(gene.data  = geneList,
+                       pathway.id = "hsa04110",
+                       species    = "hsa",
+                       limit      = list(gene=max(abs(geneList)), cpd=1))
+
+
+
+  # KEGG Gene Set Enrichment Analysis
+  kk2 <- clusterProfiler:: gseKEGG(geneList     = geneList,
+                 organism     = 'hsa',
+                 nPerm        = 1000,
+                 minGSSize    = 120,
+                 pvalueCutoff = 0.05,
+                 verbose      = FALSE)
+  head(kk2)
+
+  # KEGG Module over-representation test
+  mkk <- clusterProfiler::enrichMKEGG(gene = gene,
+                     organism = 'hsa')
+  # KEGG Module Gene Set Enrichment Analysis
+  mkk2 <- clusterProfiler::gseMKEGG(geneList = geneList,
+                   species = 'hsa')
+
+  # DAVID functional analysis
+  david <- enrichDAVID(gene = gene,
+                       idType = "ENTREZ_GENE_ID",
+                       listType = "Gene",
+                       annotation = "KEGG_PATHWAY",
+                       david.user = "clusterProfiler@hku.hk")
+
+}
 
 
 
