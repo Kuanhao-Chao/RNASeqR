@@ -5,7 +5,7 @@
 \title{Run ballgown analysis}
 \usage{
 BallgownPreprocess(path.prefix, gene.name, sample.pattern, independent.variable,
-  ballgown.pval, ballgown.log2FC)
+  ballgown.log2FC, ballgown.qval)
 }
 \description{
 Run ballgown analysis

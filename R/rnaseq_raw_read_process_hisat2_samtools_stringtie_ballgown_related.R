@@ -107,7 +107,7 @@ Hisat2ReportAssemble <- function(path.prefix, gene.name, sample.pattern){
     overall.alignment.result <- overall.alignment.with.NA[!is.na(overall.alignment.with.NA)]
     overall.alignment.result.cut <- gsub(" overall alignment rate", " ", overall.alignment.result)
     # different mapping rate
-    first.split <- strsplit(load.data, "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\* Hisat2 Aligning \\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\n")
+    first.split <- strsplit(load.data, "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\* Hisat2 Alignment \\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\n")
     second.split <- strsplit(first.split[[1]][2], "\n\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\* Current progress of RNA-seq files in")
     split.lines <- strsplit(second.split[[1]][1], "\n")
     alignment.rate.with.NA <- stringr::str_extract(split.lines[[1]], "[0-9]* \\([0-9]*.[0-9]*%\\) aligned concordantly")
@@ -124,7 +124,9 @@ Hisat2ReportAssemble <- function(path.prefix, gene.name, sample.pattern){
       add.column <- c(add.column, overall.alignment.result.cut[i])
       report.data.frame[[(sample.name[i])]] <- add.column
     }
-    dir.create(paste0(path.prefix, "RNAseq_results/Alignment_Report/"))
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Alignment_Report/"))){
+      dir.create(paste0(path.prefix, "RNAseq_results/Alignment_Report/"))
+    }
     write.csv(report.data.frame, file = paste0(path.prefix, "RNAseq_results/Alignment_Report/Alignment_report.csv"))
     png(paste0(path.prefix, "RNAseq_results/Alignment_Report/Alignment_report.png"), width = iteration.num*100 + 200, height = 40*4)
     p <- gridExtra::grid.table(report.data.frame)
@@ -193,7 +195,10 @@ StringTieMergeTrans <- function(path.prefix, gene.name, sample.pattern, num.para
     if ( isTRUE(check.results$gtf.file.logic.df) && check.results$gtf.files.number.df != 0){
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/"))
-      dir.create(file.path(paste0(path.prefix, 'gene_data/merged/')), showWarnings = FALSE)
+
+      if(!dir.exists(paste0(path.prefix, "gene_data/merged/"))){
+        dir.create(paste0(path.prefix, "gene_data/merged/"))
+      }
       sample.table <- table(check.results$gtf.files.df)
       iteration.num <- length(sample.table)
       sample.name <- names(sample.table)
@@ -250,6 +255,9 @@ StringTieReEstimate <- function(path.prefix, gene.name, sample.pattern, num.para
     cat(paste0("\n************** Stringtie re-setimate **************\n"))
     if (check.results$stringtie_merged.gtf.file.df != 0 && isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$stringtie_merged.gtf.file.df) &&
         check.results$bam.files.number.df != 0){
+      if(!dir.exists(paste0(path.prefix, "gene_data/gene_abundance/"))){
+        dir.create(file.path(paste0(path.prefix, 'gene_data/gene_abundance/')), showWarnings = FALSE)
+      }
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/"))
       sample.name <- sort(gsub(paste0(".bam$"), replace = "", check.results$bam.files.df))
@@ -284,5 +292,50 @@ GffcompareRefSample <- function(path.prefix, gene.name, sample.pattern) {
     } else {
       stop(c(paste0("(\u2718) '", gene.name, ".gtf' "), "or", paste0(" 'stringtie_merged.gtf'"), "is missing.\n\n"))
     }
+  }
+}
+
+#' converting stringtie ballogwn preprocessed data to count table
+#'
+#' @export
+PreDECountTable <- function(path.prefix, sample.pattern, python.variable.answer, python.variable.version, print=TRUE) {
+  # ftp server : ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.1.0-source.zip
+  cat("************** Installing prepDE.py ************\n")
+  if(!dir.exists(paste0(path.prefix, "gene_data/reads_count_matrix/"))){
+    dir.create(file.path(paste0(path.prefix, 'gene_data/reads_count_matrix/')), showWarnings = FALSE)
+  }
+  cat(paste0(path.prefix, "gene_data/reads_count_matrix\n"))
+  current.path <- getwd()
+  setwd(paste0(path.prefix, "gene_data/reads_count_matrix/"))
+  system2(command = 'curl', args = c('https://ccb.jhu.edu/software/stringtie/dl/prepDE.py', '--output', paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py")), stdout = "", wait = TRUE)
+  cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/prepDE.py' has been installed.\n\n"))
+  cat("************** Creating 'sample_lst.txt' file ************\n")
+  sample.files <- list.files(paste0(path.prefix, "gene_data/ballgown/"), pattern = sample.pattern)
+  write.content <- print(paste0(sample.files[1], " ", path.prefix, "gene_data/ballgown/", sample.files[1] ,"/", sample.files[1], ".gtf"))
+  for(i in 2:length(sample.files)){
+    write.content <- c(write.content, paste0(sample.files[i], " ", path.prefix, "gene_data/ballgown/",  sample.files[i], "/",sample.files[i], ".gtf"))
+  }
+  write.file<-file(paste0(path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"))
+  writeLines(write.content, write.file)
+  close(write.file)
+  cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/sample_lst.txt' has been created\n\n"))
+  cat("************** Creating gene and transcript raw count file ************\n")
+  # have to check python !!!
+  if (python.variable.answer) {
+    cat("(\u2714) : Python is available on your device!\n")
+    cat(paste0("       Python version : ", reticulate::py_config()$version, "\n"))
+    if(python.variable.version >= 3) {
+      cat("(\u270D) : Converting 'prepDE.py' from python2 to python3 \n\n")
+      system2(command = '2to3', arg = paste0("-w ", path.prefix, "gene_data/reads_count_matrix/prepDE.py"))
+    } else if (python.variable.version < 3 && python.variable.version >= 2 ){
+    }
+    system2(command = 'python', args = paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py -i ",  path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"), wait = TRUE)
+    cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv' has been created\n"))
+    cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv' has been created\n\n"))
+    on.exit(setwd(current.path))
+    return(TRUE)
+  } else {
+    on.exit(setwd(current.path))
+    stop("(\u2718)  Python is not available on this device. Please install python to run python script 'prepDE.py'\n\n")
   }
 }

@@ -105,29 +105,17 @@ MkdirGeneDir <- function(path.prefix) {
   } else {
     cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "gene_data/raw_sam/'.\n     Please check whether the directory is already exit.\n"))
   }
-  samples.bam.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_bam')), showWarnings = FALSE) == 0
+  samples.bam.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_bam/')), showWarnings = FALSE) == 0
   if (!isTRUE(samples.bam.dir)) {
     cat(paste0("     (\u2714) : Create '", path.prefix, "gene_data/raw_bam/'.\n"))
   } else {
     cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "gene_data/raw_bam/'.\n     Please check whether the directory is already exit.\n"))
   }
-  samples.gtf.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_gtf')), showWarnings = FALSE) == 0
+  samples.gtf.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_gtf/')), showWarnings = FALSE) == 0
   if (!isTRUE(samples.gtf.dir)) {
     cat(paste0("     (\u2714) : Create '", path.prefix, "gene_data/raw_gtf/'.\n\n"))
   } else {
     cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "gene_data/raw_gtf/'.\n     Please check whether the directory is already exit.\n\n"))
-  }
-  samples.gene_abundance.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/gene_abundance')), showWarnings = FALSE) == 0
-  if (!isTRUE(samples.gene_abundance.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "gene_data/gene_abundance/'.\n\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "gene_data/gene_abundance/'.\n     Please check whether the directory is already exit.\n\n"))
-  }
-  samples.reads_count_matrix.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/reads_count_matrix')), showWarnings = FALSE) == 0
-  if (!isTRUE(samples.reads_count_matrix.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "gene_data/reads_count_matrix/'.\n\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "gene_data/reads_count_matrix/'.\n     Please check whether the directory is already exit.\n\n"))
   }
 }
 
@@ -159,75 +147,9 @@ MkdirRNAseq_results <- function(path.prefix){
   cat("\u25CF 3. Creating 'RNAseq_results/' directory\n")
   RNAseq_results.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/')), showWarnings = FALSE) == 0
   if (!isTRUE(RNAseq_results.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/'.\n"))
+    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/'.\n\n"))
   } else {
-    cat(paste0("     (\u26A0)) : Fail to create '", path.prefix, "RNAseq_results/'.\n     Please check whether the directory is already exit.\n"))
-  }
-  RNAseq_results_Raw_reads.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Raw_reads/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results_Raw_reads.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Raw_reads/'.\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Raw_reads/'.\n     Please check whether the directory is already exit.\n"))
-  }
-  RNAseq_results_Raw_reads_gene.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Raw_reads/gene/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results_Raw_reads_gene.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Raw_reads/gene/'.\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Raw_reads/gene/'.\n     Please check whether the directory is already exit.\n"))
-  }
-  RNAseq_results_Raw_reads_transcript.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Raw_reads/transcript/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results_Raw_reads_transcript.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Raw_reads/transcript/'.\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Raw_reads/transcript/'.\n     Please check whether the directory is already exit.\n"))
-  }
-  RNAseq_results_quality_control.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results_quality_control.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/QA_results/'.\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/QA_results/'.\n     Please check whether the directory is already exit.\n"))
-  }
-  RNAseq_results_quality_control_Rqc.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/Rqc/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results_quality_control_Rqc.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/QA_results/Rqc/'.\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/QA_results/Rqc/'.\n     Please check whether the directory is already exit.\n"))
-  }
-  RNAseq_results_quality_control_systemPipeR.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/systemPipeR/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results_quality_control_systemPipeR.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/QA_results/systemPipeR/'.\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/QA_results/systemPipeR/'.\n     Please check whether the directory is already exit.\n"))
-  }
-  RNAseq_results_quality_control_shortread.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/ShortRead/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results_quality_control_shortread.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/QA_results/ShortRead/'.\n\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/QA_results/ShortRead/'.\n     Please check whether the directory is already exit.\n"))
-  }
-  RNAseq_results_ballgown_dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Ballgown_analysis/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results_ballgown_dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Ballgown_analysis/'.\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Ballgown_analysis/'.\n     Please check whether the directory is already exit.\n"))
-  }
-  RNAseq_results_DE_dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Ballgown_analysis/Differential_Expression')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results_DE_dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/'.\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/'.\n     Please check whether the directory is already exit.\n"))
-  }
-  RNAseq_results_DE_image_dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Ballgown_analysis/Differential_Expression/images')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results_DE_image_dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images'.\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images'.\n     Please check whether the directory is already exit.\n"))
-  }
-  RNAseq_results_ballgown_DE_GO_dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/Ballgown_analysis/Differential_Expression/GO')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results_ballgown_DE_GO_dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO'.\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO'.\n     Please check whether the directory is already exit.\n"))
+    cat(paste0("     (\u26A0)) : Fail to create '", path.prefix, "RNAseq_results/'.\n     Please check whether the directory is already exit.\n\n"))
   }
 }
 

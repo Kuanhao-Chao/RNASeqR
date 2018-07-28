@@ -1,5 +1,5 @@
 #' @export
-RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, ballgown.pval = 0.05, run = TRUE, check.s4.print = TRUE) {
+RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, ballgown.qval = 0.05, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -9,7 +9,7 @@ RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, 
   independent.variable <- RNASeqWorkFlowParam@independent.variable
   fileConn<-file(paste0(path.prefix, "Rscript/Ballgown_Process.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNAseqBallgownProcess(path.prefix = '", path.prefix, "', gene.name = '", gene.name, "', sample.pattern = '", sample.pattern, "', independent.variable = '",independent.variable, "', ballgown.log2FC = ", ballgown.log2FC, ", ballgown.pval = ", ballgown.pval, ")")
+  second <- paste0("RNAseqBallgownProcess(path.prefix = '", path.prefix, "', gene.name = '", gene.name, "', sample.pattern = '", sample.pattern, "', independent.variable = '",independent.variable, "', ballgown.log2FC = ", ballgown.log2FC, ", ballgown.qval = ", ballgown.qval, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Ballgown_Process.R' has been created.\n"))
@@ -20,14 +20,14 @@ RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, 
 }
 
 #' @export
-RNAseqBallgownProcess <- function(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.log2FC, ballgown.pval) {
+RNAseqBallgownProcess <- function(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.log2FC = 1, ballgown.qval = 0.05) {
   CheckOperatingSystem(FALSE)
   PreRNAseqBallgownProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)
   if (file.exists(paste0(path.prefix, "Rscript_out/Raw_Read_Process.Rout"))) {
     Hisat2ReportAssemble(path.prefix, gene.name, sample.pattern)
   }
-  BallgownPreprocess(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.pval, ballgown.log2FC)
-  BallgownPlotAll(path.prefix, independent.variable, ballgown.log2FC, ballgown.pval)
+  BallgownPreprocess(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.log2FC, ballgown.qval)
+  BallgownPlotAll(path.prefix, independent.variable, ballgown.log2FC, ballgown.qval)
   DEBallgownPlotAll(path.prefix, independent.variable)
   PostRNAseqBallgownProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }

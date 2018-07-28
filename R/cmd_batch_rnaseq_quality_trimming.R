@@ -24,11 +24,8 @@ RNAseqQualityTrimming <- function(path.prefix, sample.pattern, truncateStartBase
   CheckOperatingSystem(FALSE)
   PreCheckRNAseqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
   cat(paste0("************** Quality Trimming **************\n"))
-  samples.fastq.untrim.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/')), showWarnings = FALSE) == 0
-  if (!isTRUE(samples.fastq.untrim.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/'.\n"))
-  } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/'.\n     Please check whether the directory is already exit.\n"))
+  if(!dir.exists(paste0(path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/"))){
+    dir.create(file.path(paste0(path.prefix, 'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/')), showWarnings = FALSE)
   }
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   raw.fastq.unique <- unique(gsub("[1-2]*.fastq.gz$", replace = "", raw.fastq))
