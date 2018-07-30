@@ -28,7 +28,6 @@ RNAseqBallgownProcess <- function(path.prefix, gene.name, sample.pattern, indepe
   }
   BallgownPreprocess(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.log2FC, ballgown.qval)
   BallgownPlotAll(path.prefix, independent.variable, ballgown.log2FC, ballgown.qval)
-  DEBallgownPlotAll(path.prefix, independent.variable)
   PostRNAseqBallgownProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }
 

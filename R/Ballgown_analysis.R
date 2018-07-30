@@ -49,6 +49,8 @@ BallgownPreprocess <- function(path.prefix, gene.name, sample.pattern, independe
       cat(c("         \u25CF  independent.variable :", independent.variable, "\n"))
 
       results_transcripts <- ballgown::stattest(pkg.ballgown.data$bg_chrX_filt, feature="transcript",covariate = independent.variable, getFC=TRUE, meas="FPKM")
+      results_transcripts_2 <- ballgown::stattest(pkg.ballgown.data$bg_chrX, feature="transcript",covariate = independent.variable, getFC=TRUE, meas="FPKM")
+      # write.csv(results_transcripts, paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"), row.names=FALSE)
       results_transcripts$feature <- NULL
       results_transcripts.FC <- results_transcripts$fc
       results_transcripts.log2FC <- log2(results_transcripts$fc)

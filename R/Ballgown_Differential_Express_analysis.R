@@ -133,15 +133,23 @@ DEHeatmap <- function(path.prefix) {
   }
 }
 
+#'
+DEBallgownPlotAll <- function(path.prefix, independent.variable) {
+  cat(paste0("************** Ballgown result visualization **************\n"))
+  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/"))){
+    dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/"))
+  }
+  DEBallgownPCAPlot(path.prefix, independent.variable)
+  DEHeatmap(path.prefix)
+}
 
 #' This package will autamatically install org.Hs.eg.db, org.Rn.eg.db, org.Mm.eg.db. If you want to use different OrgDb annotation species, please install that annotation package and attach to your session.
-#' @export
-DEGOAnalysis <- function(path.prefix, GO.OrgDb.species) {
+DEGOAnalysis <- function(path.prefix, OrgDb.species) {
   if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/"))){
     dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/"))
   }
   # get return value
-  DEUniv_results <- DEUnivGeneList(path.prefix = path.prefix, GO.OrgDb.species = GO.OrgDb.species)
+  DEUniv_results <- DEUnivGeneList(path.prefix = path.prefix, OrgDb.species = OrgDb.species)
   gene_list_SYMBOL = DEUniv_results$gene_list_SYMBOL_rt
   gene_list_SYMBOL_univ = DEUniv_results$gene_list_SYMBOL_univ_rt
   gene_list_ENTREZID = DEUniv_results$gene_list_ENTREZID_rt
@@ -157,7 +165,7 @@ DEGOAnalysis <- function(path.prefix, GO.OrgDb.species) {
     }
     # designed for gene classification on GO distribution at a specific level. "MF", "BP", "CC"
     ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
-                                    OrgDb    = GO.OrgDb.species,   # variable
+                                    OrgDb    = OrgDb.species,   # variable
                                     ont      = i,           # variable
                                     level    = 3,              # Not sure
                                     readable = TRUE)
@@ -179,7 +187,7 @@ DEGOAnalysis <- function(path.prefix, GO.OrgDb.species) {
     # GO over-representeation test
     ego <- clusterProfiler::enrichGO(gene          = names(gene_list_ENTREZID),
                                      # universe      = geneList,
-                                     OrgDb         = GO.OrgDb.species,                   # variable
+                                     OrgDb         = OrgDb.species,                   # variable
                                      ont           = i,
                                      pAdjustMethod = "BH",                            # variable : "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
                                      readable      = TRUE)
@@ -226,69 +234,61 @@ DEGOAnalysis <- function(path.prefix, GO.OrgDb.species) {
   }
 }
 
-DEKEGGAnalysis <- function(path.prefix = path.prefix, KEGG.organism) {
+DEKEGGAnalysis <- function(path.prefix, OrgDb.species, KEGG.organism) {
   if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/"))){
     dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/"))
   }
-  DEUniv_results <- DEUnivGeneList(path.prefix = path.prefix, GO.OrgDb.species = GO.OrgDb.species)
+  DEUniv_results <- DEUnivGeneList(path.prefix = path.prefix, OrgDb.species = OrgDb.species)
   gene_list_SYMBOL = DEUniv_results$gene_list_SYMBOL_rt
   gene_list_SYMBOL_univ = DEUniv_results$gene_list_SYMBOL_univ_rt
   gene_list_ENTREZID = DEUniv_results$gene_list_ENTREZID_rt
   gene_list_ENTREZID_univ = DEUniv_results$gene_list_ENTREZID_univ_rt
-
-  # to search available KEGG database
-  # clusterProfiler::search_kegg_organism('ece', by='kegg_code')
-
-  ecoli <- clusterProfiler::search_kegg_organism('Escherichia coli', by='scientific_name')
-  dim(ecoli)
-  head(ecoli)
-
-  # KEGG Enrichment test
   # organism : species supported at 'http://www.genome.jp/kegg/catalog/org_list.html'
+  # KEGG Enrichment test
   kk <- clusterProfiler::enrichKEGG(gene         = names(gene_list_ENTREZID),
                                     organism     = KEGG.organism)                     # variable
-  head(kk)
   kk.data.frame <- data.frame(kk)
-  KEGGUrl <- GetKEGGUrl(kk, 'hsa05202')
-  # write the url into a file
-  download.file(KEGGUrl, destfile = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/URL.html"))
+  # Row size have to bigger than 0!
+  if (length(row.names(kk.data.frame)) > 0) {
+    for ( i in kk.data.frame$ID) {
+      if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", i))){
+        dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", i))
+      }
+      # get the url from KEGG result
+      KEGGUrl <- GetKEGGUrl(kk, i)
+      write(KEGGUrl, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", i, "/URL_", i, "_Pathway.txt"))
 
-
-
-
-  hsa04110 <- pathview(gene.data  = names(gene_list_ENTREZID),
-                       pathway.id = "hsa05202",
-                       species    = "hsa")
-
-
-
-
-  # KEGG Gene Set Enrichment Analysis
-  kk2 <- clusterProfiler:: gseKEGG(geneList     = geneList,
-                 organism     = 'hsa',
-                 nPerm        = 1000,
-                 minGSSize    = 120,
-                 pvalueCutoff = 0.05,
-                 verbose      = FALSE)
-  head(kk2)
-
-  # KEGG Module over-representation test
-  mkk <- clusterProfiler::enrichMKEGG(gene = gene,
-                     organism = 'hsa')
-  # KEGG Module Gene Set Enrichment Analysis
-  mkk2 <- clusterProfiler::gseMKEGG(geneList = geneList,
-                   species = 'hsa')
-
-  # DAVID functional analysis
-  david <- enrichDAVID(gene = gene,
-                       idType = "ENTREZ_GENE_ID",
-                       listType = "Gene",
-                       annotation = "KEGG_PATHWAY",
-                       david.user = "clusterProfiler@hku.hk")
-
+      for ( i in kk.data.frame$ID) {
+        print(c("i : ", i, "\n"))
+        current.path <- getwd()
+        pathway.dir <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", i, "/pathview_result/")
+        if(!dir.exists(pathway.dir)){
+          dir.create(pathway.dir)
+        }
+        setwd(pathway.dir)
+        data(bods)
+        bods.dir <- system.file("data", "bods.rda", package = "pathview")
+        print(bods.dir)
+        load(bods.dir)
+        print(bods)
+        pathview::pathview(gene.data  = names(gene_list_ENTREZID),
+                           pathway.id = i,
+                           species    = KEGG.organism,
+                           kegg.dir   = pathway.dir)
+        on.exit(setwd(current.path))
+      }
+    }
+  }
+  # # KEGG module Enrichment test
+  # mkk <- clusterProfiler::enrichMKEGG(gene = names(gene_list_ENTREZID),
+  #                                     organism = KEGG.organism)
+  # mkk.data.frame <- data.frame(mkk)
+  # if (length(row.names(mkk.data.frame)) > 0) {
+  #
+  # }
 }
 
-DEUnivGeneList <- function(path.prefix, GO.OrgDb.species) {
+DEUnivGeneList <- function(path.prefix, OrgDb.species) {
   ballgown.FPKM.path <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
   ballgown.FPKM.path.univ <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv")
   DE.csv <- read.csv(ballgown.FPKM.path)
@@ -311,13 +311,13 @@ DEUnivGeneList <- function(path.prefix, GO.OrgDb.species) {
   # GO classification
   # GO classification : groupGO designed for gene classification based on GO distribution.
   # IDs conversion
-  # GO.OrgDb.species!!
+  # OrgDb.species!!
   gene.df.DE <- clusterProfiler::bitr(gene_name, fromType = "SYMBOL",
                                       toType = c("ENTREZID", "ENSEMBL"),
-                                      OrgDb = GO.OrgDb.species)
+                                      OrgDb = OrgDb.species)
   gene.df.Univ <- clusterProfiler::bitr(gene_name_univ, fromType = "SYMBOL",
                                         toType = c("ENTREZID", "ENSEMBL"),
-                                        OrgDb = GO.OrgDb.species)
+                                        OrgDb = OrgDb.species)
   # Get ENTREZID for DE and Univ
   # DE
   ENTREZID_IDs.DE <- c()
@@ -350,14 +350,5 @@ GetKEGGUrl <- function(x, pathID) {
   return(url)
 }
 
-#'
-#' @export
-DEBallgownPlotAll <- function(path.prefix, independent.variable) {
-  cat(paste0("************** Ballgown result visualization **************\n"))
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/"))){
-    dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/"))
-  }
-  DEBallgownPCAPlot(path.prefix, independent.variable)
-  DEHeatmap(path.prefix)
-}
+
 
