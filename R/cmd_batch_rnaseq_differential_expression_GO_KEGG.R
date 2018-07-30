@@ -24,7 +24,7 @@ RNAseqDeGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, KEGG.organism
 RNAseqDeGoKegg <- function(path.prefix, independent.variable, OrgDb.species, KEGG.organism) {
   CheckOperatingSystem(FALSE)
   DEBallgownPlotAll(path.prefix, independent.variable)
-  # DEGOAnalysis(path.prefix, OrgDb.species)
+  DEGOAnalysis(path.prefix, OrgDb.species)
   DEKEGGAnalysis(path.prefix, OrgDb.species, KEGG.organism)
   PostRNAseqDeGoKegg()
 }
