@@ -4,24 +4,24 @@
 \name{RNASeqWorkFlowParam-class}
 \alias{RNASeqWorkFlowParam-class}
 \alias{RNASeq}
-\title{RNASeq
-An S4 class for storing RNA-Seq workflow parameters of this package}
+\title{RNASeq workflow
+An S4 class for checking and storing RNA-Seq workflow parameters of this package}
 \description{
-RNASeq
-An S4 class for storing RNA-Seq workflow parameters of this package
+RNASeq workflow
+An S4 class for checking and storing RNA-Seq workflow parameters of this package
 }
 \section{Slots}{
 
 \describe{
 \item{\code{os.type}}{'linux' or 'osx'. The operating system type}
 
-\item{\code{python.variable}}{a list with (whether python is valid, python version)}
+\item{\code{python.variable}}{a list storing python environment. (check.answer, python.version)}
 
 \item{\code{path.prefix}}{the directory holding installations and analysis results}
 
-\item{\code{input.path.prefix}}{user has to prepared valid 'input_files/' under this directory}
+\item{\code{input.path.prefix}}{path prefix of 'input_files/' directory}
 
-\item{\code{gene.name}}{gene name defined in this RNA-Seq workflow (ex. gene.name.fa, gene.name.gtf)}
+\item{\code{genome.name}}{variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)}
 
 \item{\code{sample.pattern}}{sample pattern describing the name of raw fastq.gz files}
 
@@ -39,7 +39,7 @@ data(workflowParam)
 class(workflowParam) #"RNASeqWorkFlowParam"
 workflowParam@path.prefix
 workflowParam@input.path.prefix
-workflowParam@gene.name
+workflowParam@genome.name
 workflowParam@sample.pattern
 workflowParam@independent.variable
 workflowParam@control.group

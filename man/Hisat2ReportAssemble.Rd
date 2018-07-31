@@ -5,7 +5,7 @@
 \alias{Hisat2ReportAssemble}
 \title{Report Hisat2 assemble rate}
 \usage{
-Hisat2ReportAssemble(path.prefix, gene.name, sample.pattern)
+Hisat2ReportAssemble(path.prefix, genome.name, sample.pattern)
 }
 \description{
 Report Hisat2 assemble rate

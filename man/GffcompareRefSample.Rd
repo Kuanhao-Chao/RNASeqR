@@ -5,7 +5,7 @@
 \alias{GffcompareRefSample}
 \title{Examine how the transcripts compare with the reference annotation}
 \usage{
-GffcompareRefSample(path.prefix, gene.name, sample.pattern)
+GffcompareRefSample(path.prefix, genome.name, sample.pattern)
 }
 \description{
 Examine how the transcripts compare with the reference annotation

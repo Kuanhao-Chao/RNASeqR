@@ -9,7 +9,7 @@
 #'
 #' @export
 #' @example
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", gene.name = "hg19", sample.pattern = "SRR[0-9]",
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
 RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, run = TRUE, check.s4.print = TRUE) {
@@ -17,7 +17,7 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
   CheckOperatingSystem(FALSE)
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
-  gene.name <- RNASeqWorkFlowParam@gene.name
+  genome.name <- RNASeqWorkFlowParam@genome.name
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   python.variable <- RNASeqWorkFlowParam@python.variable
   python.variable.answer <- python.variable$check.answer
@@ -28,7 +28,7 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
   # ExportPath(path.prefix = path.prefix)
   fileConn<-file(paste0(path.prefix, "Rscript/Raw_Read_Process.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", gene.name = "', gene.name, '", sample.pattern = "', sample.pattern, '", python.variable.answer = ', python.variable.answer, ', python.variable.version = ', python.variable.version, ', num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
+  second <- paste0('RNAseqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", genome.name = "', genome.name, '", sample.pattern = "', sample.pattern, '", python.variable.answer = ', python.variable.answer, ', python.variable.version = ', python.variable.version, ', num.parallel.threads = ', num.parallel.threads, ', indexes.optional = ', indexes.optional, ')')
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Raw_Read_Process.R' has been created.\n"))
@@ -41,38 +41,38 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
 
 #' rna seq pipline
 #' @export
-RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, python.variable.answer, python.variable.version, num.parallel.threads = 8, indexes.optional) {
+RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, python.variable.answer, python.variable.version, num.parallel.threads = 8, indexes.optional) {
   CheckOperatingSystem(FALSE)
   ExportPath(path.prefix)
-  PreRNAseqRawReadProcess(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern)
-  check.results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=FALSE)
+  PreRNAseqRawReadProcess(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern)
+  check.results <- ProgressGenesFiles(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, print=FALSE)
   if (check.results$ht2.files.number.df == 0 && indexes.optional) {
-    CreateHisat2Index(gene.name, sample.pattern)
+    CreateHisat2Index(genome.name, sample.pattern)
   }
-  Hisat2AlignmentDefault(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
-  SamtoolsToBam(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
-  StringTieAssemble(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
-  StringTieMergeTrans(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
-  GffcompareRefSample(path.prefix, gene.name, sample.pattern)
-  StringTieToBallgown(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
-  # StringTieReEstimate(path.prefix, gene.name, sample.pattern, num.parallel.threads = num.parallel.threads)
-  finals <- ProgressGenesFiles(path.prefix, gene.name, sample.pattern, print=TRUE)
+  Hisat2AlignmentDefault(path.prefix, genome.name, sample.pattern, num.parallel.threads = num.parallel.threads)
+  SamtoolsToBam(path.prefix, genome.name, sample.pattern, num.parallel.threads = num.parallel.threads)
+  StringTieAssemble(path.prefix, genome.name, sample.pattern, num.parallel.threads = num.parallel.threads)
+  StringTieMergeTrans(path.prefix, genome.name, sample.pattern, num.parallel.threads = num.parallel.threads)
+  GffcompareRefSample(path.prefix, genome.name, sample.pattern)
+  StringTieToBallgown(path.prefix, genome.name, sample.pattern, num.parallel.threads = num.parallel.threads)
+  # StringTieReEstimate(path.prefix, genome.name, sample.pattern, num.parallel.threads = num.parallel.threads)
+  finals <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
   PreDECountTable(path.prefix= path.prefix, sample.pattern = sample.pattern, python.variable.answer = python.variable.answer, python.variable.version = python.variable.version, print=TRUE)
   file.prepDE.py <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py"))
   file.sample.lst.txt <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"))
   file.gene_count_matrix <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
   file.transcript_count_matrix <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv"))
-  PostRNAseqRawReadProcess(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern)
+  PostRNAseqRawReadProcess(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern)
 }
 
-PreRNAseqRawReadProcess <- function(path.prefix, gene.name, sample.pattern) {
+PreRNAseqRawReadProcess <- function(path.prefix, genome.name, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C RNAseqRawReadProcess()' environment pre-check ...\n")
   phenodata.csv <- file.exists(paste0(path.prefix, "gene_data/phenodata.csv"))
   chrX.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/chrX.gtf"))
   chrX.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/chrX.fa"))
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   check.tool.result <- CheckToolAll()
-  check.results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=FALSE)
+  check.results <- ProgressGenesFiles(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, print=FALSE)
   check.progress.results.bool <- check.results$gtf.file.logic.df && check.results$fa.file.logic.df && (check.results$fastq.gz.files.number.df != 0)
   validity <- phenodata.csv && chrX.gtf && chrX.fa && check.tool.result && (length(raw.fastq) != 0) && check.progress.results.bool
   if (!isTRUE(validity)) {
@@ -81,11 +81,11 @@ PreRNAseqRawReadProcess <- function(path.prefix, gene.name, sample.pattern) {
   cat("     (\u2714) : RNAseqRawReadProcess() pre-check is valid\n\n")
 }
 
-PostRNAseqRawReadProcess <- function(path.prefix, gene.name, sample.pattern) {
+PostRNAseqRawReadProcess <- function(path.prefix, genome.name, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C RNAseqRawReadProcess()' environment post-check ...\n")
   # Still need to add condition
   gene_abundance <- dir.exists(paste0(path.prefix, "gene_data/gene_abundance/"))
-  check.results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print=FALSE)
+  check.results <- ProgressGenesFiles(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, print=FALSE)
   ht2.bool <- (check.results$ht2.files.number.df) != 0
   sam.bool <- (check.results$sam.files.number.df) != 0
   bam.bool <- (check.results$bam.files.number.df) != 0

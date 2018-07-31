@@ -6,7 +6,7 @@
 \title{Creating Hisat2 index
 Creat Hisat2 index for further use}
 \usage{
-CreateHisat2Index(path.prefix, gene.name, sample.pattern,
+CreateHisat2Index(path.prefix, genome.name, sample.pattern,
   splice.site.info = TRUE, exon.info = TRUE)
 }
 \description{

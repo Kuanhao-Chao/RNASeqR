@@ -1,9 +1,9 @@
 #' Run ballgown analysis
 #'
-BallgownPreprocess <- function(path.prefix, gene.name, sample.pattern, independent.variable, ballgown.log2FC, ballgown.qval) {
+BallgownPreprocess <- function(path.prefix, genome.name, sample.pattern, independent.variable, ballgown.log2FC, ballgown.qval) {
   # this ballgown function is only for two group
   CheckOperatingSystem(FALSE)
-  results <- ProgressGenesFiles(path.prefix = path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, print = FALSE)
+  results <- ProgressGenesFiles(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, print = FALSE)
   if (isTRUE(results$phenodata.file.df) && results$ballgown.dirs.number.df != 0){
     # sorting 'pheno_data'
     cat(paste0("************** Ballgown data preprocessing **************\n"))
@@ -503,6 +503,6 @@ LoadBallgownObject <- function() {
     load(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/ballgown.rda"))
     pkg.ballgown.data$bg_chrX <- bg
   } else {
-    stop(paste0("(\u2718) '", paste0(path.prefix, "gene_data/ballgown/ballgown.rda"), "' haven't created yet. Please run \"BallgownPreprocess(gene.name, sample.pattern, independent.variable)\" first.\n\n"))
+    stop(paste0("(\u2718) '", paste0(path.prefix, "gene_data/ballgown/ballgown.rda"), "' haven't created yet. Please run \"BallgownPreprocess(genome.name, sample.pattern, independent.variable)\" first.\n\n"))
   }
 }

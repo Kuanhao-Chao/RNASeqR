@@ -5,7 +5,7 @@
 \alias{Hisat2AlignmentDefault}
 \title{hisat2 alignment default}
 \usage{
-Hisat2AlignmentDefault(path.prefix, gene.name, sample.pattern,
+Hisat2AlignmentDefault(path.prefix, genome.name, sample.pattern,
   num.parallel.threads = 8)
 }
 \description{

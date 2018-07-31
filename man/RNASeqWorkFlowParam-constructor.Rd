@@ -6,7 +6,7 @@
 \title{Constructor function for RNASeqWorkFlowParam objects}
 \usage{
 RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA,
-  gene.name = NA, sample.pattern = NA, independent.variable = NA,
+  genome.name = NA, sample.pattern = NA, independent.variable = NA,
   control.group = NA, experiment.group = NA)
 }
 \arguments{
@@ -14,7 +14,7 @@ RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA,
 
 \item{input.path.prefix}{user has to prepared valid 'input_files/' under this directory}
 
-\item{gene.name}{gene name defined in this RNA-Seq workflow (ex. gene.name.fa, gene.name.gtf)}
+\item{genome.name}{gene name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)}
 
 \item{sample.pattern}{sample pattern describing the name of raw fastq.gz files}
 

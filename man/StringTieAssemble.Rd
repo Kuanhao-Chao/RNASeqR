@@ -5,7 +5,7 @@
 \alias{StringTieAssemble}
 \title{stringtie assemble and quantify expressed genes and transcripts}
 \usage{
-StringTieAssemble(path.prefix, gene.name, sample.pattern,
+StringTieAssemble(path.prefix, genome.name, sample.pattern,
   num.parallel.threads = 8)
 }
 \description{

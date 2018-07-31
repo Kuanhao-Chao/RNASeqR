@@ -5,7 +5,7 @@
 \title{inner function : check input.path.prefix}
 \usage{
 CheckInputDirFiles(input.path.prefix = NA_character_,
-  gene.name = NA_character_, sample.pattern = NA_character_)
+  genome.name = NA_character_, sample.pattern = NA_character_)
 }
 \description{
 inner function : check input.path.prefix

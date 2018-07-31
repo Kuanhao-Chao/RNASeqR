@@ -10,7 +10,7 @@
 #'
 #' @export
 #' @example
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", gene.name = "hg19", sample.pattern = "SRR[0-9]",
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
 RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.print = TRUE) {
@@ -20,13 +20,13 @@ RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
   os.type <- RNASeqWorkFlowParam@os.type
   path.prefix <- RNASeqWorkFlowParam@path.prefix
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
-  gene.name <- RNASeqWorkFlowParam@gene.name
+  genome.name <- RNASeqWorkFlowParam@genome.name
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   indexes.optional <- RNASeqWorkFlowParam@indexes.optional
   MkdirAll(path.prefix)
   fileConn<-file(paste0(path.prefix, "Rscript/Environment_Set.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNAseqEnvironmentSet(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', gene.name = '", gene.name, "', sample.pattern = '", sample.pattern, "', indexes.optional = ",indexes.optional, ", os.type = '", os.type, "')")
+  second <- paste0("RNAseqEnvironmentSet(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', genome.name = '", genome.name, "', sample.pattern = '", sample.pattern, "', indexes.optional = ",indexes.optional, ", os.type = '", os.type, "')")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Environment_Set.R' has been created.\n"))
@@ -45,22 +45,22 @@ RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
 #' @param os.type 'linux' or 'osx'. The operating system type
 #' @param path.prefix the directory holding installations and analysis results
 #' @param input.path.prefix user has to prepared valid 'input_files/' under this directory
-#' @param gene.name gene name defined in this RNA-Seq workflow (ex. gene.name.fa, gene.name.gtf)
+#' @param genome.name gene name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
 #' @param sample.pattern  sample pattern describing the name of raw fastq.gz files
 #' @param indexes.optional logical value whether indexes/ is exit in 'input_files/'
 #'
 #' @export
 #'
 #' @example
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", gene.name = "hg19", sample.pattern = "SRR[0-9]",
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNAseqEnvironmentSet(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix, gene.name = exp@@gene.name,
+#' RNAseqEnvironmentSet(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix, genome.name = exp@@genome.name,
 #'                      sample.pattern = exp@@sample.pattern, indexes.optional = exp@@indexes.optional, os.type = exp@@os.type)
 #'
-RNAseqEnvironmentSet <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, indexes.optional, os.type) {
+RNAseqEnvironmentSet <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indexes.optional, os.type) {
   CheckOperatingSystem(FALSE)
   PreRNAseqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
-  CopyInputDir(path.prefix = path.prefix, input.path.prefix = input.path.prefix, gene.name = gene.name, sample.pattern = sample.pattern, indexes.optional = indexes.optional)
+  CopyInputDir(path.prefix = path.prefix, input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, indexes.optional = indexes.optional)
   InstallAll(path.prefix = path.prefix, os.type = os.type)
   ExportPath(path.prefix = path.prefix)
   PostRNAseqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
@@ -181,16 +181,16 @@ MkdirAll <- function(path.prefix) {
 }
 
 #' inner function : Copy input files directory
-CopyInputDir <- function(path.prefix, input.path.prefix, gene.name, sample.pattern, indexes.optional = indexes.optional) {
+CopyInputDir <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indexes.optional = indexes.optional) {
   current.path <- getwd()
   setwd(paste0(path.prefix, "gene_data/"))
   cat(c("************** Directory Copying ************\n"))
-  cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", gene.name, ".gtf"), "\n"))
-  file.copy(paste0(input.path.prefix, "input_files/", gene.name, ".gtf"), paste0(getwd(), "/ref_genes/", gene.name, ".gtf"))
-  cat(c("     \u25CF           To :"), paste0(getwd(), "/ref_genes/", gene.name, ".gtf", "\n"))
-  cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", gene.name, ".fa"),  "\n"))
-  file.copy(paste0(input.path.prefix, "input_files/", gene.name, ".fa"), paste0(getwd(), "/ref_genome/", gene.name, ".fa"))
-  cat(c("     \u25CF           To :"), paste0(getwd(), "/ref_genome/", gene.name, ".fa", "\n"))
+  cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", genome.name, ".gtf"), "\n"))
+  file.copy(paste0(input.path.prefix, "input_files/", genome.name, ".gtf"), paste0(getwd(), "/ref_genes/", genome.name, ".gtf"))
+  cat(c("     \u25CF           To :"), paste0(getwd(), "/ref_genes/", genome.name, ".gtf", "\n"))
+  cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", genome.name, ".fa"),  "\n"))
+  file.copy(paste0(input.path.prefix, "input_files/", genome.name, ".fa"), paste0(getwd(), "/ref_genome/", genome.name, ".fa"))
+  cat(c("     \u25CF           To :"), paste0(getwd(), "/ref_genome/", genome.name, ".fa", "\n"))
   cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", "raw_fastq.gz/"),  "\n"))
   file.copy(paste0(input.path.prefix, "input_files/", "raw_fastq.gz/"), paste0(getwd(), "/"), overwrite = TRUE, recursive = TRUE)
   cat(c("     \u25CF           To :", paste0(getwd(),"/raw_fastq.gz/"), "\n"))

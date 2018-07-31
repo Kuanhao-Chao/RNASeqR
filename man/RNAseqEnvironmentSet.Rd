@@ -4,15 +4,15 @@
 \alias{RNAseqEnvironmentSet}
 \title{Set up the environment for the RNA seq pipeline in R shell}
 \usage{
-RNAseqEnvironmentSet(path.prefix, input.path.prefix, gene.name, sample.pattern,
-  indexes.optional, os.type)
+RNAseqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
+  sample.pattern, indexes.optional, os.type)
 }
 \arguments{
 \item{path.prefix}{the directory holding installations and analysis results}
 
 \item{input.path.prefix}{user has to prepared valid 'input_files/' under this directory}
 
-\item{gene.name}{gene name defined in this RNA-Seq workflow (ex. gene.name.fa, gene.name.gtf)}
+\item{genome.name}{gene name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)}
 
 \item{sample.pattern}{sample pattern describing the name of raw fastq.gz files}
 

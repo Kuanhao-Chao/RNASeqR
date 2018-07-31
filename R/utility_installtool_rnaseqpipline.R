@@ -1,27 +1,27 @@
 #' check 'gene_data' and subdirectory files exit
-ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = TRUE) {
+ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print = TRUE) {
   if (print) {
     cat(paste0("************** Current progress of RNA-seq files in '", paste0(path.prefix, "gene_data/'"), " **************\n"))
   }
   # 1. Check .gtf file
-  gtf.file <- file.exists(paste0(path.prefix, "gene_data", '/ref_genes/', gene.name, '.gtf'))
+  gtf.file <- file.exists(paste0(path.prefix, "gene_data", '/ref_genes/', genome.name, '.gtf'))
   if (isTRUE(gtf.file)) {
     if(print){
-      cat(c("(\u2714) :", paste0("'",path.prefix, "gene_data", '/ref_genes/', gene.name, '.gtf', "'"), "is exit\n\n"))
+      cat(c("(\u2714) :", paste0("'",path.prefix, "gene_data", '/ref_genes/', genome.name, '.gtf', "'"), "is exit\n\n"))
     }
   } else {
-    cat(c("(\u2718) :", paste0("'",path.prefix, "gene_data", '/ref_genes/', gene.name, '.gtf', "'"), "is not exit\n"))
-    cat(c("     Put the", paste0("'",gene.name,".gtf", "'"), "file in", paste0("'",path.prefix, "gene_data", '/ref_genes/', "'"), "to fix the error.\n\n"))
+    cat(c("(\u2718) :", paste0("'",path.prefix, "gene_data", '/ref_genes/', genome.name, '.gtf', "'"), "is not exit\n"))
+    cat(c("     Put the", paste0("'",genome.name,".gtf", "'"), "file in", paste0("'",path.prefix, "gene_data", '/ref_genes/', "'"), "to fix the error.\n\n"))
   }
   # 2. Check .fa file
-  fa.file <- file.exists(paste0(path.prefix, "gene_data", '/ref_genome/', gene.name, '.fa'))
+  fa.file <- file.exists(paste0(path.prefix, "gene_data", '/ref_genome/', genome.name, '.fa'))
   if (isTRUE(fa.file)) {
     if(print){
-      cat(c("(\u2714) :",paste0("'", path.prefix, "gene_data", '/ref_genome/', gene.name, '.fa', "'"), "is exit\n\n"))
+      cat(c("(\u2714) :",paste0("'", path.prefix, "gene_data", '/ref_genome/', genome.name, '.fa', "'"), "is exit\n\n"))
     }
   } else {
-    cat(c("(\u2718) :",paste0("'", path.prefix, "gene_data", '/ref_genome/', gene.name, '.fa', "'"), "is not exit\n"))
-    cat(c("     Put the", paste0("'",gene.name,".fa", "'"), "file in", paste0("'",path.prefix, "gene_data", '/ref_genome/', "'"), "to fix the error.\n\n"))
+    cat(c("(\u2718) :",paste0("'", path.prefix, "gene_data", '/ref_genome/', genome.name, '.fa', "'"), "is not exit\n"))
+    cat(c("     Put the", paste0("'",genome.name,".fa", "'"), "file in", paste0("'",path.prefix, "gene_data", '/ref_genome/', "'"), "to fix the error.\n\n"))
   }
   # 3. Check .fastq.gz file
   fastq.gz.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
@@ -47,7 +47,7 @@ ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = T
     cat(c("(\u2718) :", paste0("'",path.prefix, "gene_data", '/phenodata.csv', "'"), "is not exit\n"))
     cat(c("     Put the", paste0("'phenodata.csv'"), "file in", paste0("'",path.prefix, "gene_data", '/', "'"), "to fix the error.\n\n"))
   }
-  ht2.files <- list.files(path = paste0(path.prefix, "gene_data", '/indexes/'), pattern = paste0("^", gene.name, "_tran.[0-9]*.ht2$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  ht2.files <- list.files(path = paste0(path.prefix, "gene_data", '/indexes/'), pattern = paste0("^", genome.name, "_tran.[0-9]*.ht2$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   ht2.files.number <- length(ht2.files)
   if (ht2.files.number != 0) {
     if (print) {
@@ -58,7 +58,7 @@ ProgressGenesFiles <- function(path.prefix, gene.name, sample.pattern, print = T
     }
   } else {
     if (print) {
-      cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/indexes/', gene.name, '_tran.*.ht2\''), "is not exit\n"))
+      cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/indexes/', genome.name, '_tran.*.ht2\''), "is not exit\n"))
     }
   }
   sam.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_sam/'), pattern = paste0( "^[A-Z, a-z]*", "[0-9]*", "[A-Z, a-z]*", ".sam$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)

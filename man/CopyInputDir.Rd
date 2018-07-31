@@ -4,7 +4,7 @@
 \alias{CopyInputDir}
 \title{inner function : Copy input files directory}
 \usage{
-CopyInputDir(path.prefix, input.path.prefix, gene.name, sample.pattern,
+CopyInputDir(path.prefix, input.path.prefix, genome.name, sample.pattern,
   indexes.optional = indexes.optional)
 }
 \description{

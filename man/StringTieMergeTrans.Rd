@@ -5,7 +5,7 @@
 \alias{StringTieMergeTrans}
 \title{stringtie merge transcripts from all samples}
 \usage{
-StringTieMergeTrans(path.prefix, gene.name, sample.pattern,
+StringTieMergeTrans(path.prefix, genome.name, sample.pattern,
   num.parallel.threads = 8)
 }
 \description{

@@ -5,7 +5,7 @@
 \alias{StringTieReEstimate}
 \title{stringtie re-estimate the abundance}
 \usage{
-StringTieReEstimate(path.prefix, gene.name, sample.pattern,
+StringTieReEstimate(path.prefix, genome.name, sample.pattern,
   num.parallel.threads = 8)
 }
 \description{
