@@ -2,26 +2,35 @@
 % Please edit documentation in R/cmd_batch_rnaseq_environment_set.R
 \name{RNAseqEnvironmentSet}
 \alias{RNAseqEnvironmentSet}
-\title{Set up the environment for the RNA seq pipeline in R shell}
+\title{Environment setting for RNA-Seq workflow in R shell}
 \usage{
 RNAseqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
-  sample.pattern, indexes.optional, os.type)
+  sample.pattern, indexes.optional, os.type, mkdir.bool = TRUE)
 }
 \arguments{
-\item{path.prefix}{the directory holding installations and analysis results}
+\item{path.prefix}{path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories}
 
-\item{input.path.prefix}{user has to prepared valid 'input_files/' under this directory}
+\item{input.path.prefix}{path prefix of 'input_files/' directory}
 
-\item{genome.name}{gene name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)}
+\item{genome.name}{variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)}
 
-\item{sample.pattern}{sample pattern describing the name of raw fastq.gz files}
+\item{sample.pattern}{regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'}
 
 \item{indexes.optional}{logical value whether indexes/ is exit in 'input_files/'}
 
 \item{os.type}{'linux' or 'osx'. The operating system type}
 }
 \description{
-1. To set up the environment for the following RNA seq pipeline in R shell, create 'RNASeqWorkFlowParam' first, get the value from the instance of this S4 object, and then put set the corresponding value to the input of this function.
-2. To set up the environment for the following RNA seq pipeline in background, create 'RNASeqWorkFlowParam' first, and run 'RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam)'.
-It is recommended to set up the environment in background.
+Set up the environment for the following RNA-Seq workflow in R shell.
+It is strongly advised to run \code{RNAseqEnvironmentSet_CMD()} directly. Running this function directly is not recommended.
+This function do 4 things : 1. Create file directories. 2. Install necessary tools. 3. Export 'RNAseq_bin/' to the R environment. 4. Check command of tools.
+First it will create 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
+'Gffcompare' will be installed under 'RNAseq_bin/'. 'RNAseq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
+If you want to set up the environment for the following RNA-Seq workflow in background, please see \code{RNAseqEnvironmentSet_CMD()} function.
+}
+\examples{
+exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
+                           independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
+RNAseqEnvironmentSet(path.prefix = exp@path.prefix, input.path.prefix = exp@input.path.prefix, genome.name = exp@genome.name,
+                     sample.pattern = exp@sample.pattern, indexes.optional = exp@indexes.optional, os.type = exp@os.type)
 }

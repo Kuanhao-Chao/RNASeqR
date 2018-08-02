@@ -1,18 +1,33 @@
-#' Run RNA seq raw read processing (alignment, assembly, expressive expression) in background.
-#'
-#' To process RNA seq raw read in background, you have to run 'RNASeqWorkFlowParam()' to create S4 object beforehands.
-#' If you want to process RNA seq raw read in R shell, please see 'RNAseqRawReadProcess()' function.
-#' This function do 4 things : 1. Hisat2 : raw reads align to reference genome. 2. Stringtie : Alignments assembly into transcript. 3. Stringtie : Expressive gene and transcript quantification
-#' 4. Compare aligned genome with reference genome
-#'
-#' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
-#'
-#' @export
-#' @example
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
-RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, run = TRUE, check.s4.print = TRUE) {
+#'
+#' @title Raw reads process (alignment, assembly, expressive quantification) of RNA-Seq in background.
+#'
+#' @description Process raw reads for RNA-Seq workflow in background.
+#' This function do 5 things :
+#' 1. 'Hisat2' : aligns raw reads to reference genome. If \code{indexes.optional} in \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indexes will be created.
+#' 2. 'Samtools' : converts '.sam' files to '.bam' files.
+#' 3. 'Stringtie' : assembles alignments into transcript.
+#' 4. 'Gffcompare' : examines how transcripts compare with the reference annotation.
+#' 5. 'Stringtie' : creates input files for ballgown, edgeR and DESeq2.
+#' Before running this function, \code{RNAseqEnvironmentSet_CMD()} (or\code{RNAseqEnvironmentSet()}) must be executed successfully.
+#' If you want to process raw reads for the following RNA-Seq workflow in R shell, please see \code{RNAseqRawReadProcess()} function.
+#'
+#' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
+#' @param num.parallel.threads Specify the number of processing threads (CPUs) to use for transcript assembly. The default is 1.
+#' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+#' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
+#'
+#' @export
+#' @examples
+#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
+#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+#' ## Before run this function, make sure \code{RNAseqEnvironmentSet_CMD()} (or\code{RNAseqEnvironmentSet()}) is executed successfully.
+#' RNAseqRawReadProcess_CMD(RNASeqWorkFlowParam = exp)
+RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 1, run = TRUE, check.s4.print = TRUE) {
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
   path.prefix <- RNASeqWorkFlowParam@path.prefix
@@ -38,10 +53,45 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
   }
 }
 
-
-#' rna seq pipline
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
+#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+#' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
+#'
+#' @title Raw reads process (alignment, assembly, expressive quantification) of RNA-Seq in background.
+#'
+#' @description Process raw reads for RNA-Seq workflow in R shell.
+#' It is strongly advised to run \code{RNAseqRawReadProcess_CMD()} directly. Running this function directly is not recommended.
+#' This function do 5 things :
+#' 1. 'Hisat2' : aligns raw reads to reference genome. If \code{indexes.optional} in \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indexes will be created.
+#' 2. 'Samtools' : converts '.sam' files to '.bam' files.
+#' 3. 'Stringtie' : assembles alignments into transcript.
+#' 4. 'Gffcompare' : examines how transcripts compare with the reference annotation.
+#' 5. 'Stringtie' : creates input files for ballgown, edgeR and DESeq2.
+#' Before running this function, \code{RNAseqEnvironmentSet_CMD()} (or\code{RNAseqEnvironmentSet()}) must be executed successfully.
+#' If you want to process raw reads for the following RNA-Seq workflow in background, please see \code{RNAseqRawReadProcess_CMD()} function.
+#'
+#' @param path.prefix path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @param input.path.prefix path prefix of 'input_files/' directory
+#' @param genome.name variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
+#' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
+#' @param python.variable.answer logical value whether python is available on the device
+#' @param python.variable.version python version of the device
+#' @param indexes.optional logical value whether 'indexes/' is exit in 'input_files/'
+#' @param num.parallel.threads Specify the number of processing threads (CPUs) to use for transcript assembly. The default is 1.
+#' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+#' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
+#'
 #' @export
-RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, python.variable.answer, python.variable.version, num.parallel.threads = 8, indexes.optional) {
+#' @examples
+#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
+#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+#' ## Before run this function, make sure \code{RNAseqEnvironmentSet_CMD()} (or\code{RNAseqEnvironmentSet()}) is executed successfully.
+#' RNAseqRawReadProcess(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix,
+#'                      genome.name = exp@@genome.name, sample.pattern = exp@@sample.pattern, python.variable.answer = exp@@python.variable[0],
+#'                      python.variable.version = exp@@python.variable[1], indexes.optional = exp@@indexes.optional)
+RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, python.variable.answer, python.variable.version, num.parallel.threads = 1, indexes.optional) {
   CheckOperatingSystem(FALSE)
   ExportPath(path.prefix)
   PreRNAseqRawReadProcess(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern)

@@ -2,10 +2,29 @@
 % Please edit documentation in R/cmd_batch_rnaseq_quality_assessment.R
 \name{RNAseqQualityAssessment}
 \alias{RNAseqQualityAssessment}
-\title{Quality control}
+\title{Quality assessment of '.fastq.gz' files for RNA-Seq workflow in R shell}
 \usage{
 RNAseqQualityAssessment(path.prefix, input.path.prefix, sample.pattern)
 }
+\arguments{
+\item{path.prefix}{path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories}
+
+\item{input.path.prefix}{path prefix of 'input_files/' directory}
+
+\item{sample.pattern}{regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'}
+}
 \description{
-Quality control
+Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
+It is strongly advised to run \code{RNAseqQualityAssessment_CMD()} directly. Running this function directly is not recommended.
+This function reports the quality assessment result in two packages : \code{Rqc} and \code{systemPipeR}
+For \code{Rqc}, 'RNAseq_results/QA_results/Rqc/Rqc_report.html' will be created
+For \code{systemPipeR}, 'RNAseq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
+If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in background, please see \code{RNAseqQualityAssessment_CMD()} function.
+}
+\examples{
+input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
+exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
+                           experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+RNAseqEnvironmentSet(path.prefix = exp@path.prefix, input.path.prefix = exp@input.path.prefix,
+                     sample.pattern = exp@sample.pattern)
 }

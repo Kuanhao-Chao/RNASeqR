@@ -2,10 +2,13 @@
 % Please edit documentation in R/cmd_batch_rnaseq_environment_set.R
 \name{CheckToolAll}
 \alias{CheckToolAll}
-\title{Check necessary programs for this pipeline}
+\title{Check 'Hisat2', 'StringTie', 'Samtools' and 'Gffcompare' for this workflow}
 \usage{
 CheckToolAll(print = TRUE)
 }
+\arguments{
+\item{print}{If \code{TRUE}, detailed information will be printed. If \code{FALSE}, detailed information will not be printed.}
+}
 \description{
-Check whether Hisat2, Stringtie, Samtools, Gffcompare are installed on the workstation
+Check whether 'Hisat2', 'Stringtie', 'Samtools' and 'Gffcompare' are installed on the workstation
 }

@@ -1,18 +1,26 @@
-#' Set up the environment for the following RNA seq pipeline in background.
+#' @title Environment setting for RNA-Seq workflow in background
 #'
-#' To set up the environment for the following RNA seq pipeline in background, create 'RNASeqWorkFlowParam' first, and then run 'RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam)'.
-#' If you want to set up the environment for the following RNA seq pipeline in R shell, please see 'RNAseqEnvironmentSet()' function.
-#' This function do 4 things : 1. Create file directories. 2. Install necessary tools. 3. Export 'RNAseq_bin/' to the R environment. 4. Check command of tools.
+#' @description Set up the environment for the following RNA-Seq workflow in background.
+#' This function do 4 things :
+#' 1. Create file directories.
+#' 2. Install necessary tools.
+#' 3. Export 'RNAseq_bin/' to the R environment.
+#' 4. Check command of tools.
 #' First it will create 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
-#' 'Gffcompare' will be installed under 'RNAseq_bin/'. 'RNAseq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported.
+#' 'Gffcompare' will be installed under 'RNAseq_bin/'. 'RNAseq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
+#' If you want to set up the environment for the following RNA-Seq workflow in R shell, please see \code{RNAseqEnvironmentSet()} function.
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
+#' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+#' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
 #'
 #' @export
-#' @example
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
+#' @examples
+#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
+#' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)
 RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
@@ -26,7 +34,7 @@ RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
   MkdirAll(path.prefix)
   fileConn<-file(paste0(path.prefix, "Rscript/Environment_Set.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNAseqEnvironmentSet(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', genome.name = '", genome.name, "', sample.pattern = '", sample.pattern, "', indexes.optional = ",indexes.optional, ", os.type = '", os.type, "')")
+  second <- paste0("RNAseqEnvironmentSet(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', genome.name = '", genome.name, "', sample.pattern = '", sample.pattern, "', indexes.optional = ",indexes.optional, ", os.type = '", os.type, "', mkdir.bool = ", FALSE, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Environment_Set.R' has been created.\n"))
@@ -36,29 +44,34 @@ RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
   }
 }
 
-#' Set up the environment for the RNA seq pipeline in R shell
+#' @title Environment setting for RNA-Seq workflow in R shell
 #'
-#' 1. To set up the environment for the following RNA seq pipeline in R shell, create 'RNASeqWorkFlowParam' first, get the value from the instance of this S4 object, and then put set the corresponding value to the input of this function.
-#' 2. To set up the environment for the following RNA seq pipeline in background, create 'RNASeqWorkFlowParam' first, and run 'RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam)'.
-#' It is recommended to set up the environment in background.
+#' @description Set up the environment for the following RNA-Seq workflow in R shell.
+#' It is strongly advised to run \code{RNAseqEnvironmentSet_CMD()} directly. Running this function directly is not recommended.
+#' This function do 4 things : 1. Create file directories. 2. Install necessary tools. 3. Export 'RNAseq_bin/' to the R environment. 4. Check command of tools.
+#' First it will create 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
+#' 'Gffcompare' will be installed under 'RNAseq_bin/'. 'RNAseq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
+#' If you want to set up the environment for the following RNA-Seq workflow in background, please see \code{RNAseqEnvironmentSet_CMD()} function.
 #'
 #' @param os.type 'linux' or 'osx'. The operating system type
-#' @param path.prefix the directory holding installations and analysis results
-#' @param input.path.prefix user has to prepared valid 'input_files/' under this directory
-#' @param genome.name gene name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
-#' @param sample.pattern  sample pattern describing the name of raw fastq.gz files
+#' @param path.prefix path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @param input.path.prefix path prefix of 'input_files/' directory
+#' @param genome.name variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
+#' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
 #' @param indexes.optional logical value whether indexes/ is exit in 'input_files/'
 #'
 #' @export
 #'
-#' @example
+#' @examples
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+#'                            independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
 #' RNAseqEnvironmentSet(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix, genome.name = exp@@genome.name,
 #'                      sample.pattern = exp@@sample.pattern, indexes.optional = exp@@indexes.optional, os.type = exp@@os.type)
-#'
-RNAseqEnvironmentSet <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indexes.optional, os.type) {
+RNAseqEnvironmentSet <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indexes.optional, os.type, mkdir.bool = TRUE) {
   CheckOperatingSystem(FALSE)
+  if (mkdir.bool) {
+    MkdirAll(path.prefix)
+  }
   PreRNAseqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
   CopyInputDir(path.prefix = path.prefix, input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, indexes.optional = indexes.optional)
   InstallAll(path.prefix = path.prefix, os.type = os.type)
@@ -66,7 +79,7 @@ RNAseqEnvironmentSet <- function(path.prefix, input.path.prefix, genome.name, sa
   PostRNAseqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }
 
-#' Create sample gene directory
+# Create sample gene directory
 MkdirGeneDir <- function(path.prefix) {
   cat("\u25CF 1. Creating 'gene-data/' directory\n")
   gene_data.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/')), showWarnings = FALSE) == 0
@@ -119,7 +132,7 @@ MkdirGeneDir <- function(path.prefix) {
   }
 }
 
-#' Make RNAseq_bin/ directory
+# Make RNAseq_bin/ directory
 MkdirRNAseq_bin <- function(path.prefix) {
   cat("\u25CF 2. Creating 'RNAseq_bin/' directory\n")
   RNAseq_bin.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_bin/')), showWarnings = FALSE) == 0
@@ -142,7 +155,7 @@ MkdirRNAseq_bin <- function(path.prefix) {
   }
 }
 
-#' Make RNAseq_results/ directory
+# Make RNAseq_results/ directory
 MkdirRNAseq_results <- function(path.prefix){
   cat("\u25CF 3. Creating 'RNAseq_results/' directory\n")
   RNAseq_results.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/')), showWarnings = FALSE) == 0
@@ -153,7 +166,7 @@ MkdirRNAseq_results <- function(path.prefix){
   }
 }
 
-#' Make
+# Make
 MkdirRscript_Rscript_out <- function(path.prefix) {
   cat("\u25CF 4. Creating 'Rscript/' directory\n")
   RNAseq_rscript.dir <- dir.create(file.path(paste0(path.prefix, 'Rscript/')), showWarnings = FALSE) == 0
@@ -171,7 +184,7 @@ MkdirRscript_Rscript_out <- function(path.prefix) {
   }
 }
 
-#' Create sample gene and binary directory
+# Create sample gene and binary directory
 MkdirAll <- function(path.prefix) {
   cat("************** Creating Directories ************\n")
   MkdirGeneDir(path.prefix)
@@ -180,7 +193,7 @@ MkdirAll <- function(path.prefix) {
   MkdirRscript_Rscript_out(path.prefix)
 }
 
-#' inner function : Copy input files directory
+# inner function : Copy input files directory
 CopyInputDir <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indexes.optional = indexes.optional) {
   current.path <- getwd()
   setwd(paste0(path.prefix, "gene_data/"))
@@ -207,7 +220,7 @@ CopyInputDir <- function(path.prefix, input.path.prefix, genome.name, sample.pat
   }
 }
 
-#' Install Hisat2 binay
+# Install Hisat2 binay
 InstallHisat2Bianry <- function(path.prefix, os.type){
   os <- os.type
   url <- 'ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/'
@@ -241,7 +254,7 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
   return(TRUE)
 }
 
-#' Install stringtie binary
+# Install stringtie binary
 InstallStringTieBinary <- function(path.prefix, os.type){
   os <- os.type
   url <- 'http://ccb.jhu.edu/software/stringtie/dl/'
@@ -274,7 +287,7 @@ InstallStringTieBinary <- function(path.prefix, os.type){
   return(TRUE)
 }
 
-#' Install Gffcompare binary
+# Install Gffcompare binary
 InstallGffcompareBinary <- function(path.prefix, os.type){
   os <- os.type
   current.path <- getwd()
@@ -308,7 +321,7 @@ InstallGffcompareBinary <- function(path.prefix, os.type){
   return(TRUE)
 }
 
-#' Install Samtools binary
+# Install Samtools binary
 InstallSamtoolsBinary <- function(path.prefix, os.type){
   os <- os.type
   current.path <- getwd()
@@ -345,12 +358,7 @@ InstallSamtoolsBinary <- function(path.prefix, os.type){
   return(TRUE)
 }
 
-#' Install 'Hisat2', 'StringTie', 'Gffcompare', 'Samtools'
-#'
-#' This function is not designed to run directly. Please run 'InstallToolsCMD()' to accomplish the whole installing process.
-#'
-#' @param path.prefix directory that will store all the files created throughout the pipeline
-#' @param os.type the operating system type of the current workstation. Only 'linux' and 'osx'are valid
+# Install 'Hisat2', 'StringTie', 'Gffcompare', 'Samtools'
 InstallAll <- function(path.prefix, os.type) {
   cat("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  Start installing ... \u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
   cat("   \u261E\u261E  \u25CF'hisat2', \u25CF'stringtie', \u25CF'gffcompare', \u25CF'samtools' will be installed. ... \n")
@@ -368,11 +376,7 @@ InstallAll <- function(path.prefix, os.type) {
   #return(CheckToolAll(print=FALSE))
 }
 
-
-#' Check 'hisat2'
-#'
-#' Check whether 'hisat2' is installed on the workstation
-#'
+# Check 'hisat2'
 CheckHisat2 <- function(print=TRUE){
   if (print) {
     cat(paste0("     \u25CF  Checking hisat2 command\n"))
@@ -390,10 +394,7 @@ CheckHisat2 <- function(print=TRUE){
   }
 }
 
-#' Check s'tringtie'
-#'
-#' Check whether 'stringtie' is installed on the workstation
-#'
+# Check s'tringtie'
 CheckStringTie <- function(print=TRUE){
   if (print){
     cat(paste0("     \u25CF  Checking stringtie command\n"))
@@ -411,10 +412,7 @@ CheckStringTie <- function(print=TRUE){
   }
 }
 
-#' Check Gffcompare
-#'
-#' Check whether Gffcompare is installed on the workstation
-#'
+# Check Gffcompare
 CheckGffcompare <- function(print=TRUE) {
   if(print) {
     cat(paste0("     \u25CF  Checking gffcompare command\n"))
@@ -432,10 +430,7 @@ CheckGffcompare <- function(print=TRUE) {
   }
 }
 
-#' Check Samtools
-#'
-#' Check whether Samtools is installed on the workstation
-#'
+# Check Samtools
 CheckSamtools <- function(print=TRUE){
   if (print) {
     cat(paste0("     \u25CF  Checking samtools command\n"))
@@ -453,9 +448,11 @@ CheckSamtools <- function(print=TRUE){
   }
 }
 
-#' Check necessary programs for this pipeline
+#' @title Check 'Hisat2', 'StringTie', 'Samtools' and 'Gffcompare' for this workflow
 #'
-#' Check whether Hisat2, Stringtie, Samtools, Gffcompare are installed on the workstation
+#' @description Check whether 'Hisat2', 'Stringtie', 'Samtools' and 'Gffcompare' are installed on the workstation
+#'
+#' @param print If \code{TRUE}, detailed information will be printed. If \code{FALSE}, detailed information will not be printed.
 #'
 #' @export
 CheckToolAll <- function(print=TRUE) {
@@ -471,7 +468,6 @@ CheckToolAll <- function(print=TRUE) {
     return(FALSE)
   }
 }
-
 
 PreRNAseqEnvironmentSet <- function(path.prefix, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C RNAseqEnvironmentSet()' environment pre-check ...\n")

@@ -1,13 +1,13 @@
 #'
 #'@export
-RNAseqWorkFlow <- function(RNASeqWorkFlowParam, num.parallel.threads = 8, trimming.score = 30, ballgown.log2FC = 1, ballgown.qval = 0.05, run = TRUE, check.s4.print = TRUE) {
+RNAseqWorkFlow <- function(RNASeqWorkFlowParam, num.parallel.threads = 1, trimming.score = 30, ballgown.log2FC = 1, ballgown.qval = 0.05, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
   RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam, run = FALSE, check.s4.print = FALSE)
   RNAseqQualityAssessment_CMD(RNASeqWorkFlowParam, run = FALSE, check.s4.print = FALSE)
   RNAseqQualityTrimming_CMD(RNASeqWorkFlowParam, run = FALSE, check.s4.print = FALSE)
-  RNAseqRawReadProcess_CMD(RNASeqWorkFlowParam, num.parallel.threads = 8, run = FALSE, check.s4.print = FALSE)
+  RNAseqRawReadProcess_CMD(RNASeqWorkFlowParam, num.parallel.threads = 1, run = FALSE, check.s4.print = FALSE)
   RNAseqBallgownProcess_CMD(RNASeqWorkFlowParam, ballgown.log2FC = 1, ballgown.qval = 0.05, run = FALSE, check.s4.print = FALSE)
   fileConn<-file(paste0(path.prefix, "Rscript/RNASEQ_WORKFLOW.R"))
   first <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Environment_Set.R ", path.prefix, "Rscript_out/Environment_Set.Rout"), "\", stdout = \"\", wait = TRUE )")

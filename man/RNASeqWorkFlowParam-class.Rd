@@ -17,21 +17,21 @@ An S4 class for checking and storing RNA-Seq workflow parameters of this package
 
 \item{\code{python.variable}}{a list storing python environment. (check.answer, python.version)}
 
-\item{\code{path.prefix}}{the directory holding installations and analysis results}
+\item{\code{path.prefix}}{path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories}
 
 \item{\code{input.path.prefix}}{path prefix of 'input_files/' directory}
 
 \item{\code{genome.name}}{variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)}
 
-\item{\code{sample.pattern}}{sample pattern describing the name of raw fastq.gz files}
+\item{\code{sample.pattern}}{regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'}
 
-\item{\code{independent.variable}}{set the type of the RNA-Seq analysis workflow. Character of one of "two.group", "multi.group.pairs", "multi.group.anova"}
+\item{\code{independent.variable}}{independent variable for the biological experiment design of two-group RNA-Seq workflow}
 
-\item{\code{control.group}}{main sample grouping variable}
+\item{\code{control.group}}{group name of the control group}
 
-\item{\code{experiment.group}}{additional sample information}
+\item{\code{experiment.group}}{group name of the experiment group}
 
-\item{\code{indexes.optional}}{logical value whether indexes/ is exit in 'input_files/'}
+\item{\code{indexes.optional}}{logical value whether 'indexes/' is exit in 'input_files/'}
 }}
 
 \examples{

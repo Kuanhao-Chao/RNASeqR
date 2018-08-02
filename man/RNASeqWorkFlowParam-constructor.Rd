@@ -10,19 +10,19 @@ RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA,
   control.group = NA, experiment.group = NA)
 }
 \arguments{
-\item{path.prefix}{the directory holding installations and analysis results}
+\item{path.prefix}{path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories}
 
-\item{input.path.prefix}{user has to prepared valid 'input_files/' under this directory}
+\item{input.path.prefix}{path prefix of 'input_files/' directory}
 
-\item{genome.name}{gene name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)}
+\item{genome.name}{variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)}
 
-\item{sample.pattern}{sample pattern describing the name of raw fastq.gz files}
+\item{sample.pattern}{regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'}
 
-\item{independent.variable}{set the type of the RNA-Seq analysis workflow. Character of one of "two.group", "pair-wise.group", "multi.group"}
+\item{independent.variable}{independent variable for the biological experiment design of two-group RNA-Seq workflow}
 
-\item{control.group}{main sample grouping variable}
+\item{control.group}{group name of the control group}
 
-\item{experiment.group}{additional sample information}
+\item{experiment.group}{group name of the experiment group}
 }
 \value{
 an object of class \code{RNASeqWorkFlowParam}
