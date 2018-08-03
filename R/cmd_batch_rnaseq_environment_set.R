@@ -245,11 +245,21 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
   cat(paste0("************** Installing Hisat2 ", "(", os.file.name.zip, ") ************\n"))
   download.file(url, paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip))
   cat(paste0("\n************** Unpacking Hisat2 ", "(", os.file.name.zip, ") ************\n"))
-  system2(command = 'unzip', args = paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip," -d ", path.prefix, "RNAseq_bin/Unpacked/"))
+  main.command <- "unzip"
+  command.result <- system2(command = main.command, args = paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip," -d ", path.prefix, "RNAseq_bin/Unpacked/"))
+  if (command.result != 0 ) {
+    cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+    stop(paste0("'", main.command, "' ERROR"))
+  }
   current.path <- getwd()
   setwd(paste0(path.prefix, "RNAseq_bin/Unpacked/", os.file.name, "/"))
   cat("\n************** Moving Hisat2 Binary ************")
-  system2(command = 'cp', args = c("hisat2*", "*.py", paste0(path.prefix, "RNAseq_bin/")), stderr = FALSE)
+  main.command <- 'cp'
+  command.result <- system2(command = main.command, args = c("hisat2*", "*.py", paste0(path.prefix, "RNAseq_bin/")), stderr = FALSE)
+  if (command.result != 0 ) {
+    cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+    stop(paste0("'", main.command, "' ERROR"))
+  }
   on.exit(setwd(current.path))
   cat(paste0("\n'", path.prefix, "RNAseq_bin/Download/", os.file.name.zip,"' has been installed.\n"))
   cat(paste0("Hisat2 has been unpacked. ('", path.prefix, "RNAseq_bin/Unpacked/", os.file.name, "/')"), "\n\n")
@@ -278,11 +288,21 @@ InstallStringTieBinary <- function(path.prefix, os.type){
   cat(paste0("************** Installing stringtie ", "(", os.file.name.zip, ") ************\n"))
   download.file(url, paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip))
   cat(paste0("\n************** Unpacking stringtie ", "(", os.file.name.zip, ") ************\n"))
-  system2(command = 'tar', args = c("xvzf", paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip), "-C", paste0(path.prefix, "RNAseq_bin/Unpacked/")))
+  main.command <- "tar"
+  command.result <- system2(command = main.command, args = c("xvzf", paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip), "-C", paste0(path.prefix, "RNAseq_bin/Unpacked/")))
+  if (command.result != 0 ) {
+    cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+    stop(paste0("'", main.command, "' ERROR"))
+  }
   current.path <- getwd()
   setwd(paste0(path.prefix, "RNAseq_bin/Unpacked/", os.file.name))
   cat("\n************** Moving stringtie Binary ************")
-  system2(command = 'cp', args = c("stringtie", paste0(path.prefix, "RNAseq_bin/")), stderr = FALSE)
+  main.command <- "cp"
+  command.result <- system2(command = main.command, args = c("stringtie", paste0(path.prefix, "RNAseq_bin/")), stderr = FALSE)
+  if (command.result != 0 ) {
+    cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+    stop(paste0("'", main.command, "' ERROR"))
+  }
   on.exit(setwd(current.path))
   cat(paste0("\n'", path.prefix, "RNAseq_bin/Download/", os.file.name.zip,"' has been installed.\n"))
   cat(paste0("StringTie has been unpacked. ('", path.prefix, "RNAseq_bin/Unpacked/", os.file.name, "')"), "\n\n")
@@ -312,11 +332,21 @@ InstallGffcompareBinary <- function(path.prefix, os.type){
   cat(paste0("************** Installing gffcompare ", "(", os.file.name.zip, ") ************\n"))
   download.file(url, paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip))
   cat(paste0("\n************** Unpacking gffcompare ", "(", os.file.name.zip, ") ************\n"))
-  system2(command = 'tar', args = c("xvzf", paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip), "-C", paste0(path.prefix, "RNAseq_bin/Unpacked/")))
+  main.command <- "tar"
+  command.result <- system2(command = main.command, args = c("xvzf", paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip), "-C", paste0(path.prefix, "RNAseq_bin/Unpacked/")))
+  if (command.result != 0 ) {
+    cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+    stop(paste0("'", main.command, "' ERROR"))
+  }
   current.path <- getwd()
   setwd(paste0(path.prefix, "RNAseq_bin/Unpacked/", os.file.name))
   cat("\n************** Moving gffcompare Binary ************")
-  system2(command = 'cp', args = c("gffcompare", paste0(path.prefix, "RNAseq_bin/")), stderr = FALSE)
+  main.command <- "cp"
+  command.result <- system2(command = main.command, args = c("gffcompare", paste0(path.prefix, "RNAseq_bin/")), stderr = FALSE)
+  if (command.result != 0 ) {
+    cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+    stop(paste0("'", main.command, "' ERROR"))
+  }
   on.exit(setwd(current.path))
   cat(paste0("\n'", path.prefix, "RNAseq_bin/Download/", os.file.name.zip,"' has been installed.\n"))
   cat(paste0("Gffcompare has been unpacked. ('", path.prefix, "RNAseq_bin/Unpacked/", os.file.name, "')"), "\n\n")
@@ -344,14 +374,33 @@ InstallSamtoolsBinary <- function(path.prefix, os.type){
     return(FALSE)
   }
   cat(paste0("************** Installing samtools ", "(", os.file.name.zip, ") ************\n"))
-  system2(command = 'curl', args = c('-L', 'https://github.com/samtools/samtools/releases/download/1.8/samtools-1.8.tar.bz2', '>', paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip)), stdout = "", wait = TRUE)
+  main.command <- "curl"
+  command.result <- system2(command = main.command, args = c('-L', 'https://github.com/samtools/samtools/releases/download/1.8/samtools-1.8.tar.bz2', '>', paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip)), stdout = "", wait = TRUE)
+  if (command.result != 0 ) {
+    cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+    stop(paste0("'", main.command, "' ERROR"))
+  }
   cat(paste0("\n************** Unpacking samtools ", "(", os.file.name.zip, ") ************\n"))
-  system2(command = 'tar', args = c("jxvf", paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip), "-C", paste0(path.prefix, "RNAseq_bin/Unpacked/")))
+  main.command <- "tar"
+  command.result <- system2(command = main.command, args = c("jxvf", paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip), "-C", paste0(path.prefix, "RNAseq_bin/Unpacked/")))
+  if (command.result != 0 ) {
+    cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+    stop(paste0("'", main.command, "' ERROR"))
+  }
   current.path <- getwd()
   cat(paste0("\n************** Making samtools ", "(", os.file.name, ") ************"))
   setwd(paste0(path.prefix, "RNAseq_bin/Unpacked/", os.file.name))
-  system2(command = 'make', args = "clean", stderr = FALSE)
-  system2(command = 'make')
+  main.command <- 'make'
+  command.result <- system2(command = main.command, args = "clean", stderr = FALSE)
+  if (command.result != 0 ) {
+    cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+    stop(paste0("'", main.command, "' ERROR"))
+  }
+  command.result <- system2(command = main.command)
+  if (command.result != 0 ) {
+    cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+    stop(paste0("'", main.command, "' ERROR"))
+  }
   cat("\n************** Moving samtools Binary ************")
   file.copy("samtools", paste0(path.prefix, "RNAseq_bin/"))
   on.exit(setwd(current.path))
@@ -381,7 +430,7 @@ InstallAll <- function(path.prefix, os.type) {
 # Check 'hisat2'
 CheckHisat2 <- function(print=TRUE){
   if (print) {
-    cat(paste0("     \u25CF  Checking hisat2 command\n"))
+    cat(paste0("\u25CF\u25CF  Checking hisat2 command\n"))
   }
   hisat2.installed <- system('hisat2 --version', ignore.stdout = !print , ignore.stderr = !print)==0
   if( isTRUE(hisat2.installed)){
@@ -399,7 +448,7 @@ CheckHisat2 <- function(print=TRUE){
 # Check s'tringtie'
 CheckStringTie <- function(print=TRUE){
   if (print){
-    cat(paste0("     \u25CF  Checking stringtie command\n"))
+    cat(paste0("\u25CF\u25CF  Checking stringtie command\n"))
   }
   stringtie.installed <- system( 'stringtie --version', ignore.stdout = !print, ignore.stderr = !print)==0
   if( isTRUE(stringtie.installed)){
@@ -417,7 +466,7 @@ CheckStringTie <- function(print=TRUE){
 # Check Gffcompare
 CheckGffcompare <- function(print=TRUE) {
   if(print) {
-    cat(paste0("     \u25CF  Checking gffcompare command\n"))
+    cat(paste0("\u25CF\u25CF  Checking gffcompare command\n"))
   }
   gffcompare.old <- system( 'gffcompare --version', ignore.stdout = !print, ignore.stderr = !print)==0
   if( isTRUE(gffcompare.old)){
@@ -435,7 +484,7 @@ CheckGffcompare <- function(print=TRUE) {
 # Check Samtools
 CheckSamtools <- function(print=TRUE){
   if (print) {
-    cat(paste0("     \u25CF  Checking samtools command\n"))
+    cat(paste0("\u25CF\u25CF  Checking samtools command\n"))
   }
   samtools.old <- system( 'samtools --version', ignore.stdout = !print, ignore.stderr = !print)==0
   if( isTRUE(samtools.old)){
@@ -477,7 +526,7 @@ PreRNAseqEnvironmentSet <- function(path.prefix, sample.pattern) {
   if (!isTRUE(validity)) {
     stop("RNAseqEnvironmentSet environment() ERROR")
   }
-  cat("     (\u2714) : RNAseqEnvironmentSet() pre-check is valid\n\n")
+  cat("(\u2714) : RNAseqEnvironmentSet() pre-check is valid\n\n")
 }
 
 PostRNAseqEnvironmentSet <- function(path.prefix, sample.pattern) {
@@ -491,7 +540,7 @@ PostRNAseqEnvironmentSet <- function(path.prefix, sample.pattern) {
   if (!isTRUE(validity)) {
     stop("RNAseqEnvironmentSet() post-check ERROR")
   }
-  cat("     (\u2714) : RNAseqEnvironmentSet() post-check is valid\n\n")
+  cat("(\u2714) : RNAseqEnvironmentSet() post-check is valid\n\n")
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))

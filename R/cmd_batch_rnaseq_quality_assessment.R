@@ -129,7 +129,7 @@ PreCheckRNAseqQualityAssessment <- function(path.prefix, sample.pattern) {
   if (!isTRUE(validity)) {
     stop("RNAseqQualityAssessment environment() ERROR")
   }
-  cat("     (\u2714) : RNAseqQualityAssessment() pre-check is valid\n\n")
+  cat("(\u2714) : RNAseqQualityAssessment() pre-check is valid\n\n")
 }
 
 PostCheckRNAseqQualityAssessment <- function(path.prefix) {
@@ -155,7 +155,7 @@ PostCheckRNAseqQualityAssessment <- function(path.prefix) {
     }
     stop("RNAseqQualityAssessment() post-check ERROR")
   } else {
-    cat("     (\u2714) : RNAseqQualityAssessment() post-check is valid\n\n")
+    cat("(\u2714) : RNAseqQualityAssessment() post-check is valid\n\n")
     cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
     cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
     cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))

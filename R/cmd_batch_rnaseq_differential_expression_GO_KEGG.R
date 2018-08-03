@@ -35,7 +35,7 @@ PreRNAseqDeGoKegg <- function() {
   if (!isTRUE(validity)) {
     stop("RNAseqBallgownProcess() environment ERROR")
   }
-  cat("     (\u2714) : RNAseqBallgownProcess() pre-check is valid\n\n")
+  cat("(\u2714) : RNAseqBallgownProcess() pre-check is valid\n\n")
 }
 
 PostRNAseqDeGoKegg <- function() {
@@ -44,7 +44,7 @@ PostRNAseqDeGoKegg <- function() {
   if (!isTRUE(validity)) {
     stop("RNAseqBallgownProcess() post-check ERROR")
   }
-  cat("     (\u2714) : RNAseqBallgownProcess() post-check is valid\n\n")
+  cat("(\u2714) : RNAseqBallgownProcess() post-check is valid\n\n")
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))

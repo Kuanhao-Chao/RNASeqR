@@ -1,3 +1,6 @@
+#' RNASeqWorkflow-package
+#'
+#' @name RNASeqWorkflow
 #' @importFrom tools file_ext
 #' @importFrom reticulate py_available py_config
 #' @importFrom ballgown ballgown texpr subset stattest geneNames geneIDs transcriptNames indexes structure

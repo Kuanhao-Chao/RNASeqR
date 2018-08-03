@@ -130,7 +130,7 @@ PreRNAseqRawReadProcess <- function(path.prefix, genome.name, sample.pattern) {
   if (!isTRUE(validity)) {
     stop("RNAseqRawReadProcess() environment ERROR")
   }
-  cat("     (\u2714) : RNAseqRawReadProcess() pre-check is valid\n\n")
+  cat("(\u2714) : RNAseqRawReadProcess() pre-check is valid\n\n")
 }
 
 PostRNAseqRawReadProcess <- function(path.prefix, genome.name, sample.pattern) {
@@ -149,7 +149,7 @@ PostRNAseqRawReadProcess <- function(path.prefix, genome.name, sample.pattern) {
   if (!isTRUE(validity)) {
     stop("RNAseqRawReadProcess() post-check ERROR")
   }
-  cat("     (\u2714) : RNAseqRawReadProcess() post-check is valid\n\n")
+  cat("(\u2714) : RNAseqRawReadProcess() post-check is valid\n\n")
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))

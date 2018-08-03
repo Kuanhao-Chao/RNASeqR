@@ -25,7 +25,12 @@ Ballgown_TPM <- function() {
       output.file.path <- paste0(path.prefix, "gene_data/ballgown/", i, "/", i, "_transcript.gtf")
       command <- paste0("'{if ($3==\"transcript\") print}' ", input.file.path, " | cut -f 1,4,9 > ", output.file.path)
       print(command)
-      system2(command = "awk", args = c(command))
+      main.command <- "awk"
+      command.result <- system2(command = main.command, args = c(command))
+      if (command.result != 0 ) {
+        cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+        stop(paste0("'", main.command, "' ERROR"))
+      }
     }
 
 

@@ -16,43 +16,73 @@ CreateHisat2Index <- function (path.prefix, genome.name, sample.pattern, splice.
         current.path <- getwd()
         setwd(paste0(path.prefix, "gene_data/indexes/"))
         if (isTRUE(splice.site.info)) {
-          whole.command.1 <-  paste0(path.prefix, 'gene_data/ref_genes/', genome.name, '.gtf > ', genome.name, '.ss')
-          cat(c("Input command :", paste("extract_splice_sites.py", whole.command), "\n"))
-          command.list <- c(command.list, paste("    command : extract_splice_sites.py", whole.command))
-          system2(command = 'extract_splice_sites.py', args = whole.command)
+          whole.command <-  paste0(path.prefix, 'gene_data/ref_genes/', genome.name, '.gtf > ', genome.name, '.ss')
+          main.command <- "extract_splice_sites.py"
+          cat(c("Input command :", paste(main.command, whole.command), "\n"))
+          command.list <- c(command.list, paste("    command :", main.command, whole.command))
+          command.result <- system2(command = main.command, args = whole.command)
+          # break is return is not 0 (means success!)
+          if (command.result != 0 ) {
+            cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+            stop(paste0("'", main.command, "' ERROR"))
+          }
           cat("\n")
         }
         if (isTRUE(exon.info)) {
-          whole.command.2 <- paste0(path.prefix, 'gene_data/ref_genes/', genome.name, '.gtf > ', genome.name, '.exon')
-          cat(c("Input command :", paste("extract_exons.py", whole.command), "\n"))
-          command.list <- c(command.list, paste("    command : extract_exons.py", whole.command))
-          system2(command = 'extract_exons.py', args = whole.command)
+          whole.command <- paste0(path.prefix, 'gene_data/ref_genes/', genome.name, '.gtf > ', genome.name, '.exon')
+          main.command <- "extract_exons.py"
+          cat(c("Input command :", paste(main.command, whole.command), "\n"))
+          command.list <- c(command.list, paste("    command :", main.command, whole.command))
+          command.result <- system2(command = main.command, args = whole.command)
+          if (command.result != 0 ) {
+            cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+            stop(paste0("'", main.command, "' ERROR"))
+          }
           cat("\n")
         }
-
         if (isTRUE(splice.site.info) && isTRUE(exon.info)) {
           whole.command <- paste(paste('--ss', paste0(genome.name, '.ss'), '--exon', paste0(genome.name, '.exon'), paste0(path.prefix, 'gene_data/ref_genome/', genome.name, '.fa'), paste0(genome.name, '_tran')))
-          cat(c("Input command :", paste("hisat2-build", whole.command), "\n"))
-          command.list <- c(command.list, paste("    command : hisat2-build", whole.command))
-          # system2(command = 'hisat2-build', args = whole.command)
+          main.command <- "hisat2-build"
+          cat(c("Input command :", paste(main.command, whole.command), "\n"))
+          command.list <- c(command.list, paste("    command :", main.command, whole.command))
+          command.result <- system2(command = main.command, args = whole.command)
+          if (command.result != 0 ) {
+            cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+            stop(paste0("'", main.command, "' ERROR"))
+          }
           cat("\n")
         } else if (isTRUE(splice.site.info) && !isTRUE(exon.info)) {
           whole.command <- paste(paste('--ss', paste0(genome.name, '.ss'), paste0(path.prefix, 'gene_data/ref_genome/', genome.name, '.fa'), paste0(genome.name, '_tran')))
-          cat(c("Input command :", paste("hisat2-build", whole.command), "\n"))
-          command.list <- c(command.list, paste("    command : hisat2-build", whole.command))
-          # system2(command = 'hisat2-build', args = whole.command)
+          main.command <- "hisat2-build"
+          cat(c("Input command :", paste(main.command, whole.command), "\n"))
+          command.list <- c(command.list, paste("    command :", main.command, whole.command))
+          command.result <- system2(command = main.command, args = whole.command)
+          if (command.result != 0 ) {
+            cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+            stop(paste0("'", main.command, "' ERROR"))
+          }
           cat("\n")
         } else if (!isTRUE(splice.site.info) && isTRUE(exon.info)) {
           whole.command <- paste(paste('--exon', paste0(genome.name, '.exon'), paste0(path.prefix, 'gene_data/ref_genome/', genome.name, '.fa'), paste0(genome.name, '_tran')))
-          cat(c("Input command :", paste("hisat2-build", whole.command), "\n"))
-          command.list <- c(command.list, paste("    command : hisat2-build", whole.command))
-          # system2(command = 'hisat2-build', args = whole.command)
+          main.command <- "hisat2-build"
+          cat(c("Input command :", paste(main.command, whole.command), "\n"))
+          command.list <- c(command.list, paste("    command :", main.command, whole.command))
+          command.result <- system2(command = main.command, args = whole.command)
+          if (command.result != 0 ) {
+            cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+            stop(paste0("'", main.command, "' ERROR"))
+          }
           cat("\n")
         } else {
           whole.command <- paste(paste(paste0(path.prefix, 'gene_data/ref_genome/', genome.name, '.fa'), paste0(genome.name, '_tran')))
-          cat(c("Input command :", paste("hisat2-build", whole.command), "\n"))
-          command.list <- c(command.list, paste("    command : hisat2-build", whole.command))
-          # system2(command = 'hisat2-build', args = whole.command)
+          main.command <- "hisat2-build"
+          cat(c("Input command :", paste(main.command, whole.command), "\n"))
+          command.list <- c(command.list, paste("    command :", main.command, whole.command))
+          command.result <- system2(command = main.command, args = whole.command)
+          if (command.result != 0 ) {
+            cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+            stop(paste0("'", main.command, "' ERROR"))
+          }
           cat("\n")
         }
         command.list <- c(command.list, "\n")
@@ -97,9 +127,14 @@ Hisat2AlignmentDefault <- function(path.prefix, genome.name, sample.pattern, num
           }
           whole.command <- paste("-p", num.parallel.threads,"--dta -x", paste0("indexes/", genome.name, "_tran"), total.sub.command, "-S", paste0("raw_sam/", sample.name[i],".sam") )
           if (i != 1) cat("\n")
-          cat(c("Input command :", paste("hisat2", whole.command), "\n"))
-          command.list <- c(command.list, paste("    command : hisat2", whole.command))
-          system2(command = 'hisat2', args = whole.command)
+          main.command <- "hisat2"
+          cat(c("Input command :", paste(main.command, whole.command), "\n"))
+          command.list <- c(command.list, paste("    command :", main.command, whole.command))
+          command.result <- system2(command = main.command, args = whole.command)
+          if (command.result != 0 ) {
+            cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+            stop(paste0("'", main.command, "' ERROR"))
+          }
         }
         cat("\n")
         command.list <- c(command.list, "\n")
@@ -175,9 +210,14 @@ SamtoolsToBam <- function(path.prefix, genome.name, sample.pattern, num.parallel
       for( i in 1:iteration.num){
         whole.command <- paste("sort -@", num.parallel.threads, "-o", paste0("raw_bam/", sample.name[i], ".bam"), paste0("raw_sam/", sample.name[i], ".sam"))
         if (i != 1) cat("\n")
-        cat(c("Input command :", paste("samtools", whole.command), "\n"))
-        command.list <- c(command.list, paste("    command : samtools", whole.command))
-        system2(command = "samtools", args = whole.command)
+        main.command <- "samtools"
+        cat(c("Input command :", paste(main.command, whole.command), "\n"))
+        command.list <- c(command.list, paste("    command :", main.command, whole.command))
+        command.result <- system2(command = main.command, args = whole.command)
+        if (command.result != 0 ) {
+          cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+          stop(paste0("'", main.command, "' ERROR"))
+        }
       }
       cat("\n")
       command.list <- c(command.list, "\n")
@@ -205,9 +245,14 @@ StringTieAssemble <- function(path.prefix, genome.name, sample.pattern, num.para
       for( i in 1:iteration.num){
         whole.command <- paste("-p", num.parallel.threads, "-G",paste0("ref_genes/", genome.name, ".gtf"), "-o", paste0("raw_gtf/", sample.name[i], ".gtf"), "-l", sample.name[i], paste0("raw_bam/", sample.name[i], ".bam"))
         if (i != 1) cat("\n")
-        cat(c("Input command :", paste("stringtie", whole.command), "\n"))
-        command.list <- c(command.list, paste("    command : stringtie", whole.command))
-        system2(command = "stringtie", args = whole.command)
+        main.command <- "stringtie"
+        cat(c("Input command :", paste(main.command, whole.command), "\n"))
+        command.list <- c(command.list, paste("    command :", main.command, whole.command))
+        command.result <- system2(command = main.command, args = whole.command)
+        if (command.result != 0 ) {
+          cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+          stop(paste0("'", main.command, "' ERROR"))
+        }
       }
       cat("\n")
       command.list <- c(command.list, "\n")
@@ -245,9 +290,14 @@ StringTieMergeTrans <- function(path.prefix, genome.name, sample.pattern, num.pa
       writeLines(write.content, write.file)
       close(write.file)
       whole.command <- paste("--merge -p", num.parallel.threads, "-G", paste0("ref_genes/", genome.name, ".gtf"), "-o", "merged/stringtie_merged.gtf", "merged/mergelist.txt")
-      cat(c("Input command :", paste("stringtie", whole.command), "\n"))
-      command.list <- c(command.list, paste("    command : stringtie", whole.command))
-      system2(command = "stringtie", args = whole.command)
+      main.command <- "stringtie"
+      cat(c("Input command :", paste(main.command, whole.command), "\n"))
+      command.list <- c(command.list, paste("    command :", main.command, whole.command))
+      command.result <- system2(command = main.command, args = whole.command)
+      if (command.result != 0 ) {
+        cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+        stop(paste0("'", main.command, "' ERROR"))
+      }
       cat("\n")
       command.list <- c(command.list, "\n")
       fileConn <- paste0(path.prefix, "RNAseq_results/COMMAND.txt")
@@ -276,10 +326,15 @@ StringTieToBallgown <- function(path.prefix, genome.name, sample.pattern, num.pa
       for( i in 1:iteration.num){
         # '-e' only estimate the abundance of given reference transcripts (requires -G)
         whole.command <- paste("-e -B -p", num.parallel.threads, "-G", "merged/stringtie_merged.gtf", "-o", paste0("ballgown/", sample.name[i],"/", sample.name[i], ".gtf"), "-A", paste0("gene_abundance/", sample.name[i],"/", sample.name[i], ".tsv"), paste0("raw_bam/", sample.name[i], ".bam"))
+        main.command <- 'stringtie'
         if (i != 1) cat("\n")
-        cat(c("Input command :", paste("stringtie", whole.command), "\n"))
-        command.list <- c(command.list, paste("    command : stringtie", whole.command))
-        system2(command = "stringtie", args = whole.command)
+        cat(c("Input command :", paste(main.command, whole.command), "\n"))
+        command.list <- c(command.list, paste("    command :", main.command, whole.command))
+        command.result <- system2(command = main.command, args = whole.command)
+        if (command.result != 0 ) {
+          cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+          stop(paste0("'", main.command, "' ERROR"))
+        }
       }
       cat("\n")
       command.list <- c(command.list, "\n")
@@ -311,9 +366,14 @@ StringTieReEstimate <- function(path.prefix, genome.name, sample.pattern, num.pa
       for( i in 1:iteration.num){
         whole.command <- paste("-p", num.parallel.threads, "-e -B -G", paste0("merged/stringtie_merged.gtf"), "-o", paste0("ballgown/", sample.name[i], "/",  sample.name[i], ".gtf"), "-A", paste0("gene_abundance/", sample.name[i],"/", sample.name[i], ".tsv"), paste0("raw_bam/", sample.name[i], ".bam"))
         if (i != 1) cat("\n")
-        cat(c("Input command :", paste("stringtie", whole.command), "\n"))
-        command.list <- c(command.list, paste("    command : stringtie", whole.command))
-        system2(command = "stringtie", args = whole.command)
+        main.command <- "stringtie"
+        cat(c("Input command :", paste(main.command, whole.command), "\n"))
+        command.list <- c(command.list, paste("    command :", main.command, whole.command))
+        command.result <- system2(command = main.command, args = whole.command)
+        if (command.result != 0 ) {
+          cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+          stop(paste0("'", main.command, "' ERROR"))
+        }
       }
       cat("\n")
       command.list <- c(command.list, "\n")
@@ -337,9 +397,14 @@ GffcompareRefSample <- function(path.prefix, genome.name, sample.pattern) {
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/"))
       whole.command <- paste("-r", paste0("ref_genes/", genome.name, ".gtf"), "-G -o merged/merged merged/stringtie_merged.gtf")
-      cat(c("Input command :", paste("gffcompare", whole.command), "\n"))
-      command.list <- c(command.list, paste("    command : gffcompare", whole.command))
-      system2(command = "gffcompare", args = whole.command)
+      main.command <- "gffcompare"
+      cat(c("Input command :", paste(main.command, whole.command), "\n"))
+      command.list <- c(command.list, paste("    command :", main.command, whole.command))
+      command.result <- system2(command = main.command, args = whole.command)
+      if (command.result != 0 ) {
+        cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+        stop(paste0("'", main.command, "' ERROR"))
+      }
       cat("\n")
       command.list <- c(command.list, "\n")
       fileConn <- paste0(path.prefix, "RNAseq_results/COMMAND.txt")
@@ -364,10 +429,15 @@ PreDECountTable <- function(path.prefix, sample.pattern, python.variable.answer,
   current.path <- getwd()
   setwd(paste0(path.prefix, "gene_data/reads_count_matrix/"))
   whole.command <- paste('https://ccb.jhu.edu/software/stringtie/dl/prepDE.py', '--output', paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py"))
-  cat(c("Input command :", paste("curl", whole.command), "\n"))
-  command.list <- c(command.list, paste("    command : curl", whole.command))
+  main.command <- "curl"
+  cat(c("Input command :", paste(main.command, whole.command), "\n"))
+  command.list <- c(command.list, paste("    command :", main.command, whole.command))
   command.list <- c(command.list, "\n")
-  system2(command = 'curl', args = whole.command, stdout = "", wait = TRUE)
+  command.result <- system2(command = main.command, args = whole.command, stdout = "", wait = TRUE)
+  if (command.result != 0 ) {
+    cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+    stop(paste0("'", main.command, "' ERROR"))
+  }
   cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/prepDE.py' has been installed.\n\n"))
   cat("************** Creating 'sample_lst.txt' file ************\n")
   sample.files <- list.files(paste0(path.prefix, "gene_data/ballgown/"), pattern = sample.pattern)
@@ -387,20 +457,29 @@ PreDECountTable <- function(path.prefix, sample.pattern, python.variable.answer,
     if(python.variable.version >= 3) {
       cat("(\u270D) : Converting 'prepDE.py' from python2 to python3 \n\n")
       whole.command <- paste0("-w ", path.prefix, "gene_data/reads_count_matrix/prepDE.py")
-      cat(c("Input command :", paste("2to3", whole.command), "\n\n"))
-
+      main.command <- "2to3"
+      cat(c("Input command :", paste(main.command, whole.command), "\n\n"))
       command.list <- c(command.list, "* Coverting prepDE.py to Python3 : ")
-      command.list <- c(command.list, paste("    command : 2to3", whole.command))
+      command.list <- c(command.list, paste("    command :", main.command, whole.command))
       command.list <- c(command.list, "\n")
-      system2(command = '2to3', args = whole.command)
+      command.result <- system2(command = main.command, args = whole.command)
+      if (command.result != 0 ) {
+        cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+        stop(paste0("'", main.command, "' ERROR"))
+      }
     } else if (python.variable.version < 3 && python.variable.version >= 2 ){
     }
     cat("\n(\u2714) : Creating gene and transcript raw count files now !\n")
     whole.command <- paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py -i ",  path.prefix, "gene_data/reads_count_matrix/sample_lst.txt")
-    cat(c("Input command :", paste("python", whole.command), "\n\n"))
+    main.command <- "python"
+    cat(c("Input command :", paste(main.command, whole.command), "\n\n"))
     command.list <- c(command.list, "* Creating Gene and Transcript Raw Count File : ")
-    command.list <- c(command.list, paste("    command : python", whole.command))
-    system2(command = 'python', args = whole.command, wait = TRUE)
+    command.list <- c(command.list, paste("    command :", main.command, whole.command))
+    command.result <- system2(command = main.command, args = whole.command, wait = TRUE)
+    if (command.result != 0 ) {
+      cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+      stop(paste0("'", main.command, "' ERROR"))
+    }
     cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv' has been created\n"))
     cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv' has been created\n\n"))
     command.list <- c(command.list, "\n")

@@ -117,7 +117,7 @@ PreCheckRNAseqQualityTrimming <- function(path.prefix, sample.pattern) {
   if (!isTRUE(validity)) {
     stop("CheckRNAseqQualityTrimming() pre-check ERROR")
   }
-  cat("     (\u2714) : RNAseqQualityTrimming() pre-check is valid\n\n")
+  cat("(\u2714) : RNAseqQualityTrimming() pre-check is valid\n\n")
 }
 
 PostCheckRNAseqQualityTrimming <- function(path.prefix, sample.pattern) {
@@ -129,7 +129,7 @@ PostCheckRNAseqQualityTrimming <- function(path.prefix, sample.pattern) {
   if (!isTRUE(validity)) {
     stop("RNAseqQualityTrimming() post-check ERROR")
   }
-  cat("     (\u2714) : RNAseqQualityTrimming() post-check is valid\n\n")
+  cat("(\u2714) : RNAseqQualityTrimming() post-check is valid\n\n")
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
