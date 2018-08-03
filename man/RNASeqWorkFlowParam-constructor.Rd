@@ -30,6 +30,12 @@ an object of class \code{RNASeqWorkFlowParam}
 \description{
 Constructor function for RNASeqWorkFlowParam objects
 }
+\examples{
+\dontrun{
+exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
+                           independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
+}
+}
 \author{
 kuan-hao Chao
 }

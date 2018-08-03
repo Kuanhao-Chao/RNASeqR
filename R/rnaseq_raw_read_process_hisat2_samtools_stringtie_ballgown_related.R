@@ -1,5 +1,5 @@
-#' Creating Hisat2 index
-#' Creat Hisat2 index for further use
+# Creating Hisat2 index
+# Creat Hisat2 index for further use
 CreateHisat2Index <- function (path.prefix, genome.name, sample.pattern, splice.site.info = TRUE, exon.info = TRUE) {
   ## need to change 'Let the user can choose where to put their files'
   ## need to learn how to get the filenames under a directory
@@ -8,7 +8,7 @@ CreateHisat2Index <- function (path.prefix, genome.name, sample.pattern, splice.
     if (!is.logical(splice.site.info) || !is.logical(exon.info)) {
       stop("(\u2718) Please make sure the type of 'splice.site.info' and 'exon.info' are logical.\n")
     } else {
-      check.results <- ProgressGenesFiles(path.prefix, path.prefix, genome.name, sample.pattern, print=TRUE)
+      check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
       cat(paste0("\n************** Creating Hisat2 Index **************\n"))
       if (isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$fa.file.logic.df)){
         command.list <- c()
@@ -19,14 +19,14 @@ CreateHisat2Index <- function (path.prefix, genome.name, sample.pattern, splice.
           whole.command.1 <-  paste0(path.prefix, 'gene_data/ref_genes/', genome.name, '.gtf > ', genome.name, '.ss')
           cat(c("Input command :", paste("extract_splice_sites.py", whole.command), "\n"))
           command.list <- c(command.list, paste("    command : extract_splice_sites.py", whole.command))
-          # system2(command = 'extract_splice_sites.py', args = whole.command)
+          system2(command = 'extract_splice_sites.py', args = whole.command)
           cat("\n")
         }
         if (isTRUE(exon.info)) {
           whole.command.2 <- paste0(path.prefix, 'gene_data/ref_genes/', genome.name, '.gtf > ', genome.name, '.exon')
           cat(c("Input command :", paste("extract_exons.py", whole.command), "\n"))
           command.list <- c(command.list, paste("    command : extract_exons.py", whole.command))
-          # system2(command = 'extract_exons.py', args = whole.command)
+          system2(command = 'extract_exons.py', args = whole.command)
           cat("\n")
         }
 
@@ -67,7 +67,7 @@ CreateHisat2Index <- function (path.prefix, genome.name, sample.pattern, splice.
   }
 }
 
-#' hisat2 alignment default
+# hisat2 alignment default
 Hisat2AlignmentDefault <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckHisat2(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
@@ -79,12 +79,12 @@ Hisat2AlignmentDefault <- function(path.prefix, genome.name, sample.pattern, num
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/"))
       # Determine 'r'/'R'/''
-      deleteback <- gsub("[1-2]*.fastq.gz$", replace = "", check.results$fastq.gz.files.df)
-      sample.table.r.value <- gsub(paste0("[A-Z, a-z]*[0-9]*_"), replace = "", deleteback)
+      deleteback <- gsub("[1-2]*.fastq.gz$", replacement = "", check.results$fastq.gz.files.df)
+      sample.table.r.value <- gsub(paste0("[A-Z, a-z]*[0-9]*_"), replacement = "", deleteback)
       if (isTRUE(length(unique(sample.table.r.value)) != 1)){
         stop("(\u2718) Inconsistent formats. Please check files are all",  paste0("'XXX_r*.fastq.gz'"), "OR",  paste0("'XXX_R*.fastq.gz'"), "OR",  paste0("'XXX_*.fastq.gz'"), "\n\n")
       } else {
-        sample.table <- table(gsub(paste0("_[R]*[r]*[1-2]*.fastq.gz$"), replace = "", check.results$fastq.gz.files.df))
+        sample.table <- table(gsub(paste0("_[R]*[r]*[1-2]*.fastq.gz$"), replacement = "", check.results$fastq.gz.files.df))
         iteration.num <- length(sample.table)
         sample.name <- names(sample.table)
         sample.value <- as.vector(sample.table)
@@ -113,15 +113,13 @@ Hisat2AlignmentDefault <- function(path.prefix, genome.name, sample.pattern, num
   }
 }
 
-#' Report Hisat2 assemble rate
-#'
-#'
+# Report Hisat2 assemble rate
 Hisat2ReportAssemble <- function(path.prefix, genome.name, sample.pattern){
   check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=FALSE)
   cat(paste0("\n************** Reporting Hisat2 Alignment **************\n"))
   if (isTRUE(check.results$phenodata.file.df) && check.results$bam.files.number.df != 0){
     file.read <- paste0(path.prefix, "Rscript_out/Raw_Read_Process.Rout")
-    sample.name <- sort(gsub(paste0(".bam$"), replace = "", check.results$bam.files.df))
+    sample.name <- sort(gsub(paste0(".bam$"), replacement = "", check.results$bam.files.df))
     iteration.num <- length(sample.name)
     load.data <- readChar(file.read, file.info(file.read)$size)
     # overall alignment rate
@@ -159,7 +157,7 @@ Hisat2ReportAssemble <- function(path.prefix, genome.name, sample.pattern){
   }
 }
 
-#' use 'samtools' to sort and convert the SAM files to BAM
+# use 'samtools' to sort and convert the SAM files to BAM
 SamtoolsToBam <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckSamtools(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
@@ -170,7 +168,7 @@ SamtoolsToBam <- function(path.prefix, genome.name, sample.pattern, num.parallel
       # Map reads to each alignment
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/"))
-      sample.table <- table(gsub(paste0(".sam$"), replace = "", check.results$sam.files.df))
+      sample.table <- table(gsub(paste0(".sam$"), replacement = "", check.results$sam.files.df))
       iteration.num <- length(sample.table)
       sample.name <- names(sample.table)
       sample.value <- as.vector(sample.table)
@@ -192,7 +190,7 @@ SamtoolsToBam <- function(path.prefix, genome.name, sample.pattern, num.parallel
   }
 }
 
-#' stringtie assemble and quantify expressed genes and transcripts
+# stringtie assemble and quantify expressed genes and transcripts
 StringTieAssemble <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
@@ -202,7 +200,7 @@ StringTieAssemble <- function(path.prefix, genome.name, sample.pattern, num.para
       command.list <- c(command.list, "* Stringtie assembly : ")
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/"))
-      sample.name <- sort(gsub(paste0(".bam$"), replace = "", check.results$bam.files.df))
+      sample.name <- sort(gsub(paste0(".bam$"), replacement = "", check.results$bam.files.df))
       iteration.num <- length(sample.name)
       for( i in 1:iteration.num){
         whole.command <- paste("-p", num.parallel.threads, "-G",paste0("ref_genes/", genome.name, ".gtf"), "-o", paste0("raw_gtf/", sample.name[i], ".gtf"), "-l", sample.name[i], paste0("raw_bam/", sample.name[i], ".bam"))
@@ -222,7 +220,7 @@ StringTieAssemble <- function(path.prefix, genome.name, sample.pattern, num.para
   }
 }
 
-#' stringtie merge transcripts from all samples
+# stringtie merge transcripts from all samples
 StringTieMergeTrans <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
@@ -261,7 +259,7 @@ StringTieMergeTrans <- function(path.prefix, genome.name, sample.pattern, num.pa
   }
 }
 
-#' stringtie estimate transcript abundances and create table counts for Ballgown
+# stringtie estimate transcript abundances and create table counts for Ballgown
 StringTieToBallgown <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
@@ -271,7 +269,7 @@ StringTieToBallgown <- function(path.prefix, genome.name, sample.pattern, num.pa
       command.list <- c(command.list, "* Stringtie Creating Table Counts for Ballgown : ")
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/"))
-      sample.table <- table(gsub(paste0(".bam$"), replace = "", check.results$bam.files.df))
+      sample.table <- table(gsub(paste0(".bam$"), replacement = "", check.results$bam.files.df))
       iteration.num <- length(sample.table)
       sample.name <- names(sample.table)
       sample.value <- as.vector(sample.table)
@@ -294,7 +292,7 @@ StringTieToBallgown <- function(path.prefix, genome.name, sample.pattern, num.pa
   }
 }
 
-#' stringtie re-estimate the abundance
+# stringtie re-estimate the abundance
 StringTieReEstimate <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
@@ -308,7 +306,7 @@ StringTieReEstimate <- function(path.prefix, genome.name, sample.pattern, num.pa
       command.list <- c(command.list, "* Stringtie Re-etsimate : ")
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/"))
-      sample.name <- sort(gsub(paste0(".bam$"), replace = "", check.results$bam.files.df))
+      sample.name <- sort(gsub(paste0(".bam$"), replacement = "", check.results$bam.files.df))
       iteration.num <- length(sample.name)
       for( i in 1:iteration.num){
         whole.command <- paste("-p", num.parallel.threads, "-e -B -G", paste0("merged/stringtie_merged.gtf"), "-o", paste0("ballgown/", sample.name[i], "/",  sample.name[i], ".gtf"), "-A", paste0("gene_abundance/", sample.name[i],"/", sample.name[i], ".tsv"), paste0("raw_bam/", sample.name[i], ".bam"))
@@ -328,7 +326,7 @@ StringTieReEstimate <- function(path.prefix, genome.name, sample.pattern, num.pa
   }
 }
 
-#' Examine how the transcripts compare with the reference annotation
+# Examine how the transcripts compare with the reference annotation
 GffcompareRefSample <- function(path.prefix, genome.name, sample.pattern) {
   if (isTRUE(CheckGffcompare(print=FALSE))){
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
@@ -353,9 +351,7 @@ GffcompareRefSample <- function(path.prefix, genome.name, sample.pattern) {
   }
 }
 
-#' converting stringtie ballogwn preprocessed data to count table
-#'
-#' @export
+# converting stringtie ballogwn preprocessed data to count table
 PreDECountTable <- function(path.prefix, sample.pattern, python.variable.answer, python.variable.version, print=TRUE) {
   # ftp server : ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.1.0-source.zip
   cat("************** Installing prepDE.py ************\n")
@@ -396,7 +392,7 @@ PreDECountTable <- function(path.prefix, sample.pattern, python.variable.answer,
       command.list <- c(command.list, "* Coverting prepDE.py to Python3 : ")
       command.list <- c(command.list, paste("    command : 2to3", whole.command))
       command.list <- c(command.list, "\n")
-      system2(command = '2to3', arg = whole.command)
+      system2(command = '2to3', args = whole.command)
     } else if (python.variable.version < 3 && python.variable.version >= 2 ){
     }
     cat("\n(\u2714) : Creating gene and transcript raw count files now !\n")

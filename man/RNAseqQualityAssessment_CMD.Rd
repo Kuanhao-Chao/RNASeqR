@@ -23,8 +23,9 @@ For \code{systemPipeR}, 'RNAseq_results/QA_results/Rqc/systemPipeR/fastqReport.p
 If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in R shell, please see \code{RNAseqQualityAssessment()} function.
 }
 \examples{
+\dontrun{
 input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-RNAseqQualityAssessment_CMD(RNASeqWorkFlowParam = exp)
+RNAseqQualityAssessment_CMD(RNASeqWorkFlowParam = exp)}
 }

@@ -48,11 +48,12 @@ exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/h
 RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
 }
 \examples{
+\dontrun{
 input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 ## Before run this function, make sure \\code{RNAseqEnvironmentSet_CMD()} (or\\code{RNAseqEnvironmentSet()}) is executed successfully.
 RNAseqRawReadProcess(path.prefix = exp@path.prefix, input.path.prefix = exp@input.path.prefix,
                      genome.name = exp@genome.name, sample.pattern = exp@sample.pattern, python.variable.answer = exp@python.variable[0],
-                     python.variable.version = exp@python.variable[1], indexes.optional = exp@indexes.optional)
+                     python.variable.version = exp@python.variable[1], indexes.optional = exp@indexes.optional)}
 }

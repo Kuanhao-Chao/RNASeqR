@@ -11,6 +11,19 @@ RNAseqQualityTrimming_CMD(RNASeqWorkFlowParam, truncateStartBases = 0,
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}
 
+\item{truncateStartBases}{Function parameter of \code{QuasR::preprocessReads()}. The number of bases to be truncated (removed) from the begining of each sequence.}
+
+\item{truncateEndBases}{Function parameter of \code{QuasR::preprocessReads()}. The number of bases to be truncated (removed) from the end of each sequence.}
+
+\item{complexity}{Function parameter of \code{QuasR::preprocessReads()}. \code{NULL} or numeric(1). Default value is \code{NULL}.
+If not NULL, the minimal sequence complexity, as a fraction of the average complexity in the human genome (~3.9bits).
+For example, complexity = 0.5 will filter out sequences that do not have at least half the complexity of the human genome.
+See Details on how the complexity is calculated.}
+
+\item{minLength}{Function parameter of \code{QuasR::preprocessReads()}. The minimal allowed sequence length.}
+
+\item{nBases}{Function parameter of \code{QuasR::preprocessReads()}. The maximal number of Ns allowed per sequence.}
+
 \item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
 If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
 
@@ -22,8 +35,9 @@ The trimming method is implemented by R package \code{QuasR}
 If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNAseqQualityTrimming()} function.
 }
 \examples{
+\dontrun{
 input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-RNAseqQualityTrimming_CMD(RNASeqWorkFlowParam = exp)
+RNAseqQualityTrimming_CMD(RNASeqWorkFlowParam = exp)}
 }

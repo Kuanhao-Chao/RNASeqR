@@ -13,10 +13,11 @@
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNAseqQualityAssessment_CMD(RNASeqWorkFlowParam = exp)
+#' RNAseqQualityAssessment_CMD(RNASeqWorkFlowParam = exp)}
 RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
@@ -53,11 +54,12 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNAseqEnvironmentSet(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix,
-#'                      sample.pattern = exp@@sample.pattern)
+#'                      sample.pattern = exp@@sample.pattern)}
 RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.pattern) {
   CheckOperatingSystem(FALSE)
   PreCheckRNAseqQualityAssessment(path.prefix = path.prefix, sample.pattern = sample.pattern)
@@ -104,21 +106,20 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   unlink(paste0(path.prefix, "RNAseq_results/QA_results/systemPipeR/rnaseq"), recursive = TRUE)
   cat(paste0("     (\u2714) : systemPipeR assessment success ~~\n\n"))
 
-  # if(!dir.exists(paste0(path.prefix, "RNAseq_results/QA_results/ShortRead/"))){
-  #   dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/ShortRead/')), showWarnings = FALSE)
-  # }
-  # cat(paste0("\u25CF 3. R package \"ShortRead\" quality assessment\n"))
-  # files <- list.files(folder, sample.pattern, full.names=TRUE)
-  #
-  # cat(paste0("     \u25CF  Running 'qa()' ...  Please wait \u231B\u231B\u231B\n"))
-  # qaSummary <- ShortRead::qa(files, type="fastq")
-  # cat(paste0("     \u25CF  Creating 'ShortRead_report.html' ...  Please wait \u231B\u231B\u231B\n"))
-  # resultFile <- ShortRead::report(qaSummary)
-  # file.rename(from = resultFile, to = paste0(path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html"))
-  # cat(paste0("     (\u2714) : ShortRead assessment success ~~\n\n"))
-  # PostCheckRNAseqQualityAssessment(path.prefix = path.prefix)
-}
+  if(!dir.exists(paste0(path.prefix, "RNAseq_results/QA_results/ShortRead/"))){
+    dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/ShortRead/')), showWarnings = FALSE)
+  }
+  cat(paste0("\u25CF 3. R package \"ShortRead\" quality assessment\n"))
+  files <- list.files(folder, sample.pattern, full.names=TRUE)
 
+  cat(paste0("     \u25CF  Running 'qa()' ...  Please wait \u231B\u231B\u231B\n"))
+  qaSummary <- ShortRead::qa(files, type="fastq")
+  cat(paste0("     \u25CF  Creating 'ShortRead_report.html' ...  Please wait \u231B\u231B\u231B\n"))
+  resultFile <- ShortRead::report(qaSummary)
+  file.rename(from = resultFile, to = paste0(path.prefix, "RNAseq_results/QA_results/ShortRead/ShortRead_report.html"))
+  cat(paste0("     (\u2714) : ShortRead assessment success ~~\n\n"))
+  PostCheckRNAseqQualityAssessment(path.prefix = path.prefix)
+}
 
 PreCheckRNAseqQualityAssessment <- function(path.prefix, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C 'RNAseqQualityAssessment()' environment pre-check ...\n")

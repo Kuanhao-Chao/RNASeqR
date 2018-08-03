@@ -20,6 +20,7 @@
 #' @exportClass RNASeqWorkFlowParam
 #' @author Kuan-Hao, Chao
 #' @examples
+#' \dontrun{
 #' data(workflowParam)
 #' class(workflowParam) #"RNASeqWorkFlowParam"
 #' workflowParam@@path.prefix
@@ -28,7 +29,7 @@
 #' workflowParam@@sample.pattern
 #' workflowParam@@independent.variable
 #' workflowParam@@control.group
-#' workflowParam@@experiment.group
+#' workflowParam@@experiment.group}
 setClass("RNASeqWorkFlowParam",
          representation(
            os.type = "character",
@@ -64,9 +65,12 @@ setClass("RNASeqWorkFlowParam",
 #' @rdname RNASeqWorkFlowParam-constructor
 #'
 #' @export
-#' @example
+#'
+#' @examples
+#' \dontrun{
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
+#' }
 RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome.name = NA, sample.pattern = NA,
                                 independent.variable = NA, control.group = NA, experiment.group = NA) {
   # check input parameters
@@ -267,8 +271,8 @@ CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
   if (isTRUE(raw.fastq.dir)) {
     raw.fastq <- list.files(path = paste0(input.path.prefix, 'input_files/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
     extract.fastq.gz.sample.names <- unique(gsub("_[1-2]*.fastq.gz", "", raw.fastq))
-    check.fastq.gz.1 <- sapply(extract.fastq.gz.sample.names, function(x) paste0(x, "_1.fastq.gz"),USE.NAMES=FALSE)
-    check.fastq.gz.2 <- sapply(extract.fastq.gz.sample.names, function(x) paste0(x, "_2.fastq.gz"),USE.NAMES=FALSE)
+    check.fastq.gz.1 <- vapply(extract.fastq.gz.sample.names, function(x) paste0(x, "_1.fastq.gz"), USE.NAMES=FALSE, FUN.VALUE = "a")
+    check.fastq.gz.2 <- vapply(extract.fastq.gz.sample.names, function(x) paste0(x, "_2.fastq.gz"), USE.NAMES=FALSE, FUN.VALUE = "a")
     # checking the valid file naming of '.fastq.gz'
     for ( i in 1:length(check.fastq.gz.1)) {
       bool.check.1 <- check.fastq.gz.1[i] %in% raw.fastq

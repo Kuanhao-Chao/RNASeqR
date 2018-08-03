@@ -1,4 +1,4 @@
-#' check 'gene_data' and subdirectory files exit
+# check 'gene_data' and subdirectory files exit
 ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print = TRUE) {
   if (print) {
     cat(paste0("************** Current progress of RNA-seq files in '", paste0(path.prefix, "gene_data/'"), " **************\n"))
@@ -138,7 +138,7 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
     }
   }else {
     if (print) {
-      cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/ballgown/', gsub(".fastq.gz", replace = "", sample.pattern), "/"), "is not exit\n"))
+      cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/ballgown/', gsub(".fastq.gz", replacement = "", sample.pattern), "/"), "is not exit\n"))
     }
   }
   return(list(gtf.file.logic.df = gtf.file, fa.file.logic.df = fa.file,
@@ -160,7 +160,7 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
               ballgown.dirs.df = ballgown.dirs))
 }
 
-#' Add '~/RNAseq_bin/ to R environment "PATH"
+# Add '~/RNAseq_bin/ to R environment "PATH"
 ExportPath <- function(path.prefix) {
   cat("************** Adding PATH to R environment ************\n")
   old.path <- Sys.getenv("PATH")

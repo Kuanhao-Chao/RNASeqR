@@ -22,11 +22,12 @@
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' ## Before run this function, make sure \code{RNAseqEnvironmentSet_CMD()} (or\code{RNAseqEnvironmentSet()}) is executed successfully.
-#' RNAseqRawReadProcess_CMD(RNASeqWorkFlowParam = exp)
+#' RNAseqRawReadProcess_CMD(RNASeqWorkFlowParam = exp)}
 RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 1, run = TRUE, check.s4.print = TRUE) {
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -84,13 +85,14 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' ## Before run this function, make sure \code{RNAseqEnvironmentSet_CMD()} (or\code{RNAseqEnvironmentSet()}) is executed successfully.
 #' RNAseqRawReadProcess(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix,
 #'                      genome.name = exp@@genome.name, sample.pattern = exp@@sample.pattern, python.variable.answer = exp@@python.variable[0],
-#'                      python.variable.version = exp@@python.variable[1], indexes.optional = exp@@indexes.optional)
+#'                      python.variable.version = exp@@python.variable[1], indexes.optional = exp@@indexes.optional)}
 RNAseqRawReadProcess <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, python.variable.answer, python.variable.version, num.parallel.threads = 1, indexes.optional) {
   CheckOperatingSystem(FALSE)
   ExportPath(path.prefix)

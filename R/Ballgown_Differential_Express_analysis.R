@@ -1,4 +1,4 @@
-#' BallgownPCAPlot
+# BallgownPCAPlot
 DEBallgownPCAPlot <- function(path.prefix, independent.variable){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv"))){
@@ -133,7 +133,7 @@ DEHeatmap <- function(path.prefix) {
   }
 }
 
-#'
+#
 DEBallgownPlotAll <- function(path.prefix, independent.variable) {
   cat(paste0("************** Ballgown result visualization **************\n"))
   if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/"))){
@@ -143,7 +143,7 @@ DEBallgownPlotAll <- function(path.prefix, independent.variable) {
   DEHeatmap(path.prefix)
 }
 
-#' This package will autamatically install org.Hs.eg.db, org.Rn.eg.db, org.Mm.eg.db. If you want to use different OrgDb annotation species, please install that annotation package and attach to your session.
+# This package will autamatically install org.Hs.eg.db, org.Rn.eg.db, org.Mm.eg.db. If you want to use different OrgDb annotation species, please install that annotation package and attach to your session.
 DEGOAnalysis <- function(path.prefix, OrgDb.species) {
   if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/"))){
     dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/"))

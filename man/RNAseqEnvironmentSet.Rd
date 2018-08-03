@@ -29,8 +29,9 @@ First it will create 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/',
 If you want to set up the environment for the following RNA-Seq workflow in background, please see \code{RNAseqEnvironmentSet_CMD()} function.
 }
 \examples{
+\dontrun{
 exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
                            independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
 RNAseqEnvironmentSet(path.prefix = exp@path.prefix, input.path.prefix = exp@input.path.prefix, genome.name = exp@genome.name,
-                     sample.pattern = exp@sample.pattern, indexes.optional = exp@indexes.optional, os.type = exp@os.type)
+                     sample.pattern = exp@sample.pattern, indexes.optional = exp@indexes.optional, os.type = exp@os.type)}
 }

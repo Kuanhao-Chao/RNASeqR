@@ -1,5 +1,4 @@
-#' Run ballgown analysis
-#'
+# Run ballgown analysi
 BallgownPreprocess <- function(path.prefix, genome.name, sample.pattern, independent.variable, ballgown.log2FC, ballgown.qval) {
   # this ballgown function is only for two group
   CheckOperatingSystem(FALSE)
@@ -38,7 +37,8 @@ BallgownPreprocess <- function(path.prefix, genome.name, sample.pattern, indepen
       cat("     \u25CF writing data.frame into 'ballgown.rda' in \n")
       cat('\n')
       cat("\u25CF 4. Filtering ballgown object (variance less than 1): \n")
-      pkg.ballgown.data$bg_chrX_filt <- ballgown::subset(pkg.ballgown.data$bg_chrX, cond = 'genefilter::rowVars(ballgown::texpr(pkg.ballgown.data$bg_chrX)) >1', genomesubset=TRUE)
+      genefilter.condition <- genefilter::rowVars(ballgown::texpr(pkg.ballgown.data$bg_chrX))
+      pkg.ballgown.data$bg_chrX_filt <- ballgown::subset(pkg.ballgown.data$bg_chrX, cond = ' genefilter.condition>1', genomesubset=TRUE)
       bg_filter <- pkg.ballgown.data$bg_chrX_filt
       save(bg_filter, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/ballgown_filter.rda"))
       cat("     \u25CF writing data.frame into 'ballgown_filter.rda' in \n")
@@ -117,10 +117,7 @@ BallgownPreprocess <- function(path.prefix, genome.name, sample.pattern, indepen
     }
   }
 }
-
-
-#' Frequency plot
-#'
+#
 BallgownFrequencyPlot <- function(path.prefix) {
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
@@ -154,8 +151,7 @@ BallgownFrequencyPlot <- function(path.prefix) {
   }
 }
 
-#' DEGTranscriptRelatedPlot
-#'
+#
 BallgownTranscriptRelatedPlot <- function(path.prefix){
   # draw for distribution of transcript count per gene
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
@@ -192,7 +188,6 @@ BallgownTranscriptRelatedPlot <- function(path.prefix){
   }
 }
 
-#'
 BallgownBoxViolinPlot <- function(path.prefix) {
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
@@ -235,8 +230,7 @@ BallgownBoxViolinPlot <- function(path.prefix) {
   }
 }
 
-#' BallgownPCAPlot
-#'
+#
 BallgownPCAPlot <- function(path.prefix, independent.variable){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
@@ -348,8 +342,7 @@ BallgownPCAPlot <- function(path.prefix, independent.variable){
   }
 }
 
-#' Plot correlation plo
-#'
+#
 BallgownCorrelationPlot <- function(path.prefix){
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
@@ -413,7 +406,7 @@ BallgownCorrelationPlot <- function(path.prefix){
 }
 
 
-#' inner function : DEG volcanplot
+# inner function : DEG volcanplot
 BallgownVolcanoPlot <- function(path.prefix, ballgown.log2FC, ballgown.qval) {
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
@@ -438,8 +431,6 @@ BallgownVolcanoPlot <- function(path.prefix, ballgown.log2FC, ballgown.qval) {
   }
 }
 
-#' DEGMAPlot
-#'
 BallgownMAPlot <- function(path.prefix, ballgown.qval) {
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"))){
     # load gene name for further usage
@@ -464,7 +455,7 @@ BallgownMAPlot <- function(path.prefix, ballgown.qval) {
   }
 }
 
-#'
+#
 BallgownPlotAll <- function(path.prefix, independent.variable, ballgown.log2FC, ballgown.qval) {
   cat(paste0("************** Ballgown result visualization **************\n"))
   if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/"))){
@@ -496,8 +487,6 @@ CheckBallgownObject <- function() {
   print(pkg.ballgown.data$bg_chrX_filt)
 }
 
-
-#' load ballgown object
 LoadBallgownObject <- function() {
   if(isTRUE(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/ballgown.rda")))) {
     load(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/ballgown.rda"))

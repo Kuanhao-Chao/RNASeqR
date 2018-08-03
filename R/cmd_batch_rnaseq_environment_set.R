@@ -17,10 +17,11 @@
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)
+#' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
 RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
@@ -63,10 +64,11 @@ RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
 #' RNAseqEnvironmentSet(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix, genome.name = exp@@genome.name,
-#'                      sample.pattern = exp@@sample.pattern, indexes.optional = exp@@indexes.optional, os.type = exp@@os.type)
+#'                      sample.pattern = exp@@sample.pattern, indexes.optional = exp@@indexes.optional, os.type = exp@@os.type)}
 RNAseqEnvironmentSet <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indexes.optional, os.type, mkdir.bool = TRUE) {
   CheckOperatingSystem(FALSE)
   if (mkdir.bool) {
