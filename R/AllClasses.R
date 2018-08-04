@@ -114,7 +114,7 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome
   # 7. check 'phenodata'
   bool.phenodata <- CheckPhenodata(input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, independent.variable = independent.variable)
   # 9. check 'control.group' and 'experiment.group'
-  bool.check.control.experiment.group <- CheckControlExperimentGroup(input.path.prefix = input.path.prefix, independent.variable = independent.variable, control.group = control.group, experiment.group = experiment.group)
+  bool.check.control.experiment.group <- CheckControlGroupExperimentGroup(input.path.prefix = input.path.prefix, independent.variable = independent.variable, control.group = control.group, experiment.group = experiment.group)
 
   if ((characters.os.type == "linux" || characters.os.type == "osx") && bool.python.avail && bool.prefix.path &&
       bool.input.path.prefix && bool.input.dir.files && bool.phenodata && bool.check.control.experiment.group) {

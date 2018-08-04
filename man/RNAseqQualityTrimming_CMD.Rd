@@ -5,8 +5,8 @@
 \title{Sample trimming of '.fastq.gz' files for RNA-Seq workflow in background.}
 \usage{
 RNAseqQualityTrimming_CMD(RNASeqWorkFlowParam, truncateStartBases = 0,
-  truncateEndBases = 0, complexity = NULL, minLength = 50, nBases = 2,
-  run = TRUE, check.s4.print = TRUE)
+  truncateEndBases = 0, complexity = NULL, minLength = 50,
+  nBases = 2, run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}

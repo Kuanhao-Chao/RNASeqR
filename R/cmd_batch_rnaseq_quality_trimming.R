@@ -103,7 +103,7 @@ myFilterAndTrim <- function(fl.name, path.prefix, truncateStartBases, truncateEn
     QuasR::preprocessReads(filename = file1.output, outputFilename = file1, filenameMate = file2.output, outputFilenameMate = file2,
                            truncateStartBases = 0, truncateEndBases = 0, complexity = NULL, minLength = 50, nBases = 2)
     cat(paste0("     \u25CF \"", file1, "\" has been created.\n"))
-    cat(paste0("     \u25CF \"", file2, "\" has been created.\n"))
+    cat(paste0("     \u25CF \"", file2, "\" has been created.\n\n"))
   } else {
     stop("paired-end file ERROR")
   }

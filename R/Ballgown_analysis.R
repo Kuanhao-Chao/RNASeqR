@@ -36,9 +36,9 @@ BallgownPreprocess <- function(path.prefix, genome.name, sample.pattern, indepen
       save(bg, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/ballgown.rda"))
       cat("     \u25CF writing data.frame into 'ballgown.rda' in \n")
       cat('\n')
-      cat("\u25CF 4. Filtering ballgown object (variance less than 1): \n")
-      genefilter.condition <- genefilter::rowVars(ballgown::texpr(pkg.ballgown.data$bg_chrX))
-      pkg.ballgown.data$bg_chrX_filt <- ballgown::subset(pkg.ballgown.data$bg_chrX, cond = ' genefilter.condition>1', genomesubset=TRUE)
+      cat("\u25CF 4. Filtering ballgown object (default row sum more than zero): \n")
+      # genefilter.condition <- rowSums(ballgown::texpr(pkg.ballgown.data$bg_chrX))
+      pkg.ballgown.data$bg_chrX_filt <- ballgown::subset(pkg.ballgown.data$bg_chrX, cond = 'rowSums(ballgown::texpr(pkg.ballgown.data$bg_chrX))>0', genomesubset=TRUE)
       bg_filter <- pkg.ballgown.data$bg_chrX_filt
       save(bg_filter, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/ballgown_filter.rda"))
       cat("     \u25CF writing data.frame into 'ballgown_filter.rda' in \n")

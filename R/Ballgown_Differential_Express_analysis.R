@@ -155,81 +155,92 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
   gene_list_ENTREZID = DEUniv_results$gene_list_ENTREZID_rt
   gene_list_ENTREZID_univ = DEUniv_results$gene_list_ENTREZID_univ_rt
 
-  GO.Ontology.list <- c("MF", "BP", "CC")
-  for ( i in GO.Ontology.list) {
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", i))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", i))
-    }
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", i, "/images"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", i, "/images"))
-    }
-    # designed for gene classification on GO distribution at a specific level. "MF", "BP", "CC"
-    ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
-                                    OrgDb    = OrgDb.species,   # variable
-                                    ont      = i,           # variable
-                                    level    = 3,              # Not sure
-                                    readable = TRUE)
-    ggo.data.frame <- data.frame(ggo)
-    print(ggo.data.frame)
-
-    # Condition 1 for GO classification ! Row number have to bigger than 1 !
-    if (length(row.names(ggo.data.frame))!=0) {
-      write.csv(ggo.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", i , "/GO_", i, "_Classification.csv"))
-      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", i, "/images/GO_", i, "_Classification_Bar_plot.png"))
-      p1 <- barplot(ggo, drop=TRUE, showCategory=12)
-      print(p1)
-      dev.off()
-    } else {
-      cat(paste0("Invalid! Row size of 'GO_", i,"_Classification.csv' is 0.\n"))
+  if (length(gene_list_SYMBOL) < 500 && length(gene_list_SYMBOL_univ) < 500) {
+    # Do GO Gene Set Enrichment Analysis
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/All_Gene_Set_Enrichment/"))){
+      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/All_Gene_Set_Enrichment/"))
     }
 
+  } else {
+    # Do GO classification and GO over-representation test
+    GO.Ontology.list <- c("MF", "BP", "CC")
+    for ( i in GO.Ontology.list) {
+      if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/"))){
+        dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/"))
+      }
+      if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/", i))){
+        dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/", i))
+      }
+      if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/", i, "/images"))){
+        dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/", i, "/images"))
+      }
+      # designed for gene classification on GO distribution at a specific level. "MF", "BP", "CC"
+      ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
+                                      OrgDb    = OrgDb.species,   # variable
+                                      ont      = i,           # variable
+                                      level    = 3,              # Not sure
+                                      readable = TRUE)
+      ggo.data.frame <- data.frame(ggo)
+      print(ggo.data.frame)
 
-    # GO over-representeation test
-    ego <- clusterProfiler::enrichGO(gene          = names(gene_list_ENTREZID),
-                                     # universe      = geneList,
-                                     OrgDb         = OrgDb.species,                   # variable
-                                     ont           = i,
-                                     pAdjustMethod = "BH",                            # variable : "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
-                                     readable      = TRUE)
-    ego.data.frame <- data.frame(ego)
-    print(ego.data.frame)
+      # Condition 1 for GO classification ! Row number have to bigger than 1 !
+      if (length(row.names(ggo.data.frame))!=0) {
+        write.csv(ggo.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/", i , "/GO_", i, "_Classification.csv"))
+        png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/", i, "/images/GO_", i, "_Classification_Bar_plot.png"))
+        p1 <- barplot(ggo, drop=TRUE, showCategory=12)
+        print(p1)
+        dev.off()
+      } else {
+        cat(paste0("Invalid! Row size of 'GO_", i,"_Classification.csv' is 0.\n"))
+      }
 
-    # Condition 2 for GO Enrichment analysis ! Row numebr have to bigger or equal to 2 !
-    if (length(row.names(ego.data.frame)) >= 2) {
-      write.csv(ego.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", i, "/GO_Enrichment.csv"))
-      # bar plot
-      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", i, "/images/GO_Enrichment_Bar_plot.png"))
-      p2 <- barplot(ego, showCategory=12)
-      print(p2)
-      dev.off()
+      # GO over-representeation test
+      ego <- clusterProfiler::enrichGO(gene          = names(gene_list_ENTREZID),
+                                       # universe      = geneList,
+                                       OrgDb         = OrgDb.species,                   # variable
+                                       ont           = i,
+                                       pAdjustMethod = "BH",                            # variable : "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
+                                       readable      = TRUE)
+      ego.data.frame <- data.frame(ego)
+      print(ego.data.frame)
 
-      # dot plot
-      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", i, "/images/GO_Enrichment_Dot_plot.png"))
-      p3 <- clusterProfiler::dotplot(ego)
-      print(p3)
-      dev.off()
+      # Condition 2 for GO Enrichment analysis ! Row numebr have to bigger or equal to 2 !
+      if (length(row.names(ego.data.frame)) >= 2) {
+        write.csv(ego.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/", i, "/GO_Enrichment.csv"))
+        # bar plot
+        png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/", i, "/images/GO_Enrichment_Bar_plot.png"))
+        p2 <- barplot(ego, showCategory=12)
+        print(p2)
+        dev.off()
 
-      # have to check before run
-      # no enriched term found
-      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", i, "/images/GO_Enrichment_Map_plot.png"))
-      p4 <- clusterProfiler::emapplot(ego)
-      print(p4)
-      dev.off()
+        # dot plot
+        png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/", i, "/images/GO_Enrichment_Dot_plot.png"))
+        p3 <- clusterProfiler::dotplot(ego)
+        print(p3)
+        dev.off()
 
-      ## categorySize can be scaled by 'pvalue' or 'geneNum'
-      # the data frame should contain at least two columns
-      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", i, "/images/GO_Enrichment_Complex_plot.png"))
-      p5 <- clusterProfiler::cnetplot(ego, categorySize="pvalue", foldChange = gene_list_ENTREZID)
-      print(p5)
-      dev.off()
+        # have to check before run
+        # no enriched term found
+        png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/", i, "/images/GO_Enrichment_Map_plot.png"))
+        p4 <- clusterProfiler::emapplot(ego)
+        print(p4)
+        dev.off()
 
-      # keys must be supplied in a character vector with no NAs
-      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", i, "/images/GO_Enrichment_Induced_plot.png"))
-      p6 <- clusterProfiler::goplot(ego)
-      print(p6)
-      dev.off()
-    } else {
-      cat(paste0("Invalid! Row size of 'GO_", i,"_Enrichment.csv' is smaller than 2. Can't draw.\n"))
+        ## categorySize can be scaled by 'pvalue' or 'geneNum'
+        # the data frame should contain at least two columns
+        png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/", i, "/images/GO_Enrichment_Complex_plot.png"))
+        p5 <- clusterProfiler::cnetplot(ego, categorySize="pvalue", foldChange = gene_list_ENTREZID)
+        print(p5)
+        dev.off()
+
+        # keys must be supplied in a character vector with no NAs
+        png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/Differential_Expression_Transcript/", i, "/images/GO_Enrichment_Induced_plot.png"))
+        p6 <- clusterProfiler::goplot(ego)
+        print(p6)
+        dev.off()
+      } else {
+        cat(paste0("Invalid! Row size of 'GO_", i,"_Enrichment.csv' is smaller than 2. Can't draw.\n"))
+      }
     }
   }
 }
