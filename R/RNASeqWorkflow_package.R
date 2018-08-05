@@ -13,7 +13,8 @@
 #' @importFrom factoextra get_eigenvalue fviz_eig fviz_pca_ind
 #' @importFrom corrplot corrplot
 #' @importFrom PerformanceAnalytics chart.Correlation
-#' @importFrom clusterProfiler bitr enrichGO groupGO dotplot emapplot cnetplot goplot enrichKEGG
+#' @importFrom clusterProfiler bitr enrichGO groupGO dotplot emapplot cnetplot goplot enrichKEGG gseGO gseaplot gseKEGG
+#' @import 
 #' @importFrom pathview pathview
 #' @importFrom refGenome tableSeqids extractSeqids tableFeatures ensemblGenome read.gtf
 #' @importFrom genefilter rowVars
@@ -36,4 +37,6 @@
 #' @importFrom methods new
 #' @importFrom stats cor heatmap model.matrix
 #' @importFrom utils data download.file head read.csv read.delim write.csv write.table
+#' @importFrom clusterProfiler gseGO gseaplot
+NULL
 
