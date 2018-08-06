@@ -4,7 +4,10 @@
 \alias{CheckBallgownObject}
 \title{Check ballgown object}
 \usage{
-CheckBallgownObject()
+CheckBallgownObject(path.prefix)
+}
+\value{
+None
 }
 \description{
 Check ballgown object

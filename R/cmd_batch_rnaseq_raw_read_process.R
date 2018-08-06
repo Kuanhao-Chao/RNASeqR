@@ -20,6 +20,7 @@
 #' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
 #' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
 #'
+#' @return None
 #' @export
 #' @examples
 #' \dontrun{
@@ -83,6 +84,7 @@ RNAseqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
 #' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
 #' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
 #'
+#' @return None
 #' @export
 #' @examples
 #' \dontrun{

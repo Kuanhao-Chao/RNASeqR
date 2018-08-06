@@ -18,6 +18,7 @@
 #' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
 #' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
 #'
+#' @return None
 #' @export
 #' @examples
 #' \dontrun{
@@ -61,6 +62,7 @@ RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, truncateStartBases = 
 #' @param minLength Function parameter of \code{QuasR::preprocessReads()}. The minimal allowed sequence length.
 #' @param nBases Function parameter of \code{QuasR::preprocessReads()}. The maximal number of Ns allowed per sequence.
 #'
+#' @return None
 #' @export
 #' @examples
 #' \dontrun{

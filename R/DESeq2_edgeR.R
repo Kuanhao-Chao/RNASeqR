@@ -65,8 +65,9 @@ DEGedgeRPlot <- function(path.prefix) {
 
 #' @import DESeq2
 #' @import apeglm
-#' @import IHW
 #' @import ashr
+#'
+# @import IHW
 DEDESeq2Plot <- function(main.variable, additional.variable, dds.pval) {
     pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
     # gene analysis
@@ -169,7 +170,7 @@ DEDESeq2Plot <- function(main.variable, additional.variable, dds.pval) {
     # Plot counts
     d <- plotCounts(ddsMat, gene = which.min(diff.res$padj), intgroup = "main.variable")
     ggplot(d, aes(x=main.variable, y=count)) +
-      geom_point(position = position_jitter(w=0.1, h=0)) +
+      geom_point(position = position_jitter(width=0.1, height=0)) +
       scale_y_log10(breaks=c(25, 100, 400))
 
     mcols(diff.res)$description

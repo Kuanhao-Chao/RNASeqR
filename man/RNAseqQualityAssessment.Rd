@@ -13,6 +13,9 @@ RNAseqQualityAssessment(path.prefix, input.path.prefix, sample.pattern)
 
 \item{sample.pattern}{regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'}
 }
+\value{
+None
+}
 \description{
 Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
 It is strongly advised to run \code{RNAseqQualityAssessment_CMD()} directly. Running this function directly is not recommended.

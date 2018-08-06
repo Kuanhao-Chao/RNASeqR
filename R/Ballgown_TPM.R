@@ -1,4 +1,4 @@
-Ballgown_TPM <- function() {
+Ballgown_TPM <- function(path.prefix, sample.pattern, independent.variable) {
   cat("\u25CF 1. Printing origin phenodata.csv : \n")
   pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
   print(pheno_data)

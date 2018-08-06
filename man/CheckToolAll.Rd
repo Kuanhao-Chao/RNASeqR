@@ -9,6 +9,9 @@ CheckToolAll(print = TRUE)
 \arguments{
 \item{print}{If \code{TRUE}, detailed information will be printed. If \code{FALSE}, detailed information will not be printed.}
 }
+\value{
+None
+}
 \description{
 Check whether 'Hisat2', 'Stringtie', 'Samtools' and 'Gffcompare' are installed on the workstation
 }

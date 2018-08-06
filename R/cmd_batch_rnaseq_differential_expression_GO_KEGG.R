@@ -8,9 +8,8 @@ RNAseqDeGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, KEGG.organism
   independent.variable <- RNASeqWorkFlowParam@independent.variable
   fileConn<-file(paste0(path.prefix, "Rscript/Differential_Expression_GO_KEGG.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- "library(pathview)"
-  third <- paste0("RNAseqDeGoKegg(path.prefix = '", path.prefix, "', independent.variable = '", independent.variable, "', OrgDb.species = '", OrgDb.species, "', KEGG.organism = '",KEGG.organism, "')")
-  writeLines(c(first, second, third), fileConn)
+  second <- paste0("RNAseqDeGoKegg(path.prefix = '", path.prefix, "', independent.variable = '", independent.variable, "', OrgDb.species = '", OrgDb.species, "', KEGG.organism = '",KEGG.organism, "')")
+  writeLines(c(first, third), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Differential_Expression_GO_KEGG.R' has been created.\n"))
   if (run) {

@@ -92,38 +92,45 @@ DEBallgownPCAPlot <- function(path.prefix, independent.variable){
   }
 }
 
-DEHeatmap <- function(path.prefix) {
+DEHeatmap <- function(path.prefix, independent.variable, control.group, experiment.group) {
   if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv"))){
     # load gene name for further usage
     if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/Heatmap/"))){
       dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/Heatmap/"))
     }
     cat(paste0("\u25CF Plotting Differential Expressed Heatmap related plot\n"))
+    # Read in 'ballgown_FPKM_DE_result.csv'
     file.path <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
     data.read.csv <- read.csv(file = file.path)
-    pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
-    sample.table <- as.data.frame(table(pheno_data[2]))
-    new.data.frame.index <- c()
-    for(i in 1:length(row.names(sample.table))){
-      current.sum <- 0
-      if (i-1 == 0 ) current.sum = 0
-      else {
-        for(z in 1:(i-1)) {
-          current.sum <- current.sum + sample.table$Freq[z]
-        }
-      }
-      for(j in 1:sample.table$Freq[i]){
-        column.number <- 4+j+current.sum + i -1
-        vector <- c(vector, column.number)
-        new.data.frame.index <- c(new.data.frame.index, column.number)
+    # Retuen only independent variable FPKM
+    return.data.frame <- ParseFPKMBallgownResult(path.prefix, independent.variable, control.group, experiment.group, "ballgown_FPKM_DE_result.csv")
+    row.names(return.data.frame) <- data.read.csv$transcriptNames
+    cat(paste0("     \u25CF Filtering out transcript with no name.\n"))
+    return.data.frame.all.valid.name <- subset(return.data.frame, rownames(return.data.frame) != ".")
+    cat(paste0("     \u25CF Checking found differential express transcript term.\n"))
+    if (length(row.names(return.data.frame.all.valid.name)) == 0) {
+      cat(paste0("          \u25CF (\u26A0) No term were found.\n"))
+    } else {
+      if (length(row.names(return.data.frame.all.valid.name)) > 50) {
+        cat(paste0("          \u25CF Found ", length(row.names(return.data.frame.all.valid.name)), " terms. More than 50 terms (Only plot top 50 smallest p value).\n"))
+        return.data.frame.all.valid.name <- return.data.frame.all.valid.name[1:50,]
+      } else {
+        cat(paste0("          \u25CF Found ", length(row.names(return.data.frame.all.valid.name)), " terms.\n"))
       }
     }
-    sub.data.frame <- data.read.csv[new.data.frame.index]
-    row.names(sub.data.frame) <- data.read.csv$transcriptNames
-    df.new <- scale(sub.data.frame)
+    cat(paste0("     \u25CF Calculating log2(FPKM+1).\n"))
+    log.data.frame <- log(return.data.frame+1)
+    pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
+    sample.table <- as.data.frame(table(pheno_data[independent.variable]))
+    control.group.size <- sample.table[sample.table$Var1 == control.group,]$Freq
+    control.average <- rowMeans(log.data.frame[1:control.group.size])
+    cat(paste0("     \u25CF Each log2(FPKM+1) minus average of control.\n"))
+    log.data.frame.minus <- log.data.frame - control.average
+    df.new <- scale(log.data.frame.minus)
     png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/Heatmap/Heatmap_plot.png"), width = 1000, height = 1000)
-    # par(mar=c(10,4,4,2))
-    p1 <- heatmap(df.new, scale = "row", xlab = "samples", ylab = "transcript names",cexRow=1, cexCol = 1, margins = c(10,8))
+    redgreen <- c("red", "white", "blue")
+    pal <- colorRampPalette(redgreen)(100)
+    p1 <- heatmap(df.new, scale = "row", xlab = "samples", ylab = "transcript names",cexRow=1, cexCol = 1, margins = c(10,8), col = pal)
       # theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
     print(p1)
     dev.off()
@@ -160,7 +167,7 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
   # DETranscript.limit <- 400
   GO.Ontology.list <- c("MF", "BP", "CC")
   for ( i in GO.Ontology.list) {
-    cat("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605")
+    cat("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n")
     cat(paste0("\u25CF Gene Ontology Analysis : '", i, "' group ... \n"))
     cat("\u25CF Checking differential expression gene number ... \n")
     # if (length(gene_list_SYMBOL) < DETranscript.limit && length(gene_list_ENTREZID) < DETranscript.limit) {
@@ -180,12 +187,13 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
                                   verbose      = FALSE)
     gse.data.frame <- data.frame(gse)
     if (length(row.names(gse.data.frame)) > 0) {
-      cat("     \u25CF Printing GO Gene Set Enrichment Analysis result \n")
-      print(head(gse.data.frame))
+      # cat("     \u25CF Printing GO Gene Set Enrichment Analysis result \n")
+      # print(head(gse.data.frame))
       if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images"))){
         dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images"))
       }
       # Result column must bigger than 0
+      cat(paste0("     \u25CF (\u2714) GO Gene Set Enrichment test (", i,") enriched term found! \n"))
       cat(paste0("     \u25CF Writing 'GO_", i, "_Gene_Set_Enrichment.csv' \n"))
       write.csv(gse.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Gene_Set_Enrichment.csv"))
       cat(paste0("     \u25CF Checking 'GO_", i, "_Gene_Set_Enrichment.csv' result row number \n"))
@@ -212,7 +220,7 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
       }
         cat("\n")
     } else {
-      cat("     \u25CF No enriched term is found.\n\n")
+      cat("     \u25CF (\u26A0) No enriched term is found.\n\n")
       file.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_GSE_NO_TERM"))
     }
     # Do GO classification and GO over-representation test
@@ -236,17 +244,18 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
     ggo.data.frame <- data.frame(ggo)
     # Condition 1 for GO classification ! Row number have to bigger than 1 !
     if (length(row.names(ggo.data.frame)) > 0) {
-      cat("     \u25CF Printing GO Classification result \n")
-      print(head(ggo.data.frame))
-      cat("     \u25CF Writing 'GO_", i, "_Classification.csv' \n")
+      # cat("     \u25CF Printing GO Classification result \n")
+      # print(head(ggo.data.frame))
+      cat(paste0("     \u25CF (\u2714) GO Classification (", i,") result found! \n"))
+      cat(paste0("     \u25CF Writing 'GO_", i, "_Classification.csv' \n"))
       write.csv(ggo.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i , "/GO_", i, "_Classification.csv"))
-      cat("     \u25CF Plotting 'GO_", i, "_Classification_Bar_plot.png' \n\n")
+      cat(paste0("     \u25CF Plotting 'GO_", i, "_Classification_Bar_plot.png' \n\n"))
       png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Classification_Bar_plot.png"))
       p1 <- barplot(ggo, drop=TRUE, showCategory=12)
       print(p1)
       dev.off()
     }  else {
-      cat("     \u25CF No term is found.\n\n")
+      cat("     \u25CF (\u26A0) No term is found.\n\n")
       file.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_CLASSIFICATION_NO_TERM"))
     }
 
@@ -260,12 +269,13 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
                                      readable      = TRUE)
     ego.data.frame <- data.frame(ego)
     if (length(row.names(ego.data.frame)) >= 0) {
-      cat("     \u25CF Printing GO Enrichment result \n")
-      print(head(ggo.data.frame))
+      # cat("     \u25CF Printing GO Enrichment result \n")
+      # print(head(ggo.data.frame))
+      cat(paste0("     \u25CF (\u2714) GO Enrichment test (", i,") enriched term found! \n"))
       cat(paste0("     \u25CF Writing 'GO_", i, "_Enrichment.csv' \n"))
       write.csv(ego.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Enrichment.csv"))
     } else {
-      cat(paste0("     \u25CF No enriched term is found.\n"))
+      cat(paste0("     \u25CF (\u26A0) No enriched term is found.\n"))
       file.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_ENRICHMENT_NO_TERM"))
     }
     # Condition 2 for GO Enrichment analysis ! Row numebr have to bigger or equal to 2 !
@@ -340,12 +350,13 @@ DEKEGGAnalysis <- function(path.prefix, OrgDb.species, KEGG.organism) {
                                      verbose      = FALSE)
   kk.gse.frame <- data.frame(kk.gse)
   if (length(row.names(kk.gse.frame)) > 0) {
-    cat("     \u25CF Printing KEGG Gene Set Enrichment Analysis result \n")
-    print(head(kk.gse.frame))
+    # cat("     \u25CF Printing KEGG Gene Set Enrichment Analysis result \n")
+    # print(head(kk.gse.frame))
     if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/images"))){
       dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/images"))
     }
     # Result column must bigger than 0
+    cat(paste0("     \u25CF (\u2714) KEGG Gene Set Enrichment test enriched term found! \n"))
     cat(paste0("     \u25CF Writing 'KEGG_Gene_Set_Enrichment.csv' \n"))
     write.csv(kk.gse.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/KEGG_Gene_Set_Enrichment.csv"))
     cat(paste0("     \u25CF Checking 'KEGG_Gene_Set_Enrichment.csv' result row number \n"))
@@ -370,7 +381,7 @@ DEKEGGAnalysis <- function(path.prefix, OrgDb.species, KEGG.organism) {
       }
     }
   } else {
-    cat("     \u25CF No enriched term is found.\n\n")
+    cat("     \u25CF (\u26A0) No enriched term is found.\n\n")
     file.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/KEGG_GSE_NO_TERM"))
   }
   dir_name <- paste0("KEGG_DE_Erichment")
@@ -386,8 +397,9 @@ DEKEGGAnalysis <- function(path.prefix, OrgDb.species, KEGG.organism) {
   kk.data.frame <- data.frame(kk)
   # Row size have to bigger than 0!
   if (length(row.names(kk.data.frame)) > 0) {
-    cat("     \u25CF Printing KEGG Enrichment result \n")
-    print(head(kk.data.frame))
+    # cat("     \u25CF Printing KEGG Enrichment result \n")
+    # print(head(kk.data.frame))
+    cat(paste0("     \u25CF (\u2714) KEGG Enrichment test enriched term found! \n"))
     cat(paste0("     \u25CF Writing 'KEGG_Enrichment.csv' \n"))
     write.csv(kk.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/KEGG_Enrichment.csv"))
     for ( i in kk.data.frame$ID) {
@@ -415,7 +427,7 @@ DEKEGGAnalysis <- function(path.prefix, OrgDb.species, KEGG.organism) {
       on.exit(setwd(current.path))
     }
   } else {
-    cat(paste0("     \u25CF No enriched term is found.\n"))
+    cat(paste0("     \u25CF (\u26A0) No enriched term is found.\n"))
     file.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name,"/KEGG_ENRICHMENT_NO_TERM"))
   }
 }

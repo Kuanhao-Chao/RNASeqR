@@ -4,7 +4,7 @@
 #' @importFrom tools file_ext
 #' @importFrom reticulate py_available py_config
 #' @importFrom ballgown ballgown texpr subset stattest geneNames geneIDs transcriptNames indexes structure
-#' @importFrom dplyr arrange
+#' @importFrom dplyr arrange count
 #' @importFrom genefilter rowVars
 #' @importFrom gridExtra grid.table
 #' @importFrom rafalib mypar shist
@@ -14,7 +14,6 @@
 #' @importFrom corrplot corrplot
 #' @importFrom PerformanceAnalytics chart.Correlation
 #' @importFrom clusterProfiler bitr enrichGO groupGO dotplot emapplot cnetplot goplot enrichKEGG gseGO gseaplot gseKEGG
-#' @import 
 #' @importFrom pathview pathview
 #' @importFrom refGenome tableSeqids extractSeqids tableFeatures ensemblGenome read.gtf
 #' @importFrom genefilter rowVars
@@ -31,12 +30,12 @@
 #' @import org.Hs.eg.db
 #' @import org.Mm.eg.db
 #' @import org.Rn.eg.db
-#' @importFrom ShortRead qa report
 #' @importFrom graphics abline barplot hist legend mtext par
 #' @importFrom grDevices colorRampPalette dev.off pdf png rgb
 #' @importFrom methods new
 #' @importFrom stats cor heatmap model.matrix
 #' @importFrom utils data download.file head read.csv read.delim write.csv write.table
 #' @importFrom clusterProfiler gseGO gseaplot
+#' @importFrom rtracklayer mcols
 NULL
 

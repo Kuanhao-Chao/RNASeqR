@@ -26,6 +26,9 @@ See Details on how the complexity is calculated.}
 
 \item{nBases}{Function parameter of \code{QuasR::preprocessReads()}. The maximal number of Ns allowed per sequence.}
 }
+\value{
+None
+}
 \description{
 Trim '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
 The trimming method is implemented by R package \code{QuasR}

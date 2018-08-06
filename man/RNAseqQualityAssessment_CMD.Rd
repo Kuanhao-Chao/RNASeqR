@@ -15,6 +15,9 @@ If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
 
 \item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
 }
+\value{
+None
+}
 \description{
 Assess the quality of '.fastq.gz' files for RNA-Seq workflow in background. This step is optional in the whole RNA-Seq workflow.
 This function reports the quality assessment result in two packages : \code{Rqc} and \code{systemPipeR}

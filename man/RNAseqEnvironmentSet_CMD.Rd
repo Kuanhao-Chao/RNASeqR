@@ -14,6 +14,11 @@ RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam, run = TRUE,
 If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
 
 \item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
+
+\item{mkdir.bool}{Default \code{TRUE}. If \code{TRUE}, environment directories will be created. If \code{FALSE}, no directories will be created. When executing RNAseqEnvironmentSet(), 'mkdir.bool' should always be \code{TRUE}}
+}
+\value{
+None
 }
 \description{
 Set up the environment for the following RNA-Seq workflow in background.

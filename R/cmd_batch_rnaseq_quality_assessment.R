@@ -11,6 +11,7 @@
 #' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
 #' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
 #'
+#' @return None
 #' @export
 #' @examples
 #' \dontrun{
@@ -27,10 +28,8 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Assessment.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- "library(ggplot2)"
-  third <- "library(ShortRead)"
-  fourth <- paste0("RNAseqQualityAssessment(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
-  writeLines(c(first, second, third, fourth), fileConn)
+  second <- paste0("RNAseqQualityAssessment(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
+  writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Assessment.R' has been created.\n"))
   if (run) {
@@ -52,6 +51,7 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 #' @param input.path.prefix path prefix of 'input_files/' directory
 #' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
 #'
+#' @return None
 #' @export
 #' @examples
 #' \dontrun{
@@ -109,19 +109,18 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   cat(paste0("     \u25CF  Removing 'rnaseq' directory...  Please wait \u231B\u231B\u231B\n"))
   unlink(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/rnaseq"), recursive = TRUE)
   cat(paste0("     (\u2714) : systemPipeR assessment success ~~\n\n"))
-
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/"))){
-    dir.create(file.path(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/")), showWarnings = FALSE)
-  }
-  cat(paste0("\u25CF 3. R package \"ShortRead\" quality assessment\n"))
-  files <- list.files(folder, sample.pattern, full.names=TRUE)
-  cat(paste0("     \u25CF  Running 'qa()' ...  Please wait \u231B\u231B\u231B\n"))
-  qaSummary <- ShortRead::qa(files, type="fastq")
-  cat(paste0("     \u25CF  Creating 'ShortRead_report.html' ...  Please wait \u231B\u231B\u231B\n"))
-  resultFile <- ShortRead::report(qaSummary)
-  file.rename(from = resultFile, to = paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html"))
-  cat(paste0("     (\u2714) : ShortRead assessment success ~~\n\n"))
-  PostCheckRNAseqQualityAssessment(path.prefix = path.prefix)
+  # if(!dir.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/"))){
+  #   dir.create(file.path(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/")), showWarnings = FALSE)
+  # }
+  # cat(paste0("\u25CF 3. R package \"ShortRead\" quality assessment\n"))
+  # files <- list.files(folder, sample.pattern, full.names=TRUE)
+  # cat(paste0("     \u25CF  Running 'qa()' ...  Please wait \u231B\u231B\u231B\n"))
+  # qaSummary <- ShortRead::qa(files, type="fastq")
+  # cat(paste0("     \u25CF  Creating 'ShortRead_report.html' ...  Please wait \u231B\u231B\u231B\n"))
+  # resultFile <- ShortRead::report(qaSummary)
+  # file.rename(from = resultFile, to = paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html"))
+  # cat(paste0("     (\u2714) : ShortRead assessment success ~~\n\n"))
+  # PostCheckRNAseqQualityAssessment(path.prefix = path.prefix)
 }
 
 PreCheckRNAseqQualityAssessment <- function(path.prefix, sample.pattern) {
@@ -144,7 +143,7 @@ PostCheckRNAseqQualityAssessment <- function(path.prefix) {
   file.rqc.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html"))
   file.systemPipeR.data <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/data.list.txt"))
   file.systemPipeR.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/fastqReport.pdf"))
-  file.ShortRead.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html"))
+  # file.ShortRead.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html"))
   validity <- file.rqc.result && file.systemPipeR.data && file.systemPipeR.result && file.ShortRead.result
   if (!isTRUE(validity)) {
     if (!file.rqc.result) {
@@ -156,9 +155,9 @@ PostCheckRNAseqQualityAssessment <- function(path.prefix) {
     if (!file.systemPipeR.result){
       cat(paste0("'", path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/fastqReport.pdf' is missing!\n"))
     }
-    if (!file.ShortRead.result) {
-      cat(paste0("'", path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html' is missing!\n"))
-    }
+    # if (!file.ShortRead.result) {
+    #   cat(paste0("'", path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html' is missing!\n"))
+    # }
     stop("RNAseqQualityAssessment() post-check ERROR")
   } else {
     cat("(\u2714) : RNAseqQualityAssessment() post-check is valid\n\n")

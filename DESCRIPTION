@@ -1,12 +1,13 @@
 Package: RNASeqWorkflow
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Kuan-Hao, Chao
+Title: RNASeqWorkflow: RNA-Seq workflow and visualization with Hisat2, Stringtie, Gffcompare, Ballgown, EdgeR and DESeq2
+Version: 0.99.0
+Date: 2018-8-7
+Author: Kuan-Hao Chao
 Maintainer: Kuan-Hao Chao <ntueeb05howard@gmail.com>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, GeneExpression, GeneSetEnrichment, Alignment, QualityControl, DifferentialExpression, FunctionalPrediction, ExperimentalDesign, GO, KEGG, Visualization
+Description: R package for RNA-Seq workflow.
+License: Artistic-2.0
 Encoding: UTF-8
 RoxygenNote: 6.1.0
 Depends:
@@ -27,7 +28,6 @@ Imports:
   PerformanceAnalytics,
   reshape2,
   Rqc,
-  ShortRead,
   QuasR,
   apeglm,
   IHW,
@@ -49,3 +49,12 @@ Suggests:
   knitr
 VignetteBuilder: 
   knitr
+SystemRequirements: 
+  RNASeqWorkflow only support Linux and OS X. Window is not supported. 
+  RNASeqWorkflow will check your machine and install 'Hisat2', 'Stringtie', 'Gffcompare' binaries based on the operating system. 
+  Samtools source code will be installed and compiled on your machine. Make sure the required C++ libraries are installed on your machine. 
+  Python2 is required. If your machine is Python3, make sure '2to3' command is available.
+URL: 
+  https://github.com/HowardChao/RNASeqWorkflow
+NeedsCompilation:
+  no

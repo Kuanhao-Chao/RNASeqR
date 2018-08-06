@@ -20,6 +20,9 @@ RNAseqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
 
 \item{os.type}{'linux' or 'osx'. The operating system type}
 }
+\value{
+None
+}
 \description{
 Set up the environment for the following RNA-Seq workflow in R shell.
 It is strongly advised to run \code{RNAseqEnvironmentSet_CMD()} directly. Running this function directly is not recommended.
