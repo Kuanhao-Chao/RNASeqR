@@ -37,6 +37,8 @@
 #' @importFrom utils data download.file head read.csv read.delim write.csv write.table
 #' @importFrom clusterProfiler gseGO gseaplot
 #' @importFrom rtracklayer mcols
-#'
+#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results plotMA plotDispEsts
+#' @importFrom edgeR DGEList calcNormFactors estimateGLMCommonDisp estimateGLMTrendedDisp estimateGLMTagwiseDisp plotMeanVar plotBCV glmFit glmLRT topTags decideTestsDGE plotSmear
+#' @importFrom limma plotMDS
 NULL
 
