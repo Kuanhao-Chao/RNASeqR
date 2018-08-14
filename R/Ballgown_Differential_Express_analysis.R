@@ -1,56 +1,37 @@
 # BallgownPCAPlot
 DEBallgownPCAPlot <- function(path.prefix, independent.variable){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/
-  if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv"))){
+  if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv"))){
     # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/PCA/"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/PCA/"))
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/PCA/"))){
+      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/PCA/"))
     }
     cat(paste0("\u25CF Plotting Differential Expressed PCA related plot\n"))
-    file.path <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
-    data.read.csv <- read.csv(file = file.path)
+    # read pheno data
     pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
+    # input sample FPKM
+    return.sample.data.frame <- ParseFPKMBallgownResult(path.prefix, independent.variable, control.group, experiment.group, paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv"))
+    # get the control and experiment sample size
     sample.table <- as.data.frame(table(pheno_data[independent.variable]))
-    new.data.frame.index <- c()
-    for(i in 1:length(row.names(sample.table))){
-      current.sum <- 0
-      if (i-1 == 0 ) current.sum = 0
-      else {
-        for(z in 1:(i-1)) {
-          current.sum <- current.sum + sample.table$Freq[z]
-        }
-      }
-      for(j in 1:sample.table$Freq[i]){
-        column.number <- 4+j+current.sum + i -1
-        vector <- c(vector, column.number)
-        new.data.frame.index <- c(new.data.frame.index, column.number)
-      }
-    }
-    sub.data.frame <- data.read.csv[new.data.frame.index]
-    fpkm.trans <- data.frame(t(sub.data.frame))
-    fpkm.trans.split <- strsplit(row.names(fpkm.trans), split = "[.]")
-    fpkm.trans.independent.variable <- c()
-    for( i in 1:length(fpkm.trans.split)){
-      fpkm.trans.independent.variable <- c(fpkm.trans.independent.variable, fpkm.trans.split[[i]][2])
-    }
-    fpkm.trans$attribute <- factor(fpkm.trans.independent.variable)
+    control.group.size <- sample.table[sample.table$Var1 == control.group,]$Freq
+    experiment.group.size <- sample.table[sample.table$Var1 == experiment.group,]$Freq
+    grp = factor(c(rep(control.group, control.group.size), rep(experiment.group, experiment.group.size)))
+    fpkm.trans <- data.frame(t(return.sample.data.frame))
+    fpkm.trans$attribute <- grp
     fpkm.pca = FactoMineR::PCA(fpkm.trans, ncp=2, quali.sup=length(fpkm.trans), graph = FALSE)
     eig.val <- factoextra::get_eigenvalue(fpkm.pca)
-    png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/PCA/Dimension_pca_plot.png"))
+    png(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/PCA/Dimension_pca_plot.png"))
     p1 <- factoextra::fviz_eig(fpkm.pca, addlabels = TRUE, ylim = c(0, 50), main = "PCA Dimensions") +
       labs(title ="PCA Dimensions") +
       theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
     print(p1)
     dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/PCA/Dimension_pca_plot.png"), "' has been created. \n"))
+    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/PCA/Dimension_pca_plot.png"), "' has been created. \n"))
     #var$coord: coordinates of variables to create a scatter plot
     #var$cos2: represents the quality of representation for variables on the factor map. It’s calculated as the squared coordinates: var.cos2 = var.coord * var.coord.
     #var$contrib: contains the contributions (in percentage) of the variables to the principal components. The contribution of a variable (var) to a given principal component is (in percentage) : (var.cos2 * 100) / (total cos2 of the component).
     #var <- get_pca_var(res.pca)
-
-
-
-    png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/PCA/PCA_plot_factoextra.png"))
+    png(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/PCA/PCA_plot_factoextra.png"))
     p2 <- factoextra::fviz_pca_ind(fpkm.pca,
                                    xlab = paste0("PC1(", round(data.frame(eig.val)$variance.percent[1], 2), "%)"), ylab = paste0("PC2(", round(data.frame(eig.val)$variance.percent[2],2), "%)"),
                                    legend.title = "Treatment variable", legend.position = "top",
@@ -68,9 +49,9 @@ DEBallgownPCAPlot <- function(path.prefix, independent.variable){
       theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
     print(p2)
     dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/PCA/PCA_plot_factoextra.png"), "' has been created. \n"))
+    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/PCA/PCA_plot_factoextra.png"), "' has been created. \n"))
 
-    png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/PCA/PCA_plot_self.png"))
+    png(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/PCA/PCA_plot_self.png"))
     FPKM.res.PCA = FactoMineR::PCA(fpkm.trans, scale.unit=TRUE, ncp=2, quali.sup=length(fpkm.trans), graph = FALSE)
 
     my_colors=c(rgb(255, 47, 35,maxColorValue = 255),
@@ -86,24 +67,21 @@ DEBallgownPCAPlot <- function(path.prefix, independent.variable){
     par(xpd=TRUE)
     legend("bottomright",inset=c(0,1), horiz=TRUE, bty="n", legend=levels(FPKM.res.PCA$call$quali.sup$quali.sup[,1] ) , col=my_colors, pch=20 )
     dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/PCA/PCA_plot.png"), "' has been created. \n\n"))
+    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/PCA/PCA_plot.png"), "' has been created. \n\n"))
   } else {
     stop("(\u2718) 'ballgown_FPKM_result.csv' haven't created yet.\n\n")
   }
 }
 
 DEHeatmap <- function(path.prefix, independent.variable, control.group, experiment.group) {
-  if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv"))){
+  if(file.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv"))){
     # load gene name for further usage
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/Heatmap/"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/Heatmap/"))
-    }
+    # if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/Heatmap/"))){
+    #   dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/Heatmap/"))
+    # }
     cat(paste0("\u25CF Plotting Differential Expressed Heatmap related plot\n"))
-    # Read in 'ballgown_FPKM_DE_result.csv'
-    file.path <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
-    data.read.csv <- read.csv(file = file.path)
     # Retuen only independent variable FPKM
-    return.data.frame <- ParseFPKMBallgownResult(path.prefix, independent.variable, control.group, experiment.group, "ballgown_FPKM_DE_result.csv")
+    return.data.frame <- ParseFPKMBallgownResult(path.prefix, independent.variable, control.group, experiment.group, paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv"))
     row.names(return.data.frame) <- data.read.csv$transcriptNames
     cat(paste0("     \u25CF Filtering out transcript with no name.\n"))
     return.data.frame.all.valid.name <- subset(return.data.frame, rownames(return.data.frame) != ".")
@@ -113,7 +91,7 @@ DEHeatmap <- function(path.prefix, independent.variable, control.group, experime
     } else {
       if (length(row.names(return.data.frame.all.valid.name)) > 50) {
         cat(paste0("          \u25CF Found ", length(row.names(return.data.frame.all.valid.name)), " terms. More than 50 terms (Only plot top 50 smallest p value).\n"))
-        return.data.frame.all.valid.name <- return.data.frame.all.valid.name[1:50,]
+        return.data.frame.all.valid.name <- return.data.frame.all.valid.name[seq_len(50),]
       } else {
         cat(paste0("          \u25CF Found ", length(row.names(return.data.frame.all.valid.name)), " terms.\n"))
       }
@@ -123,18 +101,18 @@ DEHeatmap <- function(path.prefix, independent.variable, control.group, experime
     pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
     sample.table <- as.data.frame(table(pheno_data[independent.variable]))
     control.group.size <- sample.table[sample.table$Var1 == control.group,]$Freq
-    control.average <- rowMeans(log.data.frame[1:control.group.size])
+    control.average <- rowMeans(log.data.frame[seq_len(control.group.size)])
     cat(paste0("     \u25CF Each log2(FPKM+1) minus average of control.\n"))
     log.data.frame.minus <- log.data.frame - control.average
     df.new <- scale(log.data.frame.minus)
-    png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/Heatmap/Heatmap_plot.png"), width = 1000, height = 1000)
+    png(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/Heatmap_plot.png"), width = 1000, height = 1000)
     redgreen <- c("red", "white", "blue")
     pal <- colorRampPalette(redgreen)(100)
     p1 <- heatmap(df.new, scale = "row", xlab = "samples", ylab = "transcript names",cexRow=1, cexCol = 1, margins = c(10,8), col = pal)
       # theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
     print(p1)
     dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/Heatmap/Heatmap_plot.png"), "' has been created. \n"))
+    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/Heatmap/Heatmap_plot.png"), "' has been created. \n"))
   } else {
     stop("(\u2718) 'ballgown_FPKM_result.csv' haven't created yet.\n\n")
   }
@@ -143,8 +121,8 @@ DEHeatmap <- function(path.prefix, independent.variable, control.group, experime
 #
 DEBallgownPlotAll <- function(path.prefix, independent.variable) {
   cat(paste0("************** Ballgown result visualization **************\n"))
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/"))){
-    dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/images/"))
+  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/"))){
+    dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/images/"))
   }
   DEBallgownPCAPlot(path.prefix, independent.variable)
   DEHeatmap(path.prefix)
@@ -153,9 +131,9 @@ DEBallgownPlotAll <- function(path.prefix, independent.variable) {
 # This package will autamatically install org.Hs.eg.db, org.Rn.eg.db, org.Mm.eg.db. If you want to use different OrgDb annotation species, please install that annotation package and attach to your session.
 DEGOAnalysis <- function(path.prefix, OrgDb.species) {
   cat(paste0("\n************** Gene Ontology Analysis **************\n"))
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/"))){
-    cat("\u25CF Creating directory : 'RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/'\n")
-    dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/"))
+  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/"))){
+    cat("\u25CF Creating directory : 'RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/'\n")
+    dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/"))
   }
   # get return value
   DEUniv_results <- DEUnivGeneList(path.prefix = path.prefix, OrgDb.species = OrgDb.species)
@@ -174,11 +152,11 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
     cat(paste0("     \u25CF Differential expression gene number : ", length(gene_list_SYMBOL), "\n\n"))
     # Do GO Gene Set Enrichment Analysis
     dir_name <- paste0("GO_Gene_Set_Enrichment")
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name))
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name))){
+      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name))
     }
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i))
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i))){
+      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i))
     }
     cat("\u25CF GO Gene Set Enrichment Analysis ... \n")
     gse <- clusterProfiler::gseGO(geneList     = gene_list_ENTREZID_univ,
@@ -189,19 +167,19 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
     if (length(row.names(gse.data.frame)) > 0) {
       # cat("     \u25CF Printing GO Gene Set Enrichment Analysis result \n")
       # print(head(gse.data.frame))
-      if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images"))){
-        dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images"))
+      if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images"))){
+        dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images"))
       }
       # Result column must bigger than 0
       cat(paste0("     \u25CF (\u2714) GO Gene Set Enrichment test (", i,") enriched term found! \n"))
       cat(paste0("     \u25CF Writing 'GO_", i, "_Gene_Set_Enrichment.csv' \n"))
-      write.csv(gse.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Gene_Set_Enrichment.csv"))
+      write.csv(gse.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Gene_Set_Enrichment.csv"))
       cat(paste0("     \u25CF Checking 'GO_", i, "_Gene_Set_Enrichment.csv' result row number \n"))
       if (length(row.names(gse.data.frame)) < 5) {
         cat(paste0("          \u25CF 'GO_", i, "_Gene_Set_Enrichment.csv' result row number : ", length(row.names(gse.data.frame)), " (less than 5)\n"))
         for( GO.ID in gse.data.frame$ID) {
           cat(paste0("               \u25CF GO ID : ", GO.ID, "\n"))
-          png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/", GO.ID, "_gseGO.png"))
+          png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/", GO.ID, "_gseGO.png"))
           cat(paste0("               \u25CF Plotting '", GO.ID, "_gseGO.png'\n"))
           p <- clusterProfiler::gseaplot(gse, geneSetID = GO.ID)
           print(p)
@@ -209,9 +187,9 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
         }
       } else {
         cat(paste0("          \u25CF 'GO_", i, "_Gene_Set_Enrichment.csv' result row number : ", length(row.names(gse.data.frame)), " (more than 5)\n"))
-        for(GO.ID in gse.data.frame$ID[1:5]) {
+        for(GO.ID in gse.data.frame$ID[seq_len(5)]) {
           cat(paste0("               \u25CF GO ID : ", GO.ID, "\n"))
-          png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/", GO.ID, "_gseGO.png"))
+          png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/", GO.ID, "_gseGO.png"))
           cat(paste0("               \u25CF Plotting '", GO.ID, "_gseGO.png'\n"))
           p <- clusterProfiler::gseaplot(gse, geneSetID = GO.ID)
           print(p)
@@ -221,18 +199,18 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
         cat("\n")
     } else {
       cat("     \u25CF (\u26A0) No enriched term is found.\n\n")
-      file.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_GSE_NO_TERM"))
+      file.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_GSE_NO_TERM"))
     }
     # Do GO classification and GO over-representation test
     dir_name <- paste0("GO_DE_Classification_Erichment")
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name))
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name))){
+      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name))
     }
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i))
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i))){
+      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i))
     }
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images"))
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images"))){
+      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images"))
     }
     cat("\u25CF GO Classification ... \n")
     # designed for gene classification on GO distribution at a specific level. "MF", "BP", "CC"
@@ -248,15 +226,15 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
       # print(head(ggo.data.frame))
       cat(paste0("     \u25CF (\u2714) GO Classification (", i,") result found! \n"))
       cat(paste0("     \u25CF Writing 'GO_", i, "_Classification.csv' \n"))
-      write.csv(ggo.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i , "/GO_", i, "_Classification.csv"))
+      write.csv(ggo.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i , "/GO_", i, "_Classification.csv"))
       cat(paste0("     \u25CF Plotting 'GO_", i, "_Classification_Bar_plot.png' \n\n"))
-      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Classification_Bar_plot.png"))
+      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Classification_Bar_plot.png"))
       p1 <- barplot(ggo, drop=TRUE, showCategory=12)
       print(p1)
       dev.off()
     }  else {
       cat("     \u25CF (\u26A0) No term is found.\n\n")
-      file.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_CLASSIFICATION_NO_TERM"))
+      file.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_CLASSIFICATION_NO_TERM"))
     }
 
     cat("\u25CF GO Enrichment Test ... \n")
@@ -273,22 +251,22 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
       # print(head(ggo.data.frame))
       cat(paste0("     \u25CF (\u2714) GO Enrichment test (", i,") enriched term found! \n"))
       cat(paste0("     \u25CF Writing 'GO_", i, "_Enrichment.csv' \n"))
-      write.csv(ego.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Enrichment.csv"))
+      write.csv(ego.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Enrichment.csv"))
     } else {
       cat(paste0("     \u25CF (\u26A0) No enriched term is found.\n"))
-      file.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_ENRICHMENT_NO_TERM"))
+      file.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_ENRICHMENT_NO_TERM"))
     }
     # Condition 2 for GO Enrichment analysis ! Row numebr have to bigger or equal to 2 !
     if (length(row.names(ego.data.frame)) >= 2) {
       # bar plot
-      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Bar_plot.png"))
+      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Bar_plot.png"))
       cat(paste0("     \u25CF Plotting 'GO_", i, "_Enrichment_Bar_plot.png' \n"))
       p2 <- barplot(ego, showCategory=12)
       print(p2)
       dev.off()
 
       # dot plot
-      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Dot_plot.png"))
+      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Dot_plot.png"))
       cat(paste0("     \u25CF Plotting 'GO_", i, "_Enrichment_Dot_plot.png' \n"))
       p3 <- clusterProfiler::dotplot(ego)
       print(p3)
@@ -296,7 +274,7 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
 
       # have to check before run
       # no enriched term found
-      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Map_plot.png"))
+      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Map_plot.png"))
       cat(paste0("     \u25CF Plotting 'GO_", i, "_Enrichment_Map_plot.png' \n"))
       p4 <- clusterProfiler::emapplot(ego)
       print(p4)
@@ -304,14 +282,14 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
 
       ## categorySize can be scaled by 'pvalue' or 'geneNum'
       # the data frame should contain at least two columns
-      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Complex_plot.png"))
+      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Complex_plot.png"))
       cat(paste0("     \u25CF Plotting 'GO_", i, "_Enrichment_Complex_plot.png' \n"))
       p5 <- clusterProfiler::cnetplot(ego, categorySize="pvalue", foldChange = gene_list_ENTREZID)
       print(p5)
       dev.off()
 
       # keys must be supplied in a character vector with no NAs
-      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Induced_plot.png"))
+      png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Induced_plot.png"))
       cat(paste0("     \u25CF Plotting 'GO_", i, "_Enrichment_Induced_plot.png' \n"))
       p6 <- clusterProfiler::goplot(ego)
       print(p6)
@@ -319,16 +297,16 @@ DEGOAnalysis <- function(path.prefix, OrgDb.species) {
       cat("\n")
     } else {
       cat(paste0("     \u25CF Row size of 'GO_", i,"_Enrichment.csv' is smaller than 2. Can't draw.\n"))
-      file.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_ENRICHMENT_LESS_THAN_2"))
+      file.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/GO_analysis/", dir_name, "/", i, "/GO_ENRICHMENT_LESS_THAN_2"))
     }
   }
 }
 
 DEKEGGAnalysis <- function(path.prefix, OrgDb.species, KEGG.organism) {
   cat(paste0("\n************** Kyoto Encyclopedia of Genes and Genomes Analysis **************\n"))
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/"))){
-    cat("\u25CF Creating directory : 'RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/'\n")
-    dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/"))
+  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/"))){
+    cat("\u25CF Creating directory : 'RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/'\n")
+    dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/"))
   }
   DEUniv_results <- DEUnivGeneList(path.prefix = path.prefix, OrgDb.species = OrgDb.species)
   gene_list_SYMBOL = DEUniv_results$gene_list_SYMBOL_rt
@@ -340,8 +318,8 @@ DEKEGGAnalysis <- function(path.prefix, OrgDb.species, KEGG.organism) {
   # DETranscript.limit <- 400
   # Do KEGG Gene Set Enrichment Analysis
   dir_name <- paste0("KEGG_Gene_Set_Enrichment")
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name))){
-    dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name))
+  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name))){
+    dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name))
   }
   cat("\u25CF KEGG Gene Set Enrichment Analysis ... \n")
   # DO KEGG Gene Set Enrichment Analysis
@@ -352,28 +330,28 @@ DEKEGGAnalysis <- function(path.prefix, OrgDb.species, KEGG.organism) {
   if (length(row.names(kk.gse.frame)) > 0) {
     # cat("     \u25CF Printing KEGG Gene Set Enrichment Analysis result \n")
     # print(head(kk.gse.frame))
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/images"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/images"))
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/images"))){
+      dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/images"))
     }
     # Result column must bigger than 0
     cat(paste0("     \u25CF (\u2714) KEGG Gene Set Enrichment test enriched term found! \n"))
     cat(paste0("     \u25CF Writing 'KEGG_Gene_Set_Enrichment.csv' \n"))
-    write.csv(kk.gse.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/KEGG_Gene_Set_Enrichment.csv"))
+    write.csv(kk.gse.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/KEGG_Gene_Set_Enrichment.csv"))
     cat(paste0("     \u25CF Checking 'KEGG_Gene_Set_Enrichment.csv' result row number \n"))
     if (length(row.names(kk.gse.frame)) < 5) {
       cat(paste0("          \u25CF 'KEGG_Gene_Set_Enrichment.csv' result row number : ", length(row.names(kk.gse.frame)), " (less than 5)\n"))
       for( KEGG.ID in kk.gse.frame$ID) {
         print(KEGG.ID)
-        png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/images/", KEGG.ID, "_gseGO.png"))
+        png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/images/", KEGG.ID, "_gseGO.png"))
         p <- clusterProfiler::gseaplot(kk.gse, geneSetID = KEGG.ID)
         print(p)
         dev.off()
       }
     } else {
       cat(paste0("          \u25CF 'KEGG_Gene_Set_Enrichment.csv' result row number : ", length(row.names(kk.gse.frame)), " (more than 5)\n"))
-      for(KEGG.ID in kk.gse.frame$ID[1:5]) {
+      for(KEGG.ID in kk.gse.frame$ID[seq_len(5)]) {
         cat(paste0("               \u25CF KEGG ID : ", KEGG.ID, "\n"))
-        png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/images/", KEGG.ID, "_gseGO.png"))
+        png(filename = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/images/", KEGG.ID, "_gseGO.png"))
         cat(paste0("               \u25CF Plotting '", KEGG.ID, "_gseKEGG.png'\n"))
         p <- clusterProfiler::gseaplot(kk.gse, geneSetID = KEGG.ID)
         print(p)
@@ -382,11 +360,11 @@ DEKEGGAnalysis <- function(path.prefix, OrgDb.species, KEGG.organism) {
     }
   } else {
     cat("     \u25CF (\u26A0) No enriched term is found.\n\n")
-    file.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/KEGG_GSE_NO_TERM"))
+    file.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/KEGG_GSE_NO_TERM"))
   }
   dir_name <- paste0("KEGG_DE_Erichment")
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name))){
-    dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name))
+  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name))){
+    dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name))
   }
   # Do KEGG over-representation test
   # organism : species supported at 'http://www.genome.jp/kegg/catalog/org_list.html'
@@ -401,20 +379,20 @@ DEKEGGAnalysis <- function(path.prefix, OrgDb.species, KEGG.organism) {
     # print(head(kk.data.frame))
     cat(paste0("     \u25CF (\u2714) KEGG Enrichment test enriched term found! \n"))
     cat(paste0("     \u25CF Writing 'KEGG_Enrichment.csv' \n"))
-    write.csv(kk.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/KEGG_Enrichment.csv"))
+    write.csv(kk.data.frame, file = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/KEGG_Enrichment.csv"))
     for ( i in kk.data.frame$ID) {
-      if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/", i))){
-        print(paste0("     \u25CF Creating directory 'RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/", i, "\n"))
-        dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/", i))
+      if(!dir.exists(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/", i))){
+        print(paste0("     \u25CF Creating directory 'RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/", i, "\n"))
+        dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/", i))
       }
       current.path <- getwd()
       # get the url from KEGG result
       cat(paste0("     \u25CF Finding '", i, "' KEGG URL ... \n"))
       KEGGUrl <- GetKEGGUrl(kk, i)
       cat(paste0("     \u25CF Writting 'URL_", i, "_Pathway.txt' \n"))
-      write(KEGGUrl, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/", i, "/URL_", i, "_Pathway.txt"))
+      write(KEGGUrl, file = paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/", i, "/URL_", i, "_Pathway.txt"))
       # drawing pathway picture with 'pathway' package
-      pathway.dir <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/", i, "/pathview_result/")
+      pathway.dir <- paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name, "/", i, "/pathview_result/")
       if(!dir.exists(pathway.dir)){
         dir.create(pathway.dir)
       }
@@ -428,13 +406,13 @@ DEKEGGAnalysis <- function(path.prefix, OrgDb.species, KEGG.organism) {
     }
   } else {
     cat(paste0("     \u25CF (\u26A0) No enriched term is found.\n"))
-    file.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/KEGG_analysis/", dir_name,"/KEGG_ENRICHMENT_NO_TERM"))
+    file.create(paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/KEGG_analysis/", dir_name,"/KEGG_ENRICHMENT_NO_TERM"))
   }
 }
 
 DEUnivGeneList <- function(path.prefix, OrgDb.species) {
-  ballgown.FPKM.path <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
-  ballgown.FPKM.path.univ <- paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv")
+  ballgown.FPKM.path <- paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/Differential_Expression/ballgown_FPKM_DE_result.csv")
+  ballgown.FPKM.path.univ <- paste0(path.prefix, "RNAseq_results/Ballgown_FPKM_analysis/ballgown_FPKM_result.csv")
   DE.csv <- read.csv(ballgown.FPKM.path)
   Univ.csv <- read.csv(ballgown.FPKM.path.univ)
   # DE gene

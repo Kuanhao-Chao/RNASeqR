@@ -48,6 +48,7 @@ RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, truncateStartBases = 
 #' @title Sample trimming of '.fastq.gz' files for RNA-Seq workflow in R shell
 #'
 #' @description Trim '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
+#' It is strongly advised to run \code{RNAseqQualityTrimming_CMD()} directly. Running this function directly is not recommended.
 #' The trimming method is implemented by R package \code{QuasR}
 #' If you want to trim '.fastq.gz' files for the RNA-Seq workflow in background, please see \code{RNAseqQualityTrimming_CMD()} function.
 #'

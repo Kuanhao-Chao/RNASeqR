@@ -6,6 +6,9 @@
 \usage{
 CheckBallgownObject(path.prefix)
 }
+\arguments{
+\item{path.prefix}{path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories}
+}
 \value{
 None
 }

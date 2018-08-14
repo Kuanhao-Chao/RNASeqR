@@ -96,7 +96,7 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   systemPipeRdata::genWorkenvir(workflow="rnaseq")
   # create targets.txt
   cat(paste0("     \u25CF  Writing \"data.list.txt\"\n"))
-  raw.fastq.data.frame <- data.frame("FileName" = files, "SampleName" = 1:length(files), "SampleLong" = 1:length(files), "Experiment" = 1:length(files), "Date" = 1:length(files))
+  raw.fastq.data.frame <- data.frame("FileName" = files, "SampleName" = seq_len(length(files)), "SampleLong" = seq_len(files), "Experiment" = seq_len(length(files)), "Date" = seq_len(length(files)))
   write.table(raw.fastq.data.frame, "data.list.txt", sep="\t", row.names = FALSE, quote=FALSE)
   args <- systemPipeR::systemArgs(sysma="rnaseq/param/trim.param", mytargets="data.list.txt")
   cat(paste0("     \u25CF  Running 'seeFastq()' ...  Please wait \u231B\u231B\u231B\n"))

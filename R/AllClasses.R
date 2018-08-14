@@ -274,14 +274,14 @@ CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
     check.fastq.gz.1 <- vapply(extract.fastq.gz.sample.names, function(x) paste0(x, "_1.fastq.gz"), USE.NAMES=FALSE, FUN.VALUE = "a")
     check.fastq.gz.2 <- vapply(extract.fastq.gz.sample.names, function(x) paste0(x, "_2.fastq.gz"), USE.NAMES=FALSE, FUN.VALUE = "a")
     # checking the valid file naming of '.fastq.gz'
-    for ( i in 1:length(check.fastq.gz.1)) {
+    for ( i in seq_along(check.fastq.gz.1)) {
       bool.check.1 <- check.fastq.gz.1[i] %in% raw.fastq
       if (!bool.check.1) {
         cat(paste0("(\u2718) : ", check.fastq.gz.1[i], " is not found in 'input_files/raw_fastq.gz/\n"))
         stop("Pair-end file ERROR")
       }
     }
-    for ( i in 1:length(check.fastq.gz.2)) {
+    for ( i in seq_along(check.fastq.gz.2)) {
       bool.check.2 <- check.fastq.gz.2[i] %in% raw.fastq
       if (!bool.check.2) {
         cat(paste0("(\u2718) : ", check.fastq.gz.2[i], " is not found in 'input_files/raw_fastq.gz/\n"))

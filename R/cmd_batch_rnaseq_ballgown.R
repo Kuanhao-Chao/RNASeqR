@@ -1,4 +1,31 @@
+#' @title Ballgown analysis for RNA-Seq workflow in background
+#'
+#' @description Use ballgown R package for statistical analysis of assembled transcriptomes, including flexible differential expression analysis, and sample FPKM visualization as well as pre differential analysis visualization for the following RNA-Seq workflow in background.
+#' This function do 3 things :
+#' 1. Create ballgown object, and write "ballgown_FPKM_result.csv" file.
+#' 2. Find the differential expressed genes, and write "ballgown_FPKM_DE_result.csv"
+#' 3. Sample data visualization.
+#'    For transcript-related : Creating transcript_count_per_gene_plot, transcript_length_plot.
+#'    For sample profile : Creating Box plot, Violin plot, Frequency plot, PCA related plots, Correlation plots.
+#'    For pre differential expressed gene analysis : Creating MA plot, Volcano plot.
+#'    For differential express gene analysis : Creating Heatmap plot, PCA related plots.
+#' If you want to run ballgown analysis for the following RNA-Seq workflow in R shell, please see \code{RNAseqBallgownProcess()} function.
+#'
+#' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
+#' @param ballgown.log2FC Default \code{1}. Set the threshold of log2 fold change to filter out differential expressed gene.
+#' @param ballgown.qval Default \code{0.05}. Set the threshold of q-value to filter out differential expressed gene.
+#' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+#' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
+#'
+#' @return None
 #' @export
+#' @examples
+#' \dontrun{
+#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
+#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+#' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
 RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, ballgown.qval = 0.05, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
@@ -21,7 +48,37 @@ RNAseqBallgownProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, 
   }
 }
 
+#' @title Ballgown analysis for RNA-Seq workflow in R shell
+#'
+#' @description Use ballgown R package for statistical analysis of assembled transcriptomes, including flexible differential expression analysis, and sample FPKM visualization as well as pre differential analysis visualization for the following RNA-Seq workflow in background.
+#' It is strongly advised to run \code{RNAseqBallgownProcess_CMD()} directly. Running this function directly is not recommended.
+#' This function do 3 things :
+#' 1. Create ballgown object, and write "ballgown_FPKM_result.csv" file.
+#' 2. Find the differential expressed genes, and write "ballgown_FPKM_DE_result.csv"
+#' 3. Sample data visualization.
+#'    For transcript-related : Creating transcript_count_per_gene_plot, transcript_length_plot.
+#'    For sample profile : Creating Box plot, Violin plot, Frequency plot, PCA related plots, Correlation plots.
+#'    For pre differential expressed gene analysis : Creating MA plot, Volcano plot.
+#'    For differential express gene analysis : Creating Heatmap plot, PCA related plots.
+#' If you want to run ballgown analysis for the following RNA-Seq workflow in background, please see \code{RNAseqBallgownProcess_CMD()} function.
+#'
+#' @param path.prefix path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @param genome.name variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
+#' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
+#' @param independent.variable independent variable for the biological experiment design of two-group RNA-Seq workflow
+#' @param control.group group name of the control group
+#' @param experiment.group group name of the experiment group
+#' @param ballgown.log2FC Default \code{1}. Set the threshold of log2 fold change to filter out differential expressed gene.
+#' @param ballgown.qval Default \code{0.05}. Set the threshold of q-value to filter out differential expressed gene.
+#'
+#' @return None
 #' @export
+#' @examples
+#' \dontrun{
+#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
+#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+#' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
 RNAseqBallgownProcess <- function(path.prefix, genome.name, sample.pattern, independent.variable, control.group, experiment.group, ballgown.log2FC = 1, ballgown.qval = 0.05) {
   CheckOperatingSystem(FALSE)
   PreRNAseqBallgownProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)

@@ -13,7 +13,8 @@ RoxygenNote: 6.1.0
 Depends:
   R (>= 3.5.0),
   ggplot2,
-  pathview
+  pathview,
+  edgeR
 Imports:
   tools,
   reticulate,
@@ -29,11 +30,7 @@ Imports:
   reshape2,
   Rqc,
   QuasR,
-  apeglm,
-  IHW,
-  ashr,
   DESeq2,
-  edgeR,
   systemPipeR,
   systemPipeRdata,
   clusterProfiler,
@@ -45,7 +42,11 @@ Imports:
   stringr,
   pheatmap,
   methods,
-  limma
+  limma,
+  grDevices,
+  graphics,
+  stats,
+  utils
 Suggests:
   knitr
 VignetteBuilder: 

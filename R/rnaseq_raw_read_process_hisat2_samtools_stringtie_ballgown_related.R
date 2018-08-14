@@ -118,10 +118,10 @@ Hisat2AlignmentDefault <- function(path.prefix, genome.name, sample.pattern, num
         iteration.num <- length(sample.table)
         sample.name <- names(sample.table)
         sample.value <- as.vector(sample.table)
-        for( i in 1:iteration.num){
+        for( i in seq_len(iteration.num)){
           current.sub.command <- ""
           total.sub.command <- ""
-          for ( j in 1:sample.value[i]){
+          for ( j in seq_len(sample.value[i])){
             current.sub.command <- paste(paste0("-", j),  paste0("raw_fastq.gz/", sample.name[i], "_", sample.table.r.value[1], j, ".fastq.gz"))
             total.sub.command <- paste(total.sub.command, current.sub.command)
           }
@@ -172,7 +172,7 @@ Hisat2ReportAssemble <- function(path.prefix, genome.name, sample.pattern){
     alignment.first.result.cut2 <- gsub("[0-9]* \\(", " ", alignment.first.result.cut1)
     report.data.frame <- data.frame(matrix(0, ncol = 0, nrow = 3))
     row.names(report.data.frame) <- c("Unique mapping rate", "Multiple mapping rate", "Overall alignment rate")
-    for( i in 1:iteration.num){
+    for( i in seq_len(iteration.num)){
       add.column <- c()
       for( j in (i*3-1):(i*3)){
         add.column <- c(add.column, alignment.first.result.cut2[j])
@@ -207,7 +207,7 @@ SamtoolsToBam <- function(path.prefix, genome.name, sample.pattern, num.parallel
       iteration.num <- length(sample.table)
       sample.name <- names(sample.table)
       sample.value <- as.vector(sample.table)
-      for( i in 1:iteration.num){
+      for( i in seq_len(iteration.num)){
         whole.command <- paste("sort -@", num.parallel.threads, "-o", paste0("raw_bam/", sample.name[i], ".bam"), paste0("raw_sam/", sample.name[i], ".sam"))
         if (i != 1) cat("\n")
         main.command <- "samtools"
@@ -242,7 +242,7 @@ StringTieAssemble <- function(path.prefix, genome.name, sample.pattern, num.para
       setwd(paste0(path.prefix, "gene_data/"))
       sample.name <- sort(gsub(paste0(".bam$"), replacement = "", check.results$bam.files.df))
       iteration.num <- length(sample.name)
-      for( i in 1:iteration.num){
+      for( i in seq_len(iteration.num)){
         whole.command <- paste("-p", num.parallel.threads, "-G",paste0("ref_genes/", genome.name, ".gtf"), "-o", paste0("raw_gtf/", sample.name[i], ".gtf"), "-l", sample.name[i], paste0("raw_bam/", sample.name[i], ".bam"))
         if (i != 1) cat("\n")
         main.command <- "stringtie"
@@ -323,7 +323,7 @@ StringTieToBallgown <- function(path.prefix, genome.name, sample.pattern, num.pa
       iteration.num <- length(sample.table)
       sample.name <- names(sample.table)
       sample.value <- as.vector(sample.table)
-      for( i in 1:iteration.num){
+      for( i in seq_len(iteration.num)){
         # '-e' only estimate the abundance of given reference transcripts (requires -G)
         whole.command <- paste("-e -B -p", num.parallel.threads, "-G", "merged/stringtie_merged.gtf", "-o", paste0("ballgown/", sample.name[i],"/", sample.name[i], ".gtf"), "-A", paste0("gene_abundance/", sample.name[i],"/", sample.name[i], ".tsv"), paste0("raw_bam/", sample.name[i], ".bam"))
         main.command <- 'stringtie'
@@ -363,7 +363,7 @@ StringTieReEstimate <- function(path.prefix, genome.name, sample.pattern, num.pa
       setwd(paste0(path.prefix, "gene_data/"))
       sample.name <- sort(gsub(paste0(".bam$"), replacement = "", check.results$bam.files.df))
       iteration.num <- length(sample.name)
-      for( i in 1:iteration.num){
+      for( i in seq_len(iteration.num)){
         whole.command <- paste("-p", num.parallel.threads, "-e -B -G", paste0("merged/stringtie_merged.gtf"), "-o", paste0("ballgown/", sample.name[i], "/",  sample.name[i], ".gtf"), "-A", paste0("gene_abundance/", sample.name[i],"/", sample.name[i], ".tsv"), paste0("raw_bam/", sample.name[i], ".bam"))
         if (i != 1) cat("\n")
         main.command <- "stringtie"

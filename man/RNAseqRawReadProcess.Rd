@@ -24,11 +24,6 @@ RNAseqRawReadProcess(path.prefix, input.path.prefix, genome.name,
 \item{num.parallel.threads}{Specify the number of processing threads (CPUs) to use for transcript assembly. The default is 1.}
 
 \item{indexes.optional}{logical value whether 'indexes/' is exit in 'input_files/'}
-
-\item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
-If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
-
-\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
 }
 \value{
 None

@@ -171,8 +171,7 @@ ExportPath <- function(path.prefix) {
 }
 
 ParseFPKMBallgownResult <- function(path.prefix, independent.variable, control.group, experiment.group, file) {
-  file.path <- paste0(path.prefix, paste0("RNAseq_results/Ballgown_analysis/Differential_Expression/", file))
-  data.read.csv <- read.csv(file = file.path)
+  data.read.csv <- read.csv(file = file)
   pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
   sample.table <- as.data.frame(table(pheno_data[independent.variable]))
   control.group.size <- sample.table[sample.table$Var1 == control.group,]$Freq
@@ -184,4 +183,15 @@ ParseFPKMBallgownResult <- function(path.prefix, independent.variable, control.g
   return.data.frame.index <- c(control.group.range, experiment.group.range)
   return.data <- data.read.csv[return.data.frame.index]
   return(return.data)
+}
+
+FindControlExperiment <- function(path.prefix, independent.variable, control.group, experiment.group) {
+  pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
+  # gene count table
+  gene.count.table <- read.csv(paste0(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
+  # transcript count table
+  # transcript.count.table <- read.csv(paste0(path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv"))
+  control.group.data.frame <- pheno_data[pheno_data[independent.variable] == control.group, ]
+  experiment.group.data.frame <- pheno_data[pheno_data[independent.variable] == experiment.group, ]
+  return(list("control.group" = control.group.data.frame, "experiment.group" = experiment.group.data.frame))
 }

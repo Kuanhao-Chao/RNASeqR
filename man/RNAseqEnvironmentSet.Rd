@@ -19,6 +19,8 @@ RNAseqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
 \item{indexes.optional}{logical value whether indexes/ is exit in 'input_files/'}
 
 \item{os.type}{'linux' or 'osx'. The operating system type}
+
+\item{mkdir.bool}{Default \code{TRUE}. If \code{TRUE}, environment directories will be created. If \code{FALSE}, no directories will be created. When executing RNAseqEnvironmentSet(), 'mkdir.bool' should always be \code{TRUE}}
 }
 \value{
 None

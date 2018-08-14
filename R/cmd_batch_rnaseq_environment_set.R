@@ -14,7 +14,6 @@
 #' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
 #' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
 #' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
-#' @param mkdir.bool Default \code{TRUE}. If \code{TRUE}, environment directories will be created. If \code{FALSE}, no directories will be created. When executing RNAseqEnvironmentSet(), 'mkdir.bool' should always be \code{TRUE}
 #'
 #' @return None
 #' @export
@@ -62,6 +61,7 @@ RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
 #' @param genome.name variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
 #' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
 #' @param indexes.optional logical value whether indexes/ is exit in 'input_files/'
+#' @param mkdir.bool Default \code{TRUE}. If \code{TRUE}, environment directories will be created. If \code{FALSE}, no directories will be created. When executing RNAseqEnvironmentSet(), 'mkdir.bool' should always be \code{TRUE}
 #'
 #' @return None
 #' @export

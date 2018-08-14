@@ -30,7 +30,7 @@
 #' @import org.Hs.eg.db
 #' @import org.Mm.eg.db
 #' @import org.Rn.eg.db
-#' @importFrom graphics abline barplot hist legend mtext par
+#' @importFrom graphics abline barplot hist legend mtext par plot
 #' @importFrom grDevices colorRampPalette dev.off pdf png rgb
 #' @importFrom methods new
 #' @importFrom stats cor heatmap model.matrix
