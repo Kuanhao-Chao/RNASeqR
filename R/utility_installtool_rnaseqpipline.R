@@ -170,19 +170,19 @@ ExportPath <- function(path.prefix) {
   cat("\u27a4\u27a4 R environment 'PATH' : ", Sys.getenv("PATH"), "\n\n")
 }
 
-ParseFPKMBallgownResult <- function(path.prefix, independent.variable, control.group, experiment.group, file) {
-  data.read.csv <- read.csv(file = file)
-  pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
-  sample.table <- as.data.frame(table(pheno_data[independent.variable]))
-  control.group.size <- sample.table[sample.table$Var1 == control.group,]$Freq
-  experiment.group.size <- sample.table[sample.table$Var1 == experiment.group,]$Freq
-  # For control group
-  control.group.range <- 5:(5+control.group.size-1)
-  # For cexperiment group
-  experiment.group.range <- (5+control.group.size+1):(5+control.group.size+experiment.group.size)
-  return.data.frame.index <- c(control.group.range, experiment.group.range)
-  return.data <- data.read.csv[return.data.frame.index]
-  return(return.data)
+ParseResultCSV <- function(which.package, path.prefix, independent.variable, control.group, experiment.group) {
+  if (which.package == "ballgown") {
+    control.FPKM.csv <- paste0(path.prefix, "RNAseq_results/ballgown_analysis/normalized_&_statistic/FPKM_control.csv")
+    experiment.FPKM.csv <- paste0(path.prefix, "RNAseq_results/ballgown_analysis/normalized_&_statistic/FPKM_experiment.csv")
+    statistic.csv <- paste0(path.prefix, "RNAseq_results/ballgown_analysis/normalized_&_statistic/statistic.csv")
+    read.control.FPKM.csv <- read.csv(control.FPKM.csv)
+    read.experiment.FPKM.csv <- read.csv(experiment.FPKM.csv)
+    read.statistic.csv <- read.csv(statistic.csv)
+    return(list("control" = read.control.FPKM.csv, "experiment" = read.experiment.FPKM.csv, "statistic" = read.statistic.csv))
+  } else if (which.package == "DESeq2") {
+    csv.file <- paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_normalized_result.csv")
+  } else if (which.package == "edgeR") {
+  }
 }
 
 RawCountPreData <- function(path.prefix, independent.variable, control.group, experiment.group) {

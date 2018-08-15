@@ -9,10 +9,10 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
   #############################################
   ## Creating "edgeR_normalized_result.csv" ##
   ############################################
-  DE.result <- RawCountPreData(path.prefix, independent.variable, control.group, experiment.group)
+  pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, control.group, experiment.group)
   # create DGEList object (edgeR)
   cat("\u25CF Creating 'DGEList' object from count matrix ... \n")
-  deglist.object <- edgeR::DGEList(counts=DE.result$gene.count.matrix, group = DE.result$pheno_data[independent.variable][[1]], genes = row.names(DE.result$gene.count.matrix))
+  deglist.object <- edgeR::DGEList(counts=pre.de.pheno.data$gene.count.matrix, group = pre.de.pheno.data$pheno_data[independent.variable][[1]], genes = row.names(pre.de.pheno.data$gene.count.matrix))
   # Filtering
   # Self defined low abundance condition (a CPM of 1 corresponds to a count of 6-7 in the smallest sample)
   cat("     \u25CF Filtering DGEList object (raw counts row sum bigger than 0) ... \n")
@@ -30,14 +30,12 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
   #  run the cpm function on a DGEList object which contains TMM normalisation factors ==> get TMM normalized counts !!
   normalized.count.table <- edgeR::cpm(dgList, normalized.lib.sizes=TRUE)
   # For control group
-  DE.result$control.group.data.frame$ids
-  DE.result$experiment.group.data.frame$ids
+  control.cpm.data.frame <- data.frame(normalized.count.table[,colnames(normalized.count.table) %in% as.character(pre.de.pheno.data$control.group.data.frame$ids)])
+  colnames(control.cpm.data.frame) <- paste0(as.character(pre.de.pheno.data$control.group.data.frame$ids), ".", control.group)
   # For experiment group
-  control.cpm.data.frame <- data.frame(nc[,colnames(nc) %in% as.character(DE.result$control.group.data.frame$ids)])
-  colnames(control.cpm.data.frame) <- paste0(as.character(DE.result$experiment.group.data.frame$ids), ".", control.group)
+  experiment.cpm.data.frame <- data.frame(normalized.count.table[,colnames(normalized.count.table) %in% as.character(pre.de.pheno.data$experiment.group.data.frame$ids)])
+  colnames(experiment.cpm.data.frame) <- paste0(as.character(pre.de.pheno.data$experiment.group.data.frame$ids), ".", experiment.group)
   # create whole data.frame
-  experiment.cpm.data.frame <- data.frame(nc[,colnames(nc) %in% as.character(DE.result$experiment.group.data.frame$ids)])
-  colnames(experiment.cpm.data.frame) <- paste0(as.character(DE.result$experiment.group.data.frame$ids), ".", experiment.group)
   gene.id.data.frame <- data.frame("gene_id" = row.names(control.cpm.data.frame))
   total.data.frame <- cbind(gene.id.data.frame, control.cpm.data.frame, experiment.cpm.data.frame)
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.cpm.data.frame)
