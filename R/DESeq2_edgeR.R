@@ -1,116 +1,94 @@
 edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.group, experiment.group) {
   cat(paste0("\n************** edgeR analysis **************\n"))
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Reads_Count_Matrix_analysis/edgeR"))){
-    dir.create(paste0(path.prefix, "RNAseq_results/Reads_Count_Matrix_analysis/edgeR"))
+  if(!dir.exists(paste0(path.prefix, "RNAseq_results/edgeR_analysis"))){
+    dir.create(paste0(path.prefix, "RNAseq_results/edgeR_analysis"))
   }
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/Reads_Count_Matrix_analysis/edgeR/images"))){
-    dir.create(paste0(path.prefix, "RNAseq_results/Reads_Count_Matrix_analysis/edgeR/images"))
+  if(!dir.exists(paste0(path.prefix, "RNAseq_results/edgeR_analysis/images"))){
+    dir.create(paste0(path.prefix, "RNAseq_results/edgeR_analysis/images"))
   }
-  # likelihood ratio test and quasi-likelihood F-test
-  # Read pheno_data
-  pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
-  pheno_data.group <- pheno_data[independent.variable][[1]]
-  # gene count table
-  gene.count.table <- read.csv(paste0(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
-  # transcript count table
-  # transcript.count.table <- read.csv(paste0(path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv"))
-  # gene name list
-  gene.data.frame <- data.frame(gene.id = gene.count.table$gene_id)
-  # gene count table without first row
-  gene.count.table <- gene.count.table[-1]
-  rownames(gene.count.table) <- gene.data.frame$gene.id
-  # transcript name list
-  # transcript.data.frame <- data.frame(gene.id = transcript.count.table$transcript_id)
-  # gene count table without first row
-  # transcript.count.table <- transcript.count.table[-1]
-  # rownames(transcript.count.table) <- transcript.data.frame$gene.id
-  # gene matrix
-  gene.count.table <- as.matrix(gene.count.table)
-  # set up condition
-  sample.table <- as.data.frame(table(pheno_data[independent.variable]))
-  control.group.size <- sample.table[sample.table$Var1 == control.group,]$Freq
-  experiment.group.size <- sample.table[sample.table$Var1 == experiment.group,]$Freq
-
+  #############################################
+  ## Creating "edgeR_normalized_result.csv" ##
+  ############################################
+  DE.result <- RawCountPreData(path.prefix, independent.variable, control.group, experiment.group)
   # create DGEList object (edgeR)
   cat("\u25CF Creating 'DGEList' object from count matrix ... \n")
-  deglist.object <- edgeR::DGEList(counts=gene.count.table, group = pheno_data.group, genes = gene.data.frame)
-
+  deglist.object <- edgeR::DGEList(counts=DE.result$gene.count.matrix, group = DE.result$pheno_data[independent.variable][[1]], genes = row.names(DE.result$gene.count.matrix))
   # Filtering
   # Self defined low abundance condition (a CPM of 1 corresponds to a count of 6-7 in the smallest sample)
-  cat("     \u25CF Filtering DGEList object (cpm > 1 and rowSums >= 2) ... \n")
-  keep <- rowSums(edgeR::cpm(deglist.object)>1) >= 2
+  cat("     \u25CF Filtering DGEList object (raw counts row sum bigger than 0) ... \n")
+  keep <- rowSums(deglist.object$counts) > 0
   deglist.object <- deglist.object[keep, , keep.lib.sizes=FALSE]
-
   # Normalization with TMM (trimmed mean of M-values )
   cat("     \u25CF Normalizing DGEList object (TMM) ... \n")
   deglist.object <- edgeR::calcNormFactors(deglist.object, method="TMM")
-
+  # estimating Dispersions
+  # quantile-adjusted conditional maximum likelihood (qCML) method for experiments with single factor.
+  dgList <- estimateCommonDisp(deglist.object)
+  dgList <- estimateTagwiseDisp(dgList)
+  # Testing for DE genes
+  de.statistic.result <- edgeR::exactTest(dgList)
   #  run the cpm function on a DGEList object which contains TMM normalisation factors ==> get TMM normalized counts !!
+  normalized.count.table <- edgeR::cpm(dgList, normalized.lib.sizes=TRUE)
+  # For control group
+  DE.result$control.group.data.frame$ids
+  DE.result$experiment.group.data.frame$ids
+  # For experiment group
+  control.cpm.data.frame <- data.frame(nc[,colnames(nc) %in% as.character(DE.result$control.group.data.frame$ids)])
+  colnames(control.cpm.data.frame) <- paste0(as.character(DE.result$experiment.group.data.frame$ids), ".", control.group)
+  # create whole data.frame
+  experiment.cpm.data.frame <- data.frame(nc[,colnames(nc) %in% as.character(DE.result$experiment.group.data.frame$ids)])
+  colnames(experiment.cpm.data.frame) <- paste0(as.character(DE.result$experiment.group.data.frame$ids), ".", experiment.group)
+  gene.id.data.frame <- data.frame("gene_id" = row.names(control.cpm.data.frame))
+  total.data.frame <- cbind(gene.id.data.frame, control.cpm.data.frame, experiment.cpm.data.frame)
+  total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.cpm.data.frame)
+  total.data.frame[paste0(experiment.group, ".average")] <- rowMeans(experiment.cpm.data.frame)
+  total.data.frame[paste0(control.group, "+", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
+  edgeR_result <- cbind(total.data.frame, de.statistic.result$table)
+  # Write result into file (csv)
+  write.csv(edgeR_result, file = paste0(path.prefix, "RNAseq_results/edgeR_analysis/edgeR_normalized_result.csv"))
 
-  # lib.size <- deglist.object$samples$lib.size
-  # lib.size <- lib.size*deglist.object$samples$norm.factors
-  # cpm.default(deglist.object$counts,lib.size=lib.size,log=log,prior.count=prior.count)
-  #
-
+  ########################
+  ## edgeR visulization ##
+  ########################
   cat("\u25CF Plotting edgeR MDS plot ... \n")
-  png(paste0(path.prefix, "RNAseq_results/Reads_Count_Matrix_analysis/edgeR/images/MDS_plot.png"))
+  png(paste0(path.prefix, "RNAseq_results/edgeR_analysis/images/MDS_plot.png"))
   my_colors=c(rgb(255, 47, 35,maxColorValue = 255),
               rgb(50, 147, 255,maxColorValue = 255))
   limma::plotMDS(deglist.object, top = 1000, labels = NULL, col = my_colors[as.numeric(deglist.object$samples$group)],
                  pch = 20, cex = 2)
   par(xpd=TRUE)
   legend("bottomright",inset=c(0,1), horiz=TRUE, bty="n", legend=levels(deglist.object$samples$group) , col=my_colors, pch=20 )
+  title("MDS Plot")
   dev.off()
-
-  # estimating Dispersions
-  # qCML method. Given a DGEList object y, we estimate the dispersions using the following commands.
-  dgList <- estimateCommonDisp(deglist.object)
-  dgList <- estimateTagwiseDisp(dgList)
-
 
   cat("\u25CF Plotting edgeR MeanVar plot ... \n")
   png(paste0(path.prefix, "RNAseq_results/Reads_Count_Matrix_analysis/edgeR/images/MeanVar_plot.png"))
   edgeR::plotMeanVar(dgList, show.tagwise.vars=TRUE, NBline=TRUE)
+  title("Mean-Variance Plot")
   dev.off()
 
   cat("\u25CF Plotting edgeR BCV plot ...\n")
   png(paste0(path.prefix, "RNAseq_results/Reads_Count_Matrix_analysis/edgeR/images/BCV_plot.png"))
   edgeR::plotBCV(dgList)
+  title("BCV Plot")
   dev.off()
-
-  # Testing for DE genes
-  seperate.group.data.frame <- FindControlExperiment(path.prefix, independent.variable, control.group, experiment.group)
-  control.group.data.frame <- seperate.group.data.frame$control.group
-  experiment.group.data.frame <- seperate.group.data.frame$experiment.group
-
-  de <- edgeR::exactTest(dgList)
-  nc = edgeR::cpm(deglist.object, normalized.lib.sizes=TRUE)
-  control.cpm.data.frame <- nc[,colnames(nc) %in% as.character(control.group.data.frame$ids)]
-  colnames(control.cpm.data.frame) <- paste0(as.character(control.group.data.frame$ids), ".", control.group)
-  experiment.cpm.data.frame <- nc[,colnames(nc) %in% as.character(experiment.group.data.frame$ids)]
-  colnames(experiment.cpm.data.frame) <- paste0(as.character(experiment.group.data.frame$ids), ".", experiment.group)
-  gene.id.data.frame <- data.frame(rownames(de$table))
-  colnames(gene.id.data.frame) <- "gene.id"
-  edgeR_result <- cbind(gene.id.data.frame, control.cpm.data.frame, experiment.cpm.data.frame, de$table)
-  write.csv(edgeR_result, file = paste0(path.prefix, "RNAseq_results/Reads_Count_Matrix_analysis/edgeR/edgeR_", control.group, "_vs_", experiment.group, ".csv"))
 
 
 
   edgeR::plotSmear(de, de.tags = de$genes)
 
-
-
+  # Fit a negative binomial generalized log-linear model
   fit <- edgeR::glmFit(dgList)
+  # conducts likelihood ratio tests for one or more coefficients in the linear model
   lrt <- edgeR::glmLRT(fit, coef=2)
-  edgeR_result <- edgeR::topTags(lrt)
-  deGenes <- edgeR::decideTestsDGE(lrt, p=0.01)
-  deGenes <- rownames(lrt)[as.logical(deGenes)]
-  cat("\u25CF Plotting edgeR Smear plot ... \n")
-  png(paste0(path.prefix, "RNAseq_results/Reads_Count_Matrix_analysis/edgeR/images/Smear_plot.png"))
-  edgeR::plotSmear(lrt, de.tags=deGenes)
-  abline(h=c(-1, 1), col=2)
+  topTags(lrt)
+  # MA-plot is a plot of log-intensity ratios (M-values) versus log-intensity averages (A-values)
+  # mean-difference plot (aka MA plot)
+  cat("\u25CF Plotting MD plot ...\n")
+  png(paste0(path.prefix, "RNAseq_results/Reads_Count_Matrix_analysis/edgeR/images/MD_plot.png"))
+  plotMD(lrt, main = "MD (MA) Plot")
+  abline(h=c(-1, 1), col="blue")
   dev.off()
-  cat("\n")
 }
 
 DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  control.group, experiment.group, DESeq2.padj, DESeq2.log2FC) {

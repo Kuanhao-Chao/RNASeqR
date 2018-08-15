@@ -185,13 +185,21 @@ ParseFPKMBallgownResult <- function(path.prefix, independent.variable, control.g
   return(return.data)
 }
 
-FindControlExperiment <- function(path.prefix, independent.variable, control.group, experiment.group) {
+RawCountPreData <- function(path.prefix, independent.variable, control.group, experiment.group) {
+  # likelihood ratio test and quasi-likelihood F-test
+  # Read pheno_data
   pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
-  # gene count table
-  gene.count.table <- read.csv(paste0(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
-  # transcript count table
-  # transcript.count.table <- read.csv(paste0(path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv"))
   control.group.data.frame <- pheno_data[pheno_data[independent.variable] == control.group, ]
   experiment.group.data.frame <- pheno_data[pheno_data[independent.variable] == experiment.group, ]
-  return(list("control.group" = control.group.data.frame, "experiment.group" = experiment.group.data.frame))
+  control.group.size <- length(row.names(control.group.data.frame))
+  experiment.group.size <- length(row.names(experiment.group.data.frame))
+
+  # read in gene count table
+  gene.count.table.raw <- read.csv(paste0(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
+  # gene count table without first row
+  gene.count.table <- gene.count.table.raw[-1]
+  rownames(gene.count.table) <- gene.count.table.raw$gene_id
+  # gene matrix
+  gene.count.matrix <- as.matrix(gene.count.table)
+  return(list("pheno_data" = pheno_data, "control.group.data.frame" = control.group.data.frame,  "experiment.group.data.frame" = experiment.group.data.frame, "control.group.size" = control.group.size, "experiment.group.size" = experiment.group.size, "gene.count.matrix" = gene.count.matrix))
 }
