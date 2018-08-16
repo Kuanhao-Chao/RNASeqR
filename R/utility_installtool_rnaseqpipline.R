@@ -172,17 +172,20 @@ ExportPath <- function(path.prefix) {
 
 ParseResultCSV <- function(which.package, path.prefix, independent.variable, control.group, experiment.group) {
   if (which.package == "ballgown") {
-    control.FPKM.csv <- paste0(path.prefix, "RNAseq_results/ballgown_analysis/normalized_&_statistic/FPKM_control.csv")
-    experiment.FPKM.csv <- paste0(path.prefix, "RNAseq_results/ballgown_analysis/normalized_&_statistic/FPKM_experiment.csv")
-    statistic.csv <- paste0(path.prefix, "RNAseq_results/ballgown_analysis/normalized_&_statistic/statistic.csv")
-    read.control.FPKM.csv <- read.csv(control.FPKM.csv)
-    read.experiment.FPKM.csv <- read.csv(experiment.FPKM.csv)
-    read.statistic.csv <- read.csv(statistic.csv)
-    return(list("control" = read.control.FPKM.csv, "experiment" = read.experiment.FPKM.csv, "statistic" = read.statistic.csv))
+    which.analysis = "ballgown_analysis"
+    which.count.normalization <- "FPKM"
   } else if (which.package == "DESeq2") {
-    csv.file <- paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_normalized_result.csv")
   } else if (which.package == "edgeR") {
+    which.analysis = "edgeR_analysis"
+    which.count.normalization <- "TMM&CPM"
   }
+  control.normalized.csv <- paste0(path.prefix, "RNAseq_results/", which.analysis, "/normalized_&_statistic/", which.count.normalization, "_control.csv")
+  experiment.normalized.csv <- paste0(path.prefix, "RNAseq_results/", which.analysis, "/normalized_&_statistic/", which.count.normalization, "_experiment.csv")
+  statistic.csv <- paste0(path.prefix, "RNAseq_results/", which.analysis, "/normalized_&_statistic/statistic.csv")
+  read.control.normalized.csv <- read.csv(control.normalized.csv)
+  read.experiment.normalized.csv <- read.csv(experiment.normalized.csv)
+  read.statistic.csv <- read.csv(statistic.csv)
+  return(list("control" = read.control.normalized.csv, "experiment" = read.experiment.normalized.csv, "statistic" = read.statistic.csv))
 }
 
 RawCountPreData <- function(path.prefix, independent.variable, control.group, experiment.group) {

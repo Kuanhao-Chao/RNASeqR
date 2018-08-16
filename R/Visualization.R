@@ -10,7 +10,11 @@ FrequencyPlot <- function(which.package, path.prefix, independent.variable, cont
   } else if (which.package == "DESeq2") {
 
   } else if (which.package == "edgeR") {
-
+    csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
+    control.normalized <- csv.results$control
+    experiment.normalized <- csv.results$experiment
+    which.analysis <- "edgeR_analysis"
+    which.normalization <- "CPM"
   }
   independent.variable.data.frame <- cbind(control.normalized, experiment.normalized)
   png(paste0(path.prefix, paste0("RNAseq_results/", which.analysis, "/images/preDE/Frequency_plot.png")))
@@ -25,6 +29,7 @@ FrequencyPlot <- function(which.package, path.prefix, independent.variable, cont
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/", which.analysis, "/images/Frequency_Plot.png"), "' has been created. \n\n"))
 }
 
+# Box plot and violin plot
 BoxViolinPlot <- function(which.package, path.prefix, independent.variable, control.group, experiment.group) {
     # load gene name for further usage
     if (is.null(pkg.ballgown.data$bg_chrX)) {
@@ -40,7 +45,11 @@ BoxViolinPlot <- function(which.package, path.prefix, independent.variable, cont
       } else if (which.package == "DESeq2") {
 
       } else if (which.package == "edgeR") {
-
+        csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
+        control.normalized <- csv.results$control
+        experiment.normalized <- csv.results$experiment
+        which.analysis <- "edgeR_analysis"
+        which.normalization <- "CPM"
       }
       pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, control.group, experiment.group)
       my_colors=c(rgb(50, 147, 255,maxColorValue = 255),
@@ -65,7 +74,7 @@ BoxViolinPlot <- function(which.package, path.prefix, independent.variable, cont
       png(paste0(path.prefix, paste0("RNAseq_results/", which.analysis, "/images/preDE/Violin_Plot.png")))
       p2 <- ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.normalization][[1]], color=log2.normalized.value$samples), las = 2) + geom_violin() +
         scale_color_manual(values=my_colors[as.numeric(color.group)]) + stat_summary(fun.y=mean, geom="point", shape=23, size=2) +
-        xlab("Samples") + ylab("Log2(FPKM+1)") + ggtitle("Transcript FPKM Violin Plot") +
+        xlab("Samples") + ylab(paste0("Log2(", which.normalization, "+1)")) + ggtitle("Violin Plot") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
         theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
       print(p2)
@@ -74,8 +83,8 @@ BoxViolinPlot <- function(which.package, path.prefix, independent.variable, cont
     }
 }
 
-#
-BallgownPCAPlot <- function(which.package, path.prefix, independent.variable, control.group, experiment.group){
+# PCA plot
+PCAPlot <- function(which.package, path.prefix, independent.variable, control.group, experiment.group){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/
   # load gene name for further usage
   if (is.null(pkg.ballgown.data$bg_chrX)) {
@@ -91,7 +100,11 @@ BallgownPCAPlot <- function(which.package, path.prefix, independent.variable, co
     } else if (which.package == "DESeq2") {
 
     } else if (which.package == "edgeR") {
-
+      csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
+      control.normalized <- csv.results$control
+      experiment.normalized <- csv.results$experiment
+      which.analysis <- "edgeR_analysis"
+      which.normalization <- "CPM"
     }
     cat(paste0("\u25CF Plotting PCA related plot\n"))
     if(!dir.exists(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/preDE/PCA/"))){
@@ -150,8 +163,8 @@ BallgownPCAPlot <- function(which.package, path.prefix, independent.variable, co
   }
 }
 
-#
-BallgownCorrelationPlot <- function(path.prefix){
+#Correlation plot
+CorrelationPlot <- function(which.package, path.prefix, independent.variable, control.group, experiment.group){
   # load gene name for further usage
   if (is.null(pkg.ballgown.data$bg_chrX)) {
     LoadBallgownObject(path.prefix)
@@ -166,7 +179,11 @@ BallgownCorrelationPlot <- function(path.prefix){
     } else if (which.package == "DESeq2") {
 
     } else if (which.package == "edgeR") {
-
+      csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
+      control.normalized <- csv.results$control
+      experiment.normalized <- csv.results$experiment
+      which.analysis <- "edgeR_analysis"
+      which.normalization <- "CPM"
     }
     cat(paste0("\u25CF Plotting Correlation plot\n"))
     if(!dir.exists(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/preDE/Correlation/"))){
@@ -215,8 +232,8 @@ BallgownCorrelationPlot <- function(path.prefix){
   }
 }
 
-# inner function : DEG volcanplot
-BallgownVolcanoPlot <- function(path.prefix, ballgown.log2FC, ballgown.qval) {
+# Volcano plot
+VolcanoPlot <- function(which.package, path.prefix, independent.variable, control.group, experiment.group, ballgown.log2FC, ballgown.qval) {
   # load gene name for further usage
   if (is.null(pkg.ballgown.data$bg_chrX)) {
     LoadBallgownObject(path.prefix)
@@ -249,7 +266,8 @@ BallgownVolcanoPlot <- function(path.prefix, ballgown.log2FC, ballgown.qval) {
   }
 }
 
-BallgownMAPlot <- function(path.prefix, ballgown.qval) {
+# MA plot
+MAPlot <- function(which.package, path.prefix, independent.variable, control.group, experiment.group, ballgown.qval) {
   # load gene name for further usage
   if (is.null(pkg.ballgown.data$bg_chrX)) {
     LoadBallgownObject(path.prefix)

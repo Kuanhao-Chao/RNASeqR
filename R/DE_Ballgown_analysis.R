@@ -68,19 +68,24 @@ BallgownPreprocess <- function(path.prefix, genome.name, sample.pattern, indepen
       if(!dir.exists(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/transcript_related/"))){
         dir.create(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/transcript_related/"))
       }
-      BallgownTranscriptRelatedPlot
+      BallgownTranscriptRelatedPlot(path.prefix)
 
       # PreDE
       if(!dir.exists(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/preDE/"))){
         dir.create(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/preDE/"))
       }
       # Frequency
-
+      FrequencyPlot("ballgown", path.prefix, independent.variable, control.group, experiment.group)
       # Bax and Violin
+      BoxViolinPlot("ballgown", path.prefix, independent.variable, control.group, experiment.group)
       # PCA
+      PCAPlot("ballgown", path.prefix, independent.variable, control.group, experiment.group)
       #Correlation
-      #Volcano
+      CorrelationPlot("ballgown", path.prefix, independent.variable, control.group, experiment.group)
+      # Volcano
+      VolcanoPlot("ballgown", path.prefix, independent.variable, control.group, experiment.group, ballgown.log2FC, ballgown.qval)
       # MA
+      MAPlot("ballgown", path.prefix, independent.variable, control.group, experiment.group, ballgown.qval)
     } else {
       stop("(\u2718) 'ballgown_FPKM_result.csv' haven't created yet.\n\n")
     }
