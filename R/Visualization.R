@@ -1,26 +1,14 @@
 # Frequency Plot
-FrequencyPlot <- function(which.package, path.prefix, independent.variable, control.group, experiment.group) {
+FrequencyPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group) {
   cat(paste0("\u25CF Plotting  Frequency plot\n"))
-  if (which.package == "ballgown") {
-    csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
-    control.normalized <- csv.results$control
-    experiment.normalized <- csv.results$experiment
-    which.analysis <- "ballgown_analysis"
-    which.normalization <- "FPKM"
-  } else if (which.package == "DESeq2") {
-
-  } else if (which.package == "edgeR") {
-    csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
-    control.normalized <- csv.results$control
-    experiment.normalized <- csv.results$experiment
-    which.analysis <- "edgeR_analysis"
-    which.normalization <- "CPM"
-  }
+  csv.results <- ParseResultCSV(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group)
+  control.normalized <- csv.results$control
+  experiment.normalized <- csv.results$experiment
   independent.variable.data.frame <- cbind(control.normalized, experiment.normalized)
   png(paste0(path.prefix, paste0("RNAseq_results/", which.analysis, "/images/preDE/Frequency_plot.png")))
   rafalib::mypar(1, 1)
   sample.size <- length(independent.variable.data.frame)
-  rafalib::shist(log2(independent.variable.data.frame[, 1]), unit = 0.1, type = "n", xlab = paste0("log (base 2) ", which.normalization),
+  rafalib::shist(log2(independent.variable.data.frame[, 1]), unit = 0.1, type = "n", xlab = paste0("log (base 2) ", which.count.normalization),
                  main = "Frequency Plot", cex.main = 4, xlim = c(-5, 15))
   for (i in seq_len(sample.size)){
     rafalib::shist(log2(independent.variable.data.frame[, i]), unit = 0.1, col = i, add = TRUE, lwd = 2, lty = i, xlim = c(-5, 15))
@@ -30,27 +18,14 @@ FrequencyPlot <- function(which.package, path.prefix, independent.variable, cont
 }
 
 # Box plot and violin plot
-BoxViolinPlot <- function(which.package, path.prefix, independent.variable, control.group, experiment.group) {
+BoxViolinPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group) {
     # load gene name for further usage
     if (is.null(pkg.ballgown.data$bg_chrX)) {
       LoadBallgownObject(path.prefix)
     } else {
-      cat(paste0("\u25CF Plotting FPKM Box plot\n"))
-      if (which.package == "ballgown") {
-        csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
-        control.normalized <- csv.results$control
-        experiment.normalized <- csv.results$experiment
-        which.analysis <- "ballgown_analysis"
-        which.normalization <- "FPKM"
-      } else if (which.package == "DESeq2") {
-
-      } else if (which.package == "edgeR") {
-        csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
-        control.normalized <- csv.results$control
-        experiment.normalized <- csv.results$experiment
-        which.analysis <- "edgeR_analysis"
-        which.normalization <- "CPM"
-      }
+      csv.results <- ParseResultCSV(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group)
+      control.normalized <- csv.results$control
+      experiment.normalized <- csv.results$experiment
       pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, control.group, experiment.group)
       my_colors=c(rgb(50, 147, 255,maxColorValue = 255),
                   rgb(255, 47, 35,maxColorValue = 255))
@@ -58,12 +33,12 @@ BoxViolinPlot <- function(which.package, path.prefix, independent.variable, cont
       independent.variable.data.frame <- cbind(control.normalized, experiment.normalized)
       log2.normalized.value = log2(independent.variable.data.frame+1)
       log2.normalized.value <- reshape2::melt(log2.normalized.value)
-      colnames(log2.normalized.value) <- c("samples", which.normalization)
+      colnames(log2.normalized.value) <- c("samples", which.count.normalization)
       # Box plot
       cat(paste0("\u25CF Plotting Box plot\n"))
       png(paste0(path.prefix, paste0("RNAseq_results/", which.analysis, "/images/preDE/Box_Plot.png")))
-      p1 <- ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.normalization][[1]]), las = 2) + geom_boxplot(fill=my_colors[as.numeric(color.group)]) +
-        xlab("Samples") + ylab(paste0("Log2(", which.normalization, "+1)")) + ggtitle("Box Plot") +
+      p1 <- ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.count.normalization][[1]]), las = 2) + geom_boxplot(fill=my_colors[as.numeric(color.group)]) +
+        xlab("Samples") + ylab(paste0("Log2(", which.count.normalization, "+1)")) + ggtitle("Box Plot") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
         theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
       print(p1)
@@ -72,9 +47,9 @@ BoxViolinPlot <- function(which.package, path.prefix, independent.variable, cont
       # Violin plot
       cat(paste0("\u25CF Plotting Violin plot\n"))
       png(paste0(path.prefix, paste0("RNAseq_results/", which.analysis, "/images/preDE/Violin_Plot.png")))
-      p2 <- ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.normalization][[1]], color=log2.normalized.value$samples), las = 2) + geom_violin() +
+      p2 <- ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.count.normalization][[1]], color=log2.normalized.value$samples), las = 2) + geom_violin() +
         scale_color_manual(values=my_colors[as.numeric(color.group)]) + stat_summary(fun.y=mean, geom="point", shape=23, size=2) +
-        xlab("Samples") + ylab(paste0("Log2(", which.normalization, "+1)")) + ggtitle("Violin Plot") +
+        xlab("Samples") + ylab(paste0("Log2(", which.count.normalization, "+1)")) + ggtitle("Violin Plot") +
         theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
         theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
       print(p2)
@@ -84,31 +59,18 @@ BoxViolinPlot <- function(which.package, path.prefix, independent.variable, cont
 }
 
 # PCA plot
-PCAPlot <- function(which.package, path.prefix, independent.variable, control.group, experiment.group){
+PCAPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/
   # load gene name for further usage
   if (is.null(pkg.ballgown.data$bg_chrX)) {
     LoadBallgownObject(path.prefix)
   } else {
-    cat(paste0("\u25CF Plotting FPKM Box plot\n"))
-    if (which.package == "ballgown") {
-      csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
-      control.normalized <- csv.results$control
-      experiment.normalized <- csv.results$experiment
-      which.analysis <- "ballgown_analysis"
-      which.normalization <- "FPKM"
-    } else if (which.package == "DESeq2") {
-
-    } else if (which.package == "edgeR") {
-      csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
-      control.normalized <- csv.results$control
-      experiment.normalized <- csv.results$experiment
-      which.analysis <- "edgeR_analysis"
-      which.normalization <- "CPM"
-    }
     cat(paste0("\u25CF Plotting PCA related plot\n"))
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/preDE/PCA/"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/preDE/PCA/"))
+    csv.results <- ParseResultCSV(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group)
+    control.normalized <- csv.results$control
+    experiment.normalized <- csv.results$experiment
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/images/preDE/PCA/"))){
+      dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/images/preDE/PCA/"))
     }
     pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, control.group, experiment.group)
     # The independent.variable group
@@ -164,30 +126,17 @@ PCAPlot <- function(which.package, path.prefix, independent.variable, control.gr
 }
 
 #Correlation plot
-CorrelationPlot <- function(which.package, path.prefix, independent.variable, control.group, experiment.group){
+CorrelationPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group){
   # load gene name for further usage
   if (is.null(pkg.ballgown.data$bg_chrX)) {
     LoadBallgownObject(path.prefix)
   } else {
-    cat(paste0("\u25CF Plotting FPKM Box plot\n"))
-    if (which.package == "ballgown") {
-      csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
-      control.normalized <- csv.results$control
-      experiment.normalized <- csv.results$experiment
-      which.analysis <- "ballgown_analysis"
-      which.normalization <- "FPKM"
-    } else if (which.package == "DESeq2") {
-
-    } else if (which.package == "edgeR") {
-      csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
-      control.normalized <- csv.results$control
-      experiment.normalized <- csv.results$experiment
-      which.analysis <- "edgeR_analysis"
-      which.normalization <- "CPM"
-    }
     cat(paste0("\u25CF Plotting Correlation plot\n"))
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/preDE/Correlation/"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/preDE/Correlation/"))
+    csv.results <- ParseResultCSV(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group)
+    control.normalized <- csv.results$control
+    experiment.normalized <- csv.results$experiment
+    if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/images/preDE/Correlation/"))){
+      dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/images/preDE/Correlation/"))
     }
     pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, control.group, experiment.group)
     independent.variable.data.frame <- cbind(control.normalized, experiment.normalized)
@@ -228,67 +177,91 @@ CorrelationPlot <- function(which.package, path.prefix, independent.variable, co
     # Print the heatmap
     print(ggheatmap)
     dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Heat_Plot.png"), "' has been created. \n"))
+    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Heat_Plot.png"), "' has been created. \n\n"))
   }
 }
 
 # Volcano plot
-VolcanoPlot <- function(which.package, path.prefix, independent.variable, control.group, experiment.group, ballgown.log2FC, ballgown.qval) {
+VolcanoPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group, condition.pq, condition.log2FC) {
   # load gene name for further usage
   if (is.null(pkg.ballgown.data$bg_chrX)) {
     LoadBallgownObject(path.prefix)
   } else {
-    cat(paste0("\u25CF Plotting FPKM Box plot\n"))
-    if (which.package == "ballgown") {
+    cat(paste0("\u25CF Plotting Volcano plot\n"))
+    if (which.analysis == "ballgown_analysis") {
       FPKM_dataset <- read.csv(paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_normalized_result.csv"))
       ## Volcano plot
       # Make a basic volcano plot
-      png(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/PreDE/Volcano_plot.png"))
+      png(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/preDE/Volcano_plot.png"))
       par(mar=c(5,7,5,5), cex=0.6, cex.main=2, cex.axis=1.5, cex.lab=1.5)
       topT <- as.data.frame(FPKM_dataset)
-      with(topT, plot(topT$log2FC, -log10(qval), pch=20, main="Volcano Plot", xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~Q~value), xlim=c(-15,15), ylim = c(0,12)))
+      with(topT, plot(topT$log2FC, -log10(topT$qval), pch=20, main="Volcano Plot", xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~Q~value), xlim=c(-15,15), ylim = c(0,12)))
       # user4 input qvalue log2FC
       # qval to qvalue
-      subset.result.red <- subset(topT, topT$qval<ballgown.qval & topT$log2FC>=ballgown.log2FC)
+      subset.result.red <- subset(topT, topT$qval<condition.pq & topT$log2FC>=condition.log2FC)
       with(subset.result.red, points(subset.result.red$log2FC, -log10(subset.result.red$qval), pch=20, cex=1, col="red"))
-      subset.result.green <- subset(topT, topT$qval<ballgown.qval & topT$log2FC<=-1*ballgown.log2FC)
-      with(subset.result.green, points(subset.result.green$log2FC, -log10(qval), pch=20, cex=1, col="green"))
+      subset.result.green <- subset(topT, topT$qval<condition.pq & topT$log2FC<=-1*condition.log2FC)
+      with(subset.result.green, points(subset.result.green$log2FC, -log10(subset.result.green$qval), pch=20, cex=1, col="green"))
       # hight = -log10(pavl) = height
-      abline(v=c(-1*ballgown.log2FC,ballgown.log2FC), h=-1*log10(ballgown.qval), col="black", lty='dashed')
+      abline(v=c(-1*condition.log2FC,condition.log2FC), h=-1*log10(condition.pq), col="black", lty='dashed')
       dev.off()
-      cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/PreDE/Volcano_plot.png"), "' has been created. \n\n"))
-    } else if (which.package == "DESeq2") {
-
-    } else if (which.package == "edgeR") {
-
+      cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/preDE/Volcano_plot.png"), "' has been created. \n\n"))
+    } else if (which.analysis == "DESeq2_analysis") {
+      MRN_dataset <- read.csv(paste0(path.prefix, "RNAseq_results/DESeq2_analysis/DESeq2_normalized_result.csv"))
+      ## Volcano plot
+      # Make a basic volcano plot
+      png(paste0(path.prefix, "RNAseq_results/DESeq2_analysis/images/preDE/Volcano_plot.png"))
+      par(mar=c(5,7,5,5), cex=0.6, cex.main=2, cex.axis=1.5, cex.lab=1.5)
+      topT <- as.data.frame(MRN_dataset)
+      with(topT, plot(topT$log2FoldChange, -log10(topT$padj), pch=20, main="Volcano Plot", xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~Padj~value), xlim=c(-15,15), ylim = c(0,12)))
+      # user4 input qvalue log2FC
+      # qval to qvalue
+      subset.result.red <- subset(topT, topT$padj<condition.pq & topT$log2FoldChange>=condition.log2FC)
+      with(subset.result.red, points(subset.result.red$log2FoldChange, -log10(subset.result.red$padj), pch=20, cex=1, col="red"))
+      subset.result.green <- subset(topT, topT$padj<condition.pq & topT$log2FoldChange<=-1*condition.log2FC)
+      with(subset.result.green, points(subset.result.green$log2FoldChange, -log10(subset.result.green$padj), pch=20, cex=1, col="green"))
+      # hight = -log10(pavl) = height
+      abline(v=c(-1*condition.log2FC,condition.log2FC), h=-1*log10(condition.pq), col="black", lty='dashed')
+      dev.off()
+      cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/DESeq2_analysis/images/preDE/Volcano_plot.png"), "' has been created. \n\n"))
+    } else if (which.analysis == "edgeR_analysis") {
+      TMM_CPM_dataset <- read.csv(paste0(path.prefix, "RNAseq_results/edgeR_analysis/edgeR_normalized_result.csv"))
+      ## Volcano plot
+      # Make a basic volcano plot
+      png(paste0(path.prefix, "RNAseq_results/edgeR_analysis/images/preDE/Volcano_plot.png"))
+      par(mar=c(5,7,5,5), cex=0.6, cex.main=2, cex.axis=1.5, cex.lab=1.5)
+      topT <- as.data.frame(TMM_CPM_dataset)
+      with(topT, plot(topT$logFC, -log10(topT$PValue), pch=20, main="Volcano Plot", xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~P~value), xlim=c(-15,15), ylim = c(0,12)))
+      # user4 input qvalue log2FC
+      # qval to qvalue
+      subset.result.red <- subset(topT, topT$PValue<condition.pq & topT$logFC>=condition.log2FC)
+      with(subset.result.red, points(subset.result.red$logFC, -log10(subset.result.red$PValue), pch=20, cex=1, col="red"))
+      subset.result.green <- subset(topT, topT$PValue<condition.pq & topT$logFC<=-1*condition.log2FC)
+      with(subset.result.green, points(subset.result.green$logFC, -log10(subset.result.green$PValue), pch=20, cex=1, col="green"))
+      # hight = -log10(pavl) = height
+      abline(v=c(-1*condition.log2FC,condition.log2FC), h=-1*log10(condition.pq), col="black", lty='dashed')
+      dev.off()
+      cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/edgeR_analysis/images/preDE/Volcano_plot.png"), "' has been created. \n\n"))
     }
 
   }
 }
 
 # MA plot
-MAPlot <- function(which.package, path.prefix, independent.variable, control.group, experiment.group, ballgown.qval) {
+MAPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group, condition.pq) {
   # load gene name for further usage
   if (is.null(pkg.ballgown.data$bg_chrX)) {
     LoadBallgownObject(path.prefix)
   } else {
     cat(paste0("\u25CF Plotting FPKM Box plot\n"))
-    if (which.package == "ballgown") {
-      csv.results <- ParseResultCSV(which.package, path.prefix, independent.variable, control.group, experiment.group)
-      control.normalized <- csv.results$control
-      experiment.normalized <- csv.results$experiment
-      which.analysis <- "ballgown_analysis"
-      which.normalization <- "FPKM"
-    } else if (which.package == "DESeq2") {
-
-    } else if (which.package == "edgeR") {
-
-    }
+    csv.results <- ParseResultCSV(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group)
+    control.normalized <- csv.results$control
+    experiment.normalized <- csv.results$experiment
     cat(paste0("\u25CF Plotting MA plot\n"))
     FPKM_dataset <- read.csv(paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_normalized_result.csv"))
     ## Ma plot
-    png(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/PreDE/MA_plot.png"))
-    p <- ggplot(FPKM_dataset, aes(x = log2(FPKM_dataset$male.female.average), y = FPKM_dataset$log2FC, colour = FPKM_dataset$qval<ballgown.qval)) +
+    png(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/preDE/MA_plot.png"))
+    p <- ggplot(FPKM_dataset, aes(x = log2(FPKM_dataset$male.female.average), y = FPKM_dataset$log2FC, colour = FPKM_dataset$qval<condition.pq)) +
       xlab("Log2(FPKM.all.mean)") +
       ylab("Log2FC") +
       theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
@@ -302,19 +275,3 @@ MAPlot <- function(which.package, path.prefix, independent.variable, control.gro
     cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/ballgown_FPKM_result.csv"), "' has been created. \n\n"))
   }
 }
-
-# #
-# BallgownPlotAll <- function(path.prefix, independent.variable, ballgown.log2FC, ballgown.qval) {
-#   cat(paste0("\n************** Ballgown result visualization **************\n"))
-#   if(!dir.exists(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/"))){
-#     dir.create(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/"))
-#   }
-#
-#   BallgownFrequencyPlot(path.prefix)
-#   BallgownTranscriptRelatedPlot(path.prefix)
-#   BallgownBoxViolinPlot(path.prefix)
-#   BallgownPCAPlot(path.prefix, independent.variable)
-#   BallgownCorrelationPlot(path.prefix)
-#   BallgownVolcanoPlot(path.prefix, ballgown.log2FC, ballgown.qval)
-#   BallgownMAPlot(path.prefix, ballgown.qval)
-# }

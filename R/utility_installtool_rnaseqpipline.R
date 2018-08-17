@@ -170,15 +170,7 @@ ExportPath <- function(path.prefix) {
   cat("\u27a4\u27a4 R environment 'PATH' : ", Sys.getenv("PATH"), "\n\n")
 }
 
-ParseResultCSV <- function(which.package, path.prefix, independent.variable, control.group, experiment.group) {
-  if (which.package == "ballgown") {
-    which.analysis = "ballgown_analysis"
-    which.count.normalization <- "FPKM"
-  } else if (which.package == "DESeq2") {
-  } else if (which.package == "edgeR") {
-    which.analysis = "edgeR_analysis"
-    which.count.normalization <- "TMM&CPM"
-  }
+ParseResultCSV <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group) {
   control.normalized.csv <- paste0(path.prefix, "RNAseq_results/", which.analysis, "/normalized_&_statistic/", which.count.normalization, "_control.csv")
   experiment.normalized.csv <- paste0(path.prefix, "RNAseq_results/", which.analysis, "/normalized_&_statistic/", which.count.normalization, "_experiment.csv")
   statistic.csv <- paste0(path.prefix, "RNAseq_results/", which.analysis, "/normalized_&_statistic/statistic.csv")

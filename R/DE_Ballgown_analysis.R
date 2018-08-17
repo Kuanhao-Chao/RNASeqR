@@ -1,5 +1,5 @@
 # Run ballgown analysi
-BallgownPreprocess <- function(path.prefix, genome.name, sample.pattern, independent.variable, control.group, experiment.group, ballgown.log2FC, ballgown.qval) {
+BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independent.variable, control.group, experiment.group, ballgown.qval, ballgown.log2FC) {
   # this ballgown function is only for two group
   CheckOperatingSystem(FALSE)
   results <- ProgressGenesFiles(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, print = FALSE)
@@ -50,9 +50,15 @@ BallgownPreprocess <- function(path.prefix, genome.name, sample.pattern, indepen
     total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.FPKM.data.frame)
     total.data.frame[paste0(experiment.group, ".average")] <- rowMeans(experiment.FPKM.data.frame)
     total.data.frame[paste0(control.group, "+", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
-    ballgown_result <- cbind(total.data.frame, de.statistic.result)
+    ballgown.result <- cbind(total.data.frame, de.statistic.result)
     # Filter out pval is NaN and qval is NaN
-    write.csv(ballgown_result, file = paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_normalized_result.csv"), row.names=FALSE)
+    write.csv(ballgown.result, file = paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_normalized_result.csv"), row.names=FALSE)
+
+    cat(paste0("     \u25CF Selecting differential expressed genes(ballgown), q-value : ", ballgown.qval, "  log2(Fold Change) : ", ballgown.log2FC, " ..."))
+    ballgown.result.DE <- ballgown.result[(ballgown.result$log2FC>ballgown.log2FC) & (ballgown.result$qval<ballgown.qval), ]
+    DEGList.length <- length(row.names(ballgown.result.DE))
+    cat("          \u25CF ", DEGList.length, " DEG have been found !!")
+    write.csv(ballgown.result.DE, file = paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_normalized_DE_result.csv"), row.names=FALSE)
 
     ###########################
     ## ballgown visulization ##
@@ -75,19 +81,19 @@ BallgownPreprocess <- function(path.prefix, genome.name, sample.pattern, indepen
         dir.create(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/preDE/"))
       }
       # Frequency
-      FrequencyPlot("ballgown", path.prefix, independent.variable, control.group, experiment.group)
+      FrequencyPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group)
       # Bax and Violin
-      BoxViolinPlot("ballgown", path.prefix, independent.variable, control.group, experiment.group)
+      BoxViolinPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group)
       # PCA
-      PCAPlot("ballgown", path.prefix, independent.variable, control.group, experiment.group)
+      PCAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group)
       #Correlation
-      CorrelationPlot("ballgown", path.prefix, independent.variable, control.group, experiment.group)
+      CorrelationPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group)
       # Volcano
-      VolcanoPlot("ballgown", path.prefix, independent.variable, control.group, experiment.group, ballgown.log2FC, ballgown.qval)
+      VolcanoPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group, ballgown.qval, ballgown.log2FC)
       # MA
-      MAPlot("ballgown", path.prefix, independent.variable, control.group, experiment.group, ballgown.qval)
+      MAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group, ballgown.qval)
     } else {
-      stop("(\u2718) 'ballgown_FPKM_result.csv' haven't created yet.\n\n")
+      stop("(\u2718) file missing ERROR.\n\n")
     }
   }
 }
@@ -134,7 +140,7 @@ LoadBallgownObject <- function(path.prefix) {
     load(paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_R_object/ballgown.rda"))
     pkg.ballgown.data$bg_chrX <- bg
   } else {
-    stop(paste0("(\u2718) '", paste0(path.prefix, "gene_data/ballgown/ballgown.rda"), "' haven't created yet. Please run \"BallgownPreprocess(genome.name, sample.pattern, independent.variable)\" first.\n\n"))
+    stop(paste0("(\u2718) '", paste0(path.prefix, "gene_data/ballgown/ballgown.rda"), "' haven't created yet. Please run \"BallgownAnalysis(genome.name, sample.pattern, independent.variable)\" first.\n\n"))
   }
 }
 
