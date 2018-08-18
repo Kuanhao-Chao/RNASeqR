@@ -76,15 +76,15 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   }
   trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   cat(paste0("************** Quality Assessment **************\n"))
-  folder <- paste0(path.prefix, "gene_data/raw_fastq.gz/")
+  folder <- paste0(path.prefix, "gene_data/raw_fastq.gz")
   files <- list.files(folder, sample.pattern, full.names=TRUE)
-  cat(paste0("\u25CF 1. R package \"Rqc\" quality assessment\n"))
-  cat(paste0("     \u25CF  Running 'rqcQA()' ...  Please wait \u231B\u231B\u231B\n"))
-  qa <- Rqc::rqcQA(files)
-  cat(paste0("     \u25CF  Creating 'rqc_report.html' ...  Please wait \u231B\u231B\u231B\n"))
-  reportFile <- Rqc::rqcReport(qa)
-  file.rename(from = reportFile, to = paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html"))
-  cat(paste0("     (\u2714) : Rqc assessment success ~~\n\n"))
+  # cat(paste0("\u25CF 1. R package \"Rqc\" quality assessment\n"))
+  # cat(paste0("     \u25CF  Running 'rqcQA()' ...  Please wait \u231B\u231B\u231B\n"))
+  # qa <- Rqc::rqcQA(files)
+  # cat(paste0("     \u25CF  Creating 'rqc_report.html' ...  Please wait \u231B\u231B\u231B\n"))
+  # reportFile <- Rqc::rqcReport(qa)
+  # file.rename(from = reportFile, to = paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html"))
+  # cat(paste0("     (\u2714) : Rqc assessment success ~~\n\n"))
 
   if(!dir.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/"))){
     dir.create(file.path(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/")), showWarnings = FALSE)
@@ -96,7 +96,7 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   systemPipeRdata::genWorkenvir(workflow="rnaseq")
   # create targets.txt
   cat(paste0("     \u25CF  Writing \"data.list.txt\"\n"))
-  raw.fastq.data.frame <- data.frame("FileName" = files, "SampleName" = seq_len(length(files)), "SampleLong" = seq_len(files), "Experiment" = seq_len(length(files)), "Date" = seq_len(length(files)))
+  raw.fastq.data.frame <- data.frame("FileName" = files, "SampleName" = gsub(".fastq.gz", "", basename(files)), "SampleLong" = seq_len(length(files)))
   write.table(raw.fastq.data.frame, "data.list.txt", sep="\t", row.names = FALSE, quote=FALSE)
   args <- systemPipeR::systemArgs(sysma="rnaseq/param/trim.param", mytargets="data.list.txt")
   cat(paste0("     \u25CF  Running 'seeFastq()' ...  Please wait \u231B\u231B\u231B\n"))

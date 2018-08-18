@@ -198,3 +198,23 @@ RawCountPreData <- function(path.prefix, independent.variable, control.group, ex
   gene.count.matrix <- as.matrix(gene.count.table)
   return(list("pheno_data" = pheno_data, "control.group.data.frame" = control.group.data.frame,  "experiment.group.data.frame" = experiment.group.data.frame, "control.group.size" = control.group.size, "experiment.group.size" = experiment.group.size, "gene.count.matrix" = gene.count.matrix))
 }
+
+RawCountGeneNameChange <- function(raw.count, path.prefix){
+  # Convert gene id to gene name
+  row.names.raw.count <- row.names(raw.count)
+  ballgown.texpr <- read.csv(paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_R_object/texpr.csv"))
+  indices <- match(row.names.raw.count, ballgown.texpr$gene_id)
+  gene_names_for_result <- ballgown.texpr$gene_name[indices]
+  row.names(raw.count) <- gene_names_for_result
+  # Pre-filter out rowSums bigger than 0 !!
+  raw.count <- raw.count[rowSums(raw.count)>0, ]
+  # seperate novel gene and known gene
+  novel.gene.raw.count <- raw.count[row.names(raw.count) == ".", ]
+  known.gene.raw.count <- raw.count[row.names(raw.count) != ".", ]
+  # aggregate know gene with same name !
+  know.gene.raw.count.aggregate <- aggregate(data.frame(known.gene.raw.count), list(row.names(known.gene.raw.count)), sum)
+  gene.name.list <- c(know.gene.raw.count.aggregate$Group.1, rep(".", length(row.names(novel.gene.raw.count))))
+  know.gene.raw.count.aggregate$Group.1 <- NULL
+  novel.know.gene.raw.count <- rbind(know.gene.raw.count.aggregate, novel.gene.raw.count)
+  return(list("raw.counts" = novel.know.gene.raw.count, "raw.counts.name" = gene.name.list))
+}

@@ -26,7 +26,7 @@
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
-RNAseqBallgownDESeq2EdgeRProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.log2FC = 1, ballgown.qval = 0.05, DESeq2.padj = 0.1, DESeq2.log2FC = 1, edgeR.pval = 0.05, edgeR.log2FC = 1, run = TRUE, check.s4.print = TRUE) {
+RNAseqBallgownDESeq2EdgeRProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.qval = 0.05, ballgown.log2FC = 1, DESeq2.padj = 0.1, DESeq2.log2FC = 1, edgeR.pval = 0.05, edgeR.log2FC = 1, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -85,6 +85,7 @@ RNAseqBallgownDESeq2EdgeRProcess <- function(path.prefix, genome.name, sample.pa
   if (file.exists(paste0(path.prefix, "Rscript_out/Raw_Read_Process.Rout"))) {
     Hisat2ReportAssemble(path.prefix, genome.name, sample.pattern)
   }
+  cat("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  Start 'ballgown', 'DESeq2' 'edgeR' analyses  \u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
   BallgownAnalysis(path.prefix, genome.name, sample.pattern, independent.variable, control.group, experiment.group, ballgown.qval, ballgown.log2FC)
   DESeq2RawCountAnalysis(path.prefix, independent.variable,  control.group, experiment.group, DESeq2.padj, DESeq2.log2FC)
   edgeRRawCountAnalysis(path.prefix, independent.variable, control.group, experiment.group, edgeR.pval, edgeR.log2FC)

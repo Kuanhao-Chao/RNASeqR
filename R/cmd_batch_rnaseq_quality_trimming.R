@@ -26,7 +26,7 @@
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNAseqQualityTrimming_CMD(RNASeqWorkFlowParam = exp)}
-RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, truncateStartBases = 0, truncateEndBases = 0, complexity = NULL, minLength = 50, nBases = 2, run = TRUE, check.s4.print = TRUE) {
+RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, reads.length.limit = 36, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -34,7 +34,7 @@ RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, truncateStartBases = 
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Trimming.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNAseqQualityTrimming(path.prefix = '", path.prefix, "', sample.pattern = '", sample.pattern, "', truncateStartBases = ", truncateStartBases, ", truncateEndBases = ", truncateEndBases, ", complexity = ", complexity, ", minLength = ", minLength, ", nBases = ", nBases,  ")")
+  second <- paste0("RNAseqQualityTrimming(path.prefix = '", path.prefix, "', sample.pattern = '", sample.pattern, "', reads.length.limit = ", reads.length.limit, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Trimming.R' has been created.\n"))
@@ -71,7 +71,7 @@ RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, truncateStartBases = 
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNAseqEnvironmentSet(path.prefix = exp@@path.prefix, sample.pattern = exp@@sample.pattern)}
-RNAseqQualityTrimming <- function(path.prefix, sample.pattern, truncateStartBases = 0, truncateEndBases = 0, complexity = NULL, minLength = 50, nBases = 2) {
+RNAseqQualityTrimming <- function(path.prefix, sample.pattern, reads.length.limit = 36) {
   CheckOperatingSystem(FALSE)
   PreCheckRNAseqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
   cat(paste0("************** Quality Trimming **************\n"))
@@ -80,14 +80,13 @@ RNAseqQualityTrimming <- function(path.prefix, sample.pattern, truncateStartBase
   }
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   raw.fastq.unique <- unique(gsub("[1-2]*.fastq.gz$", replacement = "", raw.fastq))
-  lapply(raw.fastq.unique, myFilterAndTrim, path.prefix = path.prefix, truncateStartBases = truncateStartBases,
-         truncateEndBases = truncateEndBases, complexity = complexity, minLength = minLength, nBases = nBases)
+  lapply(raw.fastq.unique, myFilterAndTrim, path.prefix = path.prefix, reads.length.limit = reads.length.limit)
   cat("\n")
   PostCheckRNAseqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }
 
 
-myFilterAndTrim <- function(fl.name, path.prefix, truncateStartBases, truncateEndBases, complexity, minLength, nBases) {
+myFilterAndTrim <- function(fl.name, path.prefix, reads.length.limit) {
   # adding print log
   # file1 and file2 is original fastq.gz without trimmed
   cat(paste0("\u25CF \"", gsub("_", "", fl.name), "\" quality trimming\n"))
@@ -95,16 +94,53 @@ myFilterAndTrim <- function(fl.name, path.prefix, truncateStartBases, truncateEn
   file2 <- paste0(path.prefix, "gene_data/raw_fastq.gz/", fl.name, "2.fastq.gz")
   if (file.exists(file1) && file.exists(file2)) {
     # file1.output and file2.output are the new original fastq.gz file name
-    file1.output <- paste0(path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/", fl.name, "1.fastq.gz")
-    file2.output <- paste0(path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/", fl.name, "2.fastq.gz")
+    file1.untrimmed <- paste0(path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/", fl.name, "1.fastq.gz")
+    file2.untrimmed <- paste0(path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/", fl.name, "2.fastq.gz")
     cat(paste0("     \u25CF Moving \"", basename(file1), "\" to \"", path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/\"\n"))
     cat(paste0("     \u25CF Moving \"", basename(file2), "\" to \"", path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/\"\n"))
-    file.rename(from = file1, to = file1.output)
-    file.rename(from = file2, to = file2.output)
+    file.rename(from = file1, to = file1.untrimmed)
+    file.rename(from = file2, to = file2.untrimmed)
     #Sequence complexity (H) is calculated based on the dinucleotide composition using the formula (Shannon entropy):
     cat(paste0("     \u25CF Start trimming ...\n"))
-    QuasR::preprocessReads(filename = file1.output, outputFilename = file1, filenameMate = file2.output, outputFilenameMate = file2,
-                           truncateStartBases = 0, truncateEndBases = 0, complexity = NULL, minLength = 50, nBases = 2)
+    file1.read <- ShortRead::readFastq(file1.untrimmed)
+    file2.read <- ShortRead::readFastq(file2.untrimmed)
+
+    cat(paste0("          \u25CF Getting quality score list as PhredQuality ...\n"))
+    # get quality score list as PhredQuality
+    qual1 <- as(Biostrings::quality(file1.read), "matrix")
+    qual2 <- as(Biostrings::quality(file2.read), "matrix")
+
+    # Calculate probability error per base (through column) ==> Q = -10log10(P)   or  P = 10^(-Q/10)
+    cat(paste0("          \u25CF Calculating probability error per base ...\n"))
+    pe1 <- apply(qual1, MARGIN = 2, function(x){10^(-(x/10))})
+    pe2 <- apply(qual2, MARGIN = 2, function(x){10^(-(x/10))})
+    # Calculate cpm of error
+    cat(paste0("          \u25CF Calculating cumulative distribution probability of error per base ...\n"))
+    cum.pe1 <- apply(pe1, MARGIN = 1, cumsum)
+    cum.pe2 <- apply(pe2, MARGIN = 1, cumsum)
+
+    # Get the trimming position of each file
+    cat(paste0("          \u25CF Filtering out cumulative distribution probability of error per base < 1 ...\n"))
+    trimPos1 <- apply(cum.pe1, 2, function(x) { min(min(which(x > 1)), length(x)) } )
+    trimPos2 <- apply(cum.pe2, 2, function(x) { min(min(which(x > 1)), length(x)) } )
+
+    # Get the trimPos for pair-end files
+    cat(paste0("          \u25CF Finding trimming position for paired-end ...\n"))
+    trimPos.together <- mapply(function(list1, list2) {min(list1, list2)}, list1 = trimPos1, list2 = trimPos2)
+
+    trimmed.file1 <- ShortRead::narrow(x = file1.read, start = 1, end = trimPos.together)
+    trimmed.file2 <- ShortRead::narrow(x = file2.read, start = 1, end = trimPos.together)
+
+    ## drop reads that are less than 36nt
+    cat(paste0("     \u25CF Removing reads that are less than ", reads.length.limit, " base pairs ...\n"))
+    trimmed.file1 <- trimmed.file1[width(trimmed.file1) >= reads.length.limit]
+    trimmed.file2 <- trimmed.file2[width(trimmed.file2) >= reads.length.limit]
+
+    # write new fastaq files
+    cat(paste0("     \u25CF Creating trimmed pair-end files ...\n"))
+    ShortRead::writeFastq(trimmed.file1, file1, "w")
+    ShortRead::writeFastq(trimmed.file2, file2, "w")
+
     cat(paste0("     \u25CF \"", file1, "\" has been created.\n"))
     cat(paste0("     \u25CF \"", file2, "\" has been created.\n\n"))
   } else {

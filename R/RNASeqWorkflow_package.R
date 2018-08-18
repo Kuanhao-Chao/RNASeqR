@@ -40,5 +40,7 @@
 #' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results plotMA plotDispEsts
 #' @importFrom edgeR DGEList calcNormFactors estimateGLMCommonDisp estimateGLMTrendedDisp estimateGLMTagwiseDisp plotMeanVar plotBCV glmFit glmLRT topTags decideTestsDGE plotSmear
 #' @importFrom limma plotMDS
+#' @importFrom ShortRead readFastq narrow writeFastq
+#' @importFrom Biostrings quality
 NULL
 
