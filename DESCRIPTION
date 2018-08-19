@@ -46,7 +46,8 @@ Imports:
   grDevices,
   graphics,
   stats,
-  utils
+  utils,
+  DOSE
 Suggests:
   knitr
 VignetteBuilder: 

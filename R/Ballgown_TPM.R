@@ -15,7 +15,7 @@
 #     cat('\n')
 #     # for adding FPKM column!
 #     sample.names <- as.character(pheno_data.arrange$ids)
-#     sample.names.with.independent.variable <- paste0(pheno_data.arrange$ids, ".", pheno_data.arrange[independent.variable][,1])
+#     sample.names.with.independent.variable <- paste0(pheno_data.arrange$ids, ".", pheno_data.arrange[independRNAseqGoKegg_CMDent.variable][,1])
 #     sample.number <- length(sample.names)
 #
 #

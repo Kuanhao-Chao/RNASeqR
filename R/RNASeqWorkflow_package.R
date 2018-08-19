@@ -42,5 +42,6 @@
 #' @importFrom limma plotMDS
 #' @importFrom ShortRead readFastq narrow writeFastq
 #' @importFrom Biostrings quality
+#' @import DOSE
 NULL
 
