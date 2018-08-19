@@ -120,7 +120,7 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   # resultFile <- ShortRead::report(qaSummary)
   # file.rename(from = resultFile, to = paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html"))
   # cat(paste0("     (\u2714) : ShortRead assessment success ~~\n\n"))
-  # PostCheckRNAseqQualityAssessment(path.prefix = path.prefix)
+  PostCheckRNAseqQualityAssessment(path.prefix = path.prefix)
 }
 
 PreCheckRNAseqQualityAssessment <- function(path.prefix, sample.pattern) {
