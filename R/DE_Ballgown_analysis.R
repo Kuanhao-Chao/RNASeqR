@@ -11,7 +11,7 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
     dir.create(paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_R_object/"))
   }
   #############################################
-  ## Creating "edgeR_normalized_result.csv" ##
+  ## Creating "ballgown_normalized_result.csv" ##
   ############################################
   pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, control.group, experiment.group)
   # make ballgown object
@@ -52,6 +52,7 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   total.data.frame[paste0(experiment.group, ".average")] <- rowMeans(experiment.FPKM.data.frame)
   total.data.frame[paste0(control.group, "+", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
   ballgown.result <- cbind(total.data.frame, de.statistic.result)
+  ballgown.result <- rbind(ballgown.result[ballgown.result$gene.name != ".",], ballgown.result[ballgown.result$gene.name == ".",])
   # Filter out pval is NaN and qval is NaN
   write.csv(ballgown.result, file = paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_normalized_result.csv"), row.names=FALSE)
 
