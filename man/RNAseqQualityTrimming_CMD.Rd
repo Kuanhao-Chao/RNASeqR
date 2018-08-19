@@ -4,12 +4,16 @@
 \alias{RNAseqQualityTrimming_CMD}
 \title{Sample trimming of '.fastq.gz' files for RNA-Seq workflow in background.}
 \usage{
-RNAseqQualityTrimming_CMD(RNASeqWorkFlowParam, truncateStartBases = 0,
-  truncateEndBases = 0, complexity = NULL, minLength = 50,
-  nBases = 2, run = TRUE, check.s4.print = TRUE)
+RNAseqQualityTrimming_CMD(RNASeqWorkFlowParam, reads.length.limit = 36,
+  run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}
+
+\item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
+
+\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
 
 \item{truncateStartBases}{Function parameter of \code{QuasR::preprocessReads()}. The number of bases to be truncated (removed) from the begining of each sequence.}
 
@@ -23,11 +27,6 @@ See Details on how the complexity is calculated.}
 \item{minLength}{Function parameter of \code{QuasR::preprocessReads()}. The minimal allowed sequence length.}
 
 \item{nBases}{Function parameter of \code{QuasR::preprocessReads()}. The maximal number of Ns allowed per sequence.}
-
-\item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
-If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
-
-\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
 }
 \value{
 None

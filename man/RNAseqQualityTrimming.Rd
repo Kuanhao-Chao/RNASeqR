@@ -5,8 +5,7 @@
 \title{Sample trimming of '.fastq.gz' files for RNA-Seq workflow in R shell}
 \usage{
 RNAseqQualityTrimming(path.prefix, sample.pattern,
-  truncateStartBases = 0, truncateEndBases = 0, complexity = NULL,
-  minLength = 50, nBases = 2)
+  reads.length.limit = 36)
 }
 \arguments{
 \item{path.prefix}{Path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories}

@@ -22,11 +22,9 @@ RNAseqDeGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, KEGG.organism
 #' @export
 RNAseqDeGoKegg <- function(path.prefix, independent.variable, OrgDb.species, KEGG.organism) {
   CheckOperatingSystem(FALSE)
-  which.analyses <- c("ballgown_analysis", "DESeq2_analysis", "edgeR_analysis")
-  for(which.analysis in which.analyses){
-    DEGOAnalysis(which.analysis, path.prefix, OrgDb.species)
-    DEKEGGAnalysis(which.analysis, path.prefix, OrgDb.species, KEGG.organism)
-  }
+  DEBallgownPlotAll(path.prefix, independent.variable)
+  DEGOAnalysis(path.prefix, OrgDb.species)
+  DEKEGGAnalysis(path.prefix, OrgDb.species, KEGG.organism)
   PostRNAseqDeGoKegg()
 }
 

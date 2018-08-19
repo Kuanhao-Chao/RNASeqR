@@ -5,16 +5,16 @@
 \title{Ballgown analysis for RNA-Seq workflow in background}
 \usage{
 RNAseqBallgownDESeq2EdgeRProcess_CMD(RNASeqWorkFlowParam,
-  ballgown.log2FC = 1, ballgown.qval = 0.05, DESeq2.padj = 0.1,
+  ballgown.qval = 0.05, ballgown.log2FC = 1, DESeq2.padj = 0.1,
   DESeq2.log2FC = 1, edgeR.pval = 0.05, edgeR.log2FC = 1,
   run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}
 
-\item{ballgown.log2FC}{Default \code{1}. Set the threshold of log2 fold change to filter out differential expressed gene.}
-
 \item{ballgown.qval}{Default \code{0.05}. Set the threshold of q-value to filter out differential expressed gene.}
+
+\item{ballgown.log2FC}{Default \code{1}. Set the threshold of log2 fold change to filter out differential expressed gene.}
 
 \item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
 If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}

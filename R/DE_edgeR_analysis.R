@@ -17,6 +17,7 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
   gene.raw.count <- raw.counts.result$raw.counts
   # create DGEList object (edgeR)
   cat("\u25CF Creating 'DGEList' object from count matrix ... \n")
+  gene.data.frame <- data.frame(gene.name = gene.name.list)
   deglist.object <- edgeR::DGEList(counts=gene.raw.count, group = pre.de.pheno.data$pheno_data[independent.variable][[1]], genes = gene.name.list)
   # Normalization with TMM (trimmed mean of M-values )
   cat("     \u25CF Normalizing DGEList object (TMM) ... \n")
@@ -40,8 +41,7 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
   colnames(experiment.cpm.data.frame) <- paste0(as.character(pre.de.pheno.data$experiment.group.data.frame$ids), ".", experiment.group)
   write.csv(experiment.cpm.data.frame, file = paste0(path.prefix, "RNAseq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_experiment.csv"), row.names=FALSE)
   # create whole data.frame
-  gene.id.data.frame <- data.frame("gene_id" = row.names(control.cpm.data.frame))
-  total.data.frame <- cbind(gene.id.data.frame, control.cpm.data.frame, experiment.cpm.data.frame)
+  total.data.frame <- cbind(gene.data.frame, control.cpm.data.frame, experiment.cpm.data.frame)
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.cpm.data.frame)
   total.data.frame[paste0(experiment.group, ".average")] <- rowMeans(experiment.cpm.data.frame)
   total.data.frame[paste0(control.group, "+", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])

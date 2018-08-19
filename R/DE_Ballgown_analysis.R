@@ -10,9 +10,9 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   if(!dir.exists(paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_R_object/"))){
     dir.create(paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_R_object/"))
   }
-  #############################################
+  ###############################################
   ## Creating "ballgown_normalized_result.csv" ##
-  ############################################
+  ##############################################
   pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, control.group, experiment.group)
   # make ballgown object
   cat("\u25CF 1. Making ballgown object : \n")
@@ -21,9 +21,11 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   save(ballgown.object, file = paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_R_object/ballgown.rda"))
   # ballgown object do statistic test
   de.statistic.result <- ballgown::stattest(ballgown.object, feature="gene",covariate = independent.variable, getFC=TRUE, meas="FPKM")
-  # Save this data for DESeq2 and edgeR gene name conversion !!
+  # Save this data for DESeq2 and edgeR gene name conversion !! (and transciprt plot)
   ballgown.texpr <- ballgown::texpr(ballgown.object, 'all')
   write.csv(ballgown.texpr, file = paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_R_object/texpr.csv"), row.names=FALSE)
+  ballgown.t2g <- ballgown::indexes(ballgown.object)$t2g
+  write.csv(ballgown.t2g, file = paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_R_object/t2g.csv"), row.names=FALSE)
   # Convert gene id to gene name
   indices <- match(de.statistic.result$id, ballgown.texpr$gene_id)
   gene_names_for_result <- ballgown.texpr$gene_name[indices]
@@ -117,7 +119,8 @@ BallgownTranscriptRelatedPlot <- function(path.prefix){
   if(file.exists(paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_normalized_result.csv"))){
     cat(paste0("\u25CF Plotting Transcript related plot\n"))
     texpr.read.csv <- read.csv(paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_R_object/texpr.csv"))
-    transcript_gene_table <- ballgown::indexes(pkg.ballgown.data$bg_chrX)$t2g
+    t2g.read.csv <- read.csv(paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_R_object/t2g.csv"))
+    transcript_gene_table <- t2g.read.csv
     counts=table(transcript_gene_table[,"g_id"])
     c_one = length(which(counts == 1))
     c_more_than_one = length(which(counts > 1))
@@ -130,7 +133,7 @@ BallgownTranscriptRelatedPlot <- function(path.prefix){
     cat(paste0("(\u2714) : '", paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/Transcript_Related/Distribution_Transcript_Count_per_Gene_Plot.png"), "' has been created. \n"))
 
     # draw the distribution of transcript length
-    full_table <- ballgown::texpr(pkg.ballgown.data$bg_chrX, 'all')
+    full_table <- texpr.read.csv
     t.mini.length = min(full_table$length[full_table$length > 0])
     t.max.length = max(full_table$length[full_table$length > 0])
     png(paste0(path.prefix, "RNAseq_results/ballgown_analysis/images/transcript_related/Distribution_Transcript_Length_Plot.png"))
