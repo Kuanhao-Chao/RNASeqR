@@ -2,9 +2,9 @@
 #'
 #' @description Assess the quality of '.fastq.gz' files for RNA-Seq workflow in background. This step is optional in the whole RNA-Seq workflow.
 #' This function reports the quality assessment result in two packages : \code{Rqc} and \code{systemPipeR}
-#' For \code{Rqc}, 'RNAseq_results/QA_results/Rqc/Rqc_report.html' will be created
-#' For \code{systemPipeR}, 'RNAseq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
-#' If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in R shell, please see \code{RNAseqQualityAssessment()} function.
+#' For \code{Rqc}, 'RNASeq_results/QA_results/Rqc/Rqc_report.html' will be created
+#' For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
+#' If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in R shell, please see \code{RNASeqQualityAssessment()} function.
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
 #' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
@@ -18,8 +18,8 @@
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNAseqQualityAssessment_CMD(RNASeqWorkFlowParam = exp)}
-RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.print = TRUE) {
+#' RNASeqQualityAssessment_CMD(RNASeqWorkFlowParam = exp)}
+RNASeqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -28,7 +28,7 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Assessment.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNAseqQualityAssessment(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
+  second <- paste0("RNASeqQualityAssessment(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Assessment.R' has been created.\n"))
@@ -41,13 +41,13 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 #' @title Quality assessment of '.fastq.gz' files for RNA-Seq workflow in R shell
 #'
 #' @description Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
-#' It is strongly advised to run \code{RNAseqQualityAssessment_CMD()} directly. Running this function directly is not recommended.
+#' It is strongly advised to run \code{RNASeqQualityAssessment_CMD()} directly. Running this function directly is not recommended.
 #' This function reports the quality assessment result in two packages : \code{Rqc} and \code{systemPipeR}
-#' For \code{Rqc}, 'RNAseq_results/QA_results/Rqc/Rqc_report.html' will be created
-#' For \code{systemPipeR}, 'RNAseq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
-#' If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in background, please see \code{RNAseqQualityAssessment_CMD()} function.
+#' For \code{Rqc}, 'RNASeq_results/QA_results/Rqc/Rqc_report.html' will be created
+#' For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
+#' If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in background, please see \code{RNASeqQualityAssessment_CMD()} function.
 #'
-#' @param path.prefix path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @param input.path.prefix path prefix of 'input_files/' directory
 #' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
 #'
@@ -58,21 +58,21 @@ RNAseqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNAseqEnvironmentSet(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix,
+#' RNASeqEnvironmentSet(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix,
 #'                      sample.pattern = exp@@sample.pattern)}
-RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.pattern) {
+RNASeqQualityAssessment <- function(path.prefix, input.path.prefix, sample.pattern) {
   CheckOperatingSystem(FALSE)
-  PreCheckRNAseqQualityAssessment(path.prefix = path.prefix, sample.pattern = sample.pattern)
-  QA_results_subfiles <- list.files(paste0(path.prefix, "RNAseq_results/QA_results"), pattern = "QA_[0-9]*")
+  PreCheckRNASeqQualityAssessment(path.prefix = path.prefix, sample.pattern = sample.pattern)
+  QA_results_subfiles <- list.files(paste0(path.prefix, "RNASeq_results/QA_results"), pattern = "QA_[0-9]*")
   QA.count <- length(QA_results_subfiles) + 1
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/QA_results/"))){
-    dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/')), showWarnings = FALSE)
+  if(!dir.exists(paste0(path.prefix, "RNASeq_results/QA_results/"))){
+    dir.create(file.path(paste0(path.prefix, 'RNASeq_results/QA_results/')), showWarnings = FALSE)
   }
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count))){
-    dir.create(file.path(paste0(path.prefix, 'RNAseq_results/QA_results/QA_', QA.count)), showWarnings = FALSE)
+  if(!dir.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count))){
+    dir.create(file.path(paste0(path.prefix, 'RNASeq_results/QA_results/QA_', QA.count)), showWarnings = FALSE)
   }
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/Rqc/"))){
-    dir.create(file.path(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/Rqc/")), showWarnings = FALSE)
+  if(!dir.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/"))){
+    dir.create(file.path(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/")), showWarnings = FALSE)
   }
   trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   cat(paste0("************** Quality Assessment **************\n"))
@@ -83,34 +83,34 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   # qa <- Rqc::rqcQA(files)
   # cat(paste0("     \u25CF  Creating 'rqc_report.html' ...  Please wait \u231B\u231B\u231B\n"))
   # reportFile <- Rqc::rqcReport(qa)
-  # file.rename(from = reportFile, to = paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html"))
+  # file.rename(from = reportFile, to = paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html"))
   # cat(paste0("     (\u2714) : Rqc assessment success ~~\n\n"))
 
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/"))){
-    dir.create(file.path(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/")), showWarnings = FALSE)
+  if(!dir.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/"))){
+    dir.create(file.path(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/")), showWarnings = FALSE)
   }
   cat(paste0("\u25CF 2. R package \"systemPipeR\" quality assessment\n"))
   current.path <- getwd()
-  setwd(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/"))
-  # create 'rnaseq' directory
-  systemPipeRdata::genWorkenvir(workflow="rnaseq")
+  setwd(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/"))
+  # create 'RNASeq' directory
+  systemPipeRdata::genWorkenvir(workflow="RNASeq")
   # create targets.txt
   cat(paste0("     \u25CF  Writing \"data.list.txt\"\n"))
   raw.fastq.data.frame <- data.frame("FileName" = files, "SampleName" = gsub(".fastq.gz", "", basename(files)), "SampleLong" = seq_len(length(files)))
   write.table(raw.fastq.data.frame, "data.list.txt", sep="\t", row.names = FALSE, quote=FALSE)
-  args <- systemPipeR::systemArgs(sysma="rnaseq/param/trim.param", mytargets="data.list.txt")
+  args <- systemPipeR::systemArgs(sysma="RNASeq/param/trim.param", mytargets="data.list.txt")
   cat(paste0("     \u25CF  Running 'seeFastq()' ...  Please wait \u231B\u231B\u231B\n"))
   fqlist <- systemPipeR::seeFastq(fastq=systemPipeR::infile1(args), batchsize=10000, klength=8)
   cat(paste0("     \u25CF  Creating 'fastqReport.pdf' ...  Please wait \u231B\u231B\u231B\n"))
-  pdf(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/fastqReport.pdf"), height=18, width=4*length(fqlist))
+  pdf(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/fastqReport.pdf"), height=18, width=4*length(fqlist))
   systemPipeR::seeFastqPlot(fqlist)
   dev.off()
   on.exit(setwd(current.path))
-  cat(paste0("     \u25CF  Removing 'rnaseq' directory...  Please wait \u231B\u231B\u231B\n"))
-  unlink(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/rnaseq"), recursive = TRUE)
+  cat(paste0("     \u25CF  Removing 'RNASeq' directory...  Please wait \u231B\u231B\u231B\n"))
+  unlink(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/RNASeq"), recursive = TRUE)
   cat(paste0("     (\u2714) : systemPipeR assessment success ~~\n\n"))
-  # if(!dir.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/"))){
-  #   dir.create(file.path(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/")), showWarnings = FALSE)
+  # if(!dir.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/ShortRead/"))){
+  #   dir.create(file.path(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/ShortRead/")), showWarnings = FALSE)
   # }
   # cat(paste0("\u25CF 3. R package \"ShortRead\" quality assessment\n"))
   # files <- list.files(folder, sample.pattern, full.names=TRUE)
@@ -118,49 +118,49 @@ RNAseqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   # qaSummary <- ShortRead::qa(files, type="fastq")
   # cat(paste0("     \u25CF  Creating 'ShortRead_report.html' ...  Please wait \u231B\u231B\u231B\n"))
   # resultFile <- ShortRead::report(qaSummary)
-  # file.rename(from = resultFile, to = paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html"))
+  # file.rename(from = resultFile, to = paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html"))
   # cat(paste0("     (\u2714) : ShortRead assessment success ~~\n\n"))
-  PostCheckRNAseqQualityAssessment(path.prefix = path.prefix)
+  PostCheckRNASeqQualityAssessment(path.prefix = path.prefix)
 }
 
-PreCheckRNAseqQualityAssessment <- function(path.prefix, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C 'RNAseqQualityAssessment()' environment pre-check ...\n")
+PreCheckRNASeqQualityAssessment <- function(path.prefix, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C 'RNASeqQualityAssessment()' environment pre-check ...\n")
   # 1. must have .fastq.gz files
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   validity <- length(raw.fastq) != 0
   if (!isTRUE(validity)) {
-    stop("RNAseqQualityAssessment environment() ERROR")
+    stop("RNASeqQualityAssessment environment() ERROR")
   }
-  cat("(\u2714) : RNAseqQualityAssessment() pre-check is valid\n\n")
+  cat("(\u2714) : RNASeqQualityAssessment() pre-check is valid\n\n")
 }
 
-PostCheckRNAseqQualityAssessment <- function(path.prefix) {
-  cat("\u269C\u265C\u265C\u265C 'RNAseqQualityAssessment()' environment post-check ...\n")
+PostCheckRNASeqQualityAssessment <- function(path.prefix) {
+  cat("\u269C\u265C\u265C\u265C 'RNASeqQualityAssessment()' environment post-check ...\n")
   # Assessment results exist
-  QA_results_subfiles <- list.files(paste0(path.prefix, "RNAseq_results/QA_results"), pattern = "QA_[0-9]*")
+  QA_results_subfiles <- list.files(paste0(path.prefix, "RNASeq_results/QA_results"), pattern = "QA_[0-9]*")
   # Don't need to plus one
   QA.count <- length(QA_results_subfiles)
-  file.rqc.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html"))
-  file.systemPipeR.data <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/data.list.txt"))
-  file.systemPipeR.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/fastqReport.pdf"))
-  # file.ShortRead.result <- file.exists(paste0(path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html"))
+  file.rqc.result <- file.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html"))
+  file.systemPipeR.data <- file.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/data.list.txt"))
+  file.systemPipeR.result <- file.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/fastqReport.pdf"))
+  # file.ShortRead.result <- file.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html"))
   validity <- file.rqc.result && file.systemPipeR.data && file.systemPipeR.result && file.ShortRead.result
   if (!isTRUE(validity)) {
     if (!file.rqc.result) {
-      cat(paste0("'", path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html' is missing!\n"))
+      cat(paste0("'", path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html' is missing!\n"))
     }
     if (!file.systemPipeR.data) {
-      cat(paste0("'", path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/data.list.txt' is missing!\n"))
+      cat(paste0("'", path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/data.list.txt' is missing!\n"))
     }
     if (!file.systemPipeR.result){
-      cat(paste0("'", path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/systemPipeR/fastqReport.pdf' is missing!\n"))
+      cat(paste0("'", path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/fastqReport.pdf' is missing!\n"))
     }
     # if (!file.ShortRead.result) {
-    #   cat(paste0("'", path.prefix, "RNAseq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html' is missing!\n"))
+    #   cat(paste0("'", path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html' is missing!\n"))
     # }
-    stop("RNAseqQualityAssessment() post-check ERROR")
+    stop("RNASeqQualityAssessment() post-check ERROR")
   } else {
-    cat("(\u2714) : RNAseqQualityAssessment() post-check is valid\n\n")
+    cat("(\u2714) : RNASeqQualityAssessment() post-check is valid\n\n")
     cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
     cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
     cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))

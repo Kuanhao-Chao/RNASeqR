@@ -2,7 +2,7 @@
 #'
 #' @description Trim '.fastq.gz' files for RNA-Seq workflow in background. This step is optional in the whole RNA-Seq workflow.
 #' The trimming method is implemented by R package \code{QuasR}
-#' If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNAseqQualityTrimming()} function.
+#' If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNASeqQualityTrimming()} function.
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
 #' @param truncateStartBases Function parameter of \code{QuasR::preprocessReads()}. The number of bases to be truncated (removed) from the begining of each sequence.
@@ -25,8 +25,8 @@
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNAseqQualityTrimming_CMD(RNASeqWorkFlowParam = exp)}
-RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, reads.length.limit = 36, run = TRUE, check.s4.print = TRUE) {
+#' RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam = exp)}
+RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, reads.length.limit = 36, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -34,7 +34,7 @@ RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, reads.length.limit = 
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Trimming.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNAseqQualityTrimming(path.prefix = '", path.prefix, "', sample.pattern = '", sample.pattern, "', reads.length.limit = ", reads.length.limit, ")")
+  second <- paste0("RNASeqQualityTrimming(path.prefix = '", path.prefix, "', sample.pattern = '", sample.pattern, "', reads.length.limit = ", reads.length.limit, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Trimming.R' has been created.\n"))
@@ -48,11 +48,11 @@ RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, reads.length.limit = 
 #' @title Sample trimming of '.fastq.gz' files for RNA-Seq workflow in R shell
 #'
 #' @description Trim '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
-#' It is strongly advised to run \code{RNAseqQualityTrimming_CMD()} directly. Running this function directly is not recommended.
+#' It is strongly advised to run \code{RNASeqQualityTrimming_CMD()} directly. Running this function directly is not recommended.
 #' The trimming method is implemented by R package \code{QuasR}
-#' If you want to trim '.fastq.gz' files for the RNA-Seq workflow in background, please see \code{RNAseqQualityTrimming_CMD()} function.
+#' If you want to trim '.fastq.gz' files for the RNA-Seq workflow in background, please see \code{RNASeqQualityTrimming_CMD()} function.
 #'
-#' @param path.prefix Path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @param path.prefix Path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @param sample.pattern  Regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
 #' @param truncateStartBases Function parameter of \code{QuasR::preprocessReads()}. The number of bases to be truncated (removed) from the begining of each sequence.
 #' @param truncateEndBases Function parameter of \code{QuasR::preprocessReads()}. The number of bases to be truncated (removed) from the end of each sequence.
@@ -70,10 +70,10 @@ RNAseqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, reads.length.limit = 
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNAseqEnvironmentSet(path.prefix = exp@@path.prefix, sample.pattern = exp@@sample.pattern)}
-RNAseqQualityTrimming <- function(path.prefix, sample.pattern, reads.length.limit = 36) {
+#' RNASeqEnvironmentSet(path.prefix = exp@@path.prefix, sample.pattern = exp@@sample.pattern)}
+RNASeqQualityTrimming <- function(path.prefix, sample.pattern, reads.length.limit = 36) {
   CheckOperatingSystem(FALSE)
-  PreCheckRNAseqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
+  PreCheckRNASeqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
   cat(paste0("************** Quality Trimming **************\n"))
   if(!dir.exists(paste0(path.prefix, "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/"))){
     dir.create(file.path(paste0(path.prefix, 'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/')), showWarnings = FALSE)
@@ -82,7 +82,7 @@ RNAseqQualityTrimming <- function(path.prefix, sample.pattern, reads.length.limi
   raw.fastq.unique <- unique(gsub("[1-2]*.fastq.gz$", replacement = "", raw.fastq))
   lapply(raw.fastq.unique, myFilterAndTrim, path.prefix = path.prefix, reads.length.limit = reads.length.limit)
   cat("\n")
-  PostCheckRNAseqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
+  PostCheckRNASeqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }
 
 
@@ -148,27 +148,27 @@ myFilterAndTrim <- function(fl.name, path.prefix, reads.length.limit) {
   }
 }
 
-PreCheckRNAseqQualityTrimming <- function(path.prefix, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C 'RNAseqQualityTrimming()' environment pre-check ...\n")
+PreCheckRNASeqQualityTrimming <- function(path.prefix, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C 'RNASeqQualityTrimming()' environment pre-check ...\n")
   # have fastq.gz files
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   validity <- length(raw.fastq) != 0
   if (!isTRUE(validity)) {
-    stop("CheckRNAseqQualityTrimming() pre-check ERROR")
+    stop("CheckRNASeqQualityTrimming() pre-check ERROR")
   }
-  cat("(\u2714) : RNAseqQualityTrimming() pre-check is valid\n\n")
+  cat("(\u2714) : RNASeqQualityTrimming() pre-check is valid\n\n")
 }
 
-PostCheckRNAseqQualityTrimming <- function(path.prefix, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C 'RNAseqQualityTrimming()' environment post-check ...\n")
+PostCheckRNASeqQualityTrimming <- function(path.prefix, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C 'RNASeqQualityTrimming()' environment post-check ...\n")
   # have fastq.gz and trimmed fastq.gz files
   trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   validity <- (length(trimmed.raw.fastq) != 0) && (length(raw.fastq) != 0)
   if (!isTRUE(validity)) {
-    stop("RNAseqQualityTrimming() post-check ERROR")
+    stop("RNASeqQualityTrimming() post-check ERROR")
   }
-  cat("(\u2714) : RNAseqQualityTrimming() post-check is valid\n\n")
+  cat("(\u2714) : RNASeqQualityTrimming() post-check is valid\n\n")
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))

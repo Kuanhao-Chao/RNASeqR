@@ -4,7 +4,7 @@
 #'
 #' @slot os.type 'linux' or 'osx'. The operating system type
 #' @slot python.variable a list storing python environment. (check.answer, python.version)
-#' @slot path.prefix path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @slot path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @slot input.path.prefix path prefix of 'input_files/' directory
 #' @slot genome.name variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
 #' @slot sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
@@ -50,7 +50,7 @@ setClass("RNASeqWorkFlowParam",
 #'
 #' @name RNASeqWorkFlowParam-constructor
 #'
-#' @param path.prefix path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @param input.path.prefix path prefix of 'input_files/' directory
 #' @param genome.name variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
 #' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
@@ -68,7 +68,7 @@ setClass("RNASeqWorkFlowParam",
 #'
 #' @examples
 #' \dontrun{
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
 #' }
 RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome.name = NA, sample.pattern = NA,

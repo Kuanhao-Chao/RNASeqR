@@ -4,11 +4,11 @@
 #' This function do 4 things :
 #' 1. Create file directories.
 #' 2. Install necessary tools.
-#' 3. Export 'RNAseq_bin/' to the R environment.
+#' 3. Export 'RNASeq_bin/' to the R environment.
 #' 4. Check command of tools.
-#' First it will create 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
-#' 'Gffcompare' will be installed under 'RNAseq_bin/'. 'RNAseq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
-#' If you want to set up the environment for the following RNA-Seq workflow in R shell, please see \code{RNAseqEnvironmentSet()} function.
+#' First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
+#' 'Gffcompare' will be installed under 'RNASeq_bin/'. 'RNASeq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
+#' If you want to set up the environment for the following RNA-Seq workflow in R shell, please see \code{RNASeqEnvironmentSet()} function.
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
 #' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
@@ -22,8 +22,8 @@
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
-RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.print = TRUE) {
+#' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
+RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -36,7 +36,7 @@ RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
   MkdirAll(path.prefix)
   fileConn<-file(paste0(path.prefix, "Rscript/Environment_Set.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNAseqEnvironmentSet(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', genome.name = '", genome.name, "', sample.pattern = '", sample.pattern, "', indexes.optional = ",indexes.optional, ", os.type = '", os.type, "', mkdir.bool = ", FALSE, ")")
+  second <- paste0("RNASeqEnvironmentSet(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', genome.name = '", genome.name, "', sample.pattern = '", sample.pattern, "', indexes.optional = ",indexes.optional, ", os.type = '", os.type, "', mkdir.bool = ", FALSE, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Environment_Set.R' has been created.\n"))
@@ -49,39 +49,39 @@ RNAseqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
 #' @title Environment setting for RNA-Seq workflow in R shell
 #'
 #' @description Set up the environment for the following RNA-Seq workflow in R shell.
-#' It is strongly advised to run \code{RNAseqEnvironmentSet_CMD()} directly. Running this function directly is not recommended.
-#' This function do 4 things : 1. Create file directories. 2. Install necessary tools. 3. Export 'RNAseq_bin/' to the R environment. 4. Check command of tools.
-#' First it will create 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
-#' 'Gffcompare' will be installed under 'RNAseq_bin/'. 'RNAseq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
-#' If you want to set up the environment for the following RNA-Seq workflow in background, please see \code{RNAseqEnvironmentSet_CMD()} function.
+#' It is strongly advised to run \code{RNASeqEnvironmentSet_CMD()} directly. Running this function directly is not recommended.
+#' This function do 4 things : 1. Create file directories. 2. Install necessary tools. 3. Export 'RNASeq_bin/' to the R environment. 4. Check command of tools.
+#' First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
+#' 'Gffcompare' will be installed under 'RNASeq_bin/'. 'RNASeq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
+#' If you want to set up the environment for the following RNA-Seq workflow in background, please see \code{RNASeqEnvironmentSet_CMD()} function.
 #'
-#' @param os.type 'linux' or 'osx'. The operating system type
-#' @param path.prefix path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @param input.path.prefix path prefix of 'input_files/' directory
 #' @param genome.name variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
 #' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
 #' @param indexes.optional logical value whether indexes/ is exit in 'input_files/'
-#' @param mkdir.bool Default \code{TRUE}. If \code{TRUE}, environment directories will be created. If \code{FALSE}, no directories will be created. When executing RNAseqEnvironmentSet(), 'mkdir.bool' should always be \code{TRUE}
+#' @param os.type 'linux' or 'osx'. The operating system type
+#' @param mkdir.bool Default \code{TRUE}. If \code{TRUE}, environment directories will be created. If \code{FALSE}, no directories will be created. When executing RNASeqEnvironmentSet(), 'mkdir.bool' should always be \code{TRUE}
 #'
 #' @return None
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
-#' RNAseqEnvironmentSet(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix, genome.name = exp@@genome.name,
+#' RNASeqEnvironmentSet(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix, genome.name = exp@@genome.name,
 #'                      sample.pattern = exp@@sample.pattern, indexes.optional = exp@@indexes.optional, os.type = exp@@os.type)}
-RNAseqEnvironmentSet <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indexes.optional, os.type, mkdir.bool = TRUE) {
+RNASeqEnvironmentSet <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indexes.optional, os.type, mkdir.bool = TRUE) {
   CheckOperatingSystem(FALSE)
   if (mkdir.bool) {
     MkdirAll(path.prefix)
   }
-  PreRNAseqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
+  PreRNASeqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
   CopyInputDir(path.prefix = path.prefix, input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, indexes.optional = indexes.optional)
   InstallAll(path.prefix = path.prefix, os.type = os.type)
   ExportPath(path.prefix = path.prefix)
-  PostRNAseqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
+  PostRNASeqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }
 
 # Create sample gene directory
@@ -137,52 +137,52 @@ MkdirGeneDir <- function(path.prefix) {
   }
 }
 
-# Make RNAseq_bin/ directory
-MkdirRNAseq_bin <- function(path.prefix) {
-  cat("\u25CF 2. Creating 'RNAseq_bin/' directory\n")
-  RNAseq_bin.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_bin/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_bin.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_bin/'.\n"))
+# Make RNASeq_bin/ directory
+MkdirRNASeq_bin <- function(path.prefix) {
+  cat("\u25CF 2. Creating 'RNASeq_bin/' directory\n")
+  RNASeq_bin.dir <- dir.create(file.path(paste0(path.prefix, 'RNASeq_bin/')), showWarnings = FALSE) == 0
+  if (!isTRUE(RNASeq_bin.dir)) {
+    cat(paste0("     (\u2714) : Create '", path.prefix, "RNASeq_bin/'.\n"))
   } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_bin/'.\n     Please check whether the directory is already exit.\n"))
+    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNASeq_bin/'.\n     Please check whether the directory is already exit.\n"))
   }
-  download.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_bin/Download/')), showWarnings = FALSE) == 0
+  download.dir <- dir.create(file.path(paste0(path.prefix, 'RNASeq_bin/Download/')), showWarnings = FALSE) == 0
   if (!isTRUE(download.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_bin/Download/'.\n"))
+    cat(paste0("     (\u2714) : Create '", path.prefix, "RNASeq_bin/Download/'.\n"))
   } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_bin/Download/'.\n     Please check whether the directory is already exit.\n"))
+    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNASeq_bin/Download/'.\n     Please check whether the directory is already exit.\n"))
   }
-  unpacked.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_bin/Unpacked/')), showWarnings = FALSE) == 0
+  unpacked.dir <- dir.create(file.path(paste0(path.prefix, 'RNASeq_bin/Unpacked/')), showWarnings = FALSE) == 0
   if (!isTRUE(unpacked.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_bin/Unpacked/'.\n\n"))
+    cat(paste0("     (\u2714) : Create '", path.prefix, "RNASeq_bin/Unpacked/'.\n\n"))
   } else {
-    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNAseq_bin/Unpacked/'.\n     Please check whether the directory is already exit.\n\n"))
+    cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "RNASeq_bin/Unpacked/'.\n     Please check whether the directory is already exit.\n\n"))
   }
 }
 
-# Make RNAseq_results/ directory
-MkdirRNAseq_results <- function(path.prefix){
-  cat("\u25CF 3. Creating 'RNAseq_results/' directory\n")
-  RNAseq_results.dir <- dir.create(file.path(paste0(path.prefix, 'RNAseq_results/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_results.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "RNAseq_results/'.\n\n"))
+# Make RNASeq_results/ directory
+MkdirRNASeq_results <- function(path.prefix){
+  cat("\u25CF 3. Creating 'RNASeq_results/' directory\n")
+  RNASeq_results.dir <- dir.create(file.path(paste0(path.prefix, 'RNASeq_results/')), showWarnings = FALSE) == 0
+  if (!isTRUE(RNASeq_results.dir)) {
+    cat(paste0("     (\u2714) : Create '", path.prefix, "RNASeq_results/'.\n\n"))
   } else {
-    cat(paste0("     (\u26A0)) : Fail to create '", path.prefix, "RNAseq_results/'.\n     Please check whether the directory is already exit.\n\n"))
+    cat(paste0("     (\u26A0)) : Fail to create '", path.prefix, "RNASeq_results/'.\n     Please check whether the directory is already exit.\n\n"))
   }
 }
 
 # Make
 MkdirRscript_Rscript_out <- function(path.prefix) {
   cat("\u25CF 4. Creating 'Rscript/' directory\n")
-  RNAseq_rscript.dir <- dir.create(file.path(paste0(path.prefix, 'Rscript/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_rscript.dir)) {
+  RNASeq_rscript.dir <- dir.create(file.path(paste0(path.prefix, 'Rscript/')), showWarnings = FALSE) == 0
+  if (!isTRUE(RNASeq_rscript.dir)) {
     cat(paste0("     (\u2714) : Create '", path.prefix, "Rscript/'.\n\n"))
   } else {
     cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "Rscript/'.\n     Please check whether the directory is already exit.\n"))
   }
   cat("\u25CF 5. Creating 'Rscript_out/' directory\n")
-  RNAseq_rscript_out.dir <- dir.create(file.path(paste0(path.prefix, 'Rscript_out/')), showWarnings = FALSE) == 0
-  if (!isTRUE(RNAseq_rscript_out.dir)) {
+  RNASeq_rscript_out.dir <- dir.create(file.path(paste0(path.prefix, 'Rscript_out/')), showWarnings = FALSE) == 0
+  if (!isTRUE(RNASeq_rscript_out.dir)) {
     cat(paste0("     (\u2714) : Create '", path.prefix, "Rscript_out/'.\n\n"))
   } else {
     cat(paste0("     (\u26A0) : Fail to create '", path.prefix, "Rscript_out/'.\n     Please check whether the directory is already exit.\n"))
@@ -193,8 +193,8 @@ MkdirRscript_Rscript_out <- function(path.prefix) {
 MkdirAll <- function(path.prefix) {
   cat("************** Creating Directories ************\n")
   MkdirGeneDir(path.prefix)
-  MkdirRNAseq_bin(path.prefix)
-  MkdirRNAseq_results(path.prefix)
+  MkdirRNASeq_bin(path.prefix)
+  MkdirRNASeq_results(path.prefix)
   MkdirRscript_Rscript_out(path.prefix)
 }
 
@@ -232,7 +232,7 @@ CopyInputDir <- function(path.prefix, input.path.prefix, genome.name, sample.pat
 InstallHisat2Bianry <- function(path.prefix, os.type){
   os <- os.type
   url <- 'ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/'
-  # setwd(paste0(path.prefix, "RNAseq_bin/"))
+  # setwd(paste0(path.prefix, "RNASeq_bin/"))
   if (os == "linux"){
     os.file.name.zip <- "hisat2-2.1.0-Linux_x86_64.zip"
     os.file.name <- "hisat2-2.1.0"
@@ -249,26 +249,26 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
     return(FALSE)
   }
   cat(paste0("************** Installing Hisat2 ", "(", os.file.name.zip, ") ************\n"))
-  download.file(url, paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip))
+  download.file(url, paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip))
   cat(paste0("\n************** Unpacking Hisat2 ", "(", os.file.name.zip, ") ************\n"))
   main.command <- "unzip"
-  command.result <- system2(command = main.command, args = paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip," -d ", path.prefix, "RNAseq_bin/Unpacked/"))
+  command.result <- system2(command = main.command, args = paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip," -d ", path.prefix, "RNASeq_bin/Unpacked/"))
   if (command.result != 0 ) {
     cat(paste0("(\u2718) '", main.command, "' is failed !!"))
     stop(paste0("'", main.command, "' ERROR"))
   }
   current.path <- getwd()
-  setwd(paste0(path.prefix, "RNAseq_bin/Unpacked/", os.file.name, "/"))
+  setwd(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name, "/"))
   cat("\n************** Moving Hisat2 Binary ************")
   main.command <- 'cp'
-  command.result <- system2(command = main.command, args = c("hisat2*", "*.py", paste0(path.prefix, "RNAseq_bin/")), stderr = FALSE)
+  command.result <- system2(command = main.command, args = c("hisat2*", "*.py", paste0(path.prefix, "RNASeq_bin/")), stderr = FALSE)
   if (command.result != 0 ) {
     cat(paste0("(\u2718) '", main.command, "' is failed !!"))
     stop(paste0("'", main.command, "' ERROR"))
   }
   on.exit(setwd(current.path))
-  cat(paste0("\n'", path.prefix, "RNAseq_bin/Download/", os.file.name.zip,"' has been installed.\n"))
-  cat(paste0("Hisat2 has been unpacked. ('", path.prefix, "RNAseq_bin/Unpacked/", os.file.name, "/')"), "\n\n")
+  cat(paste0("\n'", path.prefix, "RNASeq_bin/Download/", os.file.name.zip,"' has been installed.\n"))
+  cat(paste0("Hisat2 has been unpacked. ('", path.prefix, "RNASeq_bin/Unpacked/", os.file.name, "/')"), "\n\n")
   return(TRUE)
 }
 
@@ -292,26 +292,26 @@ InstallStringTieBinary <- function(path.prefix, os.type){
     return(FALSE)
   }
   cat(paste0("************** Installing stringtie ", "(", os.file.name.zip, ") ************\n"))
-  download.file(url, paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip))
+  download.file(url, paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip))
   cat(paste0("\n************** Unpacking stringtie ", "(", os.file.name.zip, ") ************\n"))
   main.command <- "tar"
-  command.result <- system2(command = main.command, args = c("xvzf", paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip), "-C", paste0(path.prefix, "RNAseq_bin/Unpacked/")))
+  command.result <- system2(command = main.command, args = c("xvzf", paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip), "-C", paste0(path.prefix, "RNASeq_bin/Unpacked/")))
   if (command.result != 0 ) {
     cat(paste0("(\u2718) '", main.command, "' is failed !!"))
     stop(paste0("'", main.command, "' ERROR"))
   }
   current.path <- getwd()
-  setwd(paste0(path.prefix, "RNAseq_bin/Unpacked/", os.file.name))
+  setwd(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))
   cat("\n************** Moving stringtie Binary ************")
   main.command <- "cp"
-  command.result <- system2(command = main.command, args = c("stringtie", paste0(path.prefix, "RNAseq_bin/")), stderr = FALSE)
+  command.result <- system2(command = main.command, args = c("stringtie", paste0(path.prefix, "RNASeq_bin/")), stderr = FALSE)
   if (command.result != 0 ) {
     cat(paste0("(\u2718) '", main.command, "' is failed !!"))
     stop(paste0("'", main.command, "' ERROR"))
   }
   on.exit(setwd(current.path))
-  cat(paste0("\n'", path.prefix, "RNAseq_bin/Download/", os.file.name.zip,"' has been installed.\n"))
-  cat(paste0("StringTie has been unpacked. ('", path.prefix, "RNAseq_bin/Unpacked/", os.file.name, "')"), "\n\n")
+  cat(paste0("\n'", path.prefix, "RNASeq_bin/Download/", os.file.name.zip,"' has been installed.\n"))
+  cat(paste0("StringTie has been unpacked. ('", path.prefix, "RNASeq_bin/Unpacked/", os.file.name, "')"), "\n\n")
   return(TRUE)
 }
 
@@ -336,26 +336,26 @@ InstallGffcompareBinary <- function(path.prefix, os.type){
     return(FALSE)
   }
   cat(paste0("************** Installing gffcompare ", "(", os.file.name.zip, ") ************\n"))
-  download.file(url, paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip))
+  download.file(url, paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip))
   cat(paste0("\n************** Unpacking gffcompare ", "(", os.file.name.zip, ") ************\n"))
   main.command <- "tar"
-  command.result <- system2(command = main.command, args = c("xvzf", paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip), "-C", paste0(path.prefix, "RNAseq_bin/Unpacked/")))
+  command.result <- system2(command = main.command, args = c("xvzf", paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip), "-C", paste0(path.prefix, "RNASeq_bin/Unpacked/")))
   if (command.result != 0 ) {
     cat(paste0("(\u2718) '", main.command, "' is failed !!"))
     stop(paste0("'", main.command, "' ERROR"))
   }
   current.path <- getwd()
-  setwd(paste0(path.prefix, "RNAseq_bin/Unpacked/", os.file.name))
+  setwd(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))
   cat("\n************** Moving gffcompare Binary ************")
   main.command <- "cp"
-  command.result <- system2(command = main.command, args = c("gffcompare", paste0(path.prefix, "RNAseq_bin/")), stderr = FALSE)
+  command.result <- system2(command = main.command, args = c("gffcompare", paste0(path.prefix, "RNASeq_bin/")), stderr = FALSE)
   if (command.result != 0 ) {
     cat(paste0("(\u2718) '", main.command, "' is failed !!"))
     stop(paste0("'", main.command, "' ERROR"))
   }
   on.exit(setwd(current.path))
-  cat(paste0("\n'", path.prefix, "RNAseq_bin/Download/", os.file.name.zip,"' has been installed.\n"))
-  cat(paste0("Gffcompare has been unpacked. ('", path.prefix, "RNAseq_bin/Unpacked/", os.file.name, "')"), "\n\n")
+  cat(paste0("\n'", path.prefix, "RNASeq_bin/Download/", os.file.name.zip,"' has been installed.\n"))
+  cat(paste0("Gffcompare has been unpacked. ('", path.prefix, "RNASeq_bin/Unpacked/", os.file.name, "')"), "\n\n")
   return(TRUE)
 }
 
@@ -381,21 +381,21 @@ InstallSamtoolsBinary <- function(path.prefix, os.type){
   }
   cat(paste0("************** Installing samtools ", "(", os.file.name.zip, ") ************\n"))
   main.command <- "curl"
-  command.result <- system2(command = main.command, args = c('-L', 'https://github.com/samtools/samtools/releases/download/1.8/samtools-1.8.tar.bz2', '>', paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip)), stdout = "", wait = TRUE)
+  command.result <- system2(command = main.command, args = c('-L', 'https://github.com/samtools/samtools/releases/download/1.8/samtools-1.8.tar.bz2', '>', paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip)), stdout = "", wait = TRUE)
   if (command.result != 0 ) {
     cat(paste0("(\u2718) '", main.command, "' is failed !!"))
     stop(paste0("'", main.command, "' ERROR"))
   }
   cat(paste0("\n************** Unpacking samtools ", "(", os.file.name.zip, ") ************\n"))
   main.command <- "tar"
-  command.result <- system2(command = main.command, args = c("jxvf", paste0(path.prefix, "RNAseq_bin/Download/", os.file.name.zip), "-C", paste0(path.prefix, "RNAseq_bin/Unpacked/")))
+  command.result <- system2(command = main.command, args = c("jxvf", paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip), "-C", paste0(path.prefix, "RNASeq_bin/Unpacked/")))
   if (command.result != 0 ) {
     cat(paste0("(\u2718) '", main.command, "' is failed !!"))
     stop(paste0("'", main.command, "' ERROR"))
   }
   current.path <- getwd()
   cat(paste0("\n************** Making samtools ", "(", os.file.name, ") ************"))
-  setwd(paste0(path.prefix, "RNAseq_bin/Unpacked/", os.file.name))
+  setwd(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))
   main.command <- 'make'
   command.result <- system2(command = main.command, args = "clean", stderr = FALSE)
   if (command.result != 0 ) {
@@ -408,10 +408,10 @@ InstallSamtoolsBinary <- function(path.prefix, os.type){
     stop(paste0("'", main.command, "' ERROR"))
   }
   cat("\n************** Moving samtools Binary ************")
-  file.copy("samtools", paste0(path.prefix, "RNAseq_bin/"))
+  file.copy("samtools", paste0(path.prefix, "RNASeq_bin/"))
   on.exit(setwd(current.path))
-  cat(paste0("\n'", path.prefix, "RNAseq_bin/Download/", os.file.name.zip,"' has been installed.\n"))
-  cat(paste0("Samtools has been unpacked. ('", path.prefix, "RNAseq_bin/Unpacked/", os.file.name, "')"), "\n\n")
+  cat(paste0("\n'", path.prefix, "RNASeq_bin/Download/", os.file.name.zip,"' has been installed.\n"))
+  cat(paste0("Samtools has been unpacked. ('", path.prefix, "RNASeq_bin/Unpacked/", os.file.name, "')"), "\n\n")
   return(TRUE)
 }
 
@@ -419,9 +419,9 @@ InstallSamtoolsBinary <- function(path.prefix, os.type){
 InstallAll <- function(path.prefix, os.type) {
   cat("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  Start installing ... \u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
   cat("   \u261E\u261E  \u25CF'hisat2', \u25CF'stringtie', \u25CF'gffcompare', \u25CF'samtools' will be installed. ... \n")
-  cat(paste0("   \u261E\u261E  Compressed files will be in '", path.prefix, "RNAseq_bin/Download/'"), "\n")
-  cat(paste0("   \u261E\u261E  Unpacked files will be in '", path.prefix, "RNAseq_bin/Unpacked/'"), "\n")
-  cat(paste0("   \u261E\u261E  Binary files will be copied to '", path.prefix, "RNAseq_bin/'"), "\n\n")
+  cat(paste0("   \u261E\u261E  Compressed files will be in '", path.prefix, "RNASeq_bin/Download/'"), "\n")
+  cat(paste0("   \u261E\u261E  Unpacked files will be in '", path.prefix, "RNASeq_bin/Unpacked/'"), "\n")
+  cat(paste0("   \u261E\u261E  Binary files will be copied to '", path.prefix, "RNASeq_bin/'"), "\n\n")
   cat("\u2618\u2618 Hisat2 processing ...\n")
   InstallHisat2Bianry(path.prefix, os.type)
   cat("\u2618\u2618 Stringtie processing ...\n")
@@ -527,17 +527,17 @@ CheckToolAll <- function(print=TRUE) {
   }
 }
 
-PreRNAseqEnvironmentSet <- function(path.prefix, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C RNAseqEnvironmentSet()' environment pre-check ...\n")
+PreRNASeqEnvironmentSet <- function(path.prefix, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C RNASeqEnvironmentSet()' environment pre-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
-    stop("RNAseqEnvironmentSet environment() ERROR")
+    stop("RNASeqEnvironmentSet environment() ERROR")
   }
-  cat("(\u2714) : RNAseqEnvironmentSet() pre-check is valid\n\n")
+  cat("(\u2714) : RNASeqEnvironmentSet() pre-check is valid\n\n")
 }
 
-PostRNAseqEnvironmentSet <- function(path.prefix, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C RNAseqEnvironmentSet()' environment post-check ...\n")
+PostRNASeqEnvironmentSet <- function(path.prefix, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C RNASeqEnvironmentSet()' environment post-check ...\n")
   phenodata.csv <- file.exists(paste0(path.prefix, "gene_data/phenodata.csv"))
   chrX.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/chrX.gtf"))
   chrX.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/chrX.fa"))
@@ -545,9 +545,9 @@ PostRNAseqEnvironmentSet <- function(path.prefix, sample.pattern) {
   check.tool.result <- CheckToolAll()
   validity <- phenodata.csv && chrX.gtf && chrX.fa && check.tool.result && (length(raw.fastq) != 0)
   if (!isTRUE(validity)) {
-    stop("RNAseqEnvironmentSet() post-check ERROR")
+    stop("RNASeqEnvironmentSet() post-check ERROR")
   }
-  cat("(\u2714) : RNAseqEnvironmentSet() post-check is valid\n\n")
+  cat("(\u2714) : RNASeqEnvironmentSet() post-check is valid\n\n")
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))

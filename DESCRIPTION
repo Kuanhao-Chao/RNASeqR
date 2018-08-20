@@ -47,7 +47,9 @@ Imports:
   graphics,
   stats,
   utils,
-  DOSE
+  DOSE,
+  ShortRead,
+  Biostrings
 Suggests:
   knitr
 VignetteBuilder: 

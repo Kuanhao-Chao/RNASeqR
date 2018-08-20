@@ -160,20 +160,20 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
               ballgown.dirs.df = ballgown.dirs))
 }
 
-# Add '~/RNAseq_bin/ to R environment "PATH"
+# Add '~/RNASeq_bin/ to R environment "PATH"
 ExportPath <- function(path.prefix) {
   cat("************** Adding PATH to R environment ************\n")
   old.path <- Sys.getenv("PATH")
   Sys.setenv(
-    PATH = paste(old.path, paste0(path.prefix, "RNAseq_bin"), sep = ":")
+    PATH = paste(old.path, paste0(path.prefix, "RNASeq_bin"), sep = ":")
   )
   cat("\u27a4\u27a4 R environment 'PATH' : ", Sys.getenv("PATH"), "\n\n")
 }
 
 ParseResultCSV <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group) {
-  control.normalized.csv <- paste0(path.prefix, "RNAseq_results/", which.analysis, "/normalized_&_statistic/", which.count.normalization, "_control.csv")
-  experiment.normalized.csv <- paste0(path.prefix, "RNAseq_results/", which.analysis, "/normalized_&_statistic/", which.count.normalization, "_experiment.csv")
-  statistic.csv <- paste0(path.prefix, "RNAseq_results/", which.analysis, "/normalized_&_statistic/statistic.csv")
+  control.normalized.csv <- paste0(path.prefix, "RNASeq_results/", which.analysis, "/normalized_&_statistic/", which.count.normalization, "_control.csv")
+  experiment.normalized.csv <- paste0(path.prefix, "RNASeq_results/", which.analysis, "/normalized_&_statistic/", which.count.normalization, "_experiment.csv")
+  statistic.csv <- paste0(path.prefix, "RNASeq_results/", which.analysis, "/normalized_&_statistic/statistic.csv")
   read.control.normalized.csv <- read.csv(control.normalized.csv)
   read.experiment.normalized.csv <- read.csv(experiment.normalized.csv)
   read.statistic.csv <- read.csv(statistic.csv)
@@ -202,7 +202,7 @@ RawCountPreData <- function(path.prefix, independent.variable, control.group, ex
 RawCountGeneNameChange <- function(raw.count, path.prefix){
   # Convert gene id to gene name
   row.names.raw.count <- row.names(raw.count)
-  ballgown.texpr <- read.csv(paste0(path.prefix, "RNAseq_results/ballgown_analysis/ballgown_R_object/texpr.csv"))
+  ballgown.texpr <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/texpr.csv"))
   indices <- match(row.names.raw.count, ballgown.texpr$gene_id)
   gene_names_for_result <- ballgown.texpr$gene_name[indices]
   row.names(raw.count) <- gene_names_for_result

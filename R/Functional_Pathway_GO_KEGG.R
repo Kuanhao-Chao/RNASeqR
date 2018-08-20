@@ -5,8 +5,8 @@
 # 3. If there are Univ and DE terms ==> Do Gene_set_analysis and classification and enrichment
 GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
   cat(paste0("\u2694\u2694 Gene Ontology Analysis \n"))
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/"))){
-    dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/"))
+  if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/"))){
+    dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/"))
   }
   # get return value
   DEUniv_results <- DEUnivGeneList(which.analysis = which.analysis, path.prefix = path.prefix, OrgDb.species = OrgDb.species)
@@ -27,11 +27,11 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
       cat(paste0("\u25CF '", i, "' : \n"))
       # Do GO Gene Set Enrichment Analysis
       dir_name <- paste0("GO_Gene_Set_Enrichment")
-      if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name))){
-        dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name))
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name))){
+        dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name))
       }
-      if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i))){
-        dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i))
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i))){
+        dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i))
       }
       ######################################
       #### Gene Set Enrichment Analysis ####
@@ -43,13 +43,13 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
                                     verbose      = FALSE)
       gse.data.frame <- data.frame(gse)
       if (length(row.names(gse.data.frame)) > 0) {
-        if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images"))){
-          dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images"))
+        if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images"))){
+          dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images"))
         }
         # Result column must bigger than 0
         cat(paste0("          \u25CF (\u2714) GO Gene Set Enrichment test (", i,") enriched term found! \n"))
         cat(paste0("               \u25CF Writing 'GO_", i, "_Gene_Set_Enrichment.csv' \n"))
-        write.csv(gse.data.frame, file = paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Gene_Set_Enrichment.csv"))
+        write.csv(gse.data.frame, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Gene_Set_Enrichment.csv"))
         cat(paste0("          \u25CF Checking 'GO_", i, "_Gene_Set_Enrichment.csv' result row number \n"))
         if (length(row.names(gse.data.frame)) < 5) {
           cat(paste0("               \u25CF 'GO_", i, "_Gene_Set_Enrichment.csv' result row number : ", length(row.names(gse.data.frame)), " (less than 5)\n"))
@@ -60,7 +60,7 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
         }
         for(GO.ID in iterate.term) {
           cat(paste0("                    \u25CF GO ID : ", GO.ID, "\n"))
-          png(filename = paste0(path.prefix, "RNAseq_results/",which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/", GO.ID, "_gseGO.png"))
+          png(filename = paste0(path.prefix, "RNASeq_results/",which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/", GO.ID, "_gseGO.png"))
           cat(paste0("                         \u25CF Plotting '", GO.ID, "_gseGO.png'\n"))
           p <- clusterProfiler::gseaplot(gse, geneSetID = GO.ID)
           print(p)
@@ -69,7 +69,7 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
         cat("\n")
       } else {
         cat("          \u25CF (\u26A0) No enriched term is found.\n")
-        file.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_GSE_NO_TERM"))
+        file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_GSE_NO_TERM"))
       }
 
       #####################
@@ -82,14 +82,14 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
         cat("     \u25CF Checking differential expression gene number ... \n")
         cat(paste0("          \u25CF Differential expression gene number : ", length(gene_list_SYMBOL), "\n"))
         dir_name <- paste0("GO_DE_Classification_Erichment")
-        if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name))){
-          dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name))
+        if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name))){
+          dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name))
         }
-        if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i))){
-          dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i))
+        if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i))){
+          dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i))
         }
-        if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images"))){
-          dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images"))
+        if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images"))){
+          dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images"))
         }
         ###########################
         #### GO Classification ####
@@ -106,15 +106,15 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
         if (length(row.names(ggo.data.frame)) > 0) {
           cat(paste0("          \u25CF (\u2714) GO Classification (", i,") result found! \n"))
           cat(paste0("               \u25CF Writing 'GO_", i, "_Classification.csv' \n"))
-          write.csv(ggo.data.frame, file = paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i , "/GO_", i, "_Classification.csv"))
+          write.csv(ggo.data.frame, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i , "/GO_", i, "_Classification.csv"))
           cat(paste0("               \u25CF Plotting 'GO_", i, "_Classification_Bar_plot.png' \n"))
-          png(filename = paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Classification_Bar_plot.png"))
+          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Classification_Bar_plot.png"))
           p1 <- barplot(ggo, drop=TRUE, showCategory=12)
           print(p1)
           dev.off()
         }  else {
           cat("          \u25CF (\u26A0) No term is found.\n")
-          file.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_CLASSIFICATION_NO_TERM"))
+          file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_CLASSIFICATION_NO_TERM"))
         }
 
         #######################
@@ -133,22 +133,22 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
         cat(paste0("          \u25CF (\u2714) GO Enrichment test (", i,") enriched term found : ", length(row.names(ego.data.frame)), "\n"))
         if (length(row.names(ego.data.frame)) > 0) {
           cat(paste0("               \u25CF Writing 'GO_", i, "_Enrichment.csv' \n"))
-          write.csv(ego.data.frame, file = paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Enrichment.csv"))
+          write.csv(ego.data.frame, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Enrichment.csv"))
         } else {
           cat(paste0("          \u25CF (\u26A0) No enriched term is found.\n"))
-          file.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_ENRICHMENT_NO_TERM"))
+          file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_ENRICHMENT_NO_TERM"))
         }
         # Condition 2 for GO Enrichment analysis ! Row numebr have to bigger or equal to 2 !
         if (length(row.names(ego.data.frame)) >= 2) {
           # bar plot
-          png(filename = paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Bar_plot.png"))
+          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Bar_plot.png"))
           cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Bar_plot.png' \n"))
           p2 <- barplot(ego, showCategory=12)
           print(p2)
           dev.off()
 
           # dot plot
-          png(filename = paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Dot_plot.png"))
+          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Dot_plot.png"))
           cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Dot_plot.png' \n"))
           p3 <- clusterProfiler::dotplot(ego)
           print(p3)
@@ -156,7 +156,7 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
 
           # have to check before run
           # no enriched term found
-          png(filename = paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Map_plot.png"))
+          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Map_plot.png"))
           cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Map_plot.png' \n"))
           p4 <- clusterProfiler::emapplot(ego)
           print(p4)
@@ -164,21 +164,21 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
 
           ## categorySize can be scaled by 'pvalue' or 'geneNum'
           # the data frame should contain at least two columns
-          png(filename = paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Complex_plot.png"))
+          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Complex_plot.png"))
           cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Complex_plot.png' \n"))
           p5 <- clusterProfiler::cnetplot(ego, categorySize="pvalue", foldChange = gene_list_ENTREZID)
           print(p5)
           dev.off()
 
           # keys must be supplied in a character vector with no NAs
-          png(filename = paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Induced_plot.png"))
+          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Induced_plot.png"))
           cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Induced_plot.png' \n\n"))
           p6 <- clusterProfiler::goplot(ego)
           print(p6)
           dev.off()
         } else {
           cat(paste0("               \u25CF Row size of 'GO_", i,"_Enrichment.csv' is smaller than 2. Can't draw.\n\n"))
-          file.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_ENRICHMENT_LESS_THAN_2"))
+          file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_ENRICHMENT_LESS_THAN_2"))
         }
       }
     }
@@ -187,8 +187,8 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
 
 KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organism) {
   cat(paste0("\u2694\u2694 Kyoto Encyclopedia of Genes and Genomes Analysis \n"))
-  if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/"))){
-    dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/"))
+  if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/"))){
+    dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/"))
   }
   DEUniv_results <- DEUnivGeneList(which.analysis = which.analysis, path.prefix = path.prefix, OrgDb.species = OrgDb.species)
   gene_list_SYMBOL = DEUniv_results$gene_list_SYMBOL_rt
@@ -204,8 +204,8 @@ KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organi
   } else {
     # Do KEGG Gene Set Enrichment Analysis
     dir_name <- paste0("KEGG_Gene_Set_Enrichment")
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name))){
-      dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name))
+    if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name))){
+      dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name))
     }
 
     ######################################
@@ -219,12 +219,12 @@ KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organi
     kk.gse.frame <- data.frame(kk.gse)
     if (length(row.names(kk.gse.frame)) > 0) {
       # Result column must bigger than 0
-      if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/images"))){
-        dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/images"))
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/images"))){
+        dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/images"))
       }
       cat(paste0("     \u25CF (\u2714) KEGG Gene Set Enrichment test enriched term found! \n"))
       cat(paste0("          \u25CF Writing 'KEGG_Gene_Set_Enrichment.csv' \n"))
-      write.csv(kk.gse.frame, file = paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/KEGG_Gene_Set_Enrichment.csv"))
+      write.csv(kk.gse.frame, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/KEGG_Gene_Set_Enrichment.csv"))
       cat(paste0("     \u25CF Checking 'KEGG_Gene_Set_Enrichment.csv' result row number \n"))
       if (length(row.names(kk.gse.frame)) < 5) {
         cat(paste0("          \u25CF 'KEGG_Gene_Set_Enrichment.csv' result row number : ", length(row.names(kk.gse.frame)), " (less than 5)\n"))
@@ -235,7 +235,7 @@ KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organi
       }
       for(KEGG.ID in iterate.terms) {
         cat(paste0("               \u25CF KEGG ID : ", KEGG.ID, "\n"))
-        png(filename = paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/images/", KEGG.ID, "_gseGO.png"))
+        png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/images/", KEGG.ID, "_gseGO.png"))
         cat(paste0("                    \u25CF Plotting '", KEGG.ID, "_gseKEGG.png'\n"))
         p <- clusterProfiler::gseaplot(kk.gse, geneSetID = KEGG.ID)
         print(p)
@@ -243,7 +243,7 @@ KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organi
       }
     } else {
       cat("     \u25CF (\u26A0) No enriched term is found.\n")
-      file.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/KEGG_GSE_NO_TERM"))
+      file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/KEGG_GSE_NO_TERM"))
     }
 
     #####################
@@ -256,8 +256,8 @@ KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organi
       cat("\u25CF Checking differential expression gene number ... \n")
       cat(paste0("     \u25CF Differential expression gene number : ", length(gene_list_SYMBOL), "\n"))
       dir_name <- paste0("KEGG_DE_Erichment")
-      if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name))){
-        dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name))
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name))){
+        dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name))
       }
       #########################
       #### KEGG Enrichment ####
@@ -275,19 +275,19 @@ KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organi
         # print(head(kk.data.frame))
         cat(paste0("     \u25CF (\u2714) KEGG Enrichment test enriched term found! \n"))
         cat(paste0("          \u25CF Writing 'KEGG_Enrichment.csv' \n"))
-        write.csv(kk.data.frame, file = paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/KEGG_Enrichment.csv"))
+        write.csv(kk.data.frame, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/KEGG_Enrichment.csv"))
         for ( i in kk.data.frame$ID) {
-          if(!dir.exists(paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/", i))){
-            dir.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/", i))
+          if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/", i))){
+            dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/", i))
           }
           current.path <- getwd()
           # get the url from KEGG result
           cat(paste0("          \u25CF Finding '", i, "' KEGG URL ... \n"))
           KEGGUrl <- GetKEGGUrl(kk, i)
           cat(paste0("               \u25CF Writting 'URL_", i, "_Pathway.txt' \n"))
-          write(KEGGUrl, file = paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/", i, "/URL_", i, "_Pathway.txt"))
+          write(KEGGUrl, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/", i, "/URL_", i, "_Pathway.txt"))
           # drawing pathway picture with 'pathway' package
-          pathway.dir <- paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/", i, "/pathview_result/")
+          pathway.dir <- paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/", i, "/pathview_result/")
           if(!dir.exists(pathway.dir)){
             dir.create(pathway.dir)
           }
@@ -301,7 +301,7 @@ KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organi
         }
       } else {
         cat(paste0("     \u25CF (\u26A0) No enriched term is found.\n"))
-        file.create(paste0(path.prefix, "RNAseq_results/", which.analysis, "/KEGG_analysis/", dir_name,"/KEGG_ENRICHMENT_NO_TERM"))
+        file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name,"/KEGG_ENRICHMENT_NO_TERM"))
       }
     }
   }
@@ -309,8 +309,8 @@ KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organi
 }
 
 DEUnivGeneList <- function(which.analysis, path.prefix, OrgDb.species) {
-  DE.path.csv <- paste0(path.prefix, "RNAseq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_DE_result.csv")
-  Univ.path.csv <- paste0(path.prefix, "RNAseq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv")
+  DE.path.csv <- paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_DE_result.csv")
+  Univ.path.csv <- paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv")
   DE.csv <- read.csv(DE.path.csv)
   Univ.csv <- read.csv(Univ.path.csv)
 
@@ -345,7 +345,7 @@ DEUnivGeneList <- function(which.analysis, path.prefix, OrgDb.species) {
   #### Univ ####
   ##############
   if (length(gene_list_SYMBOL_univ) == 0 && length(gene_list_ENTREZID_univ) == 0) {
-    cat(paste0("No terms are found in '", path.prefix, "RNAseq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv'\n\n"))
+    cat(paste0("No terms are found in '", path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv'\n\n"))
     return(list(gene_list_SYMBOL_rt = NA,
                 gene_list_SYMBOL_univ_rt = NA,
                 gene_list_ENTREZID_rt = NA,
@@ -368,7 +368,7 @@ DEUnivGeneList <- function(which.analysis, path.prefix, OrgDb.species) {
   #### DE ####
   ############
   if (length(gene_list_SYMBOL) == 0 && length(gene_list_ENTREZID) == 0) {
-    cat(paste0("No annotated gene terms are found in '", path.prefix, "RNAseq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_DE_result.csv'\n\n"))
+    cat(paste0("No annotated gene terms are found in '", path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_DE_result.csv'\n\n"))
     return(list(gene_list_SYMBOL_rt = NA,
                 gene_list_SYMBOL_univ_rt = gene_list_SYMBOL_univ,
                 gene_list_ENTREZID_rt = NA,

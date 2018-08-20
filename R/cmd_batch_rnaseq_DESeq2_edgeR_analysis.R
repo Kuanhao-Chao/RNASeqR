@@ -1,6 +1,6 @@
 #'
 #' @export
-RNAseqDESeq2edgeR_CMD <- function(RNASeqWorkFlowParam, DESeq2.padj = 0.01, DESeq2.log2FC = 1, run = TRUE, check.s4.print = TRUE) {
+RNASeqDESeq2edgeR_CMD <- function(RNASeqWorkFlowParam, DESeq2.padj = 0.01, DESeq2.log2FC = 1, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -10,7 +10,7 @@ RNAseqDESeq2edgeR_CMD <- function(RNASeqWorkFlowParam, DESeq2.padj = 0.01, DESeq
   experiment.group = RNASeqWorkFlowParam@experiment.group
   fileConn<-file(paste0(path.prefix, "Rscript/DESeq2_edgeR_Process.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNAseqDESeq2edgeR(path.prefix = '", path.prefix, "', independent.variable = '", independent.variable, "', control.group = '", control.group, "', experiment.group = '",experiment.group,  "', DESeq2.padj = ",DESeq2.padj, ", DESeq2.log2FC = ",DESeq2.log2FC, ")")
+  second <- paste0("RNASeqDESeq2edgeR(path.prefix = '", path.prefix, "', independent.variable = '", independent.variable, "', control.group = '", control.group, "', experiment.group = '",experiment.group,  "', DESeq2.padj = ",DESeq2.padj, ", DESeq2.log2FC = ",DESeq2.log2FC, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/DESeq2_edgeR_Process.R' has been created.\n"))
@@ -22,29 +22,29 @@ RNAseqDESeq2edgeR_CMD <- function(RNASeqWorkFlowParam, DESeq2.padj = 0.01, DESeq
 
 #'
 #' @export
-RNAseqDESeq2edgeR <- function(path.prefix, independent.variable,  control.group, experiment.group, DESeq2.padj, DESeq2.log2FC) {
+RNASeqDESeq2edgeR <- function(path.prefix, independent.variable,  control.group, experiment.group, DESeq2.padj, DESeq2.log2FC) {
   CheckOperatingSystem(FALSE)
-  PreRNAseqDESeq2edgeR()
+  PreRNASeqDESeq2edgeR()
   DESeq2edgeRRawCountAnalysis(path.prefix = path.prefix, independent.variable = independent.variable, control.group = control.group, experiment.group = experiment.group, DESeq2.padj = DESeq2.padj, DESeq2.log2FC = DESeq2.log2FC)
-  PostRNAseqDESeq2edgeR()
+  PostRNASeqDESeq2edgeR()
 }
 
-PreRNAseqDESeq2edgeR <- function() {
-  cat("\u269C\u265C\u265C\u265C RNAseqBallgownProcess()' environment pre-check ...\n")
+PreRNASeqDESeq2edgeR <- function() {
+  cat("\u269C\u265C\u265C\u265C RNASeqBallgownProcess()' environment pre-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
-    stop("RNAseqBallgownProcess() environment ERROR")
+    stop("RNASeqBallgownProcess() environment ERROR")
   }
-  cat("(\u2714) : RNAseqBallgownProcess() pre-check is valid\n\n")
+  cat("(\u2714) : RNASeqBallgownProcess() pre-check is valid\n\n")
 }
 
-PostRNAseqDESeq2edgeR <- function() {
-  cat("\u269C\u265C\u265C\u265C RNAseqBallgownProcess()' environment post-check ...\n")
+PostRNASeqDESeq2edgeR <- function() {
+  cat("\u269C\u265C\u265C\u265C RNASeqBallgownProcess()' environment post-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
-    stop("RNAseqBallgownProcess() post-check ERROR")
+    stop("RNASeqBallgownProcess() post-check ERROR")
   }
-  cat("(\u2714) : RNAseqBallgownProcess() post-check is valid\n\n")
+  cat("(\u2714) : RNASeqBallgownProcess() post-check is valid\n\n")
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))

@@ -10,7 +10,7 @@ RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA,
   control.group = NA, experiment.group = NA)
 }
 \arguments{
-\item{path.prefix}{path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories}
+\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
 
 \item{input.path.prefix}{path prefix of 'input_files/' directory}
 
@@ -32,7 +32,7 @@ Constructor function for RNASeqWorkFlowParam objects
 }
 \examples{
 \dontrun{
-exp <- RNASeqWorkFlowParam(path.prefix = "/home/rnaseq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
+exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
                            independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
 }
 }

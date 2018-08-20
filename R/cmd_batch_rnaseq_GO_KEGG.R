@@ -1,6 +1,6 @@
 #'
 #' @export
-RNAseqGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, KEGG.organism, run = TRUE, check.s4.print = TRUE) {
+RNASeqGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, KEGG.organism, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -8,7 +8,7 @@ RNAseqGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, KEGG.organism, 
   independent.variable <- RNASeqWorkFlowParam@independent.variable
   fileConn<-file(paste0(path.prefix, "Rscript/GO_KEGG_Analysis.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNAseqGoKegg(path.prefix = '", path.prefix, "', independent.variable = '", independent.variable, "', OrgDb.species = '", OrgDb.species, "', KEGG.organism = '",KEGG.organism, "')")
+  second <- paste0("RNASeqGoKegg(path.prefix = '", path.prefix, "', independent.variable = '", independent.variable, "', OrgDb.species = '", OrgDb.species, "', KEGG.organism = '",KEGG.organism, "')")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/GO_KEGG_Analysis.R' has been created.\n"))
@@ -20,9 +20,9 @@ RNAseqGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, KEGG.organism, 
 
 #'
 #' @export
-RNAseqGoKegg <- function(path.prefix, independent.variable, OrgDb.species, KEGG.organism) {
+RNASeqGoKegg <- function(path.prefix, independent.variable, OrgDb.species, KEGG.organism) {
   CheckOperatingSystem(FALSE)
-  PreRNAseqGoKegg()
+  PreRNASeqGoKegg()
   which.analyses <- c("ballgown_analysis", "DESeq2_analysis", "edgeR_analysis")
   cat("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  Start 'Gene Ontology', 'Kyoto Encyclopedia of Genes and Genomes' analyses  \u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
   for(which.analysis in which.analyses) {
@@ -30,25 +30,25 @@ RNAseqGoKegg <- function(path.prefix, independent.variable, OrgDb.species, KEGG.
     GOAnalysis(which.analysis, path.prefix, OrgDb.species)
     KEGGAnalysis(which.analysis, path.prefix, OrgDb.species, KEGG.organism)
   }
-  PostRNAseqGoKegg()
+  PostRNASeqGoKegg()
 }
 
-PreRNAseqGoKegg <- function() {
-  cat("\u269C\u265C\u265C\u265C RNAseqGoKegg()' environment pre-check ...\n")
+PreRNASeqGoKegg <- function() {
+  cat("\u269C\u265C\u265C\u265C RNASeqGoKegg()' environment pre-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
-    stop("RNAseqGoKegg() environment ERROR")
+    stop("RNASeqGoKegg() environment ERROR")
   }
-  cat("(\u2714) : RNAseqGoKegg() pre-check is valid\n\n")
+  cat("(\u2714) : RNASeqGoKegg() pre-check is valid\n\n")
 }
 
-PostRNAseqGoKegg <- function() {
-  cat("\u269C\u265C\u265C\u265C RNAseqGoKegg()' environment post-check ...\n")
+PostRNASeqGoKegg <- function() {
+  cat("\u269C\u265C\u265C\u265C RNASeqGoKegg()' environment post-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
-    stop("RNAseqGoKegg() post-check ERROR")
+    stop("RNASeqGoKegg() post-check ERROR")
   }
-  cat("(\u2714) : RNAseqGoKegg() post-check is valid\n\n")
+  cat("(\u2714) : RNASeqGoKegg() post-check is valid\n\n")
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))

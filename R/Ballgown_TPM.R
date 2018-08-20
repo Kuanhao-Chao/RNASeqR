@@ -5,9 +5,9 @@
 #   cat('\n')
 #   sample.table <- as.data.frame(table(pheno_data[independent.variable]))
 #   if (length(row.names(sample.table)) == 2) {
-#     dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/"))
-#     dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/"))
-#     dir.create(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/images/"))
+#     dir.create(paste0(path.prefix, "RNASeq_results/Ballgown_analysis/"))
+#     dir.create(paste0(path.prefix, "RNASeq_results/Ballgown_analysis/Ballgown_object/"))
+#     dir.create(paste0(path.prefix, "RNASeq_results/Ballgown_analysis/images/"))
 #
 #     cat("\u25CF 2. Sorting phenodata.csv : \n")
 #     pheno_data.arrange <- dplyr::arrange(pheno_data, unlist(pheno_data[independent.variable]))
@@ -15,7 +15,7 @@
 #     cat('\n')
 #     # for adding FPKM column!
 #     sample.names <- as.character(pheno_data.arrange$ids)
-#     sample.names.with.independent.variable <- paste0(pheno_data.arrange$ids, ".", pheno_data.arrange[independRNAseqGoKegg_CMDent.variable][,1])
+#     sample.names.with.independent.variable <- paste0(pheno_data.arrange$ids, ".", pheno_data.arrange[independRNASeqGoKegg_CMDent.variable][,1])
 #     sample.number <- length(sample.names)
 #
 #
@@ -56,13 +56,13 @@
 #     cat("\u25CF 3. Making ballgown object : \n")
 #     pkg.ballgown.data$bg_chrX <- ballgown::ballgown(dataDir = paste0(path.prefix, "gene_data/ballgown"), samplePattern = sample.pattern, pData = pheno_data, meas = 'all')
 #     bg <- pkg.ballgown.data$bg_chrX
-#     save(bg, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/ballgown.rda"))
+#     save(bg, file = paste0(path.prefix, "RNASeq_results/Ballgown_analysis/Ballgown_object/ballgown.rda"))
 #     cat("     \u25CF writing data.frame into 'ballgown.rda' in \n")
 #     cat('\n')
 #     cat("\u25CF 4. Filtering ballgown object (variance less than 1): \n")
 #     pkg.ballgown.data$bg_chrX_filt <- ballgown::subset(pkg.ballgown.data$bg_chrX, cond = 'genefilter::rowVars(ballgown::texpr(pkg.ballgown.data$bg_chrX)) >1', genomesubset=TRUE)
 #     bg_filter <- pkg.ballgown.data$bg_chrX_filt
-#     save(bg_filter, file = paste0(path.prefix, "RNAseq_results/Ballgown_analysis/Ballgown_object/ballgown_filter.rda"))
+#     save(bg_filter, file = paste0(path.prefix, "RNASeq_results/Ballgown_analysis/Ballgown_object/ballgown_filter.rda"))
 #     cat("     \u25CF writing data.frame into 'ballgown_filter.rda' in \n")
 #     cat('\n')
 #     # differential expression
@@ -72,7 +72,7 @@
 #
 #     results_transcripts <- ballgown::stattest(pkg.ballgown.data$bg_chrX_filt, feature="transcript",covariate = independent.variable, getFC=TRUE, meas="FPKM")
 #     results_transcripts_2 <- ballgown::stattest(pkg.ballgown.data$bg_chrX, feature="transcript",covariate = independent.variable, getFC=TRUE, meas="FPKM")
-#     # write.csv(results_transcripts, paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"), row.names=FALSE)
+#     # write.csv(results_transcripts, paste0(path.prefix, "RNASeq_results/Ballgown_analysis/ballgown_FPKM_result.csv"), row.names=FALSE)
 #     results_transcripts$feature <- NULL
 #     results_transcripts.FC <- results_transcripts$fc
 #     results_transcripts.log2FC <- log2(results_transcripts$fc)
@@ -111,12 +111,12 @@
 #     cat("     \u25CF writing data.frame into 'ballgown_FPKM_result.csv' ......\n\n")
 #     cat("     \u25CF writing data.frame into 'ballgown_FPKM_result.png' ......\n\n")
 #
-#     write.csv(results_transcripts, paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.csv"), row.names=FALSE)
+#     write.csv(results_transcripts, paste0(path.prefix, "RNASeq_results/Ballgown_analysis/ballgown_FPKM_result.csv"), row.names=FALSE)
 #     cat("\u25CF 6. Printing Ballgown FPKM dataset : \n")
 #     print(head(results_transcripts))
 #     cat("\n")
 #     cat("\u25CF 7. Creating Ballgown FPKM dataset png : \n")
-#     png(paste0(path.prefix, "RNAseq_results/Ballgown_analysis/ballgown_FPKM_result.png"), width = sample.number*200 + 200, height = 40*8)
+#     png(paste0(path.prefix, "RNASeq_results/Ballgown_analysis/ballgown_FPKM_result.png"), width = sample.number*200 + 200, height = 40*8)
 #     p <- gridExtra::grid.table(head(results_transcripts))
 #     print(p)
 #     dev.off()

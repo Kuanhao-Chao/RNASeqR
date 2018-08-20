@@ -86,7 +86,7 @@ CreateHisat2Index <- function (path.prefix, genome.name, sample.pattern, splice.
           cat("\n")
         }
         command.list <- c(command.list, "\n")
-        fileConn <- paste0(path.prefix, "RNAseq_results/COMMAND.txt")
+        fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
         write(command.list, fileConn, append = TRUE)
         on.exit(setwd(current.path))
         cat(paste0("'", path.prefix, "gene_data/indexes/", genome.name, "_tran.*.ht2' has been created.\n\n"))
@@ -138,7 +138,7 @@ Hisat2AlignmentDefault <- function(path.prefix, genome.name, sample.pattern, num
         }
         cat("\n")
         command.list <- c(command.list, "\n")
-        fileConn <- paste0(path.prefix, "RNAseq_results/COMMAND.txt")
+        fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
         write(command.list, fileConn, append = TRUE)
         on.exit(setwd(current.path))
       }
@@ -180,15 +180,15 @@ Hisat2ReportAssemble <- function(path.prefix, genome.name, sample.pattern){
       add.column <- c(add.column, overall.alignment.result.cut[i])
       report.data.frame[[(sample.name[i])]] <- add.column
     }
-    if(!dir.exists(paste0(path.prefix, "RNAseq_results/Alignment_Report/"))){
-      dir.create(paste0(path.prefix, "RNAseq_results/Alignment_Report/"))
+    if(!dir.exists(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))){
+      dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
     }
-    write.csv(report.data.frame, file = paste0(path.prefix, "RNAseq_results/Alignment_Report/Alignment_report.csv"))
-    png(paste0(path.prefix, "RNAseq_results/Alignment_Report/Alignment_report.png"), width = iteration.num*100 + 200, height = 40*4)
+    write.csv(report.data.frame, file = paste0(path.prefix, "RNASeq_results/Alignment_Report/Alignment_report.csv"))
+    png(paste0(path.prefix, "RNASeq_results/Alignment_Report/Alignment_report.png"), width = iteration.num*100 + 200, height = 40*4)
     p <- gridExtra::grid.table(report.data.frame)
     print(p)
     dev.off()
-    cat(c("Results are in", paste0("'", path.prefix, "RNAseq_results/Alignment_Report/'"), "\n\n"))
+    cat(c("Results are in", paste0("'", path.prefix, "RNASeq_results/Alignment_Report/'"), "\n\n"))
   }
 }
 
@@ -221,7 +221,7 @@ SamtoolsToBam <- function(path.prefix, genome.name, sample.pattern, num.parallel
       }
       cat("\n")
       command.list <- c(command.list, "\n")
-      fileConn <- paste0(path.prefix, "RNAseq_results/COMMAND.txt")
+      fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
       write(command.list, fileConn, append = TRUE)
       on.exit(setwd(current.path))
     } else {
@@ -256,7 +256,7 @@ StringTieAssemble <- function(path.prefix, genome.name, sample.pattern, num.para
       }
       cat("\n")
       command.list <- c(command.list, "\n")
-      fileConn <- paste0(path.prefix, "RNAseq_results/COMMAND.txt")
+      fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
       write(command.list, fileConn, append = TRUE)
       on.exit(setwd(current.path))
     } else {
@@ -300,7 +300,7 @@ StringTieMergeTrans <- function(path.prefix, genome.name, sample.pattern, num.pa
       }
       cat("\n")
       command.list <- c(command.list, "\n")
-      fileConn <- paste0(path.prefix, "RNAseq_results/COMMAND.txt")
+      fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
       write(command.list, fileConn, append = TRUE)
       on.exit(setwd(current.path))
     } else {
@@ -338,7 +338,7 @@ StringTieToBallgown <- function(path.prefix, genome.name, sample.pattern, num.pa
       }
       cat("\n")
       command.list <- c(command.list, "\n")
-      fileConn <- paste0(path.prefix, "RNAseq_results/COMMAND.txt")
+      fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
       write(command.list, fileConn, append = TRUE)
       on.exit(setwd(current.path))
     } else {
@@ -377,7 +377,7 @@ StringTieReEstimate <- function(path.prefix, genome.name, sample.pattern, num.pa
       }
       cat("\n")
       command.list <- c(command.list, "\n")
-      fileConn <- paste0(path.prefix, "RNAseq_results/COMMAND.txt")
+      fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
       write(command.list, fileConn, append = TRUE)
       on.exit(setwd(current.path))
     } else {
@@ -407,7 +407,7 @@ GffcompareRefSample <- function(path.prefix, genome.name, sample.pattern) {
       }
       cat("\n")
       command.list <- c(command.list, "\n")
-      fileConn <- paste0(path.prefix, "RNAseq_results/COMMAND.txt")
+      fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
       write(command.list, fileConn, append = TRUE)
       on.exit(setwd(current.path))
     } else {
@@ -483,7 +483,7 @@ PreDECountTable <- function(path.prefix, sample.pattern, python.variable.answer,
     cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv' has been created\n"))
     cat(paste0("'", path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv' has been created\n\n"))
     command.list <- c(command.list, "\n")
-    fileConn <- paste0(path.prefix, "RNAseq_results/COMMAND.txt")
+    fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
     write(command.list, fileConn, append = TRUE)
     on.exit(setwd(current.path))
     return(TRUE)

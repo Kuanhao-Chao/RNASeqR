@@ -9,7 +9,7 @@
 #'    For sample profile : Creating Box plot, Violin plot, Frequency plot, PCA related plots, Correlation plots.
 #'    For pre differential expressed gene analysis : Creating MA plot, Volcano plot.
 #'    For differential express gene analysis : Creating Heatmap plot, PCA related plots.
-#' If you want to run ballgown analysis for the following RNA-Seq workflow in R shell, please see \code{RNAseqBallgownDESeq2EdgeRProcess()} function.
+#' If you want to run ballgown analysis for the following RNA-Seq workflow in R shell, please see \code{RNASeqBallgownDESeq2EdgeRProcess()} function.
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
 #' @param ballgown.log2FC Default \code{1}. Set the threshold of log2 fold change to filter out differential expressed gene.
@@ -25,8 +25,8 @@
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
-RNAseqBallgownDESeq2EdgeRProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.qval = 0.05, ballgown.log2FC = 1, DESeq2.padj = 0.1, DESeq2.log2FC = 1, edgeR.pval = 0.05, edgeR.log2FC = 1, run = TRUE, check.s4.print = TRUE) {
+#' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
+RNASeqBallgownDESeq2EdgeRProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.qval = 0.05, ballgown.log2FC = 1, DESeq2.padj = 0.1, DESeq2.log2FC = 1, edgeR.pval = 0.05, edgeR.log2FC = 1, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -38,7 +38,7 @@ RNAseqBallgownDESeq2EdgeRProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.q
   experiment.group <- RNASeqWorkFlowParam@experiment.group
   fileConn<-file(paste0(path.prefix, "Rscript/Ballgown_DESeq2_edgeR_Process.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNAseqBallgownDESeq2EdgeRProcess(path.prefix = '", path.prefix, "', genome.name = '", genome.name, "', sample.pattern = '", sample.pattern, "', independent.variable = '",independent.variable,  "', control.group = '",control.group,  "', experiment.group = '",experiment.group, "', ballgown.log2FC = ", ballgown.log2FC, ", ballgown.qval = ", ballgown.qval, ")")
+  second <- paste0("RNASeqBallgownDESeq2EdgeRProcess(path.prefix = '", path.prefix, "', genome.name = '", genome.name, "', sample.pattern = '", sample.pattern, "', independent.variable = '",independent.variable,  "', control.group = '",control.group,  "', experiment.group = '",experiment.group, "', ballgown.log2FC = ", ballgown.log2FC, ", ballgown.qval = ", ballgown.qval, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Ballgown_DESeq2_edgeR_Process.R' has been created.\n"))
@@ -51,7 +51,7 @@ RNAseqBallgownDESeq2EdgeRProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.q
 #' @title Ballgown analysis for RNA-Seq workflow in R shell
 #'
 #' @description Use ballgown R package for statistical analysis of assembled transcriptomes, including flexible differential expression analysis, and sample FPKM visualization as well as pre differential analysis visualization for the following RNA-Seq workflow in background.
-#' It is strongly advised to run \code{RNAseqBallgownDESeq2EdgeRProcess_CMD()} directly. Running this function directly is not recommended.
+#' It is strongly advised to run \code{RNASeqBallgownDESeq2EdgeRProcess_CMD()} directly. Running this function directly is not recommended.
 #' This function do 3 things :
 #' 1. Create ballgown object, and write "ballgown_FPKM_result.csv" file.
 #' 2. Find the differential expressed genes, and write "ballgown_FPKM_DE_result.csv"
@@ -60,9 +60,9 @@ RNAseqBallgownDESeq2EdgeRProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.q
 #'    For sample profile : Creating Box plot, Violin plot, Frequency plot, PCA related plots, Correlation plots.
 #'    For pre differential expressed gene analysis : Creating MA plot, Volcano plot.
 #'    For differential express gene analysis : Creating Heatmap plot, PCA related plots.
-#' If you want to run ballgown analysis for the following RNA-Seq workflow in background, please see \code{RNAseqBallgownDESeq2EdgeRProcess_CMD()} function.
+#' If you want to run ballgown analysis for the following RNA-Seq workflow in background, please see \code{RNASeqBallgownDESeq2EdgeRProcess_CMD()} function.
 #'
-#' @param path.prefix path prefix of 'gene_data/', 'RNAseq_bin/', 'RNAseq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @param genome.name variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
 #' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
 #' @param independent.variable independent variable for the biological experiment design of two-group RNA-Seq workflow
@@ -78,10 +78,10 @@ RNAseqBallgownDESeq2EdgeRProcess_CMD <- function(RNASeqWorkFlowParam, ballgown.q
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNAseqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
-RNAseqBallgownDESeq2EdgeRProcess <- function(path.prefix, genome.name, sample.pattern, independent.variable, control.group, experiment.group, ballgown.log2FC = 1, ballgown.qval = 0.05, DESeq2.padj = 0.1, DESeq2.log2FC = 1, edgeR.pval = 0.05, edgeR.log2FC = 1) {
+#' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
+RNASeqBallgownDESeq2EdgeRProcess <- function(path.prefix, genome.name, sample.pattern, independent.variable, control.group, experiment.group, ballgown.log2FC = 1, ballgown.qval = 0.05, DESeq2.padj = 0.1, DESeq2.log2FC = 1, edgeR.pval = 0.05, edgeR.log2FC = 1) {
   CheckOperatingSystem(FALSE)
-  PreRNAseqBallgownDESeq2EdgeRProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)
+  PreRNASeqBallgownDESeq2EdgeRProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)
   if (file.exists(paste0(path.prefix, "Rscript_out/Raw_Read_Process.Rout"))) {
     Hisat2ReportAssemble(path.prefix, genome.name, sample.pattern)
   }
@@ -89,26 +89,26 @@ RNAseqBallgownDESeq2EdgeRProcess <- function(path.prefix, genome.name, sample.pa
   BallgownAnalysis(path.prefix, genome.name, sample.pattern, independent.variable, control.group, experiment.group, ballgown.qval, ballgown.log2FC)
   DESeq2RawCountAnalysis(path.prefix, independent.variable,  control.group, experiment.group, DESeq2.padj, DESeq2.log2FC)
   edgeRRawCountAnalysis(path.prefix, independent.variable, control.group, experiment.group, edgeR.pval, edgeR.log2FC)
-  PostRNAseqBallgownDESeq2EdgeRProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)
+  PostRNASeqBallgownDESeq2EdgeRProcess(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }
 
 
-PreRNAseqBallgownDESeq2EdgeRProcess <- function(path.prefix, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C RNAseqBallgownDESeq2EdgeRProcess()' environment pre-check ...\n")
+PreRNASeqBallgownDESeq2EdgeRProcess <- function(path.prefix, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C RNASeqBallgownDESeq2EdgeRProcess()' environment pre-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
-    stop("RNAseqBallgownDESeq2EdgeRProcess() environment ERROR")
+    stop("RNASeqBallgownDESeq2EdgeRProcess() environment ERROR")
   }
-  cat("(\u2714) : RNAseqBallgownDESeq2EdgeRProcess() pre-check is valid\n\n")
+  cat("(\u2714) : RNASeqBallgownDESeq2EdgeRProcess() pre-check is valid\n\n")
 }
 
-PostRNAseqBallgownDESeq2EdgeRProcess <- function(path.prefix, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C RNAseqBallgownDESeq2EdgeRProcess()' environment post-check ...\n")
+PostRNASeqBallgownDESeq2EdgeRProcess <- function(path.prefix, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C RNASeqBallgownDESeq2EdgeRProcess()' environment post-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
-    stop("RNAseqBallgownDESeq2EdgeRProcess() post-check ERROR")
+    stop("RNASeqBallgownDESeq2EdgeRProcess() post-check ERROR")
   }
-  cat("(\u2714) : RNAseqBallgownDESeq2EdgeRProcess() post-check is valid\n\n")
+  cat("(\u2714) : RNASeqBallgownDESeq2EdgeRProcess() post-check is valid\n\n")
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
