@@ -237,6 +237,35 @@ VolcanoPlot <- function(which.analysis, which.count.normalization, path.prefix, 
   }
 }
 
+# MA plot
+MAPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group, condition.pq) {
+  # load gene name for further usage
+  csv.results <- ParseResultCSV(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group)
+  control.normalized <- csv.results$control
+  experiment.normalized <- csv.results$experiment
+  cat(paste0("\u25CF Plotting MA plot\n"))
+  normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv"))
+  ## Ma plot
+  if (which.analysis == "ballgown_analysis") {
+    condition <- "qval"
+  } else if (which.analysis == "TPM_analysis") {
+    condition <- "pval"
+  }
+  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/MA_Plot.png"))
+  p <- ggplot(normalized_dataset, aes(x = log2(normalized_dataset[paste0(control.group, ".", experiment.group, ".average")][[1]]), y = normalized_dataset$log2FC, colour = normalized_dataset[condition][[1]]<condition.pq)) +
+    xlab("Log2(FPKM.all.mean)") +
+    ylab("Log2FC") +
+    theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
+    labs(title = "MA Plot") +
+    scale_color_manual(values=c("#999999", "#FF0000")) +
+    geom_point() +
+    geom_hline(yintercept=0, color="blue") +
+    ylim(-6, 6)
+  print(p)
+  dev.off()
+  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/MA_Plot.png"), "' has been created. \n\n"))
+}
+
 # PCA plot
 DEPCAPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/

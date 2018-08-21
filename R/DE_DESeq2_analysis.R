@@ -1,5 +1,5 @@
 DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  control.group, experiment.group, DESeq2.padj, DESeq2.log2FC) {
-  cat("\u2618\u2618 DESeq2 analysis ...\n")
+  cat("\n\u2618\u2618 DESeq2 analysis ...\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis"))){
     dir.create(paste0(path.prefix, "RNASeq_results/DESeq2_analysis"))
   }
@@ -49,7 +49,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  control.g
   total.data.frame <- cbind(gene.data.frame, control.mrn.data.frame, experiment.mrn.data.frame)
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.mrn.data.frame)
   total.data.frame[paste0(experiment.group, ".average")] <- rowMeans(experiment.mrn.data.frame)
-  total.data.frame[paste0(control.group, "+", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
+  total.data.frame[paste0(control.group, ".", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
   DESeq2.result <- cbind(total.data.frame, statistic.res)
   DESeq2.result.no.NA <- DESeq2.result[((!is.na(DESeq2.result$pvalue)) & (!is.na(DESeq2.result$padj))), ]
   # Write result into file (csv)

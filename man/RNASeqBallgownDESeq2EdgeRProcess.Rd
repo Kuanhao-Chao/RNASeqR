@@ -6,8 +6,9 @@
 \usage{
 RNASeqBallgownDESeq2EdgeRProcess(path.prefix, genome.name, sample.pattern,
   independent.variable, control.group, experiment.group,
-  ballgown.qval = 0.05, ballgown.log2FC = 1, DESeq2.padj = 0.1,
-  DESeq2.log2FC = 1, edgeR.pval = 0.05, edgeR.log2FC = 1)
+  ballgown.qval = 0.05, ballgown.log2FC = 1, TPM.pval = 0.05,
+  TPM.log2FC = 1, DESeq2.padj = 0.1, DESeq2.log2FC = 1,
+  edgeR.pval = 0.05, edgeR.log2FC = 1)
 }
 \arguments{
 \item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}

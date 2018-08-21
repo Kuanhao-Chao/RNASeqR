@@ -1,6 +1,6 @@
 # Run ballgown analysi
 BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independent.variable, control.group, experiment.group, ballgown.qval, ballgown.log2FC) {
-  cat("\u2618\u2618 ballgown analysis ...\n")
+  cat("\n\u2618\u2618 ballgown analysis ...\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/"))){
     dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/"))
   }
@@ -32,6 +32,7 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   # Filter statistic
   de.statistic.result <- de.statistic.result[(de.statistic.result$fc != 1 & !is.na(de.statistic.result$pval) & !is.na(de.statistic.result$qval)), ]
   gene.id.data.frame <- data.frame("gene.name" = de.statistic.result$geneNames)
+  write.csv(gene.id.data.frame, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv"), row.names=FALSE)
   de.statistic.result$feature <- NULL; de.statistic.result$id <- NULL; de.statistic.result$geneNames <- NULL
   de.statistic.result["log2FC"] <- log2(de.statistic.result$fc)
   write.csv(de.statistic.result, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
@@ -51,7 +52,7 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   total.data.frame <- cbind(gene.id.data.frame, control.FPKM.data.frame, experiment.FPKM.data.frame)
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.FPKM.data.frame)
   total.data.frame[paste0(experiment.group, ".average")] <- rowMeans(experiment.FPKM.data.frame)
-  total.data.frame[paste0(control.group, "+", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
+  total.data.frame[paste0(control.group, ".", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
   ballgown.result <- cbind(total.data.frame, de.statistic.result)
   ballgown.result <- rbind(ballgown.result[ballgown.result$gene.name != ".",], ballgown.result[ballgown.result$gene.name == ".",])
   # Filter out pval is NaN and qval is NaN
@@ -102,7 +103,7 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
     # Volcano
     VolcanoPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group, ballgown.qval, ballgown.log2FC)
     # MA
-    BallgownMAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group, ballgown.qval)
+    MAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group, ballgown.qval)
     # DE PCA plot
     DEPCAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group)
     # Heatmap
@@ -146,27 +147,4 @@ BallgownTranscriptRelatedPlot <- function(path.prefix){
   }
 }
 
-# MA plot
-BallgownMAPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group, condition.pq) {
-  # load gene name for further usage
-  csv.results <- ParseResultCSV(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group)
-  control.normalized <- csv.results$control
-  experiment.normalized <- csv.results$experiment
-  cat(paste0("\u25CF Plotting MA plot\n"))
-  FPKM_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv"))
-  ## Ma plot
-  png(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/preDE/MA_Plot.png"))
-  p <- ggplot(FPKM_dataset, aes(x = log2(FPKM_dataset$male.female.average), y = FPKM_dataset$log2FC, colour = FPKM_dataset$qval<condition.pq)) +
-    xlab("Log2(FPKM.all.mean)") +
-    ylab("Log2FC") +
-    theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
-    labs(title = "MA Plot") +
-    scale_color_manual(values=c("#999999", "#FF0000")) +
-    geom_point() +
-    geom_hline(yintercept=0, color="blue") +
-    ylim(-6, 6)
-  print(p)
-  dev.off()
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/preDE/MA_Plot.png"), "' has been created. \n\n"))
-}
 

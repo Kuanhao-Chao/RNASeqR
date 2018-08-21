@@ -1,5 +1,5 @@
 edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.group, experiment.group, edgeR.pval, edgeR.log2FC) {
-  cat("\u2618\u2618 edgeR analysis ...\n")
+  cat("\n\u2618\u2618 edgeR analysis ...\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis"))){
     dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis"))
   }
@@ -44,7 +44,7 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
   total.data.frame <- cbind(gene.data.frame, control.cpm.data.frame, experiment.cpm.data.frame)
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.cpm.data.frame)
   total.data.frame[paste0(experiment.group, ".average")] <- rowMeans(experiment.cpm.data.frame)
-  total.data.frame[paste0(control.group, "+", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
+  total.data.frame[paste0(control.group, ".", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
   edgeR.result <- cbind(total.data.frame, de.statistic.result$table)
   # Write result into file (csv)
   write.csv(edgeR.result, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv"), row.names=FALSE)

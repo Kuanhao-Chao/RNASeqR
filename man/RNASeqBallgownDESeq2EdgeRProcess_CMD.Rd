@@ -5,9 +5,10 @@
 \title{Ballgown analysis, DESeq2 analysis, edgeR analysis for RNA-Seq workflow in background}
 \usage{
 RNASeqBallgownDESeq2EdgeRProcess_CMD(RNASeqWorkFlowParam,
-  ballgown.qval = 0.05, ballgown.log2FC = 1, DESeq2.padj = 0.1,
-  DESeq2.log2FC = 1, edgeR.pval = 0.05, edgeR.log2FC = 1,
-  run = TRUE, check.s4.print = TRUE)
+  ballgown.qval = 0.05, ballgown.log2FC = 1, TPM.pval = 0.05,
+  TPM.log2FC = 1, DESeq2.padj = 0.1, DESeq2.log2FC = 1,
+  edgeR.pval = 0.05, edgeR.log2FC = 1, run = TRUE,
+  check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}
