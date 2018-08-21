@@ -24,8 +24,8 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
   deglist.object <- edgeR::calcNormFactors(deglist.object, method="TMM")
   # estimating Dispersions
   # quantile-adjusted conditional maximum likelihood (qCML) method for experiments with single factor.
-  dgList <- estimateCommonDisp(deglist.object)
-  dgList <- estimateTagwiseDisp(dgList)
+  dgList <- edgeR::estimateCommonDisp(deglist.object)
+  dgList <- edgeR::estimateTagwiseDisp(dgList)
   # Testing for DE genes
   de.statistic.result <- edgeR::exactTest(dgList)
   write.csv(de.statistic.result$table, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
@@ -115,7 +115,7 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
     cat("\u25CF Plotting MeanVar plot ... \n")
     png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MeanVar_Plot.png"))
     edgeR::plotMeanVar(dgList, show.tagwise.vars=TRUE, NBline=TRUE)
-    title("Mean-Variance Plot")
+    graphics::title("Mean-Variance Plot")
     dev.off()
     cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MeanVar_Plot.png"), "' has been created. \n\n"))
 
@@ -123,7 +123,7 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
     cat("\u25CF Plotting BCV plot ...\n")
     png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/BCV_Plot.png"))
     edgeR::plotBCV(dgList)
-    title("BCV Plot")
+    graphics::title("BCV Plot")
     dev.off()
     cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/BCV_Plot.png"), "' has been created. \n\n"))
   } else {

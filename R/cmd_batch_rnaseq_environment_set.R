@@ -17,6 +17,7 @@
 #'
 #' @return None
 #' @export
+#' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
@@ -65,7 +66,7 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
 #'
 #' @return None
 #' @export
-#'
+#' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
@@ -251,12 +252,8 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
   cat(paste0("************** Installing Hisat2 ", "(", os.file.name.zip, ") ************\n"))
   download.file(url, paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip))
   cat(paste0("\n************** Unpacking Hisat2 ", "(", os.file.name.zip, ") ************\n"))
-  main.command <- "unzip"
-  command.result <- system2(command = main.command, args = paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip," -d ", path.prefix, "RNASeq_bin/Unpacked/"))
-  if (command.result != 0 ) {
-    cat(paste0("(\u2718) '", main.command, "' is failed !!"))
-    stop(paste0("'", main.command, "' ERROR"))
-  }
+  utils::unzip( paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip), exdir=paste0(path.prefix, "RNASeq_bin/Unpacked/"))
+  cat("hisat2 binaries\n\n")
   current.path <- getwd()
   setwd(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name, "/"))
   cat("\n************** Moving Hisat2 Binary ************")

@@ -2,11 +2,11 @@
 % Please edit documentation in R/cmd_batch_rnaseq_ballgown_DESeq2_edgeR.R
 \name{RNASeqBallgownDESeq2EdgeRProcess}
 \alias{RNASeqBallgownDESeq2EdgeRProcess}
-\title{Ballgown analysis for RNA-Seq workflow in R shell}
+\title{Ballgown analysis, DESeq2 analysis, edgeR analysis for RNA-Seq workflow in R shell}
 \usage{
 RNASeqBallgownDESeq2EdgeRProcess(path.prefix, genome.name, sample.pattern,
   independent.variable, control.group, experiment.group,
-  ballgown.log2FC = 1, ballgown.qval = 0.05, DESeq2.padj = 0.1,
+  ballgown.qval = 0.05, ballgown.log2FC = 1, DESeq2.padj = 0.1,
   DESeq2.log2FC = 1, edgeR.pval = 0.05, edgeR.log2FC = 1)
 }
 \arguments{
@@ -22,9 +22,11 @@ RNASeqBallgownDESeq2EdgeRProcess(path.prefix, genome.name, sample.pattern,
 
 \item{experiment.group}{group name of the experiment group}
 
+\item{ballgown.qval}{Default \code{0.05}. Set the threshold of q-value to filter out differential expressed gene.}
+
 \item{ballgown.log2FC}{Default \code{1}. Set the threshold of log2 fold change to filter out differential expressed gene.}
 
-\item{ballgown.qval}{Default \code{0.05}. Set the threshold of q-value to filter out differential expressed gene.}
+\item{edgeR.log2FC}{}
 }
 \value{
 None
@@ -48,4 +50,7 @@ input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
+}
+\author{
+Kuan-Hao Chao
 }

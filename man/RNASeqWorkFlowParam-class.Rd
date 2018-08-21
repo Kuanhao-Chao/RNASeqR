@@ -47,5 +47,5 @@ workflowParam@control.group
 workflowParam@experiment.group}
 }
 \author{
-Kuan-Hao, Chao
+Kuan-Hao Chao
 }

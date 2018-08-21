@@ -212,7 +212,7 @@ RawCountGeneNameChange <- function(raw.count, path.prefix){
   novel.gene.raw.count <- raw.count[row.names(raw.count) == ".", ]
   known.gene.raw.count <- raw.count[row.names(raw.count) != ".", ]
   # aggregate know gene with same name !
-  know.gene.raw.count.aggregate <- aggregate(data.frame(known.gene.raw.count), list(row.names(known.gene.raw.count)), sum)
+  know.gene.raw.count.aggregate <- stats::aggregate(data.frame(known.gene.raw.count), list(row.names(known.gene.raw.count)), sum)
   gene.name.list <- c(know.gene.raw.count.aggregate$Group.1, rep(".", length(row.names(novel.gene.raw.count))))
   know.gene.raw.count.aggregate$Group.1 <- NULL
   novel.know.gene.raw.count <- rbind(know.gene.raw.count.aggregate, novel.gene.raw.count)

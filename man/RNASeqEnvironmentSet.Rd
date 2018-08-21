@@ -40,3 +40,6 @@ exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/h
 RNASeqEnvironmentSet(path.prefix = exp@path.prefix, input.path.prefix = exp@input.path.prefix, genome.name = exp@genome.name,
                      sample.pattern = exp@sample.pattern, indexes.optional = exp@indexes.optional, os.type = exp@os.type)}
 }
+\author{
+Kuan-Hao Chao
+}

@@ -36,7 +36,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  control.g
   statistic.res <- DESeq2::results(dds_de, contrast = c("independent.variable", control.group, experiment.group))
   write.csv(statistic.res, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   # Normalization method of DESeq2 is Median Ratio Normalization (MRN)
-  normalized.count.table <- counts(dds_de, normalized=TRUE)
+  normalized.count.table <- DESeq2::counts(dds_de, normalized=TRUE)
   # For control group
   control.mrn.data.frame <- data.frame(normalized.count.table[,colnames(normalized.count.table) %in% as.character(pre.de.pheno.data$control.group.data.frame$ids)])
   colnames(control.mrn.data.frame) <- paste0(as.character(pre.de.pheno.data$control.group.data.frame$ids), ".", control.group)

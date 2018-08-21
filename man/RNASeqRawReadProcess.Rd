@@ -40,11 +40,6 @@ This function do 5 things :
 Before running this function, \code{RNASeqEnvironmentSet_CMD()} (or\code{RNASeqEnvironmentSet()}) must be executed successfully.
 If you want to process raw reads for the following RNA-Seq workflow in background, please see \code{RNASeqRawReadProcess_CMD()} function.
 }
-\details{
-exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
-                           experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
-}
 \examples{
 \dontrun{
 input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
@@ -54,4 +49,7 @@ exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file
 RNASeqRawReadProcess(path.prefix = exp@path.prefix, input.path.prefix = exp@input.path.prefix,
                      genome.name = exp@genome.name, sample.pattern = exp@sample.pattern, python.variable.answer = exp@python.variable[0],
                      python.variable.version = exp@python.variable[1], indexes.optional = exp@indexes.optional)}
+}
+\author{
+Kuan-Hao Chao
 }

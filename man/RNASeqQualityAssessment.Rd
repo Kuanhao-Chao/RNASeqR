@@ -32,3 +32,6 @@ exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file
 RNASeqEnvironmentSet(path.prefix = exp@path.prefix, input.path.prefix = exp@input.path.prefix,
                      sample.pattern = exp@sample.pattern)}
 }
+\author{
+Kuan-Hao Chao
+}

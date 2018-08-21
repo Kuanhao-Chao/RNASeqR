@@ -32,3 +32,6 @@ exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file
                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 RNASeqQualityAssessment_CMD(RNASeqWorkFlowParam = exp)}
 }
+\author{
+Kuan-Hao Chao
+}

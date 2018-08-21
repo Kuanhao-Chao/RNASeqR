@@ -97,7 +97,7 @@ PCAPlot <- function(which.analysis, which.count.normalization, path.prefix, inde
                                  habillage = normalized.trans$attribute, fill.ind = normalized.trans$attribute,
                                  col.ind = normalized.trans$attribute, # color by groups
                                  addEllipses=TRUE
-  ) +
+                                 ) +
     labs(title ="PCA Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
   print(p2)
@@ -205,11 +205,11 @@ VolcanoPlot <- function(which.analysis, which.count.normalization, path.prefix, 
     png(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/DE/Volcano_Plot.png"))
     par(mar=c(5,7,5,5), cex=0.6, cex.main=2, cex.axis=1.5, cex.lab=1.5)
     topT <- as.data.frame(MRN_dataset)
-    with(topT, plot(topT$log2FoldChange, -log10(topT$padj), pch=20, main="Volcano Plot", xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~Padj~value), xlim=c(-15,15), ylim = c(0,12)))
+    with(topT, graphics::plot(topT$log2FoldChange, -log10(topT$padj), pch=20, main="Volcano Plot", xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~Padj~value), xlim=c(-15,15), ylim = c(0,12)))
     # user4 input qvalue log2FC
     # qval to qvalue
     subset.result.red <- subset(topT, topT$padj<condition.pq & topT$log2FoldChange>=condition.log2FC)
-    with(subset.result.red, points(subset.result.red$log2FoldChange, -log10(subset.result.red$padj), pch=20, cex=1, col="red"))
+    with(subset.result.red, graphics::points(subset.result.red$log2FoldChange, -log10(subset.result.red$padj), pch=20, cex=1, col="red"))
     subset.result.green <- subset(topT, topT$padj<condition.pq & topT$log2FoldChange<=-1*condition.log2FC)
     with(subset.result.green, points(subset.result.green$log2FoldChange, -log10(subset.result.green$padj), pch=20, cex=1, col="green"))
     # hight = -log10(pavl) = height

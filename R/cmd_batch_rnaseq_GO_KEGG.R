@@ -1,5 +1,31 @@
+#' @title GO functional analysis and KEGG pathway analysis for RNA-Seq workflow in background
 #'
+#' @description Set up the environment for the following RNA-Seq workflow in background.
+#' This function do 4 things :
+#' 1. Create file directories.
+#' 2. Install necessary tools.
+#' 3. Export 'RNASeq_bin/' to the R environment.
+#' 4. Check command of tools.
+#' First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
+#' 'Gffcompare' will be installed under 'RNASeq_bin/'. 'RNASeq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
+#' If you want to set up the environment for the following RNA-Seq workflow in R shell, please see \code{RNASeqEnvironmentSet()} function.
+#'
+#' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
+#' @param OrgDb.species WIP
+#' @param KEGG.organism WIP
+#' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+#' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
+#'
+#' @return None
 #' @export
+#' @author Kuan-Hao Chao
+#' @examples
+#' \dontrun{
+#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
+#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+#' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
 RNASeqGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, KEGG.organism, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
@@ -18,8 +44,32 @@ RNASeqGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, KEGG.organism, 
   }
 }
 
+#' @title GO functional analysis and KEGG pathway analysis for RNA-Seq workflow in R shell
 #'
+#' @description Set up the environment for the following RNA-Seq workflow in background.
+#' This function do 4 things :
+#' 1. Create file directories.
+#' 2. Install necessary tools.
+#' 3. Export 'RNASeq_bin/' to the R environment.
+#' 4. Check command of tools.
+#' First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
+#' 'Gffcompare' will be installed under 'RNASeq_bin/'. 'RNASeq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
+#' If you want to set up the environment for the following RNA-Seq workflow in R shell, please see \code{RNASeqEnvironmentSet()} function.
+#'
+#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @param independent.variable independent variable for the biological experiment design of two-group RNA-Seq workflow
+#' @param OrgDb.species WIP
+#' @param KEGG.organism WIP
+#'
+#' @return None
 #' @export
+#' @author Kuan-Hao Chao
+#' @examples
+#' \dontrun{
+#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
+#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
+#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+#' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
 RNASeqGoKegg <- function(path.prefix, independent.variable, OrgDb.species, KEGG.organism) {
   CheckOperatingSystem(FALSE)
   PreRNASeqGoKegg()

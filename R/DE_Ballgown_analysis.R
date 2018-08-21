@@ -15,7 +15,6 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   ##############################################
   pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, control.group, experiment.group)
   # make ballgown object
-  cat("\u25CF 1. Making ballgown object : \n")
   ballgown.object <- ballgown::ballgown(dataDir = paste0(path.prefix, "gene_data/ballgown"), samplePattern = sample.pattern, pData = pre.de.pheno.data$pheno_data, meas = 'all')
   # save ballgown object
   save(ballgown.object, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/ballgown.rda"))
@@ -169,14 +168,5 @@ BallgownMAPlot <- function(which.analysis, which.count.normalization, path.prefi
   print(p)
   dev.off()
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/preDE/MA_Plot.png"), "' has been created. \n\n"))
-}
-
-LoadBallgownObject <- function(path.prefix) {
-  if(isTRUE(file.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/ballgown.rda")))) {
-    load(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/ballgown.rda"))
-    pkg.ballgown.data$bg_chrX <- bg
-  } else {
-    stop(paste0("(\u2718) '", paste0(path.prefix, "gene_data/ballgown/ballgown.rda"), "' haven't created yet. Please run \"BallgownAnalysis(genome.name, sample.pattern, independent.variable)\" first.\n\n"))
-  }
 }
 

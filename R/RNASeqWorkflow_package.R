@@ -22,26 +22,25 @@
 #' @importFrom systemPipeRdata genWorkenvir
 #' @importFrom systemPipeR systemArgs seeFastq infile1 seeFastqPlot
 #' @importFrom QuasR preprocessReads
-#' @import DESeq2
-#' @import edgeR
 #' @importFrom stringr str_extract
+#' @import DOSE
 #' @import ggplot2
 #' @import pheatmap pheatmap
 #' @import org.Hs.eg.db
 #' @import org.Mm.eg.db
 #' @import org.Rn.eg.db
-#' @importFrom graphics abline barplot hist legend mtext par plot
+#' @importFrom graphics abline barplot hist legend mtext par plot title points
 #' @importFrom grDevices colorRampPalette dev.off pdf png rgb
 #' @importFrom methods new
 #' @importFrom stats cor heatmap model.matrix
 #' @importFrom utils data download.file head read.csv read.delim write.csv write.table
 #' @importFrom clusterProfiler gseGO gseaplot
 #' @importFrom rtracklayer mcols
-#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results plotMA plotDispEsts
-#' @importFrom edgeR DGEList calcNormFactors estimateGLMCommonDisp estimateGLMTrendedDisp estimateGLMTagwiseDisp plotMeanVar plotBCV glmFit glmLRT topTags decideTestsDGE plotSmear
+#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results plotMA plotDispEsts counts
+#' @importFrom edgeR DGEList calcNormFactors estimateCommonDisp estimateTagwiseDisp exactTest cpm plotMeanVar plotBCV
 #' @importFrom limma plotMDS
-#' @importFrom ShortRead readFastq narrow writeFastq
+#' @importFrom ShortRead readFastq narrow width writeFastq
 #' @importFrom Biostrings quality
-#' @import DOSE
+#' @importFrom stats aggregate
 NULL
 

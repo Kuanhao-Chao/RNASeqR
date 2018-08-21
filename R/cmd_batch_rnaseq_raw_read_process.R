@@ -1,7 +1,3 @@
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
-#'
 #' @title Raw reads process (alignment, assembly, expressive quantification) of RNA-Seq in background.
 #'
 #' @description Process raw reads for RNA-Seq workflow in background.
@@ -22,6 +18,7 @@
 #'
 #' @return None
 #' @export
+#' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
@@ -55,10 +52,7 @@ RNASeqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
   }
 }
 
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam <- exp)
-#'
+
 #' @title Raw reads process (alignment, assembly, expressive quantification) of RNA-Seq in background.
 #'
 #' @description Process raw reads for RNA-Seq workflow in R shell.
@@ -78,11 +72,12 @@ RNASeqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
 #' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
 #' @param python.variable.answer logical value whether python is available on the device
 #' @param python.variable.version python version of the device
-#' @param indexes.optional logical value whether 'indexes/' is exit in 'input_files/'
 #' @param num.parallel.threads Specify the number of processing threads (CPUs) to use for transcript assembly. The default is 1.
+#' @param indexes.optional logical value whether 'indexes/' is exit in 'input_files/'
 #'
 #' @return None
 #' @export
+#' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")

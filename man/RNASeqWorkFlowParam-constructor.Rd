@@ -38,4 +38,6 @@ exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/h
 }
 \author{
 kuan-hao Chao
+
+Kuan-Hao Chao
 }

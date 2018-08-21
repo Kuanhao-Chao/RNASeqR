@@ -4,29 +4,20 @@
 \alias{RNASeqQualityTrimming_CMD}
 \title{Sample trimming of '.fastq.gz' files for RNA-Seq workflow in background.}
 \usage{
-RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam, reads.length.limit = 36,
-  run = TRUE, check.s4.print = TRUE)
+RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam, cum.error = 1,
+  reads.length.limit = 36, run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}
+
+\item{cum.error}{Default \code{1}. Cut of threshold of cumulative probability of error per base.}
+
+\item{reads.length.limit}{Default \code{36}. The shortest base pair length of short reads}
 
 \item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
 If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
 
 \item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
-
-\item{truncateStartBases}{Function parameter of \code{QuasR::preprocessReads()}. The number of bases to be truncated (removed) from the begining of each sequence.}
-
-\item{truncateEndBases}{Function parameter of \code{QuasR::preprocessReads()}. The number of bases to be truncated (removed) from the end of each sequence.}
-
-\item{complexity}{Function parameter of \code{QuasR::preprocessReads()}. \code{NULL} or numeric(1). Default value is \code{NULL}.
-If not NULL, the minimal sequence complexity, as a fraction of the average complexity in the human genome (~3.9bits).
-For example, complexity = 0.5 will filter out sequences that do not have at least half the complexity of the human genome.
-See Details on how the complexity is calculated.}
-
-\item{minLength}{Function parameter of \code{QuasR::preprocessReads()}. The minimal allowed sequence length.}
-
-\item{nBases}{Function parameter of \code{QuasR::preprocessReads()}. The maximal number of Ns allowed per sequence.}
 }
 \value{
 None
@@ -42,4 +33,7 @@ input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam = exp)}
+}
+\author{
+Kuan-Hao Chao
 }

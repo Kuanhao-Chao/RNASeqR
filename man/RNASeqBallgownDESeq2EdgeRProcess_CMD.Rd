@@ -2,7 +2,7 @@
 % Please edit documentation in R/cmd_batch_rnaseq_ballgown_DESeq2_edgeR.R
 \name{RNASeqBallgownDESeq2EdgeRProcess_CMD}
 \alias{RNASeqBallgownDESeq2EdgeRProcess_CMD}
-\title{Ballgown analysis for RNA-Seq workflow in background}
+\title{Ballgown analysis, DESeq2 analysis, edgeR analysis for RNA-Seq workflow in background}
 \usage{
 RNASeqBallgownDESeq2EdgeRProcess_CMD(RNASeqWorkFlowParam,
   ballgown.qval = 0.05, ballgown.log2FC = 1, DESeq2.padj = 0.1,
@@ -42,4 +42,7 @@ input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
+}
+\author{
+Kuan-Hao Chao
 }

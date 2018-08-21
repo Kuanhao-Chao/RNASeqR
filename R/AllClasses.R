@@ -18,7 +18,7 @@
 #' @rdname RNASeqWorkFlowParam-class
 #'
 #' @exportClass RNASeqWorkFlowParam
-#' @author Kuan-Hao, Chao
+#' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
 #' data(workflowParam)
@@ -65,7 +65,7 @@ setClass("RNASeqWorkFlowParam",
 #' @rdname RNASeqWorkFlowParam-constructor
 #'
 #' @export
-#'
+#' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",

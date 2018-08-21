@@ -5,28 +5,22 @@
 #' If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNASeqQualityTrimming()} function.
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
-#' @param truncateStartBases Function parameter of \code{QuasR::preprocessReads()}. The number of bases to be truncated (removed) from the begining of each sequence.
-#' @param truncateEndBases Function parameter of \code{QuasR::preprocessReads()}. The number of bases to be truncated (removed) from the end of each sequence.
-#' @param complexity Function parameter of \code{QuasR::preprocessReads()}. \code{NULL} or numeric(1). Default value is \code{NULL}.
-#' If not NULL, the minimal sequence complexity, as a fraction of the average complexity in the human genome (~3.9bits).
-#' For example, complexity = 0.5 will filter out sequences that do not have at least half the complexity of the human genome.
-#' See Details on how the complexity is calculated.
-#' @param minLength Function parameter of \code{QuasR::preprocessReads()}. The minimal allowed sequence length.
-#' @param nBases Function parameter of \code{QuasR::preprocessReads()}. The maximal number of Ns allowed per sequence.
-#'
+#' @param cum.error Default \code{1}. Cut of threshold of cumulative probability of error per base.
+#' @param reads.length.limit Default \code{36}. The shortest base pair length of short reads
 #' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
 #' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
 #' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
 #'
 #' @return None
 #' @export
+#' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam = exp)}
-RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, reads.length.limit = 36, run = TRUE, check.s4.print = TRUE) {
+RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, cum.error = 1, reads.length.limit = 36, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -34,7 +28,7 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, reads.length.limit = 
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Trimming.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNASeqQualityTrimming(path.prefix = '", path.prefix, "', sample.pattern = '", sample.pattern, "', reads.length.limit = ", reads.length.limit, ")")
+  second <- paste0("RNASeqQualityTrimming(path.prefix = '", path.prefix, "', sample.pattern = '", sample.pattern, "', cum.error = ", cum.error, ", reads.length.limit = ", reads.length.limit, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Quality_Trimming.R' has been created.\n"))
@@ -54,24 +48,19 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, reads.length.limit = 
 #'
 #' @param path.prefix Path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @param sample.pattern  Regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
-#' @param truncateStartBases Function parameter of \code{QuasR::preprocessReads()}. The number of bases to be truncated (removed) from the begining of each sequence.
-#' @param truncateEndBases Function parameter of \code{QuasR::preprocessReads()}. The number of bases to be truncated (removed) from the end of each sequence.
-#' @param complexity Function parameter of \code{QuasR::preprocessReads()}. \code{NULL} or numeric(1). Default value is \code{NULL}.
-#' If not NULL, the minimal sequence complexity, as a fraction of the average complexity in the human genome (~3.9bits).
-#' For example, complexity = 0.5 will filter out sequences that do not have at least half the complexity of the human genome.
-#' See Details on how the complexity is calculated.
-#' @param minLength Function parameter of \code{QuasR::preprocessReads()}. The minimal allowed sequence length.
-#' @param nBases Function parameter of \code{QuasR::preprocessReads()}. The maximal number of Ns allowed per sequence.
+#' @param cum.error Default \code{1}. Cut of threshold of cumulative probability of error per base.
+#' @param reads.length.limit Default \code{36}. The shortest base pair length of short reads
 #'
 #' @return None
 #' @export
+#' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNASeqEnvironmentSet(path.prefix = exp@@path.prefix, sample.pattern = exp@@sample.pattern)}
-RNASeqQualityTrimming <- function(path.prefix, sample.pattern, reads.length.limit = 36) {
+RNASeqQualityTrimming <- function(path.prefix, sample.pattern, cum.error = 1, reads.length.limit = 36) {
   CheckOperatingSystem(FALSE)
   PreCheckRNASeqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
   cat(paste0("************** Quality Trimming **************\n"))
@@ -80,13 +69,13 @@ RNASeqQualityTrimming <- function(path.prefix, sample.pattern, reads.length.limi
   }
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   raw.fastq.unique <- unique(gsub("[1-2]*.fastq.gz$", replacement = "", raw.fastq))
-  lapply(raw.fastq.unique, myFilterAndTrim, path.prefix = path.prefix, reads.length.limit = reads.length.limit)
+  lapply(raw.fastq.unique, myFilterAndTrim, path.prefix = path.prefix, cum.error = cum.error, reads.length.limit = reads.length.limit)
   cat("\n")
   PostCheckRNASeqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }
 
 
-myFilterAndTrim <- function(fl.name, path.prefix, reads.length.limit) {
+myFilterAndTrim <- function(fl.name, path.prefix, cum.error, reads.length.limit) {
   # adding print log
   # file1 and file2 is original fastq.gz without trimmed
   cat(paste0("\u25CF \"", gsub("_", "", fl.name), "\" quality trimming\n"))
@@ -121,8 +110,8 @@ myFilterAndTrim <- function(fl.name, path.prefix, reads.length.limit) {
 
     # Get the trimming position of each file
     cat(paste0("          \u25CF Filtering out cumulative distribution probability of error per base < 1 ...\n"))
-    trimPos1 <- apply(cum.pe1, 2, function(x) { min(min(which(x > 1)), length(x)) } )
-    trimPos2 <- apply(cum.pe2, 2, function(x) { min(min(which(x > 1)), length(x)) } )
+    trimPos1 <- apply(cum.pe1, 2, function(x) { min(min(which(x > cum.error)), length(x)) } )
+    trimPos2 <- apply(cum.pe2, 2, function(x) { min(min(which(x > cum.error)), length(x)) } )
 
     # Get the trimPos for pair-end files
     cat(paste0("          \u25CF Finding trimming position for paired-end ...\n"))
@@ -133,8 +122,8 @@ myFilterAndTrim <- function(fl.name, path.prefix, reads.length.limit) {
 
     ## drop reads that are less than 36nt
     cat(paste0("     \u25CF Removing reads that are less than ", reads.length.limit, " base pairs ...\n"))
-    trimmed.file1 <- trimmed.file1[width(trimmed.file1) >= reads.length.limit]
-    trimmed.file2 <- trimmed.file2[width(trimmed.file2) >= reads.length.limit]
+    trimmed.file1 <- trimmed.file1[ShortRead::width(trimmed.file1) >= reads.length.limit]
+    trimmed.file2 <- trimmed.file2[ShortRead::width(trimmed.file2) >= reads.length.limit]
 
     # write new fastaq files
     cat(paste0("     \u25CF Creating trimmed pair-end files ...\n"))

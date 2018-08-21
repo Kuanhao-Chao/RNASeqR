@@ -5,7 +5,7 @@ Version: 0.99.0
 Date: 2018-8-7
 Author: Kuan-Hao Chao
 Maintainer: Kuan-Hao Chao <ntueeb05howard@gmail.com>
-biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, GeneExpression, GeneSetEnrichment, Alignment, QualityControl, DifferentialExpression, FunctionalPrediction, ExperimentalDesign, GO, KEGG, Visualization
+biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, GeneExpression, GeneSetEnrichment, Alignment, QualityControl, DifferentialExpression, FunctionalPrediction, ExperimentalDesign, GO, KEGG, Visualization, Normalization, Pathways, Clustering, 
 Description: R package for RNA-Seq workflow.
 License: Artistic-2.0
 Encoding: UTF-8

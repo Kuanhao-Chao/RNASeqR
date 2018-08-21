@@ -13,6 +13,7 @@
 #'
 #' @return None
 #' @export
+#' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
@@ -53,6 +54,7 @@ RNASeqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 #'
 #' @return None
 #' @export
+#' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
 #' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
@@ -143,8 +145,7 @@ PostCheckRNASeqQualityAssessment <- function(path.prefix) {
   file.rqc.result <- file.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html"))
   file.systemPipeR.data <- file.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/data.list.txt"))
   file.systemPipeR.result <- file.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/fastqReport.pdf"))
-  # file.ShortRead.result <- file.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/ShortRead/ShortRead_report.html"))
-  validity <- file.rqc.result && file.systemPipeR.data && file.systemPipeR.result && file.ShortRead.result
+  validity <- file.systemPipeR.data && file.systemPipeR.result
   if (!isTRUE(validity)) {
     if (!file.rqc.result) {
       cat(paste0("'", path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html' is missing!\n"))
