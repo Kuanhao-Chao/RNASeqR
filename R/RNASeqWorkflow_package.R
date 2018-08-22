@@ -32,7 +32,7 @@
 #' @importFrom graphics abline barplot hist legend mtext par plot title points
 #' @importFrom grDevices colorRampPalette dev.off pdf png rgb
 #' @importFrom methods new
-#' @importFrom stats cor heatmap model.matrix
+#' @importFrom stats cor heatmap model.matrix t.test
 #' @importFrom utils data download.file head read.csv read.delim write.csv write.table
 #' @importFrom clusterProfiler gseGO gseaplot
 #' @importFrom rtracklayer mcols

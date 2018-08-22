@@ -22,7 +22,7 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
   write.csv(experiment.TPM, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_experiment.csv"), row.names=FALSE)
 
 
-  p.value <- unlist(lapply(1:nrow(control.TPM), function(x) { t.test(control.TPM[x,], experiment.TPM[x,])$p.value }))
+  p.value <- unlist(lapply(1:nrow(control.TPM), function(x) { stats::t.test(control.TPM[x,], experiment.TPM[x,])$p.value }))
   fold.change <- unlist(lapply(1:nrow(control.TPM), function(x) { mean(unlist(experiment.TPM[x,])) / mean(unlist(control.TPM[x,])) }))
   statistic.T.test <- data.frame("pval" = p.value, "fc" = fold.change, "log2FC" = log2(fold.change))
   write.csv(statistic, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
