@@ -1,5 +1,5 @@
 # Run ballgown analysi
-BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independent.variable, control.group, experiment.group, ballgown.qval, ballgown.log2FC) {
+BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independent.variable, control.group, experiment.group, ballgown.pval, ballgown.log2FC) {
   cat("\n\u2618\u2618 ballgown analysis ...\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/"))){
     dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/"))
@@ -58,8 +58,8 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   # Filter out pval is NaN and qval is NaN
   write.csv(ballgown.result, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv"), row.names=FALSE)
 
-  cat(paste0("     \u25CF Selecting differential expressed genes(ballgown) ==> q-value : ", ballgown.qval, "  log2(Fold Change) : ", ballgown.log2FC, " ...\n"))
-  ballgown.result.DE <- ballgown.result[(ballgown.result$log2FC>ballgown.log2FC) & (ballgown.result$qval<ballgown.qval), ]
+  cat(paste0("     \u25CF Selecting differential expressed genes(ballgown) ==> q-value : ", ballgown.pval, "  log2(Fold Change) : ", ballgown.log2FC, " ...\n"))
+  ballgown.result.DE <- ballgown.result[(ballgown.result$log2FC>ballgown.log2FC) & (ballgown.result$qval<ballgown.pval), ]
   cat(paste0("          \u25CF Total '", length(row.names(ballgown.result.DE)), "' DEG have been found !!!\n"))
   write.csv(ballgown.result.DE, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_DE_result.csv"), row.names=FALSE)
 
@@ -101,9 +101,9 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
       dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/DE/"))
     }
     # Volcano
-    VolcanoPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group, ballgown.qval, ballgown.log2FC)
+    VolcanoPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group, ballgown.pval, ballgown.log2FC)
     # MA
-    MAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group, ballgown.qval)
+    MAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group, ballgown.pval)
     # DE PCA plot
     DEPCAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, control.group, experiment.group)
     # Heatmap

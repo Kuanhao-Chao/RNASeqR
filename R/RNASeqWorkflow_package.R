@@ -39,7 +39,7 @@
 #' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results plotMA plotDispEsts counts
 #' @importFrom edgeR DGEList calcNormFactors estimateCommonDisp estimateTagwiseDisp exactTest cpm plotMeanVar plotBCV
 #' @importFrom limma plotMDS
-#' @importFrom ShortRead readFastq narrow width writeFastq
+#' @importFrom ShortRead readFastq narrow width writeFastq files
 #' @importFrom Biostrings quality
 #' @importFrom stats aggregate
 NULL

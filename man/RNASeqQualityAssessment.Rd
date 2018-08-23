@@ -18,9 +18,8 @@ None
 }
 \description{
 Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
-It is strongly advised to run \code{RNASeqQualityAssessment_CMD()} directly. Running this function directly is not recommended.
-This function reports the quality assessment result in two packages : \code{Rqc} and \code{systemPipeR}
-For \code{Rqc}, 'RNASeq_results/QA_results/Rqc/Rqc_report.html' will be created
+It is strongly advised to run \code{RNASeqQualityAssessment_CMD()} directly. Running \code{RNASeqQualityAssessment_CMD()} will create 'Quality_Assessment.Rout' file in 'Rscript_out/' directory.
+This function reports the quality assessment result in one packages : \code{systemPipeR}
 For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
 If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in background, please see \code{RNASeqQualityAssessment_CMD()} function.
 }

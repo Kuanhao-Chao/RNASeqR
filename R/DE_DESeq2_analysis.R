@@ -1,4 +1,4 @@
-DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  control.group, experiment.group, DESeq2.padj, DESeq2.log2FC) {
+DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  control.group, experiment.group, DESeq2.pval, DESeq2.log2FC) {
   cat("\n\u2618\u2618 DESeq2 analysis ...\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis"))){
     dir.create(paste0(path.prefix, "RNASeq_results/DESeq2_analysis"))
@@ -34,6 +34,8 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  control.g
   dds_de <- DESeq2::DESeq(dds.from.matrix)
   # creating statistic result
   statistic.res <- DESeq2::results(dds_de, contrast = c("independent.variable", control.group, experiment.group))
+  colnames(statistic.res)[2] <- "log2FC"
+  colnames(statistic.res)[5] <- "pval"
   write.csv(statistic.res, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   # Normalization method of DESeq2 is Median Ratio Normalization (MRN)
   normalized.count.table <- DESeq2::counts(dds_de, normalized=TRUE)
@@ -51,12 +53,12 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  control.g
   total.data.frame[paste0(experiment.group, ".average")] <- rowMeans(experiment.mrn.data.frame)
   total.data.frame[paste0(control.group, ".", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
   DESeq2.result <- cbind(total.data.frame, statistic.res)
-  DESeq2.result.no.NA <- DESeq2.result[((!is.na(DESeq2.result$pvalue)) & (!is.na(DESeq2.result$padj))), ]
+  DESeq2.result.no.NA <- DESeq2.result[(!is.na(DESeq2.result$pval)), ]
   # Write result into file (csv)
   write.csv(DESeq2.result.no.NA, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_result.csv"), row.names=FALSE)
 
-  cat(paste0("     \u25CF Selecting differential expressed genes(DESeq2) ==> padj-value : ", DESeq2.padj, "  log2(Fold Change) : ", DESeq2.log2FC, " ...\n"))
-  DESeq2.result.DE <- DESeq2.result.no.NA[(DESeq2.result.no.NA$log2FoldChange>DESeq2.log2FC) & (DESeq2.result.no.NA$padj<DESeq2.padj), ]
+  cat(paste0("     \u25CF Selecting differential expressed genes(DESeq2) ==> padj-value : ", DESeq2.pval, "  log2(Fold Change) : ", DESeq2.log2FC, " ...\n"))
+  DESeq2.result.DE <- DESeq2.result.no.NA[(DESeq2.result.no.NA$log2FC>DESeq2.log2FC) & (DESeq2.result.no.NA$pval<DESeq2.pval), ]
   cat("          \u25CF Total '", length(row.names(DESeq2.result.DE)), "' DEG have been found !!")
   write.csv(DESeq2.result.DE, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_DE_result.csv"), row.names=FALSE)
 
@@ -93,7 +95,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  control.g
       dir.create(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/DE/"))
     }
     # Volcano
-    VolcanoPlot("DESeq2_analysis", "MRN", path.prefix, independent.variable, control.group, experiment.group, DESeq2.padj, DESeq2.log2FC)
+    VolcanoPlot("DESeq2_analysis", "MRN", path.prefix, independent.variable, control.group, experiment.group, DESeq2.pval, DESeq2.log2FC)
 
     # MA plot
     cat(paste0("\u25CF Plotting  MA plot\n"))
@@ -155,7 +157,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  control.g
   #
   #
   # # filter out res.sort.padj (padj not null, padj < value, log2FoldChange >= 1)
-  # sig <-res.sort.padj[(!is.na(res.sort.padj$padj)) && (res.sort.padj$padj < DESeq2.padj) && (abs(res.sort.padj$log2FoldChange) >= DESeq2.log2FC)]
+  # sig <-res.sort.padj[(!is.na(res.sort.padj$padj)) && (res.sort.padj$padj < DESeq2.pval) && (abs(res.sort.padj$log2FoldChange) >= DESeq2.log2FC)]
   #
   # # plot plotDispEsts
   # # plotDispEsts

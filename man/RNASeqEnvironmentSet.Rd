@@ -27,7 +27,7 @@ None
 }
 \description{
 Set up the environment for the following RNA-Seq workflow in R shell.
-It is strongly advised to run \code{RNASeqEnvironmentSet_CMD()} directly. Running this function directly is not recommended.
+It is strongly advised to run \code{RNASeqEnvironmentSet_CMD()} directly. Running \code{RNASeqEnvironmentSet_CMD()} will create 'Environment_Set.Rout' file in 'Rscript_out/' directory.
 This function do 4 things : 1. Create file directories. 2. Install necessary tools. 3. Export 'RNASeq_bin/' to the R environment. 4. Check command of tools.
 First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
 'Gffcompare' will be installed under 'RNASeq_bin/'. 'RNASeq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.

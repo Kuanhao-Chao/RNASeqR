@@ -42,7 +42,7 @@ RNASeqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 #' @title Quality assessment of '.fastq.gz' files for RNA-Seq workflow in R shell
 #'
 #' @description Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
-#' It is strongly advised to run \code{RNASeqQualityAssessment_CMD()} directly. Running this function directly is not recommended.
+#' It is strongly advised to run \code{RNASeqQualityAssessment_CMD()} directly. Running \code{RNASeqQualityAssessment_CMD()} will create 'Quality_Assessment.Rout' file in 'Rscript_out/' directory.
 #' This function reports the quality assessment result in one packages : \code{systemPipeR}
 #' For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
 #' If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in background, please see \code{RNASeqQualityAssessment_CMD()} function.
@@ -75,10 +75,10 @@ RNASeqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   # if(!dir.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/"))){
   #   dir.create(file.path(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/")), showWarnings = FALSE)
   # }
-  # trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
-  # cat(paste0("************** Quality Assessment **************\n"))
-  # folder <- paste0(path.prefix, "gene_data/raw_fastq.gz")
-  # files <- list.files(folder, sample.pattern, full.names=TRUE)
+  trimmed.raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  cat(paste0("************** Quality Assessment **************\n"))
+  folder <- paste0(path.prefix, "gene_data/raw_fastq.gz")
+  files <- list.files(folder, sample.pattern, full.names=TRUE)
   # cat(paste0("\u25CF 1. R package \"Rqc\" quality assessment\n"))
   # cat(paste0("     \u25CF  Running 'rqcQA()' ...  Please wait \u231B\u231B\u231B\n"))
   # qa <- Rqc::rqcQA(files)
@@ -94,12 +94,12 @@ RNASeqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   current.path <- getwd()
   setwd(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/"))
   # create 'RNASeq' directory
-  systemPipeRdata::genWorkenvir(workflow="RNASeq")
+  systemPipeRdata::genWorkenvir(workflow="rnaseq")
   # create targets.txt
   cat(paste0("     \u25CF  Writing \"data.list.txt\"\n"))
   raw.fastq.data.frame <- data.frame("FileName" = files, "SampleName" = gsub(".fastq.gz", "", basename(files)), "SampleLong" = seq_len(length(files)))
   write.table(raw.fastq.data.frame, "data.list.txt", sep="\t", row.names = FALSE, quote=FALSE)
-  args <- systemPipeR::systemArgs(sysma="RNASeq/param/trim.param", mytargets="data.list.txt")
+  args <- systemPipeR::systemArgs(sysma="rnaseq/param/trim.param", mytargets="data.list.txt")
   cat(paste0("     \u25CF  Running 'seeFastq()' ...  Please wait \u231B\u231B\u231B\n"))
   fqlist <- systemPipeR::seeFastq(fastq=systemPipeR::infile1(args), batchsize=10000, klength=8)
   cat(paste0("     \u25CF  Creating 'fastqReport.pdf' ...  Please wait \u231B\u231B\u231B\n"))

@@ -1,0 +1,90 @@
+---
+title: "RNASeqWorkflow : RNA-Seq workflow for one independent variable analysis"
+author: "Author: Kuan-Hao Chao (ntueeb05howard@gmail.com)"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`"
+abstract: >
+  An RNA-Seq workflow for one independent variable analysis
+output: 
+  BiocStyle::html_document:
+    highlight: pygments
+    toc: true
+    toc_depth: 3
+    fig_caption: yes
+
+fontsize: 14pt
+vignette: >
+  %\VignetteIndexEntry{RNA-Seq workflow for one independent variable analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteDepends{}
+  %\VignetteEncoding{UTF-8}
+  %\usepackage[utf8]{inputenc}
+  %\VignettePackage{RNASeqWorkflow}
+---
+
+```{r style, echo=FALSE, results="asis", message=FALSE}
+knitr::opts_chunk$set(tidy = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+# RNA-Seq workflow
+
+## Overview
+
+Support paired-end reads only
+
+## "RNASeqWorkFlowParam" S4 Object Creation
+Before starting RNA-Seq analysis in this package, you have to run the 
+constructor function `RNASeqWorkFlowParam()` and create `RNASeqWorkFlowParam` 
+S4 object first. Be aware of the following things:
+
+1. Create a new directory for RNA-Seq analysis.
+    * It is highly recommended to create a new directory without any files inside. 
+The parameter `path.prefix` of `RNASeqWorkFlowParam()` constructor should be the absolute 
+path of this new directory. All the RNA-Seq related files that generated in the following steps 
+will be stored inside of this directory.
+
+2. Create valid 'input_files/' directory
+    * You should create a file directory named 'input_files/' with the following rules:
+        * ***`genome.name`.fa*** : reference genome in FASTA file formation.
+        * ***`genome.name`.gtf*** : gene annotation in GTF file formation.
+        *  ***rawfastq.gz*/**: directory storing FASTQ files. 
+            *  Support paired-end reads files only.
+            *  Names of paired-end FASTQ files : '`sample.pattern`_1.fastq.gz' and '`sample.pattern`_2.fastq.gz'. `sample.pattern` must be distinct for each sample.
+        * ***phenodata.csv*** : information about RNA-Seq experiment design.
+            * First column : Distint ids for each sample. Value of each sample of this column must match `sample.pattern` in FASTQ files in 'raw_fastq.gz/'. Column names must be 'ids'.
+            * Second column : independent variable for the RNA-Seq experiment. Value of each sample of this column can only be parameter `control.group` and `experiment.group`. Column name is parameter `independent.variable`.
+        * ***indexes*/** : directory storing HT2 index files for hisat2 alignment tool.
+    
+3. Run constructor of `RNASeqWorkFlowParam` S4 object
+    * This constructor will check following things before creating S4 objects
+        1. Operating system
+            * Detect your workstations operating system. This package support `Linux` and `OS X`. `Windows` is not supported.
+        2. Python version
+            * Detect whether Python is available on your work station. 
+        3. Structure and contents of 'input_files/'
+        4. Validity of input parameters
+
+```{r}
+# exp <- RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA, 
+# genome.name = NA, sample.pattern = NA, independent.variable = NA, 
+# control.group = NA, experiment.group = NA)
+```
+For this example, `RNASeqWorkFlowParam` S4 object is store in `exp` for RNA-Seq analysis steps below.
+
+
+
+## Environment Set up
+
+## Raw Reads Fastq files Quality Assessment
+
+## Raw Reads Fastq files Quality Trimming
+
+## Raw Reads Process (Alignment, Assembly, Gffcompare and Quantification)
+
+## Raw Reads Differential Expressed Genes Analysis (ballgown, TPM & t-test, DESeq2 and edgeR)
+
+## Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)
+
+## Conlusion
+

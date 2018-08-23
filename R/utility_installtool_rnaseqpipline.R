@@ -218,3 +218,4 @@ RawCountGeneNameChange <- function(raw.count, path.prefix){
   novel.know.gene.raw.count <- rbind(know.gene.raw.count.aggregate, novel.gene.raw.count)
   return(list("raw.counts" = novel.know.gene.raw.count, "raw.counts.name" = gene.name.list))
 }
+

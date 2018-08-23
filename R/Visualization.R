@@ -118,7 +118,6 @@ PCAPlot <- function(which.analysis, which.count.normalization, path.prefix, inde
   legend("bottomright",inset=c(0,1), horiz=TRUE, bty="n", legend=c(control.group, experiment.group) , col=my_colors, pch=20 )
   dev.off()
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_self.png"), "' has been created. \n\n"))
-
 }
 
 #Correlation plot
@@ -177,68 +176,28 @@ CorrelationPlot <- function(which.analysis, which.count.normalization, path.pref
 #### Differential expression visualization ####
 ###################################################
 # Volcano plot
-VolcanoPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group, condition.pq, condition.log2FC) {
+VolcanoPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group, condition.pval, condition.log2FC) {
   # load gene name for further usage
   cat(paste0("\u25CF Plotting Volcano plot\n"))
-  if (which.analysis == "ballgown_analysis") {
-    FPKM_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv"))
-    ## Volcano plot
-    # Make a basic volcano plot
-    png(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/DE/Volcano_Plot.png"))
-    par(mar=c(5,7,5,5), cex=0.6, cex.main=2, cex.axis=1.5, cex.lab=1.5)
-    topT <- as.data.frame(FPKM_dataset)
-    with(topT, plot(topT$log2FC, -log10(topT$qval), pch=20, main="Volcano Plot", xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~Q~value), xlim=c(-15,15), ylim = c(0,12)))
-    # user4 input qvalue log2FC
-    # qval to qvalue
-    subset.result.red <- subset(topT, topT$qval<condition.pq & topT$log2FC>=condition.log2FC)
-    with(subset.result.red, points(subset.result.red$log2FC, -log10(subset.result.red$qval), pch=20, cex=1, col="red"))
-    subset.result.green <- subset(topT, topT$qval<condition.pq & topT$log2FC<=-1*condition.log2FC)
-    with(subset.result.green, points(subset.result.green$log2FC, -log10(subset.result.green$qval), pch=20, cex=1, col="green"))
-    # hight = -log10(pavl) = height
-    abline(v=c(-1*condition.log2FC,condition.log2FC), h=-1*log10(condition.pq), col="black", lty='dashed')
-    dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/DE/Volcano_Plot.png"), "' has been created. \n\n"))
-  } else if (which.analysis == "DESeq2_analysis") {
-    MRN_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_result.csv"))
-    ## Volcano plot
-    # Make a basic volcano plot
-    png(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/DE/Volcano_Plot.png"))
-    par(mar=c(5,7,5,5), cex=0.6, cex.main=2, cex.axis=1.5, cex.lab=1.5)
-    topT <- as.data.frame(MRN_dataset)
-    with(topT, graphics::plot(topT$log2FoldChange, -log10(topT$padj), pch=20, main="Volcano Plot", xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~Padj~value), xlim=c(-15,15), ylim = c(0,12)))
-    # user4 input qvalue log2FC
-    # qval to qvalue
-    subset.result.red <- subset(topT, topT$padj<condition.pq & topT$log2FoldChange>=condition.log2FC)
-    with(subset.result.red, graphics::points(subset.result.red$log2FoldChange, -log10(subset.result.red$padj), pch=20, cex=1, col="red"))
-    subset.result.green <- subset(topT, topT$padj<condition.pq & topT$log2FoldChange<=-1*condition.log2FC)
-    with(subset.result.green, points(subset.result.green$log2FoldChange, -log10(subset.result.green$padj), pch=20, cex=1, col="green"))
-    # hight = -log10(pavl) = height
-    abline(v=c(-1*condition.log2FC,condition.log2FC), h=-1*log10(condition.pq), col="black", lty='dashed')
-    dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/DE/Volcano_Plot.png"), "' has been created. \n\n"))
-  } else if (which.analysis == "edgeR_analysis") {
-    TMM_CPM_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv"))
-    ## Volcano plot
-    # Make a basic volcano plot
-    png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/DE/Volcano_Plot.png"))
-    par(mar=c(5,7,5,5), cex=0.6, cex.main=2, cex.axis=1.5, cex.lab=1.5)
-    topT <- as.data.frame(TMM_CPM_dataset)
-    with(topT, plot(topT$logFC, -log10(topT$PValue), pch=20, main="Volcano Plot", xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~P~value), xlim=c(-15,15), ylim = c(0,12)))
-    # user4 input qvalue log2FC
-    # qval to qvalue
-    subset.result.red <- subset(topT, topT$PValue<condition.pq & topT$logFC>=condition.log2FC)
-    with(subset.result.red, points(subset.result.red$logFC, -log10(subset.result.red$PValue), pch=20, cex=1, col="red"))
-    subset.result.green <- subset(topT, topT$PValue<condition.pq & topT$logFC<=-1*condition.log2FC)
-    with(subset.result.green, points(subset.result.green$logFC, -log10(subset.result.green$PValue), pch=20, cex=1, col="green"))
-    # hight = -log10(pavl) = height
-    abline(v=c(-1*condition.log2FC,condition.log2FC), h=-1*log10(condition.pq), col="black", lty='dashed')
-    dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/DE/Volcano_Plot.png"), "' has been created. \n\n"))
-  }
+  normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv"))
+  ## Volcano plot
+  # Make a basic volcano plot
+  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot.png"))
+  par(mar=c(5,7,5,5), cex=0.6, cex.main=2, cex.axis=1.5, cex.lab=1.5)
+  topT <- as.data.frame(normalized_dataset)
+  with(topT, plot(topT$log2FC, -log10(topT$pval), pch=20, main="Volcano Plot", xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~Q~value), xlim=c(-15,15), ylim = c(0,12)))
+  subset.result.red <- subset(topT, topT$pval<condition.pval & topT$log2FC>=condition.log2FC)
+  with(subset.result.red, points(subset.result.red$log2FC, -log10(subset.result.red$pval), pch=20, cex=1, col="red"))
+  subset.result.green <- subset(topT, topT$pval<condition.pval & topT$log2FC<=-1*condition.log2FC)
+  with(subset.result.green, points(subset.result.green$log2FC, -log10(subset.result.green$pval), pch=20, cex=1, col="green"))
+  # hight = -log10(pavl) = height
+  abline(v=c(-1*condition.log2FC,condition.log2FC), h=-1*log10(condition.pval), col="black", lty='dashed')
+  dev.off()
+  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot.png"), "' has been created. \n\n"))
 }
 
 # MA plot
-MAPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group, condition.pq) {
+MAPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group, condition.pval) {
   # load gene name for further usage
   csv.results <- ParseResultCSV(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group)
   control.normalized <- csv.results$control
@@ -246,13 +205,8 @@ MAPlot <- function(which.analysis, which.count.normalization, path.prefix, indep
   cat(paste0("\u25CF Plotting MA plot\n"))
   normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv"))
   ## Ma plot
-  if (which.analysis == "ballgown_analysis") {
-    condition <- "qval"
-  } else if (which.analysis == "TPM_analysis") {
-    condition <- "pval"
-  }
   png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/MA_Plot.png"))
-  p <- ggplot(normalized_dataset, aes(x = log2(normalized_dataset[paste0(control.group, ".", experiment.group, ".average")][[1]]), y = normalized_dataset$log2FC, colour = normalized_dataset[condition][[1]]<condition.pq)) +
+  p <- ggplot(normalized_dataset, aes(x = log2(normalized_dataset[paste0(control.group, ".", experiment.group, ".average")][[1]]), y = normalized_dataset$log2FC, colour = normalized_dataset$pval<condition.pval)) +
     xlab("Log2(FPKM.all.mean)") +
     ylab("Log2FC") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +

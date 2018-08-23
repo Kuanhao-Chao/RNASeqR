@@ -10,9 +10,9 @@ RNASeqGoKegg_CMD(RNASeqWorkFlowParam, OrgDb.species, KEGG.organism,
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}
 
-\item{OrgDb.species}{WIP}
+\item{OrgDb.species}{the genome wide annotation packages of species on Bioconductor. Currently, there are 19 supported genome wide annotation packages of species.}
 
-\item{KEGG.organism}{WIP}
+\item{KEGG.organism}{the species that are supported for KEGG analysis. Currently, there are more than 5000 supported species genome. Check the valid species terms on https://www.genome.jp/kegg/catalog/org_list.html}
 
 \item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
 If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
@@ -23,15 +23,23 @@ If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
 None
 }
 \description{
-Set up the environment for the following RNA-Seq workflow in background.
-This function do 4 things :
-1. Create file directories.
-2. Install necessary tools.
-3. Export 'RNASeq_bin/' to the R environment.
-4. Check command of tools.
-First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
-'Gffcompare' will be installed under 'RNASeq_bin/'. 'RNASeq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
-If you want to set up the environment for the following RNA-Seq workflow in R shell, please see \code{RNASeqEnvironmentSet()} function.
+Run Gene Ontology(GO) and Kyoto Encyclopedia of Genes and Genomes(KEGG) analysis in background.
+This function do Gene Ontology(GO) and Kyoto Encyclopedia of Genes and Genomes(KEGG) analysis :
+1. Gene Ontology(GO) :
+   All gene set :
+       1. Do GO gene set enrichment analysis.
+   Differential expressed gene set :
+       1. Do GO function classification analysis.
+       2. Do GO function enrichment analysis.
+       3. Visualization : bar plot, dot plot etc.
+2. Kyoto Encyclopedia of Genes and Genomes(KEGG) :
+   All gene set :
+       1. Do KEGG gene set enrichment analysis.
+   Differential expressed gene set :
+       1. Do KEGG pathway gene set enrichment analysis
+       2. Do KEGG pathway enrichment analysis
+       3. Pathway visulization with \code{pathview} package. KEGG webpage pathway url will also be created
+If you want to do GO functional analysis and KEGG pathway analysis for the following RNA-Seq workflow in R shell, please see \code{RNASeqGoKegg()} function.
 }
 \examples{
 \dontrun{

@@ -21,15 +21,16 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
   experiment.TPM <- (experiment.FPKM/colSums(control.FPKM))*(10**6)
   write.csv(experiment.TPM, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_experiment.csv"), row.names=FALSE)
 
+  gene.id.data.frame <- data.frame(read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv")))
 
-  p.value <- unlist(lapply(1:nrow(control.TPM), function(x) { stats::t.test(control.TPM[x,], experiment.TPM[x,])$p.value }))
-  fold.change <- unlist(lapply(1:nrow(control.TPM), function(x) { mean(unlist(experiment.TPM[x,])) / mean(unlist(control.TPM[x,])) }))
+  p.value <- unlist(lapply(seq_len(nrow(control.TPM)), function(x) { stats::t.test(control.TPM[x,], experiment.TPM[x,])$p.value }))
+  fold.change <- unlist(lapply(seq_len(nrow(control.TPM)), function(x) { mean(unlist(experiment.TPM[x,])) / mean(unlist(control.TPM[x,])) }))
   statistic.T.test <- data.frame("pval" = p.value, "fc" = fold.change, "log2FC" = log2(fold.change))
-  write.csv(statistic, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
+  write.csv(statistic.T.test, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
 
   total.data.frame <- cbind(gene.id.data.frame, control.TPM, experiment.TPM)
-  total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.FPKM.data.frame)
-  total.data.frame[paste0(experiment.group, ".average")] <- rowMeans(experiment.FPKM.data.frame)
+  total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.TPM)
+  total.data.frame[paste0(experiment.group, ".average")] <- rowMeans(experiment.TPM)
   total.data.frame[paste0(control.group, ".", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
   TPM_Ttest.result <- cbind(total.data.frame, statistic.T.test)
   TPM_Ttest.result <- rbind(TPM_Ttest.result[TPM_Ttest.result$gene.name != ".",], TPM_Ttest.result[TPM_Ttest.result$gene.name == ".",])

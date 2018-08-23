@@ -28,6 +28,8 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
   dgList <- edgeR::estimateTagwiseDisp(dgList)
   # Testing for DE genes
   de.statistic.result <- edgeR::exactTest(dgList)
+  colnames(de.statistic.result$table)[1] <- "log2FC"
+  colnames(de.statistic.result$table)[3] <- "pval"
   write.csv(de.statistic.result$table, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   #  run the cpm function on a DGEList object which is normalisation by TMM factors ==> get TMM normalized counts !!
   # counts were first normalized with TMM and then be presented as cpm !
@@ -51,7 +53,7 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
 
   # Slecet DE genes (condition)
   cat(paste0("     \u25CF Selecting differential expressed genes(edgeR) ==> p-value : ", edgeR.pval, "  log2(Fold Change) : ", edgeR.log2FC, " ...\n"))
-  edgeR.result.DE <- edgeR.result[(edgeR.result$logFC>edgeR.log2FC) & (edgeR.result$PValue<edgeR.pval), ]
+  edgeR.result.DE <- edgeR.result[(edgeR.result$log2FC>edgeR.log2FC) & (edgeR.result$pval<edgeR.pval), ]
   cat("          \u25CF Total '", length(row.names(edgeR.result.DE)), "' DEG have been found !!")
   write.csv(edgeR.result.DE, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_DE_result.csv"), row.names=FALSE)
 

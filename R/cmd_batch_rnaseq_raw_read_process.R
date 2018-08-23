@@ -56,7 +56,9 @@ RNASeqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
 #' @title Raw reads process (alignment, assembly, expressive quantification) of RNA-Seq in background.
 #'
 #' @description Process raw reads for RNA-Seq workflow in R shell.
-#' It is strongly advised to run \code{RNASeqRawReadProcess_CMD()} directly. Running this function directly is not recommended.
+#' It is strongly advised to run \code{RNASeqRawReadProcess_CMD()} directly. Running this function directly is not recommended because the processes of alignment, assembly and quantification take a longer time.
+#' Running \code{RNASeqRawReadProcess_CMD()} will create 'Raw_Read_Process.Rout' file in 'Rscript_out/' directory.
+#' This function do following things :
 #' This function do 5 things :
 #' 1. 'Hisat2' : aligns raw reads to reference genome. If \code{indexes.optional} in \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indexes will be created.
 #' 2. 'Samtools' : converts '.sam' files to '.bam' files.
@@ -92,8 +94,8 @@ RNASeqRawReadProcess <- function(path.prefix, input.path.prefix, genome.name, sa
   ExportPath(path.prefix)
   PreRNASeqRawReadProcess(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern)
   check.results <- ProgressGenesFiles(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, print=FALSE)
-  if (check.results$ht2.files.number.df == 0 && indexes.optional) {
-    CreateHisat2Index(genome.name, sample.pattern)
+  if (check.results$ht2.files.number.df == 0 && !indexes.optional) {
+    CreateHisat2Index(path.prefix, genome.name, sample.pattern)
   }
   Hisat2AlignmentDefault(path.prefix, genome.name, sample.pattern, num.parallel.threads = num.parallel.threads)
   SamtoolsToBam(path.prefix, genome.name, sample.pattern, num.parallel.threads = num.parallel.threads)
