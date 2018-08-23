@@ -15,15 +15,15 @@ An S4 class for checking and storing RNA-Seq workflow parameters of this package
 \describe{
 \item{\code{os.type}}{'linux' or 'osx'. The operating system type}
 
-\item{\code{python.variable}}{a list storing python environment. (check.answer, python.version)}
+\item{\code{python.variable}}{A list storing python environment. \code{(check.answer, python.version)}}
 
 \item{\code{path.prefix}}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
 
 \item{\code{input.path.prefix}}{path prefix of 'input_files/' directory}
 
-\item{\code{genome.name}}{variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)}
+\item{\code{genome.name}}{Variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
 
-\item{\code{sample.pattern}}{regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'}
+\item{\code{sample.pattern}}{Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 
 \item{\code{independent.variable}}{independent variable for the biological experiment design of two-group RNA-Seq workflow}
 

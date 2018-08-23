@@ -3,11 +3,11 @@
 #' @aliases RNASeq
 #'
 #' @slot os.type 'linux' or 'osx'. The operating system type
-#' @slot python.variable a list storing python environment. (check.answer, python.version)
+#' @slot python.variable A list storing python environment. \code{(check.answer, python.version)}
 #' @slot path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @slot input.path.prefix path prefix of 'input_files/' directory
-#' @slot genome.name variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
-#' @slot sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
+#' @slot genome.name Variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
+#' @slot sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
 #' @slot independent.variable independent variable for the biological experiment design of two-group RNA-Seq workflow
 #' @slot control.group group name of the control group
 #' @slot experiment.group group name of the experiment group
@@ -52,8 +52,8 @@ setClass("RNASeqWorkFlowParam",
 #'
 #' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @param input.path.prefix path prefix of 'input_files/' directory
-#' @param genome.name variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
-#' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
+#' @param genome.name variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
+#' @param sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
 #' @param independent.variable independent variable for the biological experiment design of two-group RNA-Seq workflow
 #' @param control.group group name of the control group
 #' @param experiment.group group name of the experiment group
@@ -113,7 +113,7 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome
   # below still need to fix
   # 7. check 'phenodata'
   bool.phenodata <- CheckPhenodata(input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, independent.variable = independent.variable)
-  # 9. check 'control.group' and 'experiment.group'
+  # 8. check 'control.group' and 'experiment.group'
   bool.check.control.experiment.group <- CheckControlGroupExperimentGroup(input.path.prefix = input.path.prefix, independent.variable = independent.variable, control.group = control.group, experiment.group = experiment.group)
 
   if ((characters.os.type == "linux" || characters.os.type == "osx") && bool.python.avail && bool.prefix.path &&
@@ -129,8 +129,8 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome
 }
 
 # inner function : check whether input values are NA
-CheckInputParamNa <- function(path.prefix = NA, input.path.prefix = NA, genome.name = NA, sample.pattern = NA,
-                            independent.variable = NA, control.group = NA, experiment.group = NA) {
+CheckInputParamNa <- function(path.prefix, input.path.prefix, genome.name, sample.pattern,
+                            independent.variable, control.group, experiment.group) {
   cat(c("************** Checking input parameters ************\n"))
   if (is.na(path.prefix) || is.na(input.path.prefix) || is.na(genome.name) || is.na(sample.pattern) || is.na(independent.variable) || is.na(control.group) || is.na(experiment.group)) {
     if (is.na(path.prefix)) {
@@ -288,6 +288,10 @@ CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
         stop("Pair-end file ERROR")
         }
     }
+    if (sample.pattern == "") {
+      cat(paste0("(\u2718) : The value of 'sample.pattern' is \"\" !!\n"))
+      stop("'sample.pattern' ERROR")
+    }
     raw.fastq.number <- length(raw.fastq)
   }
   if (isTRUE(ht2.dir)) {
@@ -342,9 +346,10 @@ CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
   if (isTRUE(gtf.file) && isTRUE(raw.fastq.dir) && isTRUE(raw.fastq.dir) && raw.fastq.number != 0 && isTRUE(phenodata.file)) {
     cat(c(paste0("\n(\u2714) : '", input.path.prefix,"input_files/", "'"), "is valid !\n"))
     if (isTRUE(ht2.dir) && ht2.files.number != 0) {
-      cat(paste0("(\u2714) : optional directory 'indexes/' is valid !\n\n"))
+      cat(paste0("(\u2714) : optional directory 'indexes/' is valid !\n"))
       optional.indexes.bool <- TRUE
     }
+    cat("\n")
     return.value <- list("check.answer" = TRUE, "optional.indexes.bool" = optional.indexes.bool)
     return(return.value)
   } else {
@@ -358,7 +363,7 @@ CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
 CheckPhenodata <- function(input.path.prefix, genome.name, sample.pattern, independent.variable) {
   # have to sort the column !! and sort them in the correct order
   cat(c("************** Checking phenodata  ************\n"))
-  pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
+  pheno_data <- read.csv(paste0(input.path.prefix, "input_files/phenodata.csv"))
   # Covert all column to character
   pheno_data <- data.frame(lapply(pheno_data, as.character), stringsAsFactors=FALSE)
   # Checl 'ids' is in the 'phenodata.csv'
@@ -377,7 +382,7 @@ CheckPhenodata <- function(input.path.prefix, genome.name, sample.pattern, indep
     cat(paste0("(\u2718) : 'ids' column doesn't match the smaple_id in 'input_files/raw_fastq.gz'. Please check the file.\n" ))
     stop("'ids' mismatch ERROR")
   }
-  ids.list <- paste(sort(extract.fastq.gz.sample.names), collapse = " ")
+  ids.list <- paste(sort(extract.fastq.gz.sample.names), collapse = ", ")
   cat("(\u2714) : Column 'ids' of phenodata.csv is valid. \n")
   cat(paste0("      \u25CF sample ids are : \"", ids.list,"\"\n"))
   # Check again independent.variable in the list
@@ -389,7 +394,8 @@ CheckPhenodata <- function(input.path.prefix, genome.name, sample.pattern, indep
   cat(paste0("\u25B6 Checking whether '", independent.variable, "' is a two-group 'independent.variable' ...\n"))
   length.independent.variable <- length(table(pheno_data[independent.variable]))
   if (!(length.independent.variable == 2)) {
-    cat(paste0("(\u2718) : 'independent.variable' : '", independent.variable, "' is a ", length.independent.variable,"-group 'independent.variable'. Not 2-group.\n\n"))
+    cat(paste0("(\u2718) : 'independent.variable' : '", independent.variable, "' is a ", length.independent.variable,"-group 'independent.variable'. Not 2-group.\n"))
+    cat(paste0("          groups that found : ", paste0(names(table(pheno_data[independent.variable])), collapse = ", "), "\n"))
     stop("'independent.variable' none-two-group ERROR")
   }
   cat("(\u2714) : Column 'independent.variable' : '",independent.variable, "' of phenodata.csv is valid. \n")

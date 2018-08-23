@@ -14,9 +14,9 @@ RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA,
 
 \item{input.path.prefix}{path prefix of 'input_files/' directory}
 
-\item{genome.name}{variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)}
+\item{genome.name}{variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
 
-\item{sample.pattern}{regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'}
+\item{sample.pattern}{Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 
 \item{independent.variable}{independent variable for the biological experiment design of two-group RNA-Seq workflow}
 
