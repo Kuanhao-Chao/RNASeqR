@@ -1,7 +1,7 @@
-#' @title Sample trimming of '.fastq.gz' files for RNA-Seq workflow in background.
+#' @title Quality trimming of '.fastq.gz' files for RNA-Seq workflow in background.
 #'
 #' @description Trim '.fastq.gz' files for RNA-Seq workflow in background. This step is optional in the whole RNA-Seq workflow.
-#' The trimming method is implemented by R package \code{QuasR}
+#' The trimming method is implemented by R package \code{ShortRead}
 #' If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNASeqQualityTrimming()} function.
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
@@ -39,7 +39,7 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, cum.error = 1, reads.
 }
 
 
-#' @title Sample trimming of '.fastq.gz' files for RNA-Seq workflow in R shell
+#' @title Quality trimming of '.fastq.gz' files for RNA-Seq workflow in R shell
 #'
 #' @description Trim '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
 #' It is strongly advised to run \code{RNASeqQualityTrimming_CMD()} directly. Running \code{RNASeqQualityTrimming_CMD()} will create 'Quality_Trimming.Rout' file in 'Rscript_out/' directory.
@@ -47,7 +47,7 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, cum.error = 1, reads.
 #' If you want to trim '.fastq.gz' files for the RNA-Seq workflow in background, please see \code{RNASeqQualityTrimming_CMD()} function.
 #'
 #' @param path.prefix Path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
-#' @param sample.pattern  Regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
+#' @param sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'.
 #' @param cum.error Default \code{1}. Cut of threshold of cumulative probability of error per base.
 #' @param reads.length.limit Default \code{36}. The shortest base pair length of short reads
 #'

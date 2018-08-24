@@ -12,11 +12,11 @@ RNASeqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
 
 \item{input.path.prefix}{path prefix of 'input_files/' directory}
 
-\item{genome.name}{variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)}
+\item{genome.name}{genome.name variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
 
-\item{sample.pattern}{regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'}
+\item{sample.pattern}{Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 
-\item{indexes.optional}{logical value whether indexes/ is exit in 'input_files/'}
+\item{indexes.optional}{logical value whether 'indexes/' is exit in 'input_files/'}
 
 \item{os.type}{'linux' or 'osx'. The operating system type}
 
@@ -30,7 +30,7 @@ Set up the environment for the following RNA-Seq workflow in R shell.
 It is strongly advised to run \code{RNASeqEnvironmentSet_CMD()} directly. Running \code{RNASeqEnvironmentSet_CMD()} will create 'Environment_Set.Rout' file in 'Rscript_out/' directory.
 This function do 4 things : 1. Create file directories. 2. Install necessary tools. 3. Export 'RNASeq_bin/' to the R environment. 4. Check command of tools.
 First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
-'Gffcompare' will be installed under 'RNASeq_bin/'. 'RNASeq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
+'Gffcompare' will be installed under 'RNASeq_bin/Download/' and be unpacked under 'RNASeq_bin/Unpacked/'. 'RNASeq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
 If you want to set up the environment for the following RNA-Seq workflow in background, please see \code{RNASeqEnvironmentSet_CMD()} function.
 }
 \examples{

@@ -26,7 +26,7 @@ This function do 4 things :
 3. Export 'RNASeq_bin/' to the R environment.
 4. Check command of tools.
 First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/', 'Rscript_out/' directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools',
-'Gffcompare' will be installed under 'RNASeq_bin/'. 'RNASeq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
+'Gffcompare' will be installed under 'RNASeq_bin/Download/' and be unpacked under 'RNASeq_bin/Unpacked/'. 'RNASeq_bin/' will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be reported and the program will be terminated.
 If you want to set up the environment for the following RNA-Seq workflow in R shell, please see \code{RNASeqEnvironmentSet()} function.
 }
 \examples{

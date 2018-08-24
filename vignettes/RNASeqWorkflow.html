@@ -155,7 +155,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">RNASeqWorkflow : RNA-Seq workflow for one independent variable analysis</h1>
 <p class="author-name">Author: Kuan-Hao Chao (ntueeb05howard@gmail.com)</p>
-<h4 class="date"><em>Last update: 23 August, 2018</em></h4>
+<h4 class="date"><em>Last update: 25 August, 2018</em></h4>
 <h4 class="abstract">Abstract</h4>
 <p>An RNA-Seq workflow for one independent variable analysis</p>
 
@@ -166,14 +166,26 @@ $(document).ready(function () {
 <ul>
 <li><a href="#rna-seq-workflow"><span class="toc-section-number">1</span> RNA-Seq workflow</a><ul>
 <li><a href="#overview"><span class="toc-section-number">1.1</span> Overview</a></li>
-<li><a href="#rnaseqworkflowparam-s4-object-creation"><span class="toc-section-number">1.2</span> “RNASeqWorkFlowParam” S4 Object Creation</a></li>
-<li><a href="#environment-set-up"><span class="toc-section-number">1.3</span> Environment Set up</a></li>
-<li><a href="#raw-reads-fastq-files-quality-assessment"><span class="toc-section-number">1.4</span> Raw Reads Fastq files Quality Assessment</a></li>
-<li><a href="#raw-reads-fastq-files-quality-trimming"><span class="toc-section-number">1.5</span> Raw Reads Fastq files Quality Trimming</a></li>
-<li><a href="#raw-reads-process-alignment-assembly-gffcompare-and-quantification"><span class="toc-section-number">1.6</span> Raw Reads Process (Alignment, Assembly, Gffcompare and Quantification)</a></li>
-<li><a href="#raw-reads-differential-expressed-genes-analysis-ballgown-tpm-t-test-deseq2-and-edger"><span class="toc-section-number">1.7</span> Raw Reads Differential Expressed Genes Analysis (ballgown, TPM &amp; t-test, DESeq2 and edgeR)</a></li>
-<li><a href="#functional-analysis-gene-ontology-and-pathway-analysis-kyoto-encyclopedia-of-genes-and-genomes"><span class="toc-section-number">1.8</span> Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)</a></li>
-<li><a href="#conlusion"><span class="toc-section-number">1.9</span> Conlusion</a></li>
+<li><a href="#system-requirement"><span class="toc-section-number">1.2</span> System Requirement</a></li>
+<li><a href="#rnaseqworkflowparam-s4-object-creation"><span class="toc-section-number">1.3</span> “RNASeqWorkFlowParam” S4 Object Creation</a><ul>
+<li><a href="#rnaseqworkflowparam-constructor-checking-steps"><span class="toc-section-number">1.3.1</span> “RNASeqWorkFlowParam” Constructor Checking Steps</a></li>
+<li><a href="#example"><span class="toc-section-number">1.3.2</span> Example</a></li>
+</ul></li>
+<li><a href="#environment-set-up"><span class="toc-section-number">1.4</span> Environment Set up</a><ul>
+<li><a href="#files-setup"><span class="toc-section-number">1.4.1</span> Files Setup</a></li>
+<li><a href="#necessary-tools-installation"><span class="toc-section-number">1.4.2</span> Necessary Tools Installation</a></li>
+<li><a href="#export-path"><span class="toc-section-number">1.4.3</span> Export Path</a></li>
+<li><a href="#example-1"><span class="toc-section-number">1.4.4</span> Example</a></li>
+</ul></li>
+<li><a href="#fastq-files-quality-assessment"><span class="toc-section-number">1.5</span> Fastq files Quality Assessment</a><ul>
+<li><a href="#systempiper-quality-assessment"><span class="toc-section-number">1.5.1</span> <code>systemPipeR</code> Quality Assessment</a></li>
+<li><a href="#example-2"><span class="toc-section-number">1.5.2</span> Example</a></li>
+</ul></li>
+<li><a href="#fastq-files-quality-trimming"><span class="toc-section-number">1.6</span> Fastq files Quality Trimming</a></li>
+<li><a href="#raw-reads-process-alignment-assembly-gffcompare-and-quantification"><span class="toc-section-number">1.7</span> Raw Reads Process (Alignment, Assembly, Gffcompare and Quantification)</a></li>
+<li><a href="#raw-reads-differential-expressed-genes-analysis-ballgown-tpm-t-test-deseq2-and-edger"><span class="toc-section-number">1.8</span> Raw Reads Differential Expressed Genes Analysis (ballgown, TPM &amp; t-test, DESeq2 and edgeR)</a></li>
+<li><a href="#functional-analysis-gene-ontology-and-pathway-analysis-kyoto-encyclopedia-of-genes-and-genomes"><span class="toc-section-number">1.9</span> Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)</a></li>
+<li><a href="#conlusion"><span class="toc-section-number">1.10</span> Conlusion</a></li>
 </ul></li>
 </ul>
 </div>
@@ -184,8 +196,13 @@ $(document).ready(function () {
 <h2><span class="header-section-number">1.1</span> Overview</h2>
 <p>Support paired-end reads only</p>
 </div>
+<div id="system-requirement" class="section level2">
+<h2><span class="header-section-number">1.2</span> System Requirement</h2>
+</div>
 <div id="rnaseqworkflowparam-s4-object-creation" class="section level2">
-<h2><span class="header-section-number">1.2</span> “RNASeqWorkFlowParam” S4 Object Creation</h2>
+<h2><span class="header-section-number">1.3</span> “RNASeqWorkFlowParam” S4 Object Creation</h2>
+<div id="rnaseqworkflowparam-constructor-checking-steps" class="section level3">
+<h3><span class="header-section-number">1.3.1</span> “RNASeqWorkFlowParam” Constructor Checking Steps</h3>
 <p>Before starting RNA-Seq analysis in this package, you have to run the constructor function <code>RNASeqWorkFlowParam()</code> and create <code>RNASeqWorkFlowParam</code> S4 object first. Be aware of the following things:</p>
 <ol style="list-style-type: decimal">
 <li>Create a new directory for RNA-Seq analysis.
@@ -217,7 +234,7 @@ $(document).ready(function () {
 <ol style="list-style-type: decimal">
 <li>Operating system
 <ul>
-<li>Detect your workstations operating system. This package support <code>Linux</code> and <code>OS X</code>. <code>Windows</code> is not supported.</li>
+<li>Detect your workstations operating system. This package support <code>Linux</code> and <code>macOS</code>. <code>Windows</code> is not supported.</li>
 </ul></li>
 <li>Python version
 <ul>
@@ -228,31 +245,79 @@ $(document).ready(function () {
 </ol></li>
 </ul></li>
 </ol>
+</div>
+<div id="example" class="section level3">
+<h3><span class="header-section-number">1.3.2</span> Example</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># exp &lt;- RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA, </span>
 <span class="co"># genome.name = NA, sample.pattern = NA, independent.variable = NA, </span>
 <span class="co"># control.group = NA, experiment.group = NA)</span></code></pre></div>
-<p>For this example, <code>RNASeqWorkFlowParam</code> S4 object is store in <code>exp</code> for RNA-Seq analysis steps below.</p>
+<p>In this example, <code>RNASeqWorkFlowParam</code> S4 object is store in <code>exp</code> for RNA-Seq analysis steps below.</p>
+</div>
 </div>
 <div id="environment-set-up" class="section level2">
-<h2><span class="header-section-number">1.3</span> Environment Set up</h2>
+<h2><span class="header-section-number">1.4</span> Environment Set up</h2>
+<div id="files-setup" class="section level3">
+<h3><span class="header-section-number">1.4.1</span> Files Setup</h3>
+<ol style="list-style-type: decimal">
+<li><p>Create Base Directories ‘gene_data/’, ‘RNASeq_bin/’, ‘RNASeq_results’, ‘Rscript’ and ‘Rscript_out’ will be created under <code>path.prefix</code> directory.</p></li>
+<li><p>Copy ‘input_files/’ Symbolic links will be created from files in ‘input_files/’ to <code>path.prefix</code> directory.</p></li>
+</ol>
 </div>
-<div id="raw-reads-fastq-files-quality-assessment" class="section level2">
-<h2><span class="header-section-number">1.4</span> Raw Reads Fastq files Quality Assessment</h2>
+<div id="necessary-tools-installation" class="section level3">
+<h3><span class="header-section-number">1.4.2</span> Necessary Tools Installation</h3>
+<p>The operating system of your workstation will be detected. If the operating system is other than <code>Linux</code> and <code>macOS</code>, ERROR will be reported. <code>HISAT2</code>, <code>SAMtools</code>, <code>StringTie</code> and <code>Gffcompare</code> will be installed automatically. 1. HISAT2 * Based on your operating system, <code>hisat2-2.1.0-Linux_x86_64.zip</code> or <code>hisat2-2.1.0-OSX_x86_64.zip</code> zipped file will be installed. * Installed file will be unzipped and all binary files will be moved under ‘RNASeq_bin/’</p>
+<ol start="2" style="list-style-type: decimal">
+<li>SAMtools
+<ul>
+<li><code>samtools-1.8.tar.bz2</code> source files will be installed.</li>
+<li>Installed files will be unzipped and compiled. If there is any ERROR occurred during compilation, program will be stopped. You should check the development environment is OK for SAMtools and rerun <code>RNASeqEnvironmentSet_CMD</code> or <code>RNASeqEnvironmentSet()</code> to set up the environment.</li>
+</ul></li>
+<li>StringTie
+<ul>
+<li>Based on your operating system, <code>stringtie-1.3.4d.Linux_x86_64.tar.gz</code> or <code>stringtie-1.3.4d.Linux_x86_64</code> zipped file will be installed.</li>
+<li>Installed file will be unzipped and all binary files will be moved under ‘RNASeq_bin/’</li>
+</ul></li>
+<li>Gffcompare
+<ul>
+<li>Based on your operating system, <code>gffcompare-0.10.4.Linux_x86_64.tar.gz</code> or `` zipped file will be installed.</li>
+<li>Installed file will be unzipped and all binary files will be moved under ‘RNASeq_bin/’</li>
+</ul></li>
+</ol>
 </div>
-<div id="raw-reads-fastq-files-quality-trimming" class="section level2">
-<h2><span class="header-section-number">1.5</span> Raw Reads Fastq files Quality Trimming</h2>
+<div id="export-path" class="section level3">
+<h3><span class="header-section-number">1.4.3</span> Export Path</h3>
+<p>‘RNASeq_bin/’ will be added to R PATH so that these binaries can be found in R environment. <code>hisat2 --version</code>, <code>stringtie --version</code>, <code>gffcompare --version</code> and <code>samtools --version</code> commands will be checked.</p>
+</div>
+<div id="example-1" class="section level3">
+<h3><span class="header-section-number">1.4.4</span> Example</h3>
+</div>
+</div>
+<div id="fastq-files-quality-assessment" class="section level2">
+<h2><span class="header-section-number">1.5</span> Fastq files Quality Assessment</h2>
+<div id="systempiper-quality-assessment" class="section level3">
+<h3><span class="header-section-number">1.5.1</span> <code>systemPipeR</code> Quality Assessment</h3>
+<p>In this process, <code>systemPipeR</code> package is used for quality assessment. Here are the following steps: 1. Check the times that users have run quality assessment process and create the corresponding files ‘RNASeq_results/QA_results/QA_{times}’. 2. RNA-Seq environment set up. ‘rnaseq/’ directory will be created by <code>systemPipeR</code> package. 3. Create ‘data.list.txt’ file. 4. Reading FASTQ files and create ‘fastqReport.pdf’ as the report result of quality assessment 5. Remove ‘rnaseq/’ directory.</p>
+</div>
+<div id="example-2" class="section level3">
+<h3><span class="header-section-number">1.5.2</span> Example</h3>
+</div>
+</div>
+<div id="fastq-files-quality-trimming" class="section level2">
+<h2><span class="header-section-number">1.6</span> Fastq files Quality Trimming</h2>
 </div>
 <div id="raw-reads-process-alignment-assembly-gffcompare-and-quantification" class="section level2">
-<h2><span class="header-section-number">1.6</span> Raw Reads Process (Alignment, Assembly, Gffcompare and Quantification)</h2>
+<h2><span class="header-section-number">1.7</span> Raw Reads Process (Alignment, Assembly, Gffcompare and Quantification)</h2>
 </div>
 <div id="raw-reads-differential-expressed-genes-analysis-ballgown-tpm-t-test-deseq2-and-edger" class="section level2">
-<h2><span class="header-section-number">1.7</span> Raw Reads Differential Expressed Genes Analysis (ballgown, TPM &amp; t-test, DESeq2 and edgeR)</h2>
+<h2><span class="header-section-number">1.8</span> Raw Reads Differential Expressed Genes Analysis (ballgown, TPM &amp; t-test, DESeq2 and edgeR)</h2>
 </div>
 <div id="functional-analysis-gene-ontology-and-pathway-analysis-kyoto-encyclopedia-of-genes-and-genomes" class="section level2">
-<h2><span class="header-section-number">1.8</span> Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)</h2>
+<h2><span class="header-section-number">1.9</span> Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)</h2>
 </div>
 <div id="conlusion" class="section level2">
-<h2><span class="header-section-number">1.9</span> Conlusion</h2>
+<h2><span class="header-section-number">1.10</span> Conlusion</h2>
+<p>genome.name Variable of genome name defined in this RNA-Seq workflow (ex. .fa, .gtf)</p>
+<p>sample.pattern Regular expression of paired-end fastq.gz files under ‘input_files/raw_fastq.gz’. Expression not includes .</p>
 </div>
 </div>
 

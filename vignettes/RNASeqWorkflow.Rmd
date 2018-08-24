@@ -33,7 +33,14 @@ knitr::opts_chunk$set(tidy = FALSE,
 
 Support paired-end reads only
 
+## System Requirement
+1. Python, 2to3
+2. C++
+3. 
+
 ## "RNASeqWorkFlowParam" S4 Object Creation
+
+### "RNASeqWorkFlowParam" Constructor Checking Steps
 Before starting RNA-Seq analysis in this package, you have to run the 
 constructor function `RNASeqWorkFlowParam()` and create `RNASeqWorkFlowParam` 
 S4 object first. Be aware of the following things:
@@ -59,26 +66,87 @@ will be stored inside of this directory.
 3. Run constructor of `RNASeqWorkFlowParam` S4 object
     * This constructor will check following things before creating S4 objects
         1. Operating system
-            * Detect your workstations operating system. This package support `Linux` and `OS X`. `Windows` is not supported.
+            * Detect your workstations operating system. This package support `Linux` and `macOS`. `Windows` is not supported.
         2. Python version
             * Detect whether Python is available on your work station. 
         3. Structure and contents of 'input_files/'
         4. Validity of input parameters
 
+### Example
 ```{r}
 # exp <- RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA, 
 # genome.name = NA, sample.pattern = NA, independent.variable = NA, 
 # control.group = NA, experiment.group = NA)
 ```
-For this example, `RNASeqWorkFlowParam` S4 object is store in `exp` for RNA-Seq analysis steps below.
+In this example, `RNASeqWorkFlowParam` S4 object is store in `exp` for RNA-Seq analysis steps below.
+
+
+
+
 
 
 
 ## Environment Set up
 
-## Raw Reads Fastq files Quality Assessment
+### Files Setup
+1. Create Base Directories 
+'gene_data/', 'RNASeq_bin/', 'RNASeq_results', 'Rscript' and 'Rscript_out' will be created under `path.prefix` directory.
 
-## Raw Reads Fastq files Quality Trimming
+2. Copy 'input_files/'
+Symbolic links will be created from files in 'input_files/' to `path.prefix` directory. 
+
+### Necessary Tools Installation
+The operating system of your workstation will be detected. If the operating system is other than `Linux` and `macOS`, ERROR will be reported. `HISAT2`, `SAMtools`, `StringTie` and `Gffcompare` will be installed automatically.
+
+* HISAT2
+    * Based on your operating system, `hisat2-2.1.0-Linux_x86_64.zip` or `hisat2-2.1.0-OSX_x86_64.zip` zipped file will be installed.
+    * Installed file will be unzipped and all binary files will be moved under 'RNASeq_bin/'
+
+* SAMtools
+    * `samtools-1.8.tar.bz2` source files will be installed. 
+    * Installed files will be unzipped and compiled. If there is any ERROR occurred during compilation, program will be stopped. You should check the development environment is OK for SAMtools and rerun `RNASeqEnvironmentSet_CMD` or `RNASeqEnvironmentSet()` to set up the environment.
+* StringTie
+    * Based on your operating system, `stringtie-1.3.4d.Linux_x86_64.tar.gz` or `stringtie-1.3.4d.Linux_x86_64` zipped file will be installed.
+    * Installed file will be unzipped and all binary files will be moved under 'RNASeq_bin/'
+* Gffcompare
+    * Based on your operating system, `gffcompare-0.10.4.Linux_x86_64.tar.gz` or `` zipped file will be installed.
+    * Installed file will be unzipped and all binary files will be moved under 'RNASeq_bin/'
+
+
+### Export Path
+'RNASeq_bin/' will be added to R PATH so that these binaries can be found in R environment. `hisat2 --version`,`stringtie --version`,`gffcompare --version` and`samtools --version` commands will be checked. 
+
+
+
+### Example
+
+
+
+## Fastq files Quality Assessment
+### "systemPipeR" Quality Assessment
+In this process, `systemPipeR` package is used for quality assessment. Here are the following steps:
+
+1. Check the times that users have run quality assessment process and create the corresponding files 'RNASeq_results/QA_results/QA_{times}'.
+2. RNA-Seq environment set up. 'rnaseq/' directory will be created by `systemPipeR` package.
+3. Create 'data.list.txt' file. 
+4. Reading FASTQ files and create 'fastqReport.pdf' as the report result of quality assessment
+5. Remove 'rnaseq/' directory.
+
+### Example
+
+
+## Fastq files Quality Trimming
+
+### "ShortRead" Quality Trimming
+In this process, `ShortRead` package is used for quality trimming. Followings are trimming steps and method explanation.
+
+1. FASTQ files with `sample.pattern` in 'gene_data/raw_fastq.gz' will be listed and be check. This trimming function only support paired-end FASTQ files.
+2. The probability of error per each base pair is calculated by Phred Quality in FASTQ files and the cumulative probability of error of each base pair will also be calculated. The threshold cumulative probability `cum.error`, with default value `1`, is used to find the trimming point of paired end files.
+3. `reads.length.limit`, with default value 36,  determines the minimum base pair length of reads. Length of reads less than `reads.length.limit` will be trimmed.
+4. Untrimmed FASTQ files are moved to 'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz', and trimmed FASTQ files are written to 'gene_data/raw_fastq.gz/'
+5. It is strongly recommended to run `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()` for quality assessment after quality trimming.
+
+### Example
 
 ## Raw Reads Process (Alignment, Assembly, Gffcompare and Quantification)
 
@@ -88,3 +156,10 @@ For this example, `RNASeqWorkFlowParam` S4 object is store in `exp` for RNA-Seq 
 
 ## Conlusion
 
+
+
+
+genome.name Variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
+
+
+sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.

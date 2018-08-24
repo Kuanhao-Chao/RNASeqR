@@ -11,7 +11,7 @@ RNASeqQualityAssessment(path.prefix, input.path.prefix, sample.pattern)
 
 \item{input.path.prefix}{path prefix of 'input_files/' directory}
 
-\item{sample.pattern}{regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'}
+\item{sample.pattern}{sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 }
 \value{
 None
@@ -19,7 +19,7 @@ None
 \description{
 Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
 It is strongly advised to run \code{RNASeqQualityAssessment_CMD()} directly. Running \code{RNASeqQualityAssessment_CMD()} will create 'Quality_Assessment.Rout' file in 'Rscript_out/' directory.
-This function reports the quality assessment result in one packages : \code{systemPipeR}
+This function reports the quality assessment result in one packages \code{systemPipeR}
 For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
 If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in background, please see \code{RNASeqQualityAssessment_CMD()} function.
 }

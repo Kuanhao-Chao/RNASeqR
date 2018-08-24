@@ -2,7 +2,7 @@
 % Please edit documentation in R/cmd_batch_rnaseq_quality_trimming.R
 \name{RNASeqQualityTrimming}
 \alias{RNASeqQualityTrimming}
-\title{Sample trimming of '.fastq.gz' files for RNA-Seq workflow in R shell}
+\title{Quality trimming of '.fastq.gz' files for RNA-Seq workflow in R shell}
 \usage{
 RNASeqQualityTrimming(path.prefix, sample.pattern, cum.error = 1,
   reads.length.limit = 36)
@@ -10,7 +10,7 @@ RNASeqQualityTrimming(path.prefix, sample.pattern, cum.error = 1,
 \arguments{
 \item{path.prefix}{Path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
 
-\item{sample.pattern}{Regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'}
+\item{sample.pattern}{Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'.}
 
 \item{cum.error}{Default \code{1}. Cut of threshold of cumulative probability of error per base.}
 

@@ -1,8 +1,7 @@
 #' @title Quality assessment of '.fastq.gz' files for RNA-Seq workflow in background.
 #'
 #' @description Assess the quality of '.fastq.gz' files for RNA-Seq workflow in background. This step is optional in the whole RNA-Seq workflow.
-#' This function reports the quality assessment result in two packages : \code{Rqc} and \code{systemPipeR}
-#' For \code{Rqc}, 'RNASeq_results/QA_results/Rqc/Rqc_report.html' will be created
+#' This function reports the quality assessment result in packages \code{systemPipeR}
 #' For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
 #' If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in R shell, please see \code{RNASeqQualityAssessment()} function.
 #'
@@ -43,13 +42,13 @@ RNASeqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 #'
 #' @description Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
 #' It is strongly advised to run \code{RNASeqQualityAssessment_CMD()} directly. Running \code{RNASeqQualityAssessment_CMD()} will create 'Quality_Assessment.Rout' file in 'Rscript_out/' directory.
-#' This function reports the quality assessment result in one packages : \code{systemPipeR}
+#' This function reports the quality assessment result in one packages \code{systemPipeR}
 #' For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
 #' If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in background, please see \code{RNASeqQualityAssessment_CMD()} function.
 #'
 #' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @param input.path.prefix path prefix of 'input_files/' directory
-#' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
+#' @param sample.pattern  sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
 #'
 #' @return None
 #' @export
@@ -108,7 +107,7 @@ RNASeqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
   dev.off()
   on.exit(setwd(current.path))
   cat(paste0("     \u25CF  Removing 'RNASeq' directory...  Please wait \u231B\u231B\u231B\n"))
-  unlink(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/RNASeq"), recursive = TRUE)
+  unlink(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/rnaseq"), recursive = TRUE)
   cat(paste0("     (\u2714) : systemPipeR assessment success ~~\n\n"))
   # if(!dir.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/ShortRead/"))){
   #   dir.create(file.path(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/ShortRead/")), showWarnings = FALSE)
@@ -126,7 +125,12 @@ RNASeqQualityAssessment <- function(path.prefix, input.path.prefix, sample.patte
 
 PreCheckRNASeqQualityAssessment <- function(path.prefix, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C 'RNASeqQualityAssessment()' environment pre-check ...\n")
-  # 1. must have .fastq.gz files
+  phenodata.csv <- file.exists(paste0(path.prefix, "gene_data/phenodata.csv"))
+  chrX.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/chrX.gtf"))
+  chrX.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/chrX.fa"))
+  raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  check.tool.result <- CheckToolAll()
+  validity <- phenodata.csv && chrX.gtf && chrX.fa && check.tool.result && (length(raw.fastq) != 0)
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   validity <- length(raw.fastq) != 0
   if (!isTRUE(validity)) {
@@ -141,14 +145,14 @@ PostCheckRNASeqQualityAssessment <- function(path.prefix) {
   QA_results_subfiles <- list.files(paste0(path.prefix, "RNASeq_results/QA_results"), pattern = "QA_[0-9]*")
   # Don't need to plus one
   QA.count <- length(QA_results_subfiles)
-  file.rqc.result <- file.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html"))
+  # file.rqc.result <- file.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html"))
   file.systemPipeR.data <- file.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/data.list.txt"))
   file.systemPipeR.result <- file.exists(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/fastqReport.pdf"))
   validity <- file.systemPipeR.data && file.systemPipeR.result
   if (!isTRUE(validity)) {
-    if (!file.rqc.result) {
-      cat(paste0("'", path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html' is missing!\n"))
-    }
+    # if (!file.rqc.result) {
+    #   cat(paste0("'", path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/Rqc/Rqc_report.html' is missing!\n"))
+    # }
     if (!file.systemPipeR.data) {
       cat(paste0("'", path.prefix, "RNASeq_results/QA_results/QA_", QA.count, "/systemPipeR/data.list.txt' is missing!\n"))
     }

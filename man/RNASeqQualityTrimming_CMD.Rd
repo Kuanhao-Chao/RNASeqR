@@ -2,7 +2,7 @@
 % Please edit documentation in R/cmd_batch_rnaseq_quality_trimming.R
 \name{RNASeqQualityTrimming_CMD}
 \alias{RNASeqQualityTrimming_CMD}
-\title{Sample trimming of '.fastq.gz' files for RNA-Seq workflow in background.}
+\title{Quality trimming of '.fastq.gz' files for RNA-Seq workflow in background.}
 \usage{
 RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam, cum.error = 1,
   reads.length.limit = 36, run = TRUE, check.s4.print = TRUE)
@@ -24,7 +24,7 @@ None
 }
 \description{
 Trim '.fastq.gz' files for RNA-Seq workflow in background. This step is optional in the whole RNA-Seq workflow.
-The trimming method is implemented by R package \code{QuasR}
+The trimming method is implemented by R package \code{ShortRead}
 If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNASeqQualityTrimming()} function.
 }
 \examples{
