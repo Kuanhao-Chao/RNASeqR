@@ -23,12 +23,12 @@ None
 \description{
 Process raw reads for RNA-Seq workflow in background.
 This function do 5 things :
-1. 'Hisat2' : aligns raw reads to reference genome. If \code{indexes.optional} in \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indexes will be created.
+1. 'Hisat2' : aligns raw reads to reference genome. If \code{indices.optional} in \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indices will be created.
 2. 'Samtools' : converts '.sam' files to '.bam' files.
 3. 'Stringtie' : assembles alignments into transcript.
 4. 'Gffcompare' : examines how transcripts compare with the reference annotation.
 5. 'Stringtie' : creates input files for ballgown, edgeR and DESeq2.
-Before running this function, \code{RNASeqEnvironmentSet_CMD()} (or\code{RNASeqEnvironmentSet()}) must be executed successfully.
+Before running this function, \code{RNASeqEnvironmentSet_CMD()} or\code{RNASeqEnvironmentSet()} must be executed successfully.
 If you want to process raw reads for the following RNA-Seq workflow in R shell, please see \code{RNASeqRawReadProcess()} function.
 }
 \examples{

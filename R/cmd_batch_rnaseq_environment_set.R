@@ -33,11 +33,11 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
   input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
   genome.name <- RNASeqWorkFlowParam@genome.name
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
-  indexes.optional <- RNASeqWorkFlowParam@indexes.optional
+  indices.optional <- RNASeqWorkFlowParam@indices.optional
   MkdirAll(path.prefix)
   fileConn<-file(paste0(path.prefix, "Rscript/Environment_Set.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNASeqEnvironmentSet(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', genome.name = '", genome.name, "', sample.pattern = '", sample.pattern, "', indexes.optional = ",indexes.optional, ", os.type = '", os.type, "', mkdir.bool = ", FALSE, ")")
+  second <- paste0("RNASeqEnvironmentSet(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', genome.name = '", genome.name, "', sample.pattern = '", sample.pattern, "', indices.optional = ",indices.optional, ", os.type = '", os.type, "', mkdir.bool = ", FALSE, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Environment_Set.R' has been created.\n"))
@@ -60,7 +60,7 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
 #' @param input.path.prefix path prefix of 'input_files/' directory
 #' @param genome.name genome.name variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
 #' @param sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
-#' @param indexes.optional logical value whether 'indexes/' is exit in 'input_files/'
+#' @param indices.optional logical value whether 'indices/' is exit in 'input_files/'
 #' @param os.type 'linux' or 'osx'. The operating system type
 #' @param mkdir.bool Default \code{TRUE}. If \code{TRUE}, environment directories will be created. If \code{FALSE}, no directories will be created. When executing RNASeqEnvironmentSet(), 'mkdir.bool' should always be \code{TRUE}
 #'
@@ -72,14 +72,14 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
 #' RNASeqEnvironmentSet(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix, genome.name = exp@@genome.name,
-#'                      sample.pattern = exp@@sample.pattern, indexes.optional = exp@@indexes.optional, os.type = exp@@os.type)}
-RNASeqEnvironmentSet <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indexes.optional, os.type, mkdir.bool = TRUE) {
+#'                      sample.pattern = exp@@sample.pattern, indices.optional = exp@@indices.optional, os.type = exp@@os.type)}
+RNASeqEnvironmentSet <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indices.optional, os.type, mkdir.bool = TRUE) {
   CheckOperatingSystem(FALSE)
   if (mkdir.bool) {
     MkdirAll(path.prefix)
   }
   PreRNASeqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
-  CopyInputDir(path.prefix = path.prefix, input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, indexes.optional = indexes.optional)
+  CopyInputDir(path.prefix = path.prefix, input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, indices.optional = indices.optional)
   InstallAll(path.prefix = path.prefix, os.type = os.type)
   ExportPath(path.prefix = path.prefix)
   PostRNASeqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
@@ -106,11 +106,11 @@ MkdirGeneDir <- function(path.prefix) {
   } else {
     cat(paste0("     (\u26A0) : '", path.prefix, "gene_data/ref_genes/' has already be created.\n"))
   }
-  indexes.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/indexes/')), showWarnings = FALSE) == 0
-  if (!isTRUE(indexes.dir)) {
-    cat(paste0("     (\u2714) : Create '", path.prefix, "gene_data/indexes/'.\n"))
+  indices.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/indices/')), showWarnings = FALSE) == 0
+  if (!isTRUE(indices.dir)) {
+    cat(paste0("     (\u2714) : Create '", path.prefix, "gene_data/indices/'.\n"))
   } else {
-    cat(paste0("     (\u26A0) : '", path.prefix, "gene_data/indexes/' has already be created.\n"))
+    cat(paste0("     (\u26A0) : '", path.prefix, "gene_data/indices/' has already be created.\n"))
   }
   samples.fastq.dir <- dir.create(file.path(paste0(path.prefix, 'gene_data/raw_fastq.gz')), showWarnings = FALSE) == 0
   if (!isTRUE(samples.fastq.dir)) {
@@ -200,7 +200,7 @@ MkdirAll <- function(path.prefix) {
 }
 
 # inner function : Copy input files directory
-CopyInputDir <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indexes.optional = indexes.optional) {
+CopyInputDir <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indices.optional = indices.optional) {
   current.path <- getwd()
   setwd(paste0(path.prefix, "gene_data/"))
   cat(c("************** Directory Copying ************\n"))
@@ -219,11 +219,11 @@ CopyInputDir <- function(path.prefix, input.path.prefix, genome.name, sample.pat
   file.symlink(paste0(input.path.prefix, "input_files/phenodata.csv"), paste0(getwd(), "/phenodata.csv"))
   cat(c("     \u25CF           To :"), paste0(getwd(), "/phenodata.csv\n"))
   on.exit(setwd(current.path))
-  if (isTRUE(indexes.optional)) {
-    cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", "indexes/"),  "\n"))
-    indexes.subfiles <- list.files(path = paste0(input.path.prefix, "input_files/", "indexes"), pattern = paste0(genome.name, "_tran.[0-9].ht2"), recursive = TRUE, full.names = TRUE)
-    vapply(indexes.subfiles, function(x) file.symlink(x, paste0(getwd(), "/indexes")), FUN.VALUE = TRUE)
-    cat(c("     \u25CF           To :", paste0(getwd(),"/indexes/"), "\n\n"))
+  if (isTRUE(indices.optional)) {
+    cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", "indices/"),  "\n"))
+    indices.subfiles <- list.files(path = paste0(input.path.prefix, "input_files/", "indices"), pattern = paste0(genome.name, "_tran.[0-9].ht2"), recursive = TRUE, full.names = TRUE)
+    vapply(indices.subfiles, function(x) file.symlink(x, paste0(getwd(), "/indices")), FUN.VALUE = TRUE)
+    cat(c("     \u25CF           To :", paste0(getwd(),"/indices/"), "\n\n"))
   } else {
     cat("\n")
   }

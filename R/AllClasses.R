@@ -11,7 +11,7 @@
 #' @slot independent.variable independent variable for the biological experiment design of two-group RNA-Seq workflow
 #' @slot control.group group name of the control group
 #' @slot experiment.group group name of the experiment group
-#' @slot indexes.optional logical value whether 'indexes/' is exit in 'input_files/'
+#' @slot indices.optional logical value whether 'indices/' is exit in 'input_files/'
 #'
 #' @name RNASeqWorkFlowParam-class
 #'
@@ -41,7 +41,7 @@ setClass("RNASeqWorkFlowParam",
            independent.variable = "character",
            control.group = "character",
            experiment.group = "character",
-           indexes.optional = "logical"
+           indices.optional = "logical"
          )
 )
 
@@ -109,7 +109,7 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome
   input.dir.files.list <- CheckInputDirFiles(input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern)
   bool.input.dir.files <- input.dir.files.list$check.answer
   # This determine whether to run 'CreateHisat2Index'
-  bool.input.dir.indexes <- input.dir.files.list$optional.indexes.bool
+  bool.input.dir.indices <- input.dir.files.list$optional.indices.bool
   # below still need to fix
   # 7. check 'phenodata'
   bool.phenodata <- CheckPhenodata(input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, independent.variable = independent.variable)
@@ -124,7 +124,7 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome
     new("RNASeqWorkFlowParam",os.type = characters.os.type, python.variable = python.version.list, path.prefix = path.prefix,
         input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern,
         independent.variable = independent.variable, control.group = control.group, experiment.group = experiment.group,
-        indexes.optional = bool.input.dir.indexes)
+        indices.optional = bool.input.dir.indices)
   }
 }
 
@@ -265,8 +265,8 @@ CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
   # check exist and rules
   phenodata.file <- file.exists(paste0(input.path.prefix, "input_files/phenodata.csv"))
   # check exist and rules ( this is optional)
-  ht2.dir <- dir.exists(paste0(input.path.prefix, "input_files/indexes/"))
-  optional.indexes.bool <- FALSE
+  ht2.dir <- dir.exists(paste0(input.path.prefix, "input_files/indices/"))
+  optional.indices.bool <- FALSE
   # check whether sample pattern matches the file names~
   if (isTRUE(raw.fastq.dir)) {
     raw.fastq <- list.files(path = paste0(input.path.prefix, 'input_files/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
@@ -295,7 +295,7 @@ CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
     raw.fastq.number <- length(raw.fastq)
   }
   if (isTRUE(ht2.dir)) {
-    ht2.files <- list.files(path = paste0(input.path.prefix, 'input_files/indexes/'), pattern = paste0("^", genome.name, "_tran.[0-9]*.ht2$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+    ht2.files <- list.files(path = paste0(input.path.prefix, 'input_files/indices/'), pattern = paste0("^", genome.name, "_tran.[0-9]*.ht2$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
     ht2.files.number <- length(ht2.files)
   }
   if (!isTRUE(gtf.file)) {
@@ -329,28 +329,28 @@ CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
   }
   if (!isTRUE(ht2.dir)) {
     ## not exist
-    cat(c("(\u26A0) : 'indexes/' is optional. You can download the corresponding 'XXX.ht2' from 'https://ccb.jhu.edu/software/hisat2/index.shtml' to speed up the process.\n"))
+    cat(c("(\u26A0) : 'indices/' is optional. You can download the corresponding 'XXX.ht2' from 'https://ccb.jhu.edu/software/hisat2/index.shtml' to speed up the process.\n"))
   } else {
     ## exist
-    cat(paste0("(\u2714) : 'indexes/' is in 'input_files'\n"))
+    cat(paste0("(\u2714) : 'indices/' is in 'input_files'\n"))
   }
   if (isTRUE(ht2.dir) && ht2.files.number == 0) {
-    cat(c("(\u26A0) : 'indexes/' directory has been created but there are no samples in 'indexes/' or files' names", paste0("\"^", genome.name, "_tran.[0-9]*.ht2$\""), "in 'indexes/' are not found.\n      No files will be copied.\n      (1). Check whether files name", paste0("'", genome.name, "_tran.[0-9]*.ht2'"), "matches the files in 'indexes' directory.\n      (2). If you don't have", paste0("'", genome.name, "_tran.[0-9].ht2'"), "files, remove 'indexes' directory\n\n"))
-    stop("'input_files/indexes/' ERROR")
+    cat(c("(\u26A0) : 'indices/' directory has been created but there are no samples in 'indices/' or files' names", paste0("\"^", genome.name, "_tran.[0-9]*.ht2$\""), "in 'indices/' are not found.\n      No files will be copied.\n      (1). Check whether files name", paste0("'", genome.name, "_tran.[0-9]*.ht2'"), "matches the files in 'indices' directory.\n      (2). If you don't have", paste0("'", genome.name, "_tran.[0-9].ht2'"), "files, remove 'indices' directory\n\n"))
+    stop("'input_files/indices/' ERROR")
   } else if (isTRUE(ht2.dir) && ht2.files.number >= 0) {
-    optional.indexes.bool <- TRUE
+    optional.indices.bool <- TRUE
     for (i in ht2.files) {
-      cat(paste0("(\u2714) : 'indexes/", i, "'"), "is in 'input_files/'\n")
+      cat(paste0("(\u2714) : 'indices/", i, "'"), "is in 'input_files/'\n")
     }
   }
   if (isTRUE(gtf.file) && isTRUE(raw.fastq.dir) && isTRUE(raw.fastq.dir) && raw.fastq.number != 0 && isTRUE(phenodata.file)) {
     cat(c(paste0("\n(\u2714) : '", input.path.prefix,"input_files/", "'"), "is valid !\n"))
     if (isTRUE(ht2.dir) && ht2.files.number != 0) {
-      cat(paste0("(\u2714) : optional directory 'indexes/' is valid !\n"))
-      optional.indexes.bool <- TRUE
+      cat(paste0("(\u2714) : optional directory 'indices/' is valid !\n"))
+      optional.indices.bool <- TRUE
     }
     cat("\n")
-    return.value <- list("check.answer" = TRUE, "optional.indexes.bool" = optional.indexes.bool)
+    return.value <- list("check.answer" = TRUE, "optional.indices.bool" = optional.indices.bool)
     return(return.value)
   } else {
     stop("'input_files/' checking ERROR")

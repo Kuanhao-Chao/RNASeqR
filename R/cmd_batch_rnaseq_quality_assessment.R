@@ -129,6 +129,7 @@ PreCheckRNASeqQualityAssessment <- function(path.prefix, sample.pattern) {
   chrX.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/chrX.gtf"))
   chrX.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/chrX.fa"))
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  ExportPath(path.prefix)
   check.tool.result <- CheckToolAll()
   validity <- phenodata.csv && chrX.gtf && chrX.fa && check.tool.result && (length(raw.fastq) != 0)
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)

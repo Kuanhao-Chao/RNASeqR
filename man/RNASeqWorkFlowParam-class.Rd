@@ -31,7 +31,7 @@ An S4 class for checking and storing RNA-Seq workflow parameters of this package
 
 \item{\code{experiment.group}}{group name of the experiment group}
 
-\item{\code{indexes.optional}}{logical value whether 'indexes/' is exit in 'input_files/'}
+\item{\code{indices.optional}}{logical value whether 'indices/' is exit in 'input_files/'}
 }}
 
 \examples{

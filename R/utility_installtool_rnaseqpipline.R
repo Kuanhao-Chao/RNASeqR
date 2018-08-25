@@ -47,18 +47,18 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
     cat(c("(\u2718) :", paste0("'",path.prefix, "gene_data", '/phenodata.csv', "'"), "is not exit\n"))
     cat(c("     Put the", paste0("'phenodata.csv'"), "file in", paste0("'",path.prefix, "gene_data", '/', "'"), "to fix the error.\n\n"))
   }
-  ht2.files <- list.files(path = paste0(path.prefix, "gene_data", '/indexes/'), pattern = paste0("^", genome.name, "_tran.[0-9]*.ht2$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  ht2.files <- list.files(path = paste0(path.prefix, "gene_data", '/indices/'), pattern = paste0("^", genome.name, "_tran.[0-9]*.ht2"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   ht2.files.number <- length(ht2.files)
   if (ht2.files.number != 0) {
     if (print) {
       for (i in ht2.files){
-        cat(c("(\u2714) :",paste0("'",path.prefix, "gene_data", '/indexes/', i, "'"), "is exit\n"))
+        cat(c("(\u2714) :",paste0("'",path.prefix, "gene_data", '/indices/', i, "'"), "is exit\n"))
       }
       cat(c("Total:", ht2.files.number, "files\n\n"))
     }
   } else {
     if (print) {
-      cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/indexes/', genome.name, '_tran.*.ht2\''), "is not exit\n"))
+      cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/indices/', genome.name, '_tran.*.ht2\''), "is not exit\n"))
     }
   }
   sam.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_sam/'), pattern = paste0( "^[A-Z, a-z]*", "[0-9]*", "[A-Z, a-z]*", ".sam$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)

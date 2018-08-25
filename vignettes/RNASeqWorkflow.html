@@ -178,10 +178,13 @@ $(document).ready(function () {
 <li><a href="#example-1"><span class="toc-section-number">1.4.4</span> Example</a></li>
 </ul></li>
 <li><a href="#fastq-files-quality-assessment"><span class="toc-section-number">1.5</span> Fastq files Quality Assessment</a><ul>
-<li><a href="#systempiper-quality-assessment"><span class="toc-section-number">1.5.1</span> <code>systemPipeR</code> Quality Assessment</a></li>
+<li><a href="#systempiper-quality-assessment"><span class="toc-section-number">1.5.1</span> “systemPipeR” Quality Assessment</a></li>
 <li><a href="#example-2"><span class="toc-section-number">1.5.2</span> Example</a></li>
 </ul></li>
-<li><a href="#fastq-files-quality-trimming"><span class="toc-section-number">1.6</span> Fastq files Quality Trimming</a></li>
+<li><a href="#fastq-files-quality-trimming"><span class="toc-section-number">1.6</span> Fastq files Quality Trimming</a><ul>
+<li><a href="#shortread-quality-trimming"><span class="toc-section-number">1.6.1</span> “ShortRead” Quality Trimming</a></li>
+<li><a href="#example-3"><span class="toc-section-number">1.6.2</span> Example</a></li>
+</ul></li>
 <li><a href="#raw-reads-process-alignment-assembly-gffcompare-and-quantification"><span class="toc-section-number">1.7</span> Raw Reads Process (Alignment, Assembly, Gffcompare and Quantification)</a></li>
 <li><a href="#raw-reads-differential-expressed-genes-analysis-ballgown-tpm-t-test-deseq2-and-edger"><span class="toc-section-number">1.8</span> Raw Reads Differential Expressed Genes Analysis (ballgown, TPM &amp; t-test, DESeq2 and edgeR)</a></li>
 <li><a href="#functional-analysis-gene-ontology-and-pathway-analysis-kyoto-encyclopedia-of-genes-and-genomes"><span class="toc-section-number">1.9</span> Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)</a></li>
@@ -198,6 +201,11 @@ $(document).ready(function () {
 </div>
 <div id="system-requirement" class="section level2">
 <h2><span class="header-section-number">1.2</span> System Requirement</h2>
+<ol style="list-style-type: decimal">
+<li>Python, 2to3</li>
+<li>C++</li>
+<li></li>
+</ol>
 </div>
 <div id="rnaseqworkflowparam-s4-object-creation" class="section level2">
 <h2><span class="header-section-number">1.3</span> “RNASeqWorkFlowParam” S4 Object Creation</h2>
@@ -265,8 +273,13 @@ $(document).ready(function () {
 </div>
 <div id="necessary-tools-installation" class="section level3">
 <h3><span class="header-section-number">1.4.2</span> Necessary Tools Installation</h3>
-<p>The operating system of your workstation will be detected. If the operating system is other than <code>Linux</code> and <code>macOS</code>, ERROR will be reported. <code>HISAT2</code>, <code>SAMtools</code>, <code>StringTie</code> and <code>Gffcompare</code> will be installed automatically. 1. HISAT2 * Based on your operating system, <code>hisat2-2.1.0-Linux_x86_64.zip</code> or <code>hisat2-2.1.0-OSX_x86_64.zip</code> zipped file will be installed. * Installed file will be unzipped and all binary files will be moved under ‘RNASeq_bin/’</p>
-<ol start="2" style="list-style-type: decimal">
+<p>The operating system of your workstation will be detected. If the operating system is other than <code>Linux</code> and <code>macOS</code>, ERROR will be reported. <code>HISAT2</code>, <code>SAMtools</code>, <code>StringTie</code> and <code>Gffcompare</code> will be installed automatically.</p>
+<ul>
+<li>HISAT2
+<ul>
+<li>Based on your operating system, <code>hisat2-2.1.0-Linux_x86_64.zip</code> or <code>hisat2-2.1.0-OSX_x86_64.zip</code> zipped file will be installed.</li>
+<li>Installed file will be unzipped and all binary files will be moved under ‘RNASeq_bin/’</li>
+</ul></li>
 <li>SAMtools
 <ul>
 <li><code>samtools-1.8.tar.bz2</code> source files will be installed.</li>
@@ -282,11 +295,11 @@ $(document).ready(function () {
 <li>Based on your operating system, <code>gffcompare-0.10.4.Linux_x86_64.tar.gz</code> or `` zipped file will be installed.</li>
 <li>Installed file will be unzipped and all binary files will be moved under ‘RNASeq_bin/’</li>
 </ul></li>
-</ol>
+</ul>
 </div>
 <div id="export-path" class="section level3">
 <h3><span class="header-section-number">1.4.3</span> Export Path</h3>
-<p>‘RNASeq_bin/’ will be added to R PATH so that these binaries can be found in R environment. <code>hisat2 --version</code>, <code>stringtie --version</code>, <code>gffcompare --version</code> and <code>samtools --version</code> commands will be checked.</p>
+<p>‘RNASeq_bin/’ will be added to R PATH so that these binaries can be found in R environment. <code>hisat2 --version</code>,<code>stringtie --version</code>,<code>gffcompare --version</code> and<code>samtools --version</code> commands will be checked.</p>
 </div>
 <div id="example-1" class="section level3">
 <h3><span class="header-section-number">1.4.4</span> Example</h3>
@@ -295,8 +308,15 @@ $(document).ready(function () {
 <div id="fastq-files-quality-assessment" class="section level2">
 <h2><span class="header-section-number">1.5</span> Fastq files Quality Assessment</h2>
 <div id="systempiper-quality-assessment" class="section level3">
-<h3><span class="header-section-number">1.5.1</span> <code>systemPipeR</code> Quality Assessment</h3>
-<p>In this process, <code>systemPipeR</code> package is used for quality assessment. Here are the following steps: 1. Check the times that users have run quality assessment process and create the corresponding files ‘RNASeq_results/QA_results/QA_{times}’. 2. RNA-Seq environment set up. ‘rnaseq/’ directory will be created by <code>systemPipeR</code> package. 3. Create ‘data.list.txt’ file. 4. Reading FASTQ files and create ‘fastqReport.pdf’ as the report result of quality assessment 5. Remove ‘rnaseq/’ directory.</p>
+<h3><span class="header-section-number">1.5.1</span> “systemPipeR” Quality Assessment</h3>
+<p>In this process, <code>systemPipeR</code> package is used for quality assessment. Here are the following steps:</p>
+<ol style="list-style-type: decimal">
+<li>Check the times that users have run quality assessment process and create the corresponding files ‘RNASeq_results/QA_results/QA_{times}’.</li>
+<li>RNA-Seq environment set up. ‘rnaseq/’ directory will be created by <code>systemPipeR</code> package.</li>
+<li>Create ‘data.list.txt’ file.</li>
+<li>Reading FASTQ files and create ‘fastqReport.pdf’ as the report result of quality assessment</li>
+<li>Remove ‘rnaseq/’ directory.</li>
+</ol>
 </div>
 <div id="example-2" class="section level3">
 <h3><span class="header-section-number">1.5.2</span> Example</h3>
@@ -304,6 +324,20 @@ $(document).ready(function () {
 </div>
 <div id="fastq-files-quality-trimming" class="section level2">
 <h2><span class="header-section-number">1.6</span> Fastq files Quality Trimming</h2>
+<div id="shortread-quality-trimming" class="section level3">
+<h3><span class="header-section-number">1.6.1</span> “ShortRead” Quality Trimming</h3>
+<p>In this process, <code>ShortRead</code> package is used for quality trimming. Followings are trimming steps and method explanation.</p>
+<ol style="list-style-type: decimal">
+<li>FASTQ files with <code>sample.pattern</code> in ‘gene_data/raw_fastq.gz’ will be listed and be check. This trimming function only support paired-end FASTQ files.</li>
+<li>The probability of error per each base pair is calculated by Phred Quality in FASTQ files and the cumulative probability of error of each base pair will also be calculated. The threshold cumulative probability <code>cum.error</code>, with default value <code>1</code>, is used to find the trimming point of paired end files.</li>
+<li><code>reads.length.limit</code>, with default value 36, determines the minimum base pair length of reads. Length of reads less than <code>reads.length.limit</code> will be trimmed.</li>
+<li>Untrimmed FASTQ files are moved to ‘gene_data/raw_fastq.gz/original_untrimmed_fastq.gz’, and trimmed FASTQ files are written to ‘gene_data/raw_fastq.gz/’</li>
+<li>It is strongly recommended to run <code>RNASeqQualityAssessment_CMD()</code> or <code>RNASeqQualityAssessment()</code> for quality assessment after quality trimming.</li>
+</ol>
+</div>
+<div id="example-3" class="section level3">
+<h3><span class="header-section-number">1.6.2</span> Example</h3>
+</div>
 </div>
 <div id="raw-reads-process-alignment-assembly-gffcompare-and-quantification" class="section level2">
 <h2><span class="header-section-number">1.7</span> Raw Reads Process (Alignment, Assembly, Gffcompare and Quantification)</h2>

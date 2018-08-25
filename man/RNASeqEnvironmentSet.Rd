@@ -5,7 +5,7 @@
 \title{Environment setting for RNA-Seq workflow in R shell}
 \usage{
 RNASeqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
-  sample.pattern, indexes.optional, os.type, mkdir.bool = TRUE)
+  sample.pattern, indices.optional, os.type, mkdir.bool = TRUE)
 }
 \arguments{
 \item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
@@ -16,7 +16,7 @@ RNASeqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
 
 \item{sample.pattern}{Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 
-\item{indexes.optional}{logical value whether 'indexes/' is exit in 'input_files/'}
+\item{indices.optional}{logical value whether 'indices/' is exit in 'input_files/'}
 
 \item{os.type}{'linux' or 'osx'. The operating system type}
 
@@ -38,7 +38,7 @@ If you want to set up the environment for the following RNA-Seq workflow in back
 exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
                            independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
 RNASeqEnvironmentSet(path.prefix = exp@path.prefix, input.path.prefix = exp@input.path.prefix, genome.name = exp@genome.name,
-                     sample.pattern = exp@sample.pattern, indexes.optional = exp@indexes.optional, os.type = exp@os.type)}
+                     sample.pattern = exp@sample.pattern, indices.optional = exp@indices.optional, os.type = exp@os.type)}
 }
 \author{
 Kuan-Hao Chao

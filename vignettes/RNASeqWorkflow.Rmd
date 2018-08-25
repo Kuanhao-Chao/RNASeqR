@@ -31,6 +31,10 @@ knitr::opts_chunk$set(tidy = FALSE,
 
 ## Overview
 
+1. Each step is a function
+2. Eahc function ==> R shell, background
+3. 
+
 Support paired-end reads only
 
 ## System Requirement
@@ -40,16 +44,13 @@ Support paired-end reads only
 
 ## "RNASeqWorkFlowParam" S4 Object Creation
 
+This is the **pre-step** of RNA-Seq workflow in this package. Before starting RNA-Seq analysis, you have to run the constructor function `RNASeqWorkFlowParam()` and create `RNASeqWorkFlowParam` S4 instance first. This instance will be used as input parameter in the following analysis function.
+
 ### "RNASeqWorkFlowParam" Constructor Checking Steps
-Before starting RNA-Seq analysis in this package, you have to run the 
-constructor function `RNASeqWorkFlowParam()` and create `RNASeqWorkFlowParam` 
-S4 object first. Be aware of the following things:
 
 1. Create a new directory for RNA-Seq analysis.
     * It is highly recommended to create a new directory without any files inside. 
-The parameter `path.prefix` of `RNASeqWorkFlowParam()` constructor should be the absolute 
-path of this new directory. All the RNA-Seq related files that generated in the following steps 
-will be stored inside of this directory.
+The parameter `path.prefix` of `RNASeqWorkFlowParam()` constructor should be the absolute path of this new directory. All the RNA-Seq related files that generated in the following steps will be stored inside of this directory.
 
 2. Create valid 'input_files/' directory
     * You should create a file directory named 'input_files/' with the following rules:
@@ -61,16 +62,18 @@ will be stored inside of this directory.
         * ***phenodata.csv*** : information about RNA-Seq experiment design.
             * First column : Distint ids for each sample. Value of each sample of this column must match `sample.pattern` in FASTQ files in 'raw_fastq.gz/'. Column names must be 'ids'.
             * Second column : independent variable for the RNA-Seq experiment. Value of each sample of this column can only be parameter `control.group` and `experiment.group`. Column name is parameter `independent.variable`.
-        * ***indexes*/** : directory storing HT2 index files for hisat2 alignment tool.
+        * ***indices*/** : directory storing `HT2` indices files for hisat2 alignment tool.
+            * This directory is optional. `HT2` indices files corresponding to target reference genome can be installed at [HISAT2 official website](https://ccb.jhu.edu/software/hisat2/index.shtml). Providing `HT2` files can accelerate the subsequent steps.
+            * If `HT2` index files are not provided, 'indices/' directory should be deleted in 'input_files/' directory.
     
 3. Run constructor of `RNASeqWorkFlowParam` S4 object
     * This constructor will check following things before creating S4 objects
-        1. Operating system
+        * Operating system
             * Detect your workstations operating system. This package support `Linux` and `macOS`. `Windows` is not supported.
-        2. Python version
+        * Python version
             * Detect whether Python is available on your work station. 
-        3. Structure and contents of 'input_files/'
-        4. Validity of input parameters
+        * Structure and contents of 'input_files/'
+        * Validity of input parameters
 
 ### Example
 ```{r}
@@ -88,6 +91,8 @@ In this example, `RNASeqWorkFlowParam` S4 object is store in `exp` for RNA-Seq a
 
 ## Environment Set up
 
+This is the **first necessary step** of RNA-Seq workflow in this package. To set up the environment, run `RNASeqEnvironmentSet_CMD()` to execute process in background or run `RNASeqEnvironmentSet()` to execute process in R shell.
+
 ### Files Setup
 1. Create Base Directories 
 'gene_data/', 'RNASeq_bin/', 'RNASeq_results', 'Rscript' and 'Rscript_out' will be created under `path.prefix` directory.
@@ -96,7 +101,7 @@ In this example, `RNASeqWorkFlowParam` S4 object is store in `exp` for RNA-Seq a
 Symbolic links will be created from files in 'input_files/' to `path.prefix` directory. 
 
 ### Necessary Tools Installation
-The operating system of your workstation will be detected. If the operating system is other than `Linux` and `macOS`, ERROR will be reported. `HISAT2`, `SAMtools`, `StringTie` and `Gffcompare` will be installed automatically.
+The operating system of your workstation will be detected. If the operating system is other than `Linux` and `macOS`, `ERROR` will be reported. `HISAT2`, `SAMtools`, `StringTie` and `Gffcompare` will be installed automatically.
 
 * HISAT2
     * Based on your operating system, `hisat2-2.1.0-Linux_x86_64.zip` or `hisat2-2.1.0-OSX_x86_64.zip` zipped file will be installed.
@@ -114,7 +119,7 @@ The operating system of your workstation will be detected. If the operating syst
 
 
 ### Export Path
-'RNASeq_bin/' will be added to R PATH so that these binaries can be found in R environment. `hisat2 --version`,`stringtie --version`,`gffcompare --version` and`samtools --version` commands will be checked. 
+'RNASeq_bin/' will be added to R PATH so that these binaries can be found in R environment. In the last step of environment setting, `hisat2 --version`,`stringtie --version`,`gffcompare --version` and `samtools --version` commands will be checked in order to make sure the environment is correctly constructed.
 
 
 
@@ -123,7 +128,11 @@ The operating system of your workstation will be detected. If the operating syst
 
 
 ## Fastq files Quality Assessment
+
+This is an **optional step** of RNA-Seq workflow in this package. However, it is strongly recommended to do it before processing raw reads. To assess the quality of raw reads in FASTQ files, run `RNASeqQualityAssessment_CMD()` to execute process in background or run `RNASeqQualityAssessment()` to execute process in R shell.
+
 ### "systemPipeR" Quality Assessment
+
 In this process, `systemPipeR` package is used for quality assessment. Here are the following steps:
 
 1. Check the times that users have run quality assessment process and create the corresponding files 'RNASeq_results/QA_results/QA_{times}'.
@@ -137,6 +146,8 @@ In this process, `systemPipeR` package is used for quality assessment. Here are 
 
 ## Fastq files Quality Trimming
 
+This is an **optional step** of RNA-Seq workflow in this package. However, it is strongly recommended to do it if the result of quality assessment is unsatisfied. To trim the raw reads in FASTQ files, run `RNASeqQualityTrimming_CMD()` to execute process in background or run `RNASeqQualityTrimming()` to execute process in R shell. After trimming process, it is strongly recommended to redo quality assessment step. Different quality assessment result will be stored in different directories with index of processing order.
+
 ### "ShortRead" Quality Trimming
 In this process, `ShortRead` package is used for quality trimming. Followings are trimming steps and method explanation.
 
@@ -148,7 +159,87 @@ In this process, `ShortRead` package is used for quality trimming. Followings ar
 
 ### Example
 
-## Raw Reads Process (Alignment, Assembly, Gffcompare and Quantification)
+## Raw Reads Process (Alignment, Assembly, Gffcompare, Quantification)
+
+This is a **second necessary step** of RNA-Seq workflow in this package. Programs installed in environment setting step, `HISAT2`, `SAMtools`, `StringTie` and `Gffcompare`, will be executed. To process raw reads FASTQ files, run `RNASeqRawReadProcess_CMD()` to execute process in background or run `RNASeqRawReadProcess()` to execute process in R shell. For more details about commands that executed during each reads processing step, please check the reported `RNASeq_results/COMMAND.txt`.
+
+### HISAT2 Index
+
+In pre-step(`RNASeqWorkFlowParam` creation step), 'indices/' directory is checked and the whether `HT2` indices files are provided is known. If not provided, following commands will be executed:
+
+* Input: *`genome.name`.gtf*, *`genome.name`.fa*
+* Output: *`genome.name`.ss*, *`genome.name`.exon*, *`genome.name`_tran.{number}.ht2*
+
+1. `extract_splice_sites.py`, `extract_exons.py` execution
+    * These two commands are executed to extract splice-site and exon information from gene annotation file.
+
+2. `hisat2-build` index creation
+    * This command build HISAT2 indices files with *`genome.name`.ss* and *`genome.name`.exon* created in the previous step. Be aware that index building step requires a larger amount of memory and longer time than the alignment step, and it might not be possible to run on some personal workstations. It is highly recommended to check the availibility of `HT2` indices files at [HISAT2 official website](https://ccb.jhu.edu/software/hisat2/index.shtml) for your target reference genome beforehands.
+
+### HISAT2 Alignment
+
+* Input: *`genome.name`_tran.{number}.ht2*, *`sample.pattern`.fastq.gz*
+* Output: *`sample.pattern`.sam*
+
+1. `hisat2` command is executed on paired end FASTQ files. `SAM` files will be created.
+    * `SAM` files are stored in 'gene_data/raw_bam/'
+
+### SAMtools `SAM` to `BAM`
+
+* Input: *`sample.pattern`.sam*
+* Output: *`sample.pattern`.bam*
+
+1. `samtools` command is executed. Output files from `hisat2` `SAM` files will be converted to `BAM` files. 
+    * `BAM` files are stored in 'gene_data/raw_sam/'. 
+
+### StringTie Assembly
+
+* Input: *`genome.name`.gtf*, *`sample.pattern`.bam*
+* Output: *`sample.pattern`.gtf*
+
+1. `stringtie` command is executed. 
+    * Assembler of RNA-Seq alignments into potential transcripts.
+    * Output assembled `GTF` files which are from each `FASTQ` files are stored in 'gene_data/raw_gtf/'
+
+### StringTie Merge `GTF`
+
+* Input: *`sample.pattern`.gtf*
+* Output: *stringtiemerged.gtf*, *mergelist.txt*
+
+1. Creating *mergelist.txt*
+    * *mergelist.txt* is created for the merging step.
+2. `stringtie` command is executed. 
+    *  Transcript merger merges each *`sample.pattern`.gtf* into *stringtiemerged.gtf*
+    *  Output files are all stored in 'gene_data/merged/'
+
+### Gffcompare 
+
+* Input: *`genome.name`.gtf*, *stringtiemerged.gtf*
+* Output: *merged.annotated.gtf*, *merged.loci*, *merged.stats*, *merged.stringtie_merged.gtf.refmap*, *merged.stringtie_merged.gtf.tmap*, *merged.tracking*
+
+1. `gffcompare` command is executed. 
+    * The comparison result of merged `GTF` file and reference annotation file is reported under 'merged/' directory.
+
+### Raw reads count table creation
+
+Whether this step is executed depends on the availability of Python on your workstation. 
+
+* Input: *samplelst.txt*
+* Output: *gene_count_matrix.csv*, *transcript_count_matrix.csv*
+
+1. Reads count table converter Python script is downloaded as `prepDE.py`
+2. Python checking
+    * If Python is not available, this step is skipped.
+    * If Python2 is available, `prepDE.py` is executed.
+    * If Python3 is available, `2to3` command is checked.(Usally, if Python3 is installed, `2to3` command will be installed too.)
+    * If Python3 is available but `2to3` command is unavailable, raw reads count generation step will be skipped.
+3. `prepDE.py` raw reads count creation
+    * Raw reads count is executed and the results are stored in 'gene_data/reads_count_matrix/'
+
+### 
+
+### Example
+
 
 ## Raw Reads Differential Expressed Genes Analysis (ballgown, TPM & t-test, DESeq2 and edgeR)
 

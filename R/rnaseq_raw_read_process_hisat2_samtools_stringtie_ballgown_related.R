@@ -14,7 +14,7 @@ CreateHisat2Index <- function (path.prefix, genome.name, sample.pattern, splice.
         command.list <- c()
         command.list <- c(command.list, "* Creating Hisat2 Index : ")
         current.path <- getwd()
-        setwd(paste0(path.prefix, "gene_data/indexes/"))
+        setwd(paste0(path.prefix, "gene_data/indices/"))
         if (isTRUE(splice.site.info)) {
           whole.command <-  paste0(path.prefix, 'gene_data/ref_genes/', genome.name, '.gtf > ', genome.name, '.ss')
           main.command <- "extract_splice_sites.py"
@@ -89,7 +89,7 @@ CreateHisat2Index <- function (path.prefix, genome.name, sample.pattern, splice.
         fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
         write(command.list, fileConn, append = TRUE)
         on.exit(setwd(current.path))
-        cat(paste0("'", path.prefix, "gene_data/indexes/", genome.name, "_tran.*.ht2' has been created.\n\n"))
+        cat(paste0("'", path.prefix, "gene_data/indices/", genome.name, "_tran.*.ht2' has been created.\n\n"))
       } else {
         stop(c(paste0("(\u2718) '", genome.name, ".gtf' "), "or", paste0(" '", genome.name, ".fa'"), "is missing.\n\n"))
       }
@@ -125,7 +125,7 @@ Hisat2AlignmentDefault <- function(path.prefix, genome.name, sample.pattern, num
             current.sub.command <- paste(paste0("-", j),  paste0("raw_fastq.gz/", sample.name[i], "_", sample.table.r.value[1], j, ".fastq.gz"))
             total.sub.command <- paste(total.sub.command, current.sub.command)
           }
-          whole.command <- paste("-p", num.parallel.threads,"--dta -x", paste0("indexes/", genome.name, "_tran"), total.sub.command, "-S", paste0("raw_sam/", sample.name[i],".sam") )
+          whole.command <- paste("-p", num.parallel.threads,"--dta -x", paste0("indices/", genome.name, "_tran"), total.sub.command, "-S", paste0("raw_sam/", sample.name[i],".sam") )
           if (i != 1) cat("\n")
           main.command <- "hisat2"
           cat(c("Input command :", paste(main.command, whole.command), "\n"))

@@ -6,16 +6,16 @@
 \usage{
 RNASeqRawReadProcess(path.prefix, input.path.prefix, genome.name,
   sample.pattern, python.variable.answer, python.variable.version,
-  num.parallel.threads = 1, indexes.optional)
+  num.parallel.threads = 1, indices.optional)
 }
 \arguments{
 \item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
 
 \item{input.path.prefix}{path prefix of 'input_files/' directory}
 
-\item{genome.name}{variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)}
+\item{genome.name}{Variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
 
-\item{sample.pattern}{regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'}
+\item{sample.pattern}{Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 
 \item{python.variable.answer}{logical value whether python is available on the device}
 
@@ -23,23 +23,23 @@ RNASeqRawReadProcess(path.prefix, input.path.prefix, genome.name,
 
 \item{num.parallel.threads}{Specify the number of processing threads (CPUs) to use for transcript assembly. The default is 1.}
 
-\item{indexes.optional}{logical value whether 'indexes/' is exit in 'input_files/'}
+\item{indices.optional}{logical value whether 'indices/' is exit in 'input_files/'}
 }
 \value{
 None
 }
 \description{
 Process raw reads for RNA-Seq workflow in R shell.
-It is strongly advised to run \code{RNASeqRawReadProcess_CMD()} directly. Running this function directly is not recommended because the processes of alignment, assembly and quantification take a longer time.
+It is strongly advised to run \code{RNASeqRawReadProcess_CMD()} directly. Running this function directly is not recommended because the processes of alignment, assembly and quantification take a longer time than other functions.
 Running \code{RNASeqRawReadProcess_CMD()} will create 'Raw_Read_Process.Rout' file in 'Rscript_out/' directory.
 This function do following things :
 This function do 5 things :
-1. 'Hisat2' : aligns raw reads to reference genome. If \code{indexes.optional} in \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indexes will be created.
+1. 'Hisat2' : aligns raw reads to reference genome. If \code{indices.optional} in \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indices will be created.
 2. 'Samtools' : converts '.sam' files to '.bam' files.
 3. 'Stringtie' : assembles alignments into transcript.
 4. 'Gffcompare' : examines how transcripts compare with the reference annotation.
 5. 'Stringtie' : creates input files for ballgown, edgeR and DESeq2.
-Before running this function, \code{RNASeqEnvironmentSet_CMD()} (or\code{RNASeqEnvironmentSet()}) must be executed successfully.
+Before running this function, \code{RNASeqEnvironmentSet_CMD()} or\code{RNASeqEnvironmentSet()} must be executed successfully.
 If you want to process raw reads for the following RNA-Seq workflow in background, please see \code{RNASeqRawReadProcess_CMD()} function.
 }
 \examples{
@@ -50,7 +50,7 @@ exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file
 ## Before run this function, make sure \\code{RNASeqEnvironmentSet_CMD()} (or\\code{RNASeqEnvironmentSet()}) is executed successfully.
 RNASeqRawReadProcess(path.prefix = exp@path.prefix, input.path.prefix = exp@input.path.prefix,
                      genome.name = exp@genome.name, sample.pattern = exp@sample.pattern, python.variable.answer = exp@python.variable[0],
-                     python.variable.version = exp@python.variable[1], indexes.optional = exp@indexes.optional)}
+                     python.variable.version = exp@python.variable[1], indices.optional = exp@indices.optional)}
 }
 \author{
 Kuan-Hao Chao
