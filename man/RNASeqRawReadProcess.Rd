@@ -6,7 +6,7 @@
 \usage{
 RNASeqRawReadProcess(path.prefix, input.path.prefix, genome.name,
   sample.pattern, python.variable.answer, python.variable.version,
-  num.parallel.threads = 1, indices.optional)
+  python.2to3, num.parallel.threads = 1, indices.optional)
 }
 \arguments{
 \item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}

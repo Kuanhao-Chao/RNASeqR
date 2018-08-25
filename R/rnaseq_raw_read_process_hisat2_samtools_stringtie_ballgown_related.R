@@ -417,7 +417,7 @@ GffcompareRefSample <- function(path.prefix, genome.name, sample.pattern) {
 }
 
 # converting stringtie ballogwn preprocessed data to count table
-PreDECountTable <- function(path.prefix, sample.pattern, python.variable.answer, python.variable.version, print=TRUE) {
+PreDECountTable <- function(path.prefix, sample.pattern, python.variable.answer, python.variable.version, python.2to3, print=TRUE) {
   # ftp server : ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.1.0-source.zip
   cat("************** Installing prepDE.py ************\n")
   if(!dir.exists(paste0(path.prefix, "gene_data/reads_count_matrix/"))){
@@ -455,17 +455,23 @@ PreDECountTable <- function(path.prefix, sample.pattern, python.variable.answer,
     cat("(\u2714) : Python is available on your device!\n")
     cat(paste0("       Python version : ", reticulate::py_config()$version, "\n"))
     if(python.variable.version >= 3) {
-      cat("(\u270D) : Converting 'prepDE.py' from python2 to python3 \n\n")
-      whole.command <- paste0("-w ", path.prefix, "gene_data/reads_count_matrix/prepDE.py")
-      main.command <- "2to3"
-      cat(c("Input command :", paste(main.command, whole.command), "\n\n"))
-      command.list <- c(command.list, "* Coverting prepDE.py to Python3 : ")
-      command.list <- c(command.list, paste("    command :", main.command, whole.command))
-      command.list <- c(command.list, "\n")
-      command.result <- system2(command = main.command, args = whole.command)
-      if (command.result != 0 ) {
-        cat(paste0("(\u2718) '", main.command, "' is failed !!"))
-        stop(paste0("'", main.command, "' ERROR"))
+      ## If Python3 ==> check whether 2to3 variable is valid!
+      if (isTRUE(python.2to3)) {
+        cat("(\u270D) : Converting 'prepDE.py' from python2 to python3 \n\n")
+        whole.command <- paste0("-W ", path.prefix, "gene_data/reads_count_matrix/prepDE.py", " --no-diffs")
+        main.command <- "2to3"
+        cat(c("Input command :", paste(main.command, whole.command), "\n\n"))
+        command.list <- c(command.list, "* Coverting prepDE.py to Python3 : ")
+        command.list <- c(command.list, paste("    command :", main.command, whole.command))
+        command.list <- c(command.list, "\n")
+        command.result <- system2(command = main.command, args = whole.command)
+        if (command.result != 0 ) {
+          cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+          stop(paste0("'", main.command, "' ERROR"))
+        }
+      } else {
+        cat(paste0("(\u26A0) 2to3 command is not available on your device !\n\n'"))
+        return(TRUE)
       }
     } else if (python.variable.version < 3 && python.variable.version >= 2 ){
     }
@@ -488,7 +494,10 @@ PreDECountTable <- function(path.prefix, sample.pattern, python.variable.answer,
     on.exit(setwd(current.path))
     return(TRUE)
   } else {
+    ## Fix !!
     on.exit(setwd(current.path))
-    stop("(\u2718)  Python is not available on this device. Please install python to run python script 'prepDE.py'\n\n")
+    cat(paste0("(\u26A0) Python is not available on your device!! Please install python to run python script 'prepDE.py'\n\n'"))
+    return(TRUE)
+    # stop("(\u2718)  Python is not available on this device. Please install python to run python script 'prepDE.py'\n\n")
   }
 }

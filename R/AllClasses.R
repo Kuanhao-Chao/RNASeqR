@@ -4,6 +4,7 @@
 #'
 #' @slot os.type 'linux' or 'osx'. The operating system type
 #' @slot python.variable A list storing python environment. \code{(check.answer, python.version)}
+#' @slot python.2to3 logical value whether \code{2to3} command is available on the workstation
 #' @slot path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @slot input.path.prefix path prefix of 'input_files/' directory
 #' @slot genome.name Variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
@@ -34,6 +35,7 @@ setClass("RNASeqWorkFlowParam",
          representation(
            os.type = "character",
            python.variable = "list",
+           python.2to3 = "logical",
            path.prefix = "character",
            input.path.prefix = "character",
            genome.name = "character",
@@ -82,6 +84,7 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome
   python.version.list <- CheckPython()
   bool.python.avail <- python.version.list$check.answer
   numeric.python.version <- python.version.list$python.version
+  two.to.three.result <- Check2to3()
   # 3. check validity of path.prefix
   bool.prefix.path <- CheckPrefixPath(path.prefix = path.prefix)
   if (bool.prefix.path){
@@ -121,8 +124,8 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome
     cat(paste0("\n**************************************\n"))
     cat(paste0("************** Success! **************\n"))
     cat(paste0("**************************************\n"))
-    new("RNASeqWorkFlowParam",os.type = characters.os.type, python.variable = python.version.list, path.prefix = path.prefix,
-        input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern,
+    new("RNASeqWorkFlowParam",os.type = characters.os.type, python.variable = python.version.list, python.2to3 = two.to.three.result,
+        path.prefix = path.prefix, input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern,
         independent.variable = independent.variable, control.group = control.group, experiment.group = experiment.group,
         indices.optional = bool.input.dir.indices)
   }
@@ -202,9 +205,23 @@ CheckPython <- function() {
     } else if (python.version < 3 && python.version >= 2 ){
       return.value <- list("check.answer" = TRUE, "python.version" = 2)
     }
+    return(return.value)
   } else {
     cat("(\u2718) : Python is not available on this device. Please install python.(It's fine for python2 and python3)\n\n")
     stop("Python unavaliable ERROR")
+  }
+}
+
+# inner function : check 2to3 availability
+Check2to3 <- function() {
+  cat(c("************** Checking 2to3 command ************\n"))
+  a <- system2("2to3", "--help", stdout = FALSE)
+  if (a == 0) {
+    cat("(\u2714) : 2to3 command is available on your device!\n\n")
+    return(TRUE)
+  } else {
+    cat("(\u2718) : 2to3 command is not available on your device!\n\n")
+    return(FALSE)
   }
 }
 

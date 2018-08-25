@@ -89,7 +89,12 @@ RNASeqGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, KEGG.organism, 
 RNASeqGoKegg <- function(path.prefix, independent.variable, OrgDb.species, KEGG.organism) {
   CheckOperatingSystem(FALSE)
   PreRNASeqGoKegg()
-  which.analyses <- c("ballgown_analysis", "DESeq2_analysis", "edgeR_analysis")
+  raw.read.avail <- RawReadCountAvailability(path.prefix)
+  if (raw.read.avail) {
+    which.analyses <- c("ballgown_analysis", "TPM_analysis", "DESeq2_analysis", "edgeR_analysis")
+  } else {
+    which.analyses <- c("ballgown_analysis", "TPM_analysis")
+  }
   cat("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  Start 'Gene Ontology', 'Kyoto Encyclopedia of Genes and Genomes' analyses  \u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
   for(which.analysis in which.analyses) {
     cat("\u2618\u2618 ", strsplit(which.analysis, "_")[[1]][1] , " analysis ...\n")

@@ -219,3 +219,14 @@ RawCountGeneNameChange <- function(raw.count, path.prefix){
   return(list("raw.counts" = novel.know.gene.raw.count, "raw.counts.name" = gene.name.list))
 }
 
+RawReadCountAvailability <- function(path.prefix) {
+  file.prepDE.py <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py"))
+  file.sample.lst.txt <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"))
+  file.gene_count_matrix <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
+  if (file.prepDE.py & file.sample.lst.txt & file.gene_count_matrix) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+}
+

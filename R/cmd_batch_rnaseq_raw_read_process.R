@@ -36,13 +36,14 @@ RNASeqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
   python.variable <- RNASeqWorkFlowParam@python.variable
   python.variable.answer <- python.variable$check.answer
   python.variable.version <- python.variable$python.version
+  python.2to3 <- RNASeqWorkFlowParam@python.2to3
   indices.optional <- RNASeqWorkFlowParam@indices.optional
   # not print but if the prefix is invalid, then 'Prefix path '", path.prefix, "' is invalid. Please try another one.' will be printed.
   # If precheck doesn't have .ht2 files is fine
   # ExportPath(path.prefix = path.prefix)
   fileConn<-file(paste0(path.prefix, "Rscript/Raw_Read_Process.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0('RNASeqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", genome.name = "', genome.name, '", sample.pattern = "', sample.pattern, '", python.variable.answer = ', python.variable.answer, ', python.variable.version = ', python.variable.version, ', num.parallel.threads = ', num.parallel.threads, ', indices.optional = ', indices.optional, ')')
+  second <- paste0('RNASeqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", genome.name = "', genome.name, '", sample.pattern = "', sample.pattern, '", python.variable.answer = ', python.variable.answer, ', python.variable.version = ', python.variable.version, ', python.2to3 = ', python.2to3, ', num.parallel.threads = ', num.parallel.threads, ', indices.optional = ', indices.optional, ')')
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Raw_Read_Process.R' has been created.\n"))
@@ -89,7 +90,7 @@ RNASeqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
 #' RNASeqRawReadProcess(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix,
 #'                      genome.name = exp@@genome.name, sample.pattern = exp@@sample.pattern, python.variable.answer = exp@@python.variable[0],
 #'                      python.variable.version = exp@@python.variable[1], indices.optional = exp@@indices.optional)}
-RNASeqRawReadProcess <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, python.variable.answer, python.variable.version, num.parallel.threads = 1, indices.optional) {
+RNASeqRawReadProcess <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, python.variable.answer, python.variable.version, python.2to3, num.parallel.threads = 1, indices.optional) {
   CheckOperatingSystem(FALSE)
   ExportPath(path.prefix)
   PreRNASeqRawReadProcess(path.prefix, genome.name, sample.pattern)
@@ -105,11 +106,7 @@ RNASeqRawReadProcess <- function(path.prefix, input.path.prefix, genome.name, sa
   StringTieToBallgown(path.prefix, genome.name, sample.pattern, num.parallel.threads)
   # StringTieReEstimate(path.prefix, genome.name, sample.pattern, num.parallel.threads = num.parallel.threads)
   finals <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
-  PreDECountTable(path.prefix= path.prefix, sample.pattern, python.variable.answer, python.variable.version, print=TRUE)
-  file.prepDE.py <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py"))
-  file.sample.lst.txt <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/sample_lst.txt"))
-  file.gene_count_matrix <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
-  file.transcript_count_matrix <- file.exists(paste0(path.prefix, "gene_data/reads_count_matrix/transcript_count_matrix.csv"))
+  PreDECountTable(path.prefix= path.prefix, sample.pattern, python.variable.answer, python.variable.version, python.2to3, print=TRUE)
   PostRNASeqRawReadProcess(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern)
 }
 

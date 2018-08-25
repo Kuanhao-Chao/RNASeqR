@@ -17,6 +17,8 @@ An S4 class for checking and storing RNA-Seq workflow parameters of this package
 
 \item{\code{python.variable}}{A list storing python environment. \code{(check.answer, python.version)}}
 
+\item{\code{python.2to3}}{logical value whether \code{2to3} command is available on the workstation}
+
 \item{\code{path.prefix}}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
 
 \item{\code{input.path.prefix}}{path prefix of 'input_files/' directory}

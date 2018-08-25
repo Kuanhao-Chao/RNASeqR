@@ -155,7 +155,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">RNASeqWorkflow : RNA-Seq workflow for one independent variable analysis</h1>
 <p class="author-name">Author: Kuan-Hao Chao (ntueeb05howard@gmail.com)</p>
-<h4 class="date"><em>Last update: 25 August, 2018</em></h4>
+<h4 class="date"><em>Last update: 26 August, 2018</em></h4>
 <h4 class="abstract">Abstract</h4>
 <p>An RNA-Seq workflow for one independent variable analysis</p>
 
@@ -185,7 +185,17 @@ $(document).ready(function () {
 <li><a href="#shortread-quality-trimming"><span class="toc-section-number">1.6.1</span> “ShortRead” Quality Trimming</a></li>
 <li><a href="#example-3"><span class="toc-section-number">1.6.2</span> Example</a></li>
 </ul></li>
-<li><a href="#raw-reads-process-alignment-assembly-gffcompare-and-quantification"><span class="toc-section-number">1.7</span> Raw Reads Process (Alignment, Assembly, Gffcompare and Quantification)</a></li>
+<li><a href="#raw-reads-process-alignment-assembly-gffcompare-quantification"><span class="toc-section-number">1.7</span> Raw Reads Process (Alignment, Assembly, Gffcompare, Quantification)</a><ul>
+<li><a href="#hisat2-index"><span class="toc-section-number">1.7.1</span> HISAT2 Index</a></li>
+<li><a href="#hisat2-alignment"><span class="toc-section-number">1.7.2</span> HISAT2 Alignment</a></li>
+<li><a href="#samtools-sam-to-bam"><span class="toc-section-number">1.7.3</span> SAMtools <code>SAM</code> to <code>BAM</code></a></li>
+<li><a href="#stringtie-assembly"><span class="toc-section-number">1.7.4</span> StringTie Assembly</a></li>
+<li><a href="#stringtie-merge-gtf"><span class="toc-section-number">1.7.5</span> StringTie Merge <code>GTF</code></a></li>
+<li><a href="#gffcompare"><span class="toc-section-number">1.7.6</span> Gffcompare</a></li>
+<li><a href="#raw-reads-count-table-creation"><span class="toc-section-number">1.7.7</span> Raw reads count table creation</a></li>
+<li><a href="#section"><span class="toc-section-number">1.7.8</span> </a></li>
+<li><a href="#example-4"><span class="toc-section-number">1.7.9</span> Example</a></li>
+</ul></li>
 <li><a href="#raw-reads-differential-expressed-genes-analysis-ballgown-tpm-t-test-deseq2-and-edger"><span class="toc-section-number">1.8</span> Raw Reads Differential Expressed Genes Analysis (ballgown, TPM &amp; t-test, DESeq2 and edgeR)</a></li>
 <li><a href="#functional-analysis-gene-ontology-and-pathway-analysis-kyoto-encyclopedia-of-genes-and-genomes"><span class="toc-section-number">1.9</span> Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)</a></li>
 <li><a href="#conlusion"><span class="toc-section-number">1.10</span> Conlusion</a></li>
@@ -197,6 +207,11 @@ $(document).ready(function () {
 <h1><span class="header-section-number">1</span> RNA-Seq workflow</h1>
 <div id="overview" class="section level2">
 <h2><span class="header-section-number">1.1</span> Overview</h2>
+<ol style="list-style-type: decimal">
+<li>Each step is a function</li>
+<li>Eahc function ==&gt; R shell, background</li>
+<li></li>
+</ol>
 <p>Support paired-end reads only</p>
 </div>
 <div id="system-requirement" class="section level2">
@@ -209,9 +224,9 @@ $(document).ready(function () {
 </div>
 <div id="rnaseqworkflowparam-s4-object-creation" class="section level2">
 <h2><span class="header-section-number">1.3</span> “RNASeqWorkFlowParam” S4 Object Creation</h2>
+<p>This is the <strong>pre-step</strong> of RNA-Seq workflow in this package. Before starting RNA-Seq analysis, you have to run the constructor function <code>RNASeqWorkFlowParam()</code> and create <code>RNASeqWorkFlowParam</code> S4 instance first. This instance will be used as input parameter in the following analysis function.</p>
 <div id="rnaseqworkflowparam-constructor-checking-steps" class="section level3">
 <h3><span class="header-section-number">1.3.1</span> “RNASeqWorkFlowParam” Constructor Checking Steps</h3>
-<p>Before starting RNA-Seq analysis in this package, you have to run the constructor function <code>RNASeqWorkFlowParam()</code> and create <code>RNASeqWorkFlowParam</code> S4 object first. Be aware of the following things:</p>
 <ol style="list-style-type: decimal">
 <li>Create a new directory for RNA-Seq analysis.
 <ul>
@@ -233,13 +248,17 @@ $(document).ready(function () {
 <li>First column : Distint ids for each sample. Value of each sample of this column must match <code>sample.pattern</code> in FASTQ files in ‘raw_fastq.gz/’. Column names must be ‘ids’.</li>
 <li>Second column : independent variable for the RNA-Seq experiment. Value of each sample of this column can only be parameter <code>control.group</code> and <code>experiment.group</code>. Column name is parameter <code>independent.variable</code>.</li>
 </ul></li>
-<li><strong><em>indexes</em>/</strong> : directory storing HT2 index files for hisat2 alignment tool.</li>
+<li><strong><em>indices</em>/</strong> : directory storing <code>HT2</code> indices files for hisat2 alignment tool.
+<ul>
+<li>This directory is optional. <code>HT2</code> indices files corresponding to target reference genome can be installed at <a href="https://ccb.jhu.edu/software/hisat2/index.shtml">HISAT2 official website</a>. Providing <code>HT2</code> files can accelerate the subsequent steps.</li>
+<li>If <code>HT2</code> index files are not provided, ‘indices/’ directory should be deleted in ‘input_files/’ directory.</li>
+</ul></li>
 </ul></li>
 </ul></li>
 <li>Run constructor of <code>RNASeqWorkFlowParam</code> S4 object
 <ul>
 <li>This constructor will check following things before creating S4 objects
-<ol style="list-style-type: decimal">
+<ul>
 <li>Operating system
 <ul>
 <li>Detect your workstations operating system. This package support <code>Linux</code> and <code>macOS</code>. <code>Windows</code> is not supported.</li>
@@ -250,7 +269,7 @@ $(document).ready(function () {
 </ul></li>
 <li>Structure and contents of ‘input_files/’</li>
 <li>Validity of input parameters</li>
-</ol></li>
+</ul></li>
 </ul></li>
 </ol>
 </div>
@@ -264,6 +283,7 @@ $(document).ready(function () {
 </div>
 <div id="environment-set-up" class="section level2">
 <h2><span class="header-section-number">1.4</span> Environment Set up</h2>
+<p>This is the <strong>first necessary step</strong> of RNA-Seq workflow in this package. To set up the environment, run <code>RNASeqEnvironmentSet_CMD()</code> to execute process in background or run <code>RNASeqEnvironmentSet()</code> to execute process in R shell.</p>
 <div id="files-setup" class="section level3">
 <h3><span class="header-section-number">1.4.1</span> Files Setup</h3>
 <ol style="list-style-type: decimal">
@@ -273,7 +293,7 @@ $(document).ready(function () {
 </div>
 <div id="necessary-tools-installation" class="section level3">
 <h3><span class="header-section-number">1.4.2</span> Necessary Tools Installation</h3>
-<p>The operating system of your workstation will be detected. If the operating system is other than <code>Linux</code> and <code>macOS</code>, ERROR will be reported. <code>HISAT2</code>, <code>SAMtools</code>, <code>StringTie</code> and <code>Gffcompare</code> will be installed automatically.</p>
+<p>The operating system of your workstation will be detected. If the operating system is other than <code>Linux</code> and <code>macOS</code>, <code>ERROR</code> will be reported. <code>HISAT2</code>, <code>SAMtools</code>, <code>StringTie</code> and <code>Gffcompare</code> will be installed automatically.</p>
 <ul>
 <li>HISAT2
 <ul>
@@ -299,7 +319,7 @@ $(document).ready(function () {
 </div>
 <div id="export-path" class="section level3">
 <h3><span class="header-section-number">1.4.3</span> Export Path</h3>
-<p>‘RNASeq_bin/’ will be added to R PATH so that these binaries can be found in R environment. <code>hisat2 --version</code>,<code>stringtie --version</code>,<code>gffcompare --version</code> and<code>samtools --version</code> commands will be checked.</p>
+<p>‘RNASeq_bin/’ will be added to R PATH so that these binaries can be found in R environment. In the last step of environment setting, <code>hisat2 --version</code>,<code>stringtie --version</code>,<code>gffcompare --version</code> and <code>samtools --version</code> commands will be checked in order to make sure the environment is correctly constructed.</p>
 </div>
 <div id="example-1" class="section level3">
 <h3><span class="header-section-number">1.4.4</span> Example</h3>
@@ -307,6 +327,7 @@ $(document).ready(function () {
 </div>
 <div id="fastq-files-quality-assessment" class="section level2">
 <h2><span class="header-section-number">1.5</span> Fastq files Quality Assessment</h2>
+<p>This is an <strong>optional step</strong> of RNA-Seq workflow in this package. However, it is strongly recommended to do it before processing raw reads. To assess the quality of raw reads in FASTQ files, run <code>RNASeqQualityAssessment_CMD()</code> to execute process in background or run <code>RNASeqQualityAssessment()</code> to execute process in R shell.</p>
 <div id="systempiper-quality-assessment" class="section level3">
 <h3><span class="header-section-number">1.5.1</span> “systemPipeR” Quality Assessment</h3>
 <p>In this process, <code>systemPipeR</code> package is used for quality assessment. Here are the following steps:</p>
@@ -324,6 +345,7 @@ $(document).ready(function () {
 </div>
 <div id="fastq-files-quality-trimming" class="section level2">
 <h2><span class="header-section-number">1.6</span> Fastq files Quality Trimming</h2>
+<p>This is an <strong>optional step</strong> of RNA-Seq workflow in this package. However, it is strongly recommended to do it if the result of quality assessment is unsatisfied. To trim the raw reads in FASTQ files, run <code>RNASeqQualityTrimming_CMD()</code> to execute process in background or run <code>RNASeqQualityTrimming()</code> to execute process in R shell. After trimming process, it is strongly recommended to redo quality assessment step. Different quality assessment result will be stored in different directories with index of processing order.</p>
 <div id="shortread-quality-trimming" class="section level3">
 <h3><span class="header-section-number">1.6.1</span> “ShortRead” Quality Trimming</h3>
 <p>In this process, <code>ShortRead</code> package is used for quality trimming. Followings are trimming steps and method explanation.</p>
@@ -339,8 +361,126 @@ $(document).ready(function () {
 <h3><span class="header-section-number">1.6.2</span> Example</h3>
 </div>
 </div>
-<div id="raw-reads-process-alignment-assembly-gffcompare-and-quantification" class="section level2">
-<h2><span class="header-section-number">1.7</span> Raw Reads Process (Alignment, Assembly, Gffcompare and Quantification)</h2>
+<div id="raw-reads-process-alignment-assembly-gffcompare-quantification" class="section level2">
+<h2><span class="header-section-number">1.7</span> Raw Reads Process (Alignment, Assembly, Gffcompare, Quantification)</h2>
+<p>This is a <strong>second necessary step</strong> of RNA-Seq workflow in this package. Programs installed in environment setting step, <code>HISAT2</code>, <code>SAMtools</code>, <code>StringTie</code> and <code>Gffcompare</code>, will be executed. To process raw reads FASTQ files, run <code>RNASeqRawReadProcess_CMD()</code> to execute process in background or run <code>RNASeqRawReadProcess()</code> to execute process in R shell. For more details about commands that executed during each reads processing step, please check the reported <code>RNASeq_results/COMMAND.txt</code>.</p>
+<div id="hisat2-index" class="section level3">
+<h3><span class="header-section-number">1.7.1</span> HISAT2 Index</h3>
+<p>In pre-step(<code>RNASeqWorkFlowParam</code> creation step), ‘indices/’ directory is checked and the whether <code>HT2</code> indices files are provided is known. If not provided, following commands will be executed:</p>
+<ul>
+<li>Input: <em><code>genome.name</code>.gtf</em>, <em><code>genome.name</code>.fa</em></li>
+<li>Output: <em><code>genome.name</code>.ss</em>, <em><code>genome.name</code>.exon</em>, *<code>genome.name</code>_tran.{number}.ht2*</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>extract_splice_sites.py</code>, <code>extract_exons.py</code> execution
+<ul>
+<li>These two commands are executed to extract splice-site and exon information from gene annotation file.</li>
+</ul></li>
+<li><code>hisat2-build</code> index creation
+<ul>
+<li>This command build HISAT2 indices files with <em><code>genome.name</code>.ss</em> and <em><code>genome.name</code>.exon</em> created in the previous step. Be aware that index building step requires a larger amount of memory and longer time than the alignment step, and it might not be possible to run on some personal workstations. It is highly recommended to check the availibility of <code>HT2</code> indices files at <a href="https://ccb.jhu.edu/software/hisat2/index.shtml">HISAT2 official website</a> for your target reference genome beforehands.</li>
+</ul></li>
+</ol>
+</div>
+<div id="hisat2-alignment" class="section level3">
+<h3><span class="header-section-number">1.7.2</span> HISAT2 Alignment</h3>
+<ul>
+<li>Input: *<code>genome.name</code>_tran.{number}.ht2<em>, </em><code>sample.pattern</code>.fastq.gz*</li>
+<li>Output: <em><code>sample.pattern</code>.sam</em></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>hisat2</code> command is executed on paired end FASTQ files. <code>SAM</code> files will be created.
+<ul>
+<li><code>SAM</code> files are stored in ‘gene_data/raw_bam/’</li>
+</ul></li>
+</ol>
+</div>
+<div id="samtools-sam-to-bam" class="section level3">
+<h3><span class="header-section-number">1.7.3</span> SAMtools <code>SAM</code> to <code>BAM</code></h3>
+<ul>
+<li>Input: <em><code>sample.pattern</code>.sam</em></li>
+<li>Output: <em><code>sample.pattern</code>.bam</em></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>samtools</code> command is executed. Output files from <code>hisat2</code> <code>SAM</code> files will be converted to <code>BAM</code> files.
+<ul>
+<li><code>BAM</code> files are stored in ‘gene_data/raw_sam/’.</li>
+</ul></li>
+</ol>
+</div>
+<div id="stringtie-assembly" class="section level3">
+<h3><span class="header-section-number">1.7.4</span> StringTie Assembly</h3>
+<ul>
+<li>Input: <em><code>genome.name</code>.gtf</em>, <em><code>sample.pattern</code>.bam</em></li>
+<li>Output: <em><code>sample.pattern</code>.gtf</em></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>stringtie</code> command is executed.
+<ul>
+<li>Assembler of RNA-Seq alignments into potential transcripts.</li>
+<li>Output assembled <code>GTF</code> files which are from each <code>FASTQ</code> files are stored in ‘gene_data/raw_gtf/’</li>
+</ul></li>
+</ol>
+</div>
+<div id="stringtie-merge-gtf" class="section level3">
+<h3><span class="header-section-number">1.7.5</span> StringTie Merge <code>GTF</code></h3>
+<ul>
+<li>Input: <em><code>sample.pattern</code>.gtf</em></li>
+<li>Output: <em>stringtiemerged.gtf</em>, <em>mergelist.txt</em></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>Creating <em>mergelist.txt</em>
+<ul>
+<li><em>mergelist.txt</em> is created for the merging step.</li>
+</ul></li>
+<li><code>stringtie</code> command is executed.
+<ul>
+<li>Transcript merger merges each <em><code>sample.pattern</code>.gtf</em> into <em>stringtiemerged.gtf</em></li>
+<li>Output files are all stored in ‘gene_data/merged/’</li>
+</ul></li>
+</ol>
+</div>
+<div id="gffcompare" class="section level3">
+<h3><span class="header-section-number">1.7.6</span> Gffcompare</h3>
+<ul>
+<li>Input: <em><code>genome.name</code>.gtf</em>, <em>stringtiemerged.gtf</em></li>
+<li>Output: <em>merged.annotated.gtf</em>, <em>merged.loci</em>, <em>merged.stats</em>, <em>merged.stringtie_merged.gtf.refmap</em>, <em>merged.stringtie_merged.gtf.tmap</em>, <em>merged.tracking</em></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>gffcompare</code> command is executed.
+<ul>
+<li>The comparison result of merged <code>GTF</code> file and reference annotation file is reported under ‘merged/’ directory.</li>
+</ul></li>
+</ol>
+</div>
+<div id="raw-reads-count-table-creation" class="section level3">
+<h3><span class="header-section-number">1.7.7</span> Raw reads count table creation</h3>
+<p>Whether this step is executed depends on the availability of Python on your workstation.</p>
+<ul>
+<li>Input: <em>samplelst.txt</em></li>
+<li>Output: <em>gene_count_matrix.csv</em>, <em>transcript_count_matrix.csv</em></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>Reads count table converter Python script is downloaded as <code>prepDE.py</code></li>
+<li>Python checking
+<ul>
+<li>If Python is not available, this step is skipped.</li>
+<li>If Python2 is available, <code>prepDE.py</code> is executed.</li>
+<li>If Python3 is available, <code>2to3</code> command is checked.(Usally, if Python3 is installed, <code>2to3</code> command will be installed too.)</li>
+<li>If Python3 is available but <code>2to3</code> command is unavailable, raw reads count generation step will be skipped.</li>
+</ul></li>
+<li><code>prepDE.py</code> raw reads count creation
+<ul>
+<li>Raw reads count is executed and the results are stored in ‘gene_data/reads_count_matrix/’</li>
+</ul></li>
+</ol>
+</div>
+<div id="section" class="section level3">
+<h3><span class="header-section-number">1.7.8</span> </h3>
+</div>
+<div id="example-4" class="section level3">
+<h3><span class="header-section-number">1.7.9</span> Example</h3>
+</div>
 </div>
 <div id="raw-reads-differential-expressed-genes-analysis-ballgown-tpm-t-test-deseq2-and-edger" class="section level2">
 <h2><span class="header-section-number">1.8</span> Raw Reads Differential Expressed Genes Analysis (ballgown, TPM &amp; t-test, DESeq2 and edgeR)</h2>

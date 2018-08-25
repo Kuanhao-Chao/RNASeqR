@@ -112,8 +112,11 @@ RNASeqDifferentialAnalysis <- function(path.prefix, genome.name, sample.pattern,
   cat("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  Start 'ballgown', 'DESeq2' 'edgeR' analyses  \u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
   BallgownAnalysis(path.prefix, genome.name, sample.pattern, independent.variable, control.group, experiment.group, ballgown.pval, ballgown.log2FC)
   TPMNormalizationAnalysis(path.prefix, genome.name, sample.pattern, independent.variable, control.group, experiment.group, TPM.pval, TPM.log2FC)
-  DESeq2RawCountAnalysis(path.prefix, independent.variable,  control.group, experiment.group, DESeq2.pval, DESeq2.log2FC)
-  edgeRRawCountAnalysis(path.prefix, independent.variable, control.group, experiment.group, edgeR.pval, edgeR.log2FC)
+  raw.read.avail <- RawReadCountAvailability(path.prefix)
+  if (raw.read.avail) {
+    DESeq2RawCountAnalysis(path.prefix, independent.variable,  control.group, experiment.group, DESeq2.pval, DESeq2.log2FC)
+    edgeRRawCountAnalysis(path.prefix, independent.variable, control.group, experiment.group, edgeR.pval, edgeR.log2FC)
+  }
   PostRNASeqDifferentialAnalysis(path.prefix = path.prefix, sample.pattern = sample.pattern)
 }
 
