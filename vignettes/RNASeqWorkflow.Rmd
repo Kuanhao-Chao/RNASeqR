@@ -10,7 +10,7 @@ output:
     toc: true
     toc_depth: 3
     fig_caption: yes
-
+bibliography: bibliography.bib
 fontsize: 14pt
 vignette: >
   %\VignetteIndexEntry{RNA-Seq workflow for one independent variable analysis}

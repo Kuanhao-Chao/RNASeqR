@@ -58,7 +58,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  control.g
   write.csv(DESeq2.result.no.NA, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_result.csv"), row.names=FALSE)
 
   cat(paste0("     \u25CF Selecting differential expressed genes(DESeq2) ==> padj-value : ", DESeq2.pval, "  log2(Fold Change) : ", DESeq2.log2FC, " ...\n"))
-  DESeq2.result.DE <- DESeq2.result.no.NA[(DESeq2.result.no.NA$log2FC>DESeq2.log2FC) & (DESeq2.result.no.NA$pval<DESeq2.pval), ]
+  DESeq2.result.DE <- DESeq2.result.no.NA[((DESeq2.result.no.NA$log2FC>DESeq2.log2FC) | (DESeq2.result.no.NA$log2FC<(-DESeq2.log2FC))) & (DESeq2.result.no.NA$pval<DESeq2.pval), ]
   cat("          \u25CF Total '", length(row.names(DESeq2.result.DE)), "' DEG have been found !!")
   write.csv(DESeq2.result.DE, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_DE_result.csv"), row.names=FALSE)
 

@@ -80,8 +80,8 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam, ballgown.pval = 
 #' If you want to run differential analysis on ballgown, TPM normalization, DESeq2, edgeR for the following RNA-Seq workflow in background, please see \code{RNASeqDifferentialAnalysis()} function.
 #'
 #' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
-#' @param genome.name variable of genome name defined in this RNA-Seq workflow (ex. genome.name.fa, genome.name.gtf)
-#' @param sample.pattern  regular expression of raw fastq.gz files under 'input_files/raw_fastq.gz'
+#' @param genome.name genome.name Variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
+#' @param sample.pattern sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
 #' @param independent.variable independent variable for the biological experiment design of two-group RNA-Seq workflow
 #' @param control.group group name of the control group
 #' @param experiment.group group name of the experiment group

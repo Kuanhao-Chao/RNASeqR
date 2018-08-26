@@ -30,7 +30,7 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   gene_names_for_result <- ballgown.texpr$gene_name[indices]
   de.statistic.result <- data.frame(geneNames=gene_names_for_result, de.statistic.result)
   # Filter statistic
-  de.statistic.result <- de.statistic.result[(de.statistic.result$fc != 1 & !is.na(de.statistic.result$pval) & !is.na(de.statistic.result$qval)), ]
+  de.statistic.result <- de.statistic.result[(de.statistic.result$fc != 1 & !is.na(de.statistic.result$pval) & !is.na(de.statistic.result$pval)), ]
   gene.id.data.frame <- data.frame("gene.name" = de.statistic.result$geneNames)
   write.csv(gene.id.data.frame, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv"), row.names=FALSE)
   de.statistic.result$feature <- NULL; de.statistic.result$id <- NULL; de.statistic.result$geneNames <- NULL
@@ -55,11 +55,11 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   total.data.frame[paste0(control.group, ".", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
   ballgown.result <- cbind(total.data.frame, de.statistic.result)
   ballgown.result <- rbind(ballgown.result[ballgown.result$gene.name != ".",], ballgown.result[ballgown.result$gene.name == ".",])
-  # Filter out pval is NaN and qval is NaN
+  # Filter out pval is NaN and pval is NaN
   write.csv(ballgown.result, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv"), row.names=FALSE)
 
-  cat(paste0("     \u25CF Selecting differential expressed genes(ballgown) ==> q-value : ", ballgown.pval, "  log2(Fold Change) : ", ballgown.log2FC, " ...\n"))
-  ballgown.result.DE <- ballgown.result[(ballgown.result$log2FC>ballgown.log2FC) & (ballgown.result$qval<ballgown.pval), ]
+  cat(paste0("     \u25CF Selecting differential expressed genes(ballgown) ==> p-value : ", ballgown.pval, "  log2(Fold Change) : ", ballgown.log2FC, " ...\n"))
+  ballgown.result.DE <- ballgown.result[((ballgown.result$log2FC>ballgown.log2FC) | (ballgown.result$log2FC<(-ballgown.log2FC))) & (ballgown.result$pval<ballgown.pval), ]
   cat(paste0("          \u25CF Total '", length(row.names(ballgown.result.DE)), "' DEG have been found !!!\n"))
   write.csv(ballgown.result.DE, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_DE_result.csv"), row.names=FALSE)
 

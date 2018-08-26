@@ -62,7 +62,7 @@ RNASeqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 #'                      sample.pattern = exp@@sample.pattern)}
 RNASeqQualityAssessment <- function(path.prefix, input.path.prefix, sample.pattern) {
   CheckOperatingSystem(FALSE)
-  PreCheckRNASeqQualityAssessment(path.prefix = path.prefix, sample.pattern = sample.pattern)
+  PreCheckRNASeqQualityAssessment(path.prefix, sample.pattern)
   QA_results_subfiles <- list.files(paste0(path.prefix, "RNASeq_results/QA_results"), pattern = "QA_[0-9]*")
   QA.count <- length(QA_results_subfiles) + 1
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/QA_results/"))){

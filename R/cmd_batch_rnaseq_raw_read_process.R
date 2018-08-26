@@ -113,13 +113,13 @@ RNASeqRawReadProcess <- function(path.prefix, input.path.prefix, genome.name, sa
 PreRNASeqRawReadProcess <- function(path.prefix, genome.name, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C RNASeqRawReadProcess()' environment pre-check ...\n")
   phenodata.csv <- file.exists(paste0(path.prefix, "gene_data/phenodata.csv"))
-  chrX.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/chrX.gtf"))
-  chrX.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/chrX.fa"))
+  ref.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/", genome.name, ".gtf"))
+  ref.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/", genome.name, ".fa"))
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   check.tool.result <- CheckToolAll()
-  check.results <- ProgressGenesFiles(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, print=FALSE)
+  check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=FALSE)
   check.progress.results.bool <- check.results$gtf.file.logic.df && check.results$fa.file.logic.df && (check.results$fastq.gz.files.number.df != 0)
-  validity <- phenodata.csv && chrX.gtf && chrX.fa && check.tool.result && (length(raw.fastq) != 0) && check.progress.results.bool
+  validity <- phenodata.csv && ref.gtf && ref.fa && check.tool.result && (length(raw.fastq) != 0) && check.progress.results.bool
   if (!isTRUE(validity)) {
     stop("RNASeqRawReadProcess() environment ERROR")
   }
@@ -130,7 +130,7 @@ PostRNASeqRawReadProcess <- function(path.prefix, genome.name, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C RNASeqRawReadProcess()' environment post-check ...\n")
   # Still need to add condition
   gene_abundance <- dir.exists(paste0(path.prefix, "gene_data/gene_abundance/"))
-  check.results <- ProgressGenesFiles(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, print=FALSE)
+  check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=FALSE)
   ht2.bool <- (check.results$ht2.files.number.df) != 0
   sam.bool <- (check.results$sam.files.number.df) != 0
   bam.bool <- (check.results$bam.files.number.df) != 0

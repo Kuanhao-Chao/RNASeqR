@@ -53,7 +53,7 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
 
   # Slecet DE genes (condition)
   cat(paste0("     \u25CF Selecting differential expressed genes(edgeR) ==> p-value : ", edgeR.pval, "  log2(Fold Change) : ", edgeR.log2FC, " ...\n"))
-  edgeR.result.DE <- edgeR.result[(edgeR.result$log2FC>edgeR.log2FC) & (edgeR.result$pval<edgeR.pval), ]
+  edgeR.result.DE <- edgeR.result[((edgeR.result$log2FC>edgeR.log2FC) | (edgeR.result$log2FC<(-edgeR.log2FC))) & (edgeR.result$pval<edgeR.pval), ]
   cat("          \u25CF Total '", length(row.names(edgeR.result.DE)), "' DEG have been found !!")
   write.csv(edgeR.result.DE, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_DE_result.csv"), row.names=FALSE)
 

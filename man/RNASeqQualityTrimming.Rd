@@ -10,7 +10,7 @@ RNASeqQualityTrimming(path.prefix, sample.pattern, cum.error = 1,
 \arguments{
 \item{path.prefix}{Path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
 
-\item{sample.pattern}{Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'.}
+\item{sample.pattern}{sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 
 \item{cum.error}{Default \code{1}. Cut of threshold of cumulative probability of error per base.}
 

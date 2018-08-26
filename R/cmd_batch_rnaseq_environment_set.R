@@ -78,11 +78,11 @@ RNASeqEnvironmentSet <- function(path.prefix, input.path.prefix, genome.name, sa
   if (mkdir.bool) {
     MkdirAll(path.prefix)
   }
-  PreRNASeqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
-  CopyInputDir(path.prefix = path.prefix, input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, indices.optional = indices.optional)
-  InstallAll(path.prefix = path.prefix, os.type = os.type)
-  ExportPath(path.prefix = path.prefix)
-  PostRNASeqEnvironmentSet(path.prefix = path.prefix, sample.pattern = sample.pattern)
+  PreRNASeqEnvironmentSet(path.prefix, sample.pattern)
+  CopyInputDir(path.prefix, input.path.prefix, genome.name, sample.pattern, indices.optional)
+  InstallAll(path.prefix, os.type)
+  ExportPath(path.prefix)
+  PostRNASeqEnvironmentSet(path.prefix, genome.name, sample.pattern)
 }
 
 # Create sample gene directory
@@ -450,7 +450,7 @@ InstallAll <- function(path.prefix, os.type) {
 # Check 'hisat2'
 CheckHisat2 <- function(print=TRUE){
   if (print) {
-    cat(paste0("\u25CF\u25CF  Checking hisat2 command\n"))
+    cat(paste0("\u25CF  Checking hisat2 command\n"))
   }
   hisat2.installed <- system('hisat2 --version', ignore.stdout = !print , ignore.stderr = !print)==0
   if( isTRUE(hisat2.installed)){
@@ -468,7 +468,7 @@ CheckHisat2 <- function(print=TRUE){
 # Check 'stringtie'
 CheckStringTie <- function(print=TRUE){
   if (print){
-    cat(paste0("\u25CF\u25CF  Checking stringtie command\n"))
+    cat(paste0("\u25CF  Checking stringtie command\n"))
   }
   stringtie.installed <- system( 'stringtie --version', ignore.stdout = !print, ignore.stderr = !print)==0
   if( isTRUE(stringtie.installed)){
@@ -486,7 +486,7 @@ CheckStringTie <- function(print=TRUE){
 # Check 'Gffcompare'
 CheckGffcompare <- function(print=TRUE) {
   if(print) {
-    cat(paste0("\u25CF\u25CF  Checking gffcompare command\n"))
+    cat(paste0("\u25CF  Checking gffcompare command\n"))
   }
   gffcompare.old <- system( 'gffcompare --version', ignore.stdout = !print, ignore.stderr = !print)==0
   if( isTRUE(gffcompare.old)){
@@ -504,7 +504,7 @@ CheckGffcompare <- function(print=TRUE) {
 # Check 'Samtools'
 CheckSamtools <- function(print=TRUE){
   if (print) {
-    cat(paste0("\u25CF\u25CF  Checking samtools command\n"))
+    cat(paste0("\u25CF  Checking samtools command\n"))
   }
   samtools.old <- system( 'samtools --version', ignore.stdout = !print, ignore.stderr = !print)==0
   if( isTRUE(samtools.old)){
@@ -550,14 +550,14 @@ PreRNASeqEnvironmentSet <- function(path.prefix, sample.pattern) {
   cat("(\u2714) : RNASeqEnvironmentSet() pre-check is valid\n\n")
 }
 
-PostRNASeqEnvironmentSet <- function(path.prefix, sample.pattern) {
+PostRNASeqEnvironmentSet <- function(path.prefix, genome.name, sample.pattern) {
   cat("\u269C\u265C\u265C\u265C RNASeqEnvironmentSet()' environment post-check ...\n")
   phenodata.csv <- file.exists(paste0(path.prefix, "gene_data/phenodata.csv"))
-  chrX.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/chrX.gtf"))
-  chrX.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/chrX.fa"))
+  ref.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/", genome.name, ".gtf"))
+  ref.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/", genome.name, ".fa"))
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   check.tool.result <- CheckToolAll()
-  validity <- phenodata.csv && chrX.gtf && chrX.fa && check.tool.result && (length(raw.fastq) != 0)
+  validity <- phenodata.csv && ref.gtf && ref.fa && check.tool.result && (length(raw.fastq) != 0)
   if (!isTRUE(validity)) {
     stop("RNASeqEnvironmentSet() post-check ERROR")
   }

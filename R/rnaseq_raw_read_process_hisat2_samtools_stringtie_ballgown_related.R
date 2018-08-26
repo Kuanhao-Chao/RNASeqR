@@ -9,7 +9,8 @@ CreateHisat2Index <- function (path.prefix, genome.name, sample.pattern, splice.
       stop("(\u2718) Please make sure the type of 'splice.site.info' and 'exon.info' are logical.\n")
     } else {
       check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
-      cat(paste0("\n************** Creating Hisat2 Index **************\n"))
+      cat("\n\u2618\u2618\u2618 Index Creation :\n")
+      cat(paste0("************** Creating Hisat2 Index **************\n"))
       if (isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$fa.file.logic.df)){
         command.list <- c()
         command.list <- c(command.list, "* Creating Hisat2 Index : ")
@@ -101,7 +102,8 @@ CreateHisat2Index <- function (path.prefix, genome.name, sample.pattern, splice.
 Hisat2AlignmentDefault <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckHisat2(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
-    cat(paste0("\n************** Hisat2 Alignment **************\n"))
+    cat("\n\u2618\u2618\u2618 Alignment :\n")
+    cat(paste0("************** Hisat2 Alignment **************\n"))
     if (check.results$ht2.files.number.df != 0 && check.results$fastq.gz.files.number.df != 0){
       command.list <- c()
       command.list <- c(command.list, "* Hisat2 Alignment : ")
@@ -196,7 +198,8 @@ Hisat2ReportAssemble <- function(path.prefix, genome.name, sample.pattern){
 SamtoolsToBam <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckSamtools(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
-    cat(paste0("\n************** Samtools converting '.sam' to '.bam' **************\n"))
+    cat("\n\u2618\u2618\u2618 'SAM' to 'BAM' :\n")
+    cat(paste0("************** Samtools converting '.sam' to '.bam' **************\n"))
     if (check.results$sam.files.number.df != 0){
       command.list <- c()
       command.list <- c(command.list, "* Samtools Converting '.sam' to '.bam' : ")
@@ -234,7 +237,8 @@ SamtoolsToBam <- function(path.prefix, genome.name, sample.pattern, num.parallel
 StringTieAssemble <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
-    cat(paste0("\n************** Stringtie assembly **************\n"))
+    cat("\n\u2618\u2618\u2618 Assembly :\n")
+    cat(paste0("************** Stringtie assembly **************\n"))
     if (check.results$bam.files.number.df != 0){
       command.list <- c()
       command.list <- c(command.list, "* Stringtie assembly : ")
@@ -269,7 +273,8 @@ StringTieAssemble <- function(path.prefix, genome.name, sample.pattern, num.para
 StringTieMergeTrans <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
-    cat(paste0("\n************** Stringtie merging transcripts **************\n"))
+    cat("\n\u2618\u2618\u2618 Transcript Merging :\n")
+    cat(paste0("************** Stringtie merging transcripts **************\n"))
     if ( isTRUE(check.results$gtf.file.logic.df) && check.results$gtf.files.number.df != 0){
       command.list <- c()
       command.list <- c(command.list, "* Stringtie Merging Transcripts : ")
@@ -313,7 +318,8 @@ StringTieMergeTrans <- function(path.prefix, genome.name, sample.pattern, num.pa
 StringTieToBallgown <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
-    cat(paste0("\n************** Stringtie creating table counts for Ballgown **************\n"))
+    cat("\n\u2618\u2618\u2618 Ballgown Table Counts Creation :\n")
+    cat(paste0("************** Stringtie creating table counts for Ballgown **************\n"))
     if ((check.results$bam.files.number.df != 0) && isTRUE(check.results$stringtie_merged.gtf.file.df)){
       command.list <- c()
       command.list <- c(command.list, "* Stringtie Creating Table Counts for Ballgown : ")
@@ -351,7 +357,8 @@ StringTieToBallgown <- function(path.prefix, genome.name, sample.pattern, num.pa
 StringTieReEstimate <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
-    cat(paste0("\n************** Stringtie re-estimate **************\n"))
+    cat("\n\u2618\u2618\u2618 Re-setimate :\n")
+    cat(paste0("************** Stringtie re-estimate **************\n"))
     if (check.results$stringtie_merged.gtf.file.df != 0 && isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$stringtie_merged.gtf.file.df) &&
         check.results$bam.files.number.df != 0){
       if(!dir.exists(paste0(path.prefix, "gene_data/gene_abundance/"))){
@@ -390,7 +397,8 @@ StringTieReEstimate <- function(path.prefix, genome.name, sample.pattern, num.pa
 GffcompareRefSample <- function(path.prefix, genome.name, sample.pattern) {
   if (isTRUE(CheckGffcompare(print=FALSE))){
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
-    cat(paste0("\n************** Gffcompare comparing transcripts between merged and reference **************\n"))
+    cat("\n\u2618\u2618\u2618 Merged `GTF` & Reference Comparison :\n")
+    cat(paste0("************** Gffcompare comparing transcripts between merged and reference **************\n"))
     if ( isTRUE(check.results$stringtie_merged.gtf.file.df) && isTRUE(check.results$gtf.file.logic.df)){
       command.list <- c()
       command.list <- c(command.list, "* Gffcompare Comparing Transcripts between Merged and Reference : ")
@@ -419,6 +427,7 @@ GffcompareRefSample <- function(path.prefix, genome.name, sample.pattern) {
 # converting stringtie ballogwn preprocessed data to count table
 PreDECountTable <- function(path.prefix, sample.pattern, python.variable.answer, python.variable.version, python.2to3, print=TRUE) {
   # ftp server : ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.1.0-source.zip
+  cat("\n\u2618\u2618\u2618 Raw Reads Count Creation :\n")
   cat("************** Installing prepDE.py ************\n")
   if(!dir.exists(paste0(path.prefix, "gene_data/reads_count_matrix/"))){
     dir.create(file.path(paste0(path.prefix, 'gene_data/reads_count_matrix/')), showWarnings = FALSE)

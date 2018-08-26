@@ -1,6 +1,7 @@
 # check 'gene_data' and subdirectory files exit
 ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print = TRUE) {
   if (print) {
+    cat("\uD83D\uDD0D\uD83D\uDD0D\uD83D\uDD0D Checking Files ...\n")
     cat(paste0("************** Current progress of RNA-seq files in '", paste0(path.prefix, "gene_data/'"), " **************\n"))
   }
   # 1. Check .gtf file

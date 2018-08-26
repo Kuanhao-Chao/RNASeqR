@@ -38,7 +38,7 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
   write.csv(TPM_Ttest.result, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/TPM_normalized_result.csv"), row.names=FALSE)
 
   cat(paste0("     \u25CF Selecting differential expressed genes() ==> p-value : ", TPM.pval, "  log2(Fold Change) : ", TPM.log2FC, " ...\n"))
-  TPM_Ttest.result.DE <- TPM_Ttest.result[(TPM_Ttest.result$log2FC>TPM.log2FC) & (TPM_Ttest.result$pval<TPM.pval), ]
+  TPM_Ttest.result.DE <- TPM_Ttest.result[((TPM_Ttest.result$log2FC>TPM.log2FC) | (TPM_Ttest.result$log2FC<(-TPM.log2FC))) & (TPM_Ttest.result$pval<TPM.pval), ]
   cat(paste0("          \u25CF Total '", length(row.names(TPM_Ttest.result.DE)), "' DEG have been found !!!\n"))
   write.csv(TPM_Ttest.result.DE, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/TPM_normalized_DE_result.csv"), row.names=FALSE)
 
