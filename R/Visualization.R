@@ -312,12 +312,17 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
   cat(paste0("     \u25CF Each log2(", which.count.normalization, "+1) minus average of control.\n"))
   log.data.frame.minus <- log.data.frame - control.log.average
   df.new <- scale(log.data.frame.minus)
-  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), width = 1000, height = 1000)
-  redgreen <- c("blue", "white", "red")
-  pal <- colorRampPalette(redgreen)(100)
-  pheatmap::pheatmap(df.new, scale = "row", xlab = "samples", ylab = "transcript names",cexRow=1, cexCol = 1, margins = c(10,8), col = pal, main = "Heatmap Plot (pheatmap)")
-  # theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-  dev.off()
-  cat(paste0("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), "' has been created. \n")
+  # Check Na(list) or Infinite(numeric)
+  if (any(is.na((df.new)) | is.infinite((df.new)))) {
+    cat(paste0("(\u26A0) : There are invalid value after scaling DEG dataframe. Heatmap can't be drawn !\n\n"))
+  } else {
+    png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), width = 1000, height = 1000)
+    redgreen <- c("blue", "white", "red")
+    pal <- colorRampPalette(redgreen)(100)
+    pheatmap::pheatmap(df.new, scale = "row", xlab = "samples", ylab = "transcript names",cexRow=1, cexCol = 1, margins = c(10,8), col = pal, main = "Heatmap Plot (pheatmap)")
+    # theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
+    dev.off()
+    cat(paste0("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), "' has been created. \n\n")
+  }
 }
 
