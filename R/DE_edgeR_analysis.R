@@ -1,4 +1,4 @@
-edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.group, experiment.group, edgeR.pval, edgeR.log2FC) {
+edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group, control.group, edgeR.pval, edgeR.log2FC) {
   cat("\n\u2618\u2618 edgeR analysis ...\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis"))){
     dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis"))
@@ -9,12 +9,12 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
   #############################################
   ## Creating "edgeR_normalized_result.csv" ##
   ############################################
-  pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, control.group, experiment.group)
+  pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
   raw.count <- pre.de.pheno.data$gene.count.matrix
-  raw.counts.result <- RawCountGeneNameChange(raw.count, path.prefix)
+  raw.count.result <- RawCountGeneNameChange(raw.count, path.prefix)
   # Convert gene id to gene name
-  gene.name.list <- raw.counts.result$raw.counts.name
-  gene.raw.count <- raw.counts.result$raw.counts
+  gene.name.list <- raw.count.result$raw.count.name
+  gene.raw.count <- raw.count.result$raw.count
   # create DGEList object (edgeR)
   cat("\u25CF Creating 'DGEList' object from count matrix ... \n")
   gene.data.frame <- data.frame(gene.name = gene.name.list)
@@ -31,22 +31,22 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
   colnames(de.statistic.result$table)[1] <- "log2FC"
   colnames(de.statistic.result$table)[3] <- "pval"
   write.csv(de.statistic.result$table, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
-  #  run the cpm function on a DGEList object which is normalisation by TMM factors ==> get TMM normalized counts !!
-  # counts were first normalized with TMM and then be presented as cpm !
+  #  run the cpm function on a DGEList object which is normalisation by TMM factors ==> get TMM normalized count !!
+  # count were first normalized with TMM and then be presented as cpm !
   normalized.count.table <- edgeR::cpm(dgList, normalized.lib.sizes=TRUE)
+  # For case group
+  case.cpm.data.frame <- data.frame(normalized.count.table[,colnames(normalized.count.table) %in% as.character(pre.de.pheno.data$case.group.data.frame$ids)])
+  colnames(case.cpm.data.frame) <- paste0(as.character(pre.de.pheno.data$case.group.data.frame$ids), ".", case.group)
+  write.csv(case.cpm.data.frame, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_case.csv"), row.names=FALSE)
   # For control group
   control.cpm.data.frame <- data.frame(normalized.count.table[,colnames(normalized.count.table) %in% as.character(pre.de.pheno.data$control.group.data.frame$ids)])
   colnames(control.cpm.data.frame) <- paste0(as.character(pre.de.pheno.data$control.group.data.frame$ids), ".", control.group)
   write.csv(control.cpm.data.frame, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_control.csv"), row.names=FALSE)
-  # For experiment group
-  experiment.cpm.data.frame <- data.frame(normalized.count.table[,colnames(normalized.count.table) %in% as.character(pre.de.pheno.data$experiment.group.data.frame$ids)])
-  colnames(experiment.cpm.data.frame) <- paste0(as.character(pre.de.pheno.data$experiment.group.data.frame$ids), ".", experiment.group)
-  write.csv(experiment.cpm.data.frame, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_experiment.csv"), row.names=FALSE)
   # create whole data.frame
-  total.data.frame <- cbind(gene.data.frame, control.cpm.data.frame, experiment.cpm.data.frame)
+  total.data.frame <- cbind(gene.data.frame, case.cpm.data.frame, control.cpm.data.frame)
+  total.data.frame[paste0(case.group, ".average")] <- rowMeans(case.cpm.data.frame)
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.cpm.data.frame)
-  total.data.frame[paste0(experiment.group, ".average")] <- rowMeans(experiment.cpm.data.frame)
-  total.data.frame[paste0(control.group, ".", experiment.group, ".average")]<- rowMeans(total.data.frame[-1])
+  total.data.frame[paste0(case.group, ".", control.group, ".average")]<- rowMeans(total.data.frame[-1])
   edgeR.result <- cbind(total.data.frame, de.statistic.result$table)
   # Write result into file (csv)
   write.csv(edgeR.result, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv"), row.names=FALSE)
@@ -63,8 +63,8 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
 
   # PreDE
   if(file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv")) &&
+     file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_case.csv")) &&
      file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_control.csv")) &&
-     file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_experiment.csv")) &&
      file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"))){
     if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images"))){
       dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images"))
@@ -77,13 +77,13 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
       dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/"))
     }
     # Frequency
-    FrequencyPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, control.group, experiment.group)
+    FrequencyPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
     # Bax and Violin
-    BoxViolinPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, control.group, experiment.group)
+    BoxViolinPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
     # PCA
-    PCAPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, control.group, experiment.group)
+    PCAPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
     #Correlation
-    CorrelationPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, control.group, experiment.group)
+    CorrelationPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
 
     ############
     #### DE ####
@@ -92,21 +92,21 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, control.gro
       dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/DE/"))
     }
     # Volcano
-    VolcanoPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, control.group, experiment.group, edgeR.pval, edgeR.log2FC)
+    VolcanoPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group, edgeR.pval, edgeR.log2FC)
 
     # PCA plot
-    DEPCAPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, control.group, experiment.group)
+    DEPCAPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
 
     # Heatmap
-    DEHeatmap("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, control.group, experiment.group)
+    DEHeatmap("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
 
     # MDS plot
     cat("\u25CF Plotting MDS plot ... \n")
     png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MDS_Plot.png"))
     my_colors=c(rgb(50, 147, 255,maxColorValue = 255),
                 rgb(255, 47, 35,maxColorValue = 255))
-    limma::plotMDS(deglist.object, top = 1000, labels = NULL, col = my_colors[as.numeric(deglist.object$samples$group)],
-                   pch = 20, cex = 2)
+    edgeR::plotMDS.DGEList(deglist.object, top = 1000, labels = NULL, col = my_colors[as.numeric(deglist.object$samples$group)],
+                           pch = 20, cex = 2)
     par(xpd=TRUE)
     legend("bottomright",inset=c(0,1), horiz=TRUE, bty="n", legend=levels(deglist.object$samples$group) , col=my_colors, pch=20 )
     title("MDS Plot")

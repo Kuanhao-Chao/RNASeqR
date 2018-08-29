@@ -5,10 +5,10 @@
 \title{Ballgown analysis, TPM & Student's t-test analysis, DESeq2 analysis, edgeR analysis for RNA-Seq workflow in R shell}
 \usage{
 RNASeqDifferentialAnalysis(path.prefix, genome.name, sample.pattern,
-  independent.variable, control.group, experiment.group,
-  ballgown.pval = 0.05, ballgown.log2FC = 1, TPM.pval = 0.05,
-  TPM.log2FC = 1, DESeq2.pval = 0.1, DESeq2.log2FC = 1,
-  edgeR.pval = 0.05, edgeR.log2FC = 1)
+  independent.variable, case.group, control.group, ballgown.pval = 0.05,
+  ballgown.log2FC = 1, TPM.pval = 0.05, TPM.log2FC = 1,
+  DESeq2.pval = 0.1, DESeq2.log2FC = 1, edgeR.pval = 0.05,
+  edgeR.log2FC = 1)
 }
 \arguments{
 \item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
@@ -19,9 +19,9 @@ RNASeqDifferentialAnalysis(path.prefix, genome.name, sample.pattern,
 
 \item{independent.variable}{independent variable for the biological experiment design of two-group RNA-Seq workflow}
 
-\item{control.group}{group name of the control group}
+\item{case.group}{group name of the case group}
 
-\item{experiment.group}{group name of the experiment group}
+\item{control.group}{group name of the control group}
 
 \item{ballgown.pval}{Default \code{0.05}. Set the threshold of ballgown p-value to filter out differential expressed gene.}
 
@@ -51,9 +51,9 @@ This function do following things :
    The main statistic test in ballgown is paramatic F-test comparing nested linear models
 2. TPM & Student's t-test analysis
    TPM normalization is calculated from the FPKM values produced by ballgown.
-   Independent sample t-test is used with TPM values as input. P-values will be produced after t-test. Fold change values are calculated by the formula : "average TPM experiment group values divide average TPM control group values".
+   Independent sample t-test is used with TPM values as input. P-values will be produced after t-test. Fold change values are calculated by the formula : "average TPM control group values divide average TPM case group values".
 3. DESeq2 analysis
-   Median of rations normalization(MRN) is used in DESeq2 for raw counts normalization. Sequencing depth and RNA composition is taken into consideration is this normalization method.
+   Median of rations normalization(MRN) is used in DESeq2 for raw read count normalization. Sequencing depth and RNA composition is taken into consideration is this normalization method.
    The main statistic test in DESeq2 is negative binomial distribution.
 4. edgeR analysis
    Raw reads are normalized by TMM and library size. (run \code{calcNormFactors()} to get a DGEList, and then run \code{cpm()} on that DGEList)

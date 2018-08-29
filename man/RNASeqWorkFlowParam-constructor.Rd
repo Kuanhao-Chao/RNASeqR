@@ -7,7 +7,7 @@
 \usage{
 RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA,
   genome.name = NA, sample.pattern = NA, independent.variable = NA,
-  control.group = NA, experiment.group = NA)
+  case.group = NA, control.group = NA)
 }
 \arguments{
 \item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
@@ -20,9 +20,9 @@ RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA,
 
 \item{independent.variable}{independent variable for the biological experiment design of two-group RNA-Seq workflow}
 
-\item{control.group}{group name of the control group}
+\item{case.group}{group name of the case group}
 
-\item{experiment.group}{group name of the experiment group}
+\item{control.group}{group name of the control group}
 }
 \value{
 an object of class \code{RNASeqWorkFlowParam}
@@ -33,7 +33,7 @@ Constructor function for RNASeqWorkFlowParam objects
 \examples{
 \dontrun{
 exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
-                           independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
+                           independent.variable = "two.group", case.group = "treatment", control.group = "cell")
 }
 }
 \author{

@@ -314,15 +314,15 @@ StringTieMergeTrans <- function(path.prefix, genome.name, sample.pattern, num.pa
   }
 }
 
-# stringtie estimate transcript abundances and create table counts for Ballgown
+# stringtie estimate transcript abundances and create table count for Ballgown
 StringTieToBallgown <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
-    cat("\n\u2618\u2618\u2618 Ballgown Table Counts Creation :\n")
-    cat(paste0("************** Stringtie creating table counts for Ballgown **************\n"))
+    cat("\n\u2618\u2618\u2618 Ballgown Table count Creation :\n")
+    cat(paste0("************** Stringtie creating table count for Ballgown **************\n"))
     if ((check.results$bam.files.number.df != 0) && isTRUE(check.results$stringtie_merged.gtf.file.df)){
       command.list <- c()
-      command.list <- c(command.list, "* Stringtie Creating Table Counts for Ballgown : ")
+      command.list <- c(command.list, "* Stringtie Creating Table count for Ballgown : ")
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/"))
       sample.table <- table(gsub(paste0(".bam$"), replacement = "", check.results$bam.files.df))

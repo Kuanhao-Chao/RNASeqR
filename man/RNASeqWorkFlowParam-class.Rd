@@ -29,9 +29,9 @@ An S4 class for checking and storing RNA-Seq workflow parameters of this package
 
 \item{\code{independent.variable}}{independent variable for the biological experiment design of two-group RNA-Seq workflow}
 
-\item{\code{control.group}}{group name of the control group}
+\item{\code{case.group}}{group name of the case group}
 
-\item{\code{experiment.group}}{group name of the experiment group}
+\item{\code{control.group}}{group name of the control group}
 
 \item{\code{indices.optional}}{logical value whether 'indices/' is exit in 'input_files/'}
 }}
@@ -45,8 +45,8 @@ workflowParam@input.path.prefix
 workflowParam@genome.name
 workflowParam@sample.pattern
 workflowParam@independent.variable
-workflowParam@control.group
-workflowParam@experiment.group}
+workflowParam@case.group
+workflowParam@control.group}
 }
 \author{
 Kuan-Hao Chao

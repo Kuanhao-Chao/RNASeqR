@@ -46,7 +46,7 @@ This function do following things :
    TPM normalization is calculated from the FPKM values produced by ballgown.
    Independent sample t-test is used with TPM values as input. P-values will be produced after t-test. Fold change values are calculated by the formula : "average TPM experiment group values divide average TPM control group values".
 3. DESeq2 analysis
-   Median of rations normalization(MRN) is used in DESeq2 for raw counts normalization. Sequencing depth and RNA composition is taken into consideration is this normalization method.
+   Median of rations normalization(MRN) is used in DESeq2 for raw read count normalization. Sequencing depth and RNA composition is taken into consideration is this normalization method.
    The main statistic test in DESeq2 is negative binomial distribution.
 4. edgeR analysis
    Raw reads are normalized by TMM and library size. (run \code{calcNormFactors()} to get a DGEList, and then run \code{cpm()} on that DGEList)

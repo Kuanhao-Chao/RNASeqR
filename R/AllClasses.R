@@ -10,8 +10,8 @@
 #' @slot genome.name Variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
 #' @slot sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
 #' @slot independent.variable independent variable for the biological experiment design of two-group RNA-Seq workflow
+#' @slot case.group group name of the case group
 #' @slot control.group group name of the control group
-#' @slot experiment.group group name of the experiment group
 #' @slot indices.optional logical value whether 'indices/' is exit in 'input_files/'
 #'
 #' @name RNASeqWorkFlowParam-class
@@ -29,8 +29,8 @@
 #' workflowParam@@genome.name
 #' workflowParam@@sample.pattern
 #' workflowParam@@independent.variable
-#' workflowParam@@control.group
-#' workflowParam@@experiment.group}
+#' workflowParam@@case.group
+#' workflowParam@@control.group}
 setClass("RNASeqWorkFlowParam",
          representation(
            os.type = "character",
@@ -41,8 +41,8 @@ setClass("RNASeqWorkFlowParam",
            genome.name = "character",
            sample.pattern = "character",
            independent.variable = "character",
+           case.group = "character",
            control.group = "character",
-           experiment.group = "character",
            indices.optional = "logical"
          )
 )
@@ -57,8 +57,8 @@ setClass("RNASeqWorkFlowParam",
 #' @param genome.name variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
 #' @param sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
 #' @param independent.variable independent variable for the biological experiment design of two-group RNA-Seq workflow
+#' @param case.group group name of the case group
 #' @param control.group group name of the control group
-#' @param experiment.group group name of the experiment group
 #'
 #' @return an object of class \code{RNASeqWorkFlowParam}
 #'
@@ -71,13 +71,13 @@ setClass("RNASeqWorkFlowParam",
 #' @examples
 #' \dontrun{
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
+#'                            independent.variable = "two.group", case.group = "treatment", control.group = "cell")
 #' }
 RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome.name = NA, sample.pattern = NA,
-                                independent.variable = NA, control.group = NA, experiment.group = NA) {
+                                independent.variable = NA, case.group = NA, control.group = NA) {
   # check input parameters
   CheckInputParamNa(path.prefix, input.path.prefix, genome.name, sample.pattern,
-                    independent.variable, control.group, experiment.group)
+                    independent.variable, case.group, control.group)
   # 1. check operating system
   characters.os.type <- CheckOperatingSystem()
   # 2. check python version
@@ -116,26 +116,26 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome
   # below still need to fix
   # 7. check 'phenodata'
   bool.phenodata <- CheckPhenodata(input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, independent.variable = independent.variable)
-  # 8. check 'control.group' and 'experiment.group'
-  bool.check.control.experiment.group <- CheckControlGroupExperimentGroup(input.path.prefix = input.path.prefix, independent.variable = independent.variable, control.group = control.group, experiment.group = experiment.group)
+  # 8. check 'case.group' and 'control.group'
+  bool.check.control.control.group <- CheckCaseControlGroup(input.path.prefix = input.path.prefix, independent.variable = independent.variable, case.group = case.group, control.group = control.group)
 
   if ((characters.os.type == "linux" || characters.os.type == "osx") && bool.python.avail && bool.prefix.path &&
-      bool.input.path.prefix && bool.input.dir.files && bool.phenodata && bool.check.control.experiment.group) {
+      bool.input.path.prefix && bool.input.dir.files && bool.phenodata && bool.check.control.control.group) {
     cat(paste0("\n**************************************\n"))
     cat(paste0("************** Success! **************\n"))
     cat(paste0("**************************************\n"))
     new("RNASeqWorkFlowParam",os.type = characters.os.type, python.variable = python.version.list, python.2to3 = two.to.three.result,
         path.prefix = path.prefix, input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern,
-        independent.variable = independent.variable, control.group = control.group, experiment.group = experiment.group,
+        independent.variable = independent.variable, case.group = case.group, control.group = control.group,
         indices.optional = bool.input.dir.indices)
   }
 }
 
 # inner function : check whether input values are NA
 CheckInputParamNa <- function(path.prefix, input.path.prefix, genome.name, sample.pattern,
-                            independent.variable, control.group, experiment.group) {
+                            independent.variable, case.group, control.group) {
   cat(c("************** Checking input parameters ************\n"))
-  if (is.na(path.prefix) || is.na(input.path.prefix) || is.na(genome.name) || is.na(sample.pattern) || is.na(independent.variable) || is.na(control.group) || is.na(experiment.group)) {
+  if (is.na(path.prefix) || is.na(input.path.prefix) || is.na(genome.name) || is.na(sample.pattern) || is.na(independent.variable) || is.na(case.group) || is.na(control.group)) {
     if (is.na(path.prefix)) {
       cat("(\u2718) : 'path.prefix' is missing.\n\n")
     }
@@ -151,11 +151,11 @@ CheckInputParamNa <- function(path.prefix, input.path.prefix, genome.name, sampl
     if (is.na(independent.variable)) {
       cat("(\u2718) : 'independent.variable' is missing.\n\n")
     }
+    if (is.na(case.group)) {
+      cat("(\u2718) : 'case.group' is missing.\n\n")
+    }
     if (is.na(control.group)) {
       cat("(\u2718) : 'control.group' is missing.\n\n")
-    }
-    if (is.na(experiment.group)) {
-      cat("(\u2718) : 'experiment.group' is missing.\n\n")
     }
     stop("Input parameters ERROR")
   } else {
@@ -421,28 +421,28 @@ CheckPhenodata <- function(input.path.prefix, genome.name, sample.pattern, indep
 }
 
 # inner function
-CheckControlGroupExperimentGroup <- function(input.path.prefix, independent.variable, control.group, experiment.group) {
-  cat(c("************** Checking 'control.group' & 'experiment.group' ************\n"))
+CheckCaseControlGroup <- function(input.path.prefix, independent.variable, case.group, control.group) {
+  cat(c("************** Checking 'case.group' & 'control.group' ************\n"))
   pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
   # Covert all column to character
   pheno_data <- data.frame(lapply(pheno_data, as.character), stringsAsFactors=FALSE)
-  cont.in <- control.group %in% as.character(data.frame(table(pheno_data[independent.variable]))$Var1)
-  exp.in <- experiment.group %in% as.character(data.frame(table(pheno_data[independent.variable]))$Var1)
-  # Check 'control.group' is on group of 'independent.variable'
+  cont.in <- case.group %in% as.character(data.frame(table(pheno_data[independent.variable]))$Var1)
+  exp.in <- control.group %in% as.character(data.frame(table(pheno_data[independent.variable]))$Var1)
+  # Check 'case.group' is on group of 'independent.variable'
   if (!cont.in) {
+    cat(paste0("(\u2718) : 'case.group' : '", case.group, "' is not a group of in 'independent.variable'.\n\n"))
+    stop("'case.group' invalid ERROR")
+  }
+  if (!exp.in) {
     cat(paste0("(\u2718) : 'control.group' : '", control.group, "' is not a group of in 'independent.variable'.\n\n"))
     stop("'control.group' invalid ERROR")
   }
-  if (!exp.in) {
-    cat(paste0("(\u2718) : 'experiment.group' : '", experiment.group, "' is not a group of in 'independent.variable'.\n\n"))
-    stop("'experiment.group' invalid ERROR")
-  }
   if (exp.in && cont.in) {
-    cat(paste0("(\u2714) :    'control.group' : '", control.group, "' is a group of in 'independent.variable'.\n"))
-    cat(paste0("(\u2714) : 'experiment.group' : '", experiment.group, "' is a group of in 'independent.variable'.\n\n"))
-    if (experiment.group == control.group) {
-      cat(paste0("(\u2718) : 'control.group' and 'experiment.group' are same.\n\n"))
-      stop("'control.group' &'experiment.group' same ERROR")
+    cat(paste0("(\u2714) :    'case.group' : '", case.group, "' is a group of in 'independent.variable'.\n"))
+    cat(paste0("(\u2714) : 'control.group' : '", control.group, "' is a group of in 'independent.variable'.\n\n"))
+    if (control.group == case.group) {
+      cat(paste0("(\u2718) : 'case.group' and 'control.group' are same.\n\n"))
+      stop("'case.group' &'control.group' same ERROR")
     }
   return(TRUE)
   }

@@ -70,7 +70,7 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.p
 #' @examples
 #' \dontrun{
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            independent.variable = "two.group", control.group = "treatment", experiment.group = "cell")
+#'                            independent.variable = "two.group", case.group = "treatment", control.group = "cell")
 #' RNASeqEnvironmentSet(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix, genome.name = exp@@genome.name,
 #'                      sample.pattern = exp@@sample.pattern, indices.optional = exp@@indices.optional, os.type = exp@@os.type)}
 RNASeqEnvironmentSet <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indices.optional, os.type, mkdir.bool = TRUE) {

@@ -171,24 +171,24 @@ ExportPath <- function(path.prefix) {
   cat("\u27a4\u27a4 R environment 'PATH' : ", Sys.getenv("PATH"), "\n\n")
 }
 
-ParseResultCSV <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, control.group, experiment.group) {
+ParseResultCSV <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group) {
+  case.normalized.csv <- paste0(path.prefix, "RNASeq_results/", which.analysis, "/normalized_&_statistic/", which.count.normalization, "_case.csv")
   control.normalized.csv <- paste0(path.prefix, "RNASeq_results/", which.analysis, "/normalized_&_statistic/", which.count.normalization, "_control.csv")
-  experiment.normalized.csv <- paste0(path.prefix, "RNASeq_results/", which.analysis, "/normalized_&_statistic/", which.count.normalization, "_experiment.csv")
   statistic.csv <- paste0(path.prefix, "RNASeq_results/", which.analysis, "/normalized_&_statistic/statistic.csv")
+  read.case.normalized.csv <- read.csv(case.normalized.csv)
   read.control.normalized.csv <- read.csv(control.normalized.csv)
-  read.experiment.normalized.csv <- read.csv(experiment.normalized.csv)
   read.statistic.csv <- read.csv(statistic.csv)
-  return(list("control" = read.control.normalized.csv, "experiment" = read.experiment.normalized.csv, "statistic" = read.statistic.csv))
+  return(list("case" = read.case.normalized.csv, "control" = read.control.normalized.csv, "statistic" = read.statistic.csv))
 }
 
-RawCountPreData <- function(path.prefix, independent.variable, control.group, experiment.group) {
+RawCountPreData <- function(path.prefix, independent.variable, case.group, control.group) {
   # likelihood ratio test and quasi-likelihood F-test
   # Read pheno_data
   pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
+  case.group.data.frame <- pheno_data[pheno_data[independent.variable] == case.group, ]
   control.group.data.frame <- pheno_data[pheno_data[independent.variable] == control.group, ]
-  experiment.group.data.frame <- pheno_data[pheno_data[independent.variable] == experiment.group, ]
+  case.group.size <- length(row.names(case.group.data.frame))
   control.group.size <- length(row.names(control.group.data.frame))
-  experiment.group.size <- length(row.names(experiment.group.data.frame))
 
   # read in gene count table
   gene.count.table.raw <- read.csv(paste0(path.prefix, "gene_data/reads_count_matrix/gene_count_matrix.csv"))
@@ -197,7 +197,7 @@ RawCountPreData <- function(path.prefix, independent.variable, control.group, ex
   rownames(gene.count.table) <- gene.count.table.raw$gene_id
   # gene matrix
   gene.count.matrix <- as.matrix(gene.count.table)
-  return(list("pheno_data" = pheno_data, "control.group.data.frame" = control.group.data.frame,  "experiment.group.data.frame" = experiment.group.data.frame, "control.group.size" = control.group.size, "experiment.group.size" = experiment.group.size, "gene.count.matrix" = gene.count.matrix))
+  return(list("pheno_data" = pheno_data, "case.group.data.frame" = case.group.data.frame,  "control.group.data.frame" = control.group.data.frame, "case.group.size" = case.group.size, "control.group.size" = control.group.size, "gene.count.matrix" = gene.count.matrix))
 }
 
 RawCountGeneNameChange <- function(raw.count, path.prefix){
@@ -217,7 +217,7 @@ RawCountGeneNameChange <- function(raw.count, path.prefix){
   gene.name.list <- c(know.gene.raw.count.aggregate$Group.1, rep(".", length(row.names(novel.gene.raw.count))))
   know.gene.raw.count.aggregate$Group.1 <- NULL
   novel.know.gene.raw.count <- rbind(know.gene.raw.count.aggregate, novel.gene.raw.count)
-  return(list("raw.counts" = novel.know.gene.raw.count, "raw.counts.name" = gene.name.list))
+  return(list("raw.count" = novel.know.gene.raw.count, "raw.count.name" = gene.name.list))
 }
 
 RawReadCountAvailability <- function(path.prefix) {

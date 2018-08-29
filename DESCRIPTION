@@ -11,7 +11,7 @@ License: Artistic-2.0
 Encoding: UTF-8
 RoxygenNote: 6.1.0
 Depends:
-  R (>= 3.5.0),
+  R,
   ggplot2,
   pathview,
   edgeR

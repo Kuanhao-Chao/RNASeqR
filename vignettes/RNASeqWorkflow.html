@@ -155,7 +155,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">RNASeqWorkflow : RNA-Seq workflow for one independent variable analysis</h1>
 <p class="author-name">Author: Kuan-Hao Chao (ntueeb05howard@gmail.com)</p>
-<h4 class="date"><em>Last update: 26 August, 2018</em></h4>
+<h4 class="date"><em>Last update: 29 August, 2018</em></h4>
 <h4 class="abstract">Abstract</h4>
 <p>An RNA-Seq workflow for one independent variable analysis</p>
 
@@ -168,8 +168,9 @@ $(document).ready(function () {
 <li><a href="#overview"><span class="toc-section-number">1.1</span> Overview</a></li>
 <li><a href="#system-requirement"><span class="toc-section-number">1.2</span> System Requirement</a></li>
 <li><a href="#rnaseqworkflowparam-s4-object-creation"><span class="toc-section-number">1.3</span> “RNASeqWorkFlowParam” S4 Object Creation</a><ul>
-<li><a href="#rnaseqworkflowparam-constructor-checking-steps"><span class="toc-section-number">1.3.1</span> “RNASeqWorkFlowParam” Constructor Checking Steps</a></li>
-<li><a href="#example"><span class="toc-section-number">1.3.2</span> Example</a></li>
+<li><a href="#rnaseqworkflowparam-slots-explanation"><span class="toc-section-number">1.3.1</span> <code>RNASeqWorkFlowParam</code> Slots Explanation</a></li>
+<li><a href="#rnaseqworkflowparam-constructor-checking-steps"><span class="toc-section-number">1.3.2</span> <code>RNASeqWorkFlowParam</code> Constructor Checking Steps</a></li>
+<li><a href="#example"><span class="toc-section-number">1.3.3</span> Example</a></li>
 </ul></li>
 <li><a href="#environment-set-up"><span class="toc-section-number">1.4</span> Environment Set up</a><ul>
 <li><a href="#files-setup"><span class="toc-section-number">1.4.1</span> Files Setup</a></li>
@@ -177,26 +178,30 @@ $(document).ready(function () {
 <li><a href="#export-path"><span class="toc-section-number">1.4.3</span> Export Path</a></li>
 <li><a href="#example-1"><span class="toc-section-number">1.4.4</span> Example</a></li>
 </ul></li>
-<li><a href="#fastq-files-quality-assessment"><span class="toc-section-number">1.5</span> Fastq files Quality Assessment</a><ul>
+<li><a href="#fastq-files-quality-assessment"><span class="toc-section-number">1.5</span> <code>FASTQ</code> Files Quality Assessment</a><ul>
 <li><a href="#systempiper-quality-assessment"><span class="toc-section-number">1.5.1</span> “systemPipeR” Quality Assessment</a></li>
 <li><a href="#example-2"><span class="toc-section-number">1.5.2</span> Example</a></li>
 </ul></li>
-<li><a href="#fastq-files-quality-trimming"><span class="toc-section-number">1.6</span> Fastq files Quality Trimming</a><ul>
+<li><a href="#fastq-files-quality-trimming"><span class="toc-section-number">1.6</span> <code>FASTQ</code> Files Quality Trimming</a><ul>
 <li><a href="#shortread-quality-trimming"><span class="toc-section-number">1.6.1</span> “ShortRead” Quality Trimming</a></li>
 <li><a href="#example-3"><span class="toc-section-number">1.6.2</span> Example</a></li>
 </ul></li>
 <li><a href="#raw-reads-process-alignment-assembly-gffcompare-quantification"><span class="toc-section-number">1.7</span> Raw Reads Process (Alignment, Assembly, Gffcompare, Quantification)</a><ul>
-<li><a href="#hisat2-index"><span class="toc-section-number">1.7.1</span> HISAT2 Index</a></li>
-<li><a href="#hisat2-alignment"><span class="toc-section-number">1.7.2</span> HISAT2 Alignment</a></li>
-<li><a href="#samtools-sam-to-bam"><span class="toc-section-number">1.7.3</span> SAMtools <code>SAM</code> to <code>BAM</code></a></li>
-<li><a href="#stringtie-assembly"><span class="toc-section-number">1.7.4</span> StringTie Assembly</a></li>
-<li><a href="#stringtie-merge-gtf"><span class="toc-section-number">1.7.5</span> StringTie Merge <code>GTF</code></a></li>
-<li><a href="#gffcompare"><span class="toc-section-number">1.7.6</span> Gffcompare</a></li>
+<li><a href="#hisat2-index"><span class="toc-section-number">1.7.1</span> <code>HISAT2</code> Index</a></li>
+<li><a href="#hisat2-alignment"><span class="toc-section-number">1.7.2</span> <code>HISAT2</code> Alignment</a></li>
+<li><a href="#samtools-sam-to-bam"><span class="toc-section-number">1.7.3</span> <code>SAMtools</code> <code>SAM</code> to <code>BAM</code></a></li>
+<li><a href="#stringtie-assembly"><span class="toc-section-number">1.7.4</span> <code>StringTie</code> Assembly</a></li>
+<li><a href="#stringtie-merge-gtf"><span class="toc-section-number">1.7.5</span> <code>StringTie</code> Merge <code>GTF</code></a></li>
+<li><a href="#gffcompare"><span class="toc-section-number">1.7.6</span> <code>Gffcompare</code></a></li>
 <li><a href="#raw-reads-count-table-creation"><span class="toc-section-number">1.7.7</span> Raw reads count table creation</a></li>
-<li><a href="#section"><span class="toc-section-number">1.7.8</span> </a></li>
-<li><a href="#example-4"><span class="toc-section-number">1.7.9</span> Example</a></li>
+<li><a href="#example-4"><span class="toc-section-number">1.7.8</span> Example</a></li>
 </ul></li>
-<li><a href="#raw-reads-differential-expressed-genes-analysis-ballgown-tpm-t-test-deseq2-and-edger"><span class="toc-section-number">1.8</span> Raw Reads Differential Expressed Genes Analysis (ballgown, TPM &amp; t-test, DESeq2 and edgeR)</a></li>
+<li><a href="#differential-expressed-genes-analysis"><span class="toc-section-number">1.8</span> Differential Expressed Genes Analysis</a><ul>
+<li><a href="#ballgown-analysis"><span class="toc-section-number">1.8.1</span> “ballgown” Analysis</a></li>
+<li><a href="#tpm-student-t-test-analysis"><span class="toc-section-number">1.8.2</span> TPM &amp; Student t-test Analysis</a></li>
+<li><a href="#deseq2-analysis"><span class="toc-section-number">1.8.3</span> “DESeq2” Analysis</a></li>
+<li><a href="#edger-analysis"><span class="toc-section-number">1.8.4</span> “edgeR” Analysis</a></li>
+</ul></li>
 <li><a href="#functional-analysis-gene-ontology-and-pathway-analysis-kyoto-encyclopedia-of-genes-and-genomes"><span class="toc-section-number">1.9</span> Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)</a></li>
 <li><a href="#conlusion"><span class="toc-section-number">1.10</span> Conlusion</a></li>
 </ul></li>
@@ -225,60 +230,72 @@ $(document).ready(function () {
 <div id="rnaseqworkflowparam-s4-object-creation" class="section level2">
 <h2><span class="header-section-number">1.3</span> “RNASeqWorkFlowParam” S4 Object Creation</h2>
 <p>This is the <strong>pre-step</strong> of RNA-Seq workflow in this package. Before starting RNA-Seq analysis, you have to run the constructor function <code>RNASeqWorkFlowParam()</code> and create <code>RNASeqWorkFlowParam</code> S4 instance first. This instance will be used as input parameter in the following analysis function.</p>
+<div id="rnaseqworkflowparam-slots-explanation" class="section level3">
+<h3><span class="header-section-number">1.3.1</span> <code>RNASeqWorkFlowParam</code> Slots Explanation</h3>
+<p>There are 11 slots in <code>RNASeqWorkFlowParam</code>.</p>
+<ol style="list-style-type: decimal">
+<li><code>os.type</code> : The operating system type. Value is <code>linux</code> or <code>osx</code>. This package only support Linux and macOS (no Windows). If other operating system is detected, ERROR will be reported.</li>
+<li><code>python.variable</code> : Python related variable. Value is a list of whether Python is available and Python version (<code>TRUE</code> or <code>FALSE</code>, <code>2</code> or <code>3</code>).</li>
+<li><code>python.2to3</code> : Availability of <code>2to3</code> command. Value is <code>TRUE</code> or <code>FALSE</code>.</li>
+<li><code>path.prefix</code> : Path prefix of <em>‘gene_data/’</em>, <em>‘RNASeqbin/’</em>, <em>‘RNASeqresults/’</em>, <em>‘Rscript/’</em> and <em>‘Rscriptout/’</em> directories. It is recommended to create a new directory with out any file inside and all the following RNA-Seq results will be installed in it.</li>
+<li><code>input.path.prefix</code> : Path prefix of <em>‘inputfiles/’</em> directory. User have to prepare an <em>‘inputfile/’</em> directory with the following rules:
+<ul>
+<li><strong><em><code>genome.name</code>.fa</em></strong> : reference genome in FASTA file formation.</li>
+<li><strong><em><code>genome.name</code>.gtf</em></strong> : gene annotation in GTF file formation.</li>
+<li><strong><em>rawfastq.gz</em>/</strong>: directory storing FASTQ files.</li>
+<li>Support paired-end reads files only.</li>
+<li>Names of paired-end FASTQ files : <em>‘<code>sample.pattern</code>1.fastq.gz’</em> and <em>‘<code>sample.pattern</code>2.fastq.gz’</em>. <code>sample.pattern</code> must be distinct for each sample.</li>
+<li><strong><em>phenodata.csv</em></strong> : information about RNA-Seq experiment design.
+<ul>
+<li>First column : Distint ids for each sample. Value of each sample of this column must match <code>sample.pattern</code> in FASTQ files in <em>‘rawfastq.gz/’</em>. Column names must be <strong>ids</strong>.</li>
+<li>Second column : independent variable for the RNA-Seq experiment. Value of each sample of this column can only be parameter <code>case.group</code> and <code>control.group</code>. Column name is parameter <code>independent.variable</code>.</li>
+</ul></li>
+<li><strong><em>indices</em>/</strong> : directory storing <code>HT2</code> indices files for hisat2 alignment tool.
+<ul>
+<li>This directory is <strong>optional</strong>. <code>HT2</code> indices files corresponding to target reference genome can be installed at <a href="https://ccb.jhu.edu/software/hisat2/index.shtml">HISAT2 official website</a>. Providing <code>HT2</code> files can accelerate the subsequent steps.</li>
+<li>If <code>HT2</code> index files are not provided, <em>‘inputfiles/indices/’</em> directory should be deleted.</li>
+</ul></li>
+</ul></li>
+<li><code>genome.name</code> : Variable of genome name defined in this RNA-Seq workflow (ex. ‘<code>genome.name</code>.fa’, ‘<code>genome.name</code>.gtf’)<br />
+</li>
+<li><code>sample.pattern</code> : Regular expression of paired-end fastq.gz files under <em>‘inputfiles/rawfastq.gz/’</em>. <strong>IMPORTANT!!</strong> expression shouldn’t have <code>_[1,2].fastq.gz</code> in end.</li>
+<li><code>independent.variable</code>: Independent variable for the biological experiment design of two-group RNA-Seq workflow.</li>
+<li><code>case.group</code> : Group name of the case group.</li>
+<li><code>control.group</code> : Group name of the control group.</li>
+<li><code>indices.optional</code> : logical value whether <em>‘input_files/indices/’</em> is exit. Value is <code>TRUE</code> or <code>FALSE</code></li>
+</ol>
+</div>
 <div id="rnaseqworkflowparam-constructor-checking-steps" class="section level3">
-<h3><span class="header-section-number">1.3.1</span> “RNASeqWorkFlowParam” Constructor Checking Steps</h3>
+<h3><span class="header-section-number">1.3.2</span> <code>RNASeqWorkFlowParam</code> Constructor Checking Steps</h3>
 <ol style="list-style-type: decimal">
 <li>Create a new directory for RNA-Seq analysis.
 <ul>
 <li>It is highly recommended to create a new directory without any files inside. The parameter <code>path.prefix</code> of <code>RNASeqWorkFlowParam()</code> constructor should be the absolute path of this new directory. All the RNA-Seq related files that generated in the following steps will be stored inside of this directory.</li>
 </ul></li>
-<li>Create valid ‘input_files/’ directory
+<li>Create valid <em>‘inputfiles/’</em> directory
 <ul>
-<li>You should create a file directory named ‘input_files/’ with the following rules:
-<ul>
-<li><strong><em><code>genome.name</code>.fa</em></strong> : reference genome in FASTA file formation.</li>
-<li><strong><em><code>genome.name</code>.gtf</em></strong> : gene annotation in GTF file formation.</li>
-<li><strong><em>rawfastq.gz</em>/</strong>: directory storing FASTQ files.
-<ul>
-<li>Support paired-end reads files only.</li>
-<li>Names of paired-end FASTQ files : ’<code>sample.pattern</code>_1.fastq.gz’ and ’<code>sample.pattern</code>_2.fastq.gz’. <code>sample.pattern</code> must be distinct for each sample.</li>
-</ul></li>
-<li><strong><em>phenodata.csv</em></strong> : information about RNA-Seq experiment design.
-<ul>
-<li>First column : Distint ids for each sample. Value of each sample of this column must match <code>sample.pattern</code> in FASTQ files in ‘raw_fastq.gz/’. Column names must be ‘ids’.</li>
-<li>Second column : independent variable for the RNA-Seq experiment. Value of each sample of this column can only be parameter <code>control.group</code> and <code>experiment.group</code>. Column name is parameter <code>independent.variable</code>.</li>
-</ul></li>
-<li><strong><em>indices</em>/</strong> : directory storing <code>HT2</code> indices files for hisat2 alignment tool.
-<ul>
-<li>This directory is optional. <code>HT2</code> indices files corresponding to target reference genome can be installed at <a href="https://ccb.jhu.edu/software/hisat2/index.shtml">HISAT2 official website</a>. Providing <code>HT2</code> files can accelerate the subsequent steps.</li>
-<li>If <code>HT2</code> index files are not provided, ‘indices/’ directory should be deleted in ‘input_files/’ directory.</li>
-</ul></li>
-</ul></li>
+<li>You should create a file directory named <em>‘inputfiles/’</em> with neccessary files inside. It should follow the rules metioned above.</li>
 </ul></li>
 <li>Run constructor of <code>RNASeqWorkFlowParam</code> S4 object
 <ul>
 <li>This constructor will check following things before creating S4 objects
 <ul>
-<li>Operating system
-<ul>
-<li>Detect your workstations operating system. This package support <code>Linux</code> and <code>macOS</code>. <code>Windows</code> is not supported.</li>
-</ul></li>
-<li>Python version
-<ul>
-<li>Detect whether Python is available on your work station.</li>
-</ul></li>
-<li>Structure and contents of ‘input_files/’</li>
+<li>Operating system</li>
+<li>Python version</li>
+<li>2to3 command<br />
+</li>
+<li>Structure, contents and rules of <em>‘inputfiles/’</em></li>
 <li>Validity of input parameters</li>
 </ul></li>
 </ul></li>
 </ol>
 </div>
 <div id="example" class="section level3">
-<h3><span class="header-section-number">1.3.2</span> Example</h3>
+<h3><span class="header-section-number">1.3.3</span> Example</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># exp &lt;- RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA, </span>
 <span class="co"># genome.name = NA, sample.pattern = NA, independent.variable = NA, </span>
 <span class="co"># control.group = NA, experiment.group = NA)</span></code></pre></div>
-<p>In this example, <code>RNASeqWorkFlowParam</code> S4 object is store in <code>exp</code> for RNA-Seq analysis steps below.</p>
+<p>In this example, <code>RNASeqWorkFlowParam</code> S4 object is store in <code>exp</code> for RNA-Seq analysis steps below. Any ERROR occured in checking steps will terminate the program.</p>
 </div>
 </div>
 <div id="environment-set-up" class="section level2">
@@ -287,86 +304,111 @@ $(document).ready(function () {
 <div id="files-setup" class="section level3">
 <h3><span class="header-section-number">1.4.1</span> Files Setup</h3>
 <ol style="list-style-type: decimal">
-<li><p>Create Base Directories ‘gene_data/’, ‘RNASeq_bin/’, ‘RNASeq_results’, ‘Rscript’ and ‘Rscript_out’ will be created under <code>path.prefix</code> directory.</p></li>
-<li><p>Copy ‘input_files/’ Symbolic links will be created from files in ‘input_files/’ to <code>path.prefix</code> directory.</p></li>
+<li><p>Create Base Directories <em>‘gene_data/’</em>, <em>‘RNASeqbin/’</em>, <em>‘RNASeqresults’</em>, <em>‘Rscript’</em> and <em>‘Rscriptout’</em> will be created under <code>path.prefix</code> directory.</p></li>
+<li><p>Copy <em>‘inputfiles/’</em> Symbolic links will be created from files in <em>‘inputfiles/’</em> to <code>path.prefix</code> directory.</p></li>
 </ol>
 </div>
 <div id="necessary-tools-installation" class="section level3">
 <h3><span class="header-section-number">1.4.2</span> Necessary Tools Installation</h3>
-<p>The operating system of your workstation will be detected. If the operating system is other than <code>Linux</code> and <code>macOS</code>, <code>ERROR</code> will be reported. <code>HISAT2</code>, <code>SAMtools</code>, <code>StringTie</code> and <code>Gffcompare</code> will be installed automatically.</p>
+<p>The operating system of your workstation will be detected. If the operating system is other than <code>Linux</code> and <code>macOS</code>, ERROR will be reported. <code>HISAT2</code>, <code>SAMtools</code>, <code>StringTie</code> and <code>Gffcompare</code> will be installed automatically.</p>
 <ul>
-<li>HISAT2
+<li><code>HISAT2</code>
 <ul>
 <li>Based on your operating system, <code>hisat2-2.1.0-Linux_x86_64.zip</code> or <code>hisat2-2.1.0-OSX_x86_64.zip</code> zipped file will be installed.</li>
-<li>Installed file will be unzipped and all binary files will be moved under ‘RNASeq_bin/’</li>
+<li>Installed file will be unzipped and all binary files will be copied under <em>‘RNASeqbin/’</em></li>
 </ul></li>
-<li>SAMtools
+<li><em>SAMtools</em>
 <ul>
 <li><code>samtools-1.8.tar.bz2</code> source files will be installed.</li>
-<li>Installed files will be unzipped and compiled. If there is any ERROR occurred during compilation, program will be stopped. You should check the development environment is OK for SAMtools and rerun <code>RNASeqEnvironmentSet_CMD</code> or <code>RNASeqEnvironmentSet()</code> to set up the environment.</li>
+<li>Installed files will be unzipped and compiled. If there is any ERROR occurred during compilation, program will be stopped. You should check whether the development environment is OK for SAMtools before rerunning <code>RNASeqEnvironmentSet_CMD</code> or <code>RNASeqEnvironmentSet()</code> to set up the environment again.</li>
+<li>Maked samtools binary will be copied under <em>‘RNASeqbin/’</em>.</li>
 </ul></li>
-<li>StringTie
+<li><code>StringTie</code>
 <ul>
 <li>Based on your operating system, <code>stringtie-1.3.4d.Linux_x86_64.tar.gz</code> or <code>stringtie-1.3.4d.Linux_x86_64</code> zipped file will be installed.</li>
-<li>Installed file will be unzipped and all binary files will be moved under ‘RNASeq_bin/’</li>
+<li>Installed file will be unzipped and all binary files will be copied under <em>‘RNASeqbin/’</em>.</li>
 </ul></li>
-<li>Gffcompare
+<li><code>Gffcompare</code>
 <ul>
-<li>Based on your operating system, <code>gffcompare-0.10.4.Linux_x86_64.tar.gz</code> or `` zipped file will be installed.</li>
-<li>Installed file will be unzipped and all binary files will be moved under ‘RNASeq_bin/’</li>
+<li>Based on your operating system, <code>gffcompare-0.10.4.Linux_x86_64.tar.gz</code> or <code>gffcompare-0.10.4.Linux_x86_64.tar.gz</code> zipped file will be installed.</li>
+<li>Installed file will be unzipped and all binary files will be copied under <em>‘RNASeqbin/’</em>.</li>
 </ul></li>
 </ul>
 </div>
 <div id="export-path" class="section level3">
 <h3><span class="header-section-number">1.4.3</span> Export Path</h3>
-<p>‘RNASeq_bin/’ will be added to R PATH so that these binaries can be found in R environment. In the last step of environment setting, <code>hisat2 --version</code>,<code>stringtie --version</code>,<code>gffcompare --version</code> and <code>samtools --version</code> commands will be checked in order to make sure the environment is correctly constructed.</p>
+<p><em>‘RNASeqbin/’</em> will be added to R PATH so that these binaries can be found in R environment. In the last step of environment setting, <code>hisat2 --version</code>,<code>stringtie --version</code>,<code>gffcompare --version</code> and <code>samtools --version</code> commands will be checked in order to make sure the environment is correctly constructed.</p>
 </div>
 <div id="example-1" class="section level3">
 <h3><span class="header-section-number">1.4.4</span> Example</h3>
+<ol style="list-style-type: decimal">
+<li>Run in background Result will be reported in <em>‘Rscriptout/EnvironmentSet.Rout’</em>. Make sure the environment is successfully set up before running the subsequent steps.</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># RNASeqEnvironmentSet_CMD()</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Run in R shell Result will be reported in R shell. Make sure the environment is successfully set up before running the subsequent steps.</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># RNASeqEnvironmentSet()</span></code></pre></div>
 </div>
 </div>
 <div id="fastq-files-quality-assessment" class="section level2">
-<h2><span class="header-section-number">1.5</span> Fastq files Quality Assessment</h2>
+<h2><span class="header-section-number">1.5</span> <code>FASTQ</code> Files Quality Assessment</h2>
 <p>This is an <strong>optional step</strong> of RNA-Seq workflow in this package. However, it is strongly recommended to do it before processing raw reads. To assess the quality of raw reads in FASTQ files, run <code>RNASeqQualityAssessment_CMD()</code> to execute process in background or run <code>RNASeqQualityAssessment()</code> to execute process in R shell.</p>
 <div id="systempiper-quality-assessment" class="section level3">
 <h3><span class="header-section-number">1.5.1</span> “systemPipeR” Quality Assessment</h3>
-<p>In this process, <code>systemPipeR</code> package is used for quality assessment. Here are the following steps:</p>
+<p>In this process, <a href="http://bioconductor.org/packages/release/bioc/html/systemPipeR.html">systemPipeR</a> package is used for quality assessment. Here are the following steps:</p>
 <ol style="list-style-type: decimal">
-<li>Check the times that users have run quality assessment process and create the corresponding files ‘RNASeq_results/QA_results/QA_{times}’.</li>
-<li>RNA-Seq environment set up. ‘rnaseq/’ directory will be created by <code>systemPipeR</code> package.</li>
-<li>Create ‘data.list.txt’ file.</li>
-<li>Reading FASTQ files and create ‘fastqReport.pdf’ as the report result of quality assessment</li>
-<li>Remove ‘rnaseq/’ directory.</li>
+<li>Check the number of times that user has run quality assessment process and create the corresponding files <em>‘RNASeqresults/QAresults/QA{times}’</em>.</li>
+<li>RNA-Seq environment set up. <em>‘rnaseq/’</em> directory will be created by <a href="http://bioconductor.org/packages/release/bioc/html/systemPipeR.html">systemPipeR</a> package.</li>
+<li>Create <em>‘data.list.txt’</em> file.</li>
+<li>Reading FASTQ files and create <em>‘fastqReport.pdf’</em> as the report result of quality assessment</li>
+<li>Remove <em>‘rnaseq/’</em> directory.</li>
 </ol>
 </div>
 <div id="example-2" class="section level3">
 <h3><span class="header-section-number">1.5.2</span> Example</h3>
+<ol style="list-style-type: decimal">
+<li>Run in background Result will be reported in <em>‘Rscriptout/Quality_Assessment.Rout’</em>. Make sure quality assessment is successfully done before running the subsequent steps.</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># RNASeqQualityAssessment_CMD()</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Run in R shell Result will be reported in R shell. Make sure quality assessment is successfully done before running the subsequent steps.</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># RNASeqQualityAssessment()</span></code></pre></div>
 </div>
 </div>
 <div id="fastq-files-quality-trimming" class="section level2">
-<h2><span class="header-section-number">1.6</span> Fastq files Quality Trimming</h2>
+<h2><span class="header-section-number">1.6</span> <code>FASTQ</code> Files Quality Trimming</h2>
 <p>This is an <strong>optional step</strong> of RNA-Seq workflow in this package. However, it is strongly recommended to do it if the result of quality assessment is unsatisfied. To trim the raw reads in FASTQ files, run <code>RNASeqQualityTrimming_CMD()</code> to execute process in background or run <code>RNASeqQualityTrimming()</code> to execute process in R shell. After trimming process, it is strongly recommended to redo quality assessment step. Different quality assessment result will be stored in different directories with index of processing order.</p>
 <div id="shortread-quality-trimming" class="section level3">
 <h3><span class="header-section-number">1.6.1</span> “ShortRead” Quality Trimming</h3>
-<p>In this process, <code>ShortRead</code> package is used for quality trimming. Followings are trimming steps and method explanation.</p>
+<p>In this process, <a href="http://bioconductor.org/packages/release/bioc/html/ShortRead.html">ShortRead</a> package is used for quality trimming. Followings are trimming steps and method explanation.</p>
 <ol style="list-style-type: decimal">
-<li>FASTQ files with <code>sample.pattern</code> in ‘gene_data/raw_fastq.gz’ will be listed and be check. This trimming function only support paired-end FASTQ files.</li>
+<li><code>FASTQ</code> files with <code>sample.pattern</code> in <em>‘gene_data/rawfastq.gz’</em> will be listed and be check. This trimming function only support paired-end FASTQ files.</li>
 <li>The probability of error per each base pair is calculated by Phred Quality in FASTQ files and the cumulative probability of error of each base pair will also be calculated. The threshold cumulative probability <code>cum.error</code>, with default value <code>1</code>, is used to find the trimming point of paired end files.</li>
-<li><code>reads.length.limit</code>, with default value 36, determines the minimum base pair length of reads. Length of reads less than <code>reads.length.limit</code> will be trimmed.</li>
-<li>Untrimmed FASTQ files are moved to ‘gene_data/raw_fastq.gz/original_untrimmed_fastq.gz’, and trimmed FASTQ files are written to ‘gene_data/raw_fastq.gz/’</li>
+<li><code>reads.length.limit</code>, with default value 36, determines the minimum base pair length of reads. Length of reads less than <code>reads.length.limit</code> will be filtered out.</li>
+<li>Untrimmed original <code>FASTQ</code> files are moved to <em>‘gene_data/rawfastq.gz/originaluntrimmedfastq.gz’</em>, and trimmed reads are written to <em>‘gene_data/rawfastq.gz/’</em></li>
 <li>It is strongly recommended to run <code>RNASeqQualityAssessment_CMD()</code> or <code>RNASeqQualityAssessment()</code> for quality assessment after quality trimming.</li>
 </ol>
 </div>
 <div id="example-3" class="section level3">
 <h3><span class="header-section-number">1.6.2</span> Example</h3>
+<ol style="list-style-type: decimal">
+<li>Run in background Result will be reported in <em>‘Rscriptout/QualityTrimming.Rout’</em>. Make sure quality trimming is successfully done before running the subsequent steps.</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># RNASeqQualityAssessment_CMD()</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Run in R shell Result will be reported in R shell. Make sure quality assessment is successfully done before running the subsequent steps.</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># RNASeqQualityAssessment()</span></code></pre></div>
 </div>
 </div>
 <div id="raw-reads-process-alignment-assembly-gffcompare-quantification" class="section level2">
 <h2><span class="header-section-number">1.7</span> Raw Reads Process (Alignment, Assembly, Gffcompare, Quantification)</h2>
-<p>This is a <strong>second necessary step</strong> of RNA-Seq workflow in this package. Programs installed in environment setting step, <code>HISAT2</code>, <code>SAMtools</code>, <code>StringTie</code> and <code>Gffcompare</code>, will be executed. To process raw reads FASTQ files, run <code>RNASeqRawReadProcess_CMD()</code> to execute process in background or run <code>RNASeqRawReadProcess()</code> to execute process in R shell. For more details about commands that executed during each reads processing step, please check the reported <code>RNASeq_results/COMMAND.txt</code>.</p>
+<p>This is a <strong>second necessary step</strong> of RNA-Seq workflow in this package. Programs installed in environment setting step, <code>HISAT2</code>, <code>SAMtools</code>, <code>StringTie</code> and <code>Gffcompare</code>, will be executed. To process raw reads FASTQ files, run <code>RNASeqRawReadProcess_CMD()</code> to execute process in background or run <code>RNASeqRawReadProcess()</code> to execute process in R shell. For more details about commands that executed during each reads processing step, please check the reported <em>‘RNASeqresults/COMMAND.txt’</em>.</p>
 <div id="hisat2-index" class="section level3">
-<h3><span class="header-section-number">1.7.1</span> HISAT2 Index</h3>
-<p>In pre-step(<code>RNASeqWorkFlowParam</code> creation step), ‘indices/’ directory is checked and the whether <code>HT2</code> indices files are provided is known. If not provided, following commands will be executed:</p>
+<h3><span class="header-section-number">1.7.1</span> <code>HISAT2</code> Index</h3>
+<p>In pre-step(<code>RNASeqWorkFlowParam</code> creation step), <em>‘indices/’</em> directory is checked and the whether <code>HT2</code> indices files are provided is known. If not provided, following commands will be executed:</p>
 <ul>
 <li>Input: <em><code>genome.name</code>.gtf</em>, <em><code>genome.name</code>.fa</em></li>
 <li>Output: <em><code>genome.name</code>.ss</em>, <em><code>genome.name</code>.exon</em>, *<code>genome.name</code>_tran.{number}.ht2*</li>
@@ -383,7 +425,7 @@ $(document).ready(function () {
 </ol>
 </div>
 <div id="hisat2-alignment" class="section level3">
-<h3><span class="header-section-number">1.7.2</span> HISAT2 Alignment</h3>
+<h3><span class="header-section-number">1.7.2</span> <code>HISAT2</code> Alignment</h3>
 <ul>
 <li>Input: *<code>genome.name</code>_tran.{number}.ht2<em>, </em><code>sample.pattern</code>.fastq.gz*</li>
 <li>Output: <em><code>sample.pattern</code>.sam</em></li>
@@ -391,12 +433,12 @@ $(document).ready(function () {
 <ol style="list-style-type: decimal">
 <li><code>hisat2</code> command is executed on paired end FASTQ files. <code>SAM</code> files will be created.
 <ul>
-<li><code>SAM</code> files are stored in ‘gene_data/raw_bam/’</li>
+<li><code>SAM</code> files are stored in <em>‘gene_data/raw_bam/’</em></li>
 </ul></li>
 </ol>
 </div>
 <div id="samtools-sam-to-bam" class="section level3">
-<h3><span class="header-section-number">1.7.3</span> SAMtools <code>SAM</code> to <code>BAM</code></h3>
+<h3><span class="header-section-number">1.7.3</span> <code>SAMtools</code> <code>SAM</code> to <code>BAM</code></h3>
 <ul>
 <li>Input: <em><code>sample.pattern</code>.sam</em></li>
 <li>Output: <em><code>sample.pattern</code>.bam</em></li>
@@ -404,12 +446,12 @@ $(document).ready(function () {
 <ol style="list-style-type: decimal">
 <li><code>samtools</code> command is executed. Output files from <code>hisat2</code> <code>SAM</code> files will be converted to <code>BAM</code> files.
 <ul>
-<li><code>BAM</code> files are stored in ‘gene_data/raw_sam/’.</li>
+<li><code>BAM</code> files are stored in <em>‘gene_data/raw_sam/’</em>.</li>
 </ul></li>
 </ol>
 </div>
 <div id="stringtie-assembly" class="section level3">
-<h3><span class="header-section-number">1.7.4</span> StringTie Assembly</h3>
+<h3><span class="header-section-number">1.7.4</span> <code>StringTie</code> Assembly</h3>
 <ul>
 <li>Input: <em><code>genome.name</code>.gtf</em>, <em><code>sample.pattern</code>.bam</em></li>
 <li>Output: <em><code>sample.pattern</code>.gtf</em></li>
@@ -418,30 +460,30 @@ $(document).ready(function () {
 <li><code>stringtie</code> command is executed.
 <ul>
 <li>Assembler of RNA-Seq alignments into potential transcripts.</li>
-<li>Output assembled <code>GTF</code> files which are from each <code>FASTQ</code> files are stored in ‘gene_data/raw_gtf/’</li>
+<li>Output assembled <code>GTF</code> files which are from each <code>FASTQ</code> files are stored in <em>‘gene_data/raw_gtf/’</em></li>
 </ul></li>
 </ol>
 </div>
 <div id="stringtie-merge-gtf" class="section level3">
-<h3><span class="header-section-number">1.7.5</span> StringTie Merge <code>GTF</code></h3>
+<h3><span class="header-section-number">1.7.5</span> <code>StringTie</code> Merge <code>GTF</code></h3>
 <ul>
 <li>Input: <em><code>sample.pattern</code>.gtf</em></li>
 <li>Output: <em>stringtiemerged.gtf</em>, <em>mergelist.txt</em></li>
 </ul>
 <ol style="list-style-type: decimal">
-<li>Creating <em>mergelist.txt</em>
+<li>Creating mergelist.txt
 <ul>
-<li><em>mergelist.txt</em> is created for the merging step.</li>
+<li><em>gene_data/merged/mergelist.txt</em> is created for the merging step.</li>
 </ul></li>
 <li><code>stringtie</code> command is executed.
 <ul>
 <li>Transcript merger merges each <em><code>sample.pattern</code>.gtf</em> into <em>stringtiemerged.gtf</em></li>
-<li>Output files are all stored in ‘gene_data/merged/’</li>
+<li>Output files are all stored in <em>‘gene_data/merged/’</em></li>
 </ul></li>
 </ol>
 </div>
 <div id="gffcompare" class="section level3">
-<h3><span class="header-section-number">1.7.6</span> Gffcompare</h3>
+<h3><span class="header-section-number">1.7.6</span> <code>Gffcompare</code></h3>
 <ul>
 <li>Input: <em><code>genome.name</code>.gtf</em>, <em>stringtiemerged.gtf</em></li>
 <li>Output: <em>merged.annotated.gtf</em>, <em>merged.loci</em>, <em>merged.stats</em>, <em>merged.stringtie_merged.gtf.refmap</em>, <em>merged.stringtie_merged.gtf.tmap</em>, <em>merged.tracking</em></li>
@@ -449,7 +491,7 @@ $(document).ready(function () {
 <ol style="list-style-type: decimal">
 <li><code>gffcompare</code> command is executed.
 <ul>
-<li>The comparison result of merged <code>GTF</code> file and reference annotation file is reported under ‘merged/’ directory.</li>
+<li>The comparison result of merged <code>GTF</code> file and reference annotation file is reported under <em>‘merged/’</em> directory.</li>
 </ul></li>
 </ol>
 </div>
@@ -466,24 +508,158 @@ $(document).ready(function () {
 <ul>
 <li>If Python is not available, this step is skipped.</li>
 <li>If Python2 is available, <code>prepDE.py</code> is executed.</li>
-<li>If Python3 is available, <code>2to3</code> command is checked.(Usally, if Python3 is installed, <code>2to3</code> command will be installed too.)</li>
+<li>If Python3 is available, <code>2to3</code> command will be checked.(Usally, if Python3 is installed, <code>2to3</code> command will be installed too.)</li>
 <li>If Python3 is available but <code>2to3</code> command is unavailable, raw reads count generation step will be skipped.</li>
+<li>If Python3 and <code>2to3</code> command is available, <code>prepDE.py</code> is converted to file that can be executed by Python2 and be executed.</li>
 </ul></li>
-<li><code>prepDE.py</code> raw reads count creation
+<li>raw reads count creation
 <ul>
-<li>Raw reads count is executed and the results are stored in ‘gene_data/reads_count_matrix/’</li>
+<li>Raw reads count is created and the results are stored in <em>‘gene_data/reads_count_matrix/’</em></li>
 </ul></li>
 </ol>
 </div>
-<div id="section" class="section level3">
-<h3><span class="header-section-number">1.7.8</span> </h3>
-</div>
 <div id="example-4" class="section level3">
-<h3><span class="header-section-number">1.7.9</span> Example</h3>
+<h3><span class="header-section-number">1.7.8</span> Example</h3>
+<ol style="list-style-type: decimal">
+<li>Run in background Result will be reported in <em>‘Rscriptout/Raw_Read_Process.Rout’</em>. Make sure raw read process is successfully done before running the subsequent steps.</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># RNASeqRawReadProcess_CMD()</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Run in R shell Result will be reported in R shell. Make sure raw read process is successfully done before running the subsequent steps.</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># RNASeqRawReadProcess()</span></code></pre></div>
 </div>
 </div>
-<div id="raw-reads-differential-expressed-genes-analysis-ballgown-tpm-t-test-deseq2-and-edger" class="section level2">
-<h2><span class="header-section-number">1.8</span> Raw Reads Differential Expressed Genes Analysis (ballgown, TPM &amp; t-test, DESeq2 and edgeR)</h2>
+<div id="differential-expressed-genes-analysis" class="section level2">
+<h2><span class="header-section-number">1.8</span> Differential Expressed Genes Analysis</h2>
+<p>This is the <strong>third necessary step</strong> of RNA-Seq workflow in this package. To do differential analysis(DA), run <code>RNASeqDifferentialAnalysis_CMD()</code> to execute process in background or run <code>RNASeqDifferentialAnalysis()</code> to execute process in R shell. In <code>RNASeqWorkflow</code> package, we provide four ways to do differential analysis. The reads sum of each row equals <code>0</code> in <em><code>gene_data/reads_count_matrix/gene_count_matrix.csv</code></em>, which is generated in the previous step, will be filtered out.</p>
+<div id="ballgown-analysis" class="section level3">
+<h3><span class="header-section-number">1.8.1</span> “ballgown” Analysis</h3>
+<p><a href="https://www.bioconductor.org/packages/release/bioc/html/ballgown.html">Ballgown</a> is designed to facilitate flexible differential expression analysis of RNA-Seq data (<a href="https://github.com/alyssafrazee/ballgown">ballgown github</a>). The default statistical model is a parametric F-test comparing nested linear models. Normalized row count in <a href="https://www.bioconductor.org/packages/release/bioc/html/ballgown.html">ballgown</a> is represented as FPKM values. The following are <a href="https://www.bioconductor.org/packages/release/bioc/html/ballgown.html">ballgown</a> analysis steps:</p>
+<ul>
+<li>Input: <em>‘gene_data/ballgown/’</em></li>
+<li>Output: <em>‘RNASeq_results/ballgown_analysis/’</em></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><code>ballgown</code> object is created and written in <em>‘RNASeqresults/ballgownanalysis/ballgownRobject/ballgown.rda’</em>.</li>
+<li>Row of extracted statistic results from created ballgown object with <code>pval</code> equals <code>0</code> or <code>qval</code> equals <code>0</code> will be filterd out. Log 2 fold change value will be calculated as column name <code>log2FC</code>.</li>
+<li>The row sum of sample FPKM values equal ‘0’ will be filter out. According to the <em>‘gene_data/phenodata.csv’</em> file, normalized count will be seperated into case and control group with column name <em><code>sample.pattern.FPKM</code></em>.</li>
+<li>A report <code>CSV</code> file combined with normalized FPKM count, average of case group, control group and statistic results will be stored as <em>‘RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv’</em>.</li>
+<li>Differential expressed gene result <em>‘RNASeq_results/ballgown_analysis/ballgown_normalized_DE_result.csv’</em> is reported. Default selecting threshold is <strong><code>pval &lt; 0.05</code> and <code>log2FC &gt; 1 | log2FC &lt; 1</code></strong></li>
+<li>Visualization. The following pictures will be plotted.
+<ul>
+<li>Pre differential analysis sample profile related plot
+<ul>
+<li>Frequency Plot: The frequency of normalized FPKM values will be drawn by using <a href="https://cran.r-project.org/web/packages/rafalib/index.html">rafalib</a> package. X axis is <code>log2(FPKM)</code>; Y axis is <code>Frequency</code>.</li>
+<li>Box Plot &amp; Violin Plot: The distribution normalized FPKM values of each sample will be drawn by <a href="https://ggplot2.tidyverse.org">ggplot2</a> package. X axis is <code>Samples</code>; Y axis is <code>Log2(FPKM+1)</code>.</li>
+<li>PCA Plot : The principal components analysis(PCA) will be calculated on FPKM values by <a href="http://factominer.free.fr">FactoMineR</a> and <a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> packages. One dimension bar plot (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a>), two PCA plots (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> and <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a>) will be created.</li>
+<li>Correlation Plot : The correlation of each pair of samples will be calculated. One correlation dot plot (<a href="https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html">corrplot</a>), one correlation bar plot (<a href="https://cran.r-project.org/web/packages/PerformanceAnalytics/PerformanceAnalytics.pdf">PerformanceAnalytics</a>) and one correlation heat plot (<a href="https://ggplot2.tidyverse.org">ggplot2</a>) will be created.</li>
+</ul></li>
+<li>Differential analysis related plot
+<ul>
+<li>Volcano Plot : The upregulated and downregulated genes will colored with red and green. X axis is <code>log2(Fold Change)</code>; Y axis is <code>log2(p value)</code>. It is drawn by <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a> package.</li>
+<li>MA Plot : The upregulated and downregulated genes will colored with red and green. X axis is <code>log2(Fold Change)</code>; Y axis is <code>log2(p value)</code>. It is drawn by <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a> package.</li>
+<li>PCA Plot : The principal components analysis(PCA) of selected differential expressed genes will be calculated on their FPKM values by <a href="http://factominer.free.fr">FactoMineR</a> and <a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> packages. One dimension bar plot (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a>), two PCA plots (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> and <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a>) will be created.</li>
+<li>Heatmap Plot : Heatmap will be ploted by using <a href="https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf">pheatmap</a> package.</li>
+</ul></li>
+</ul></li>
+</ol>
+</div>
+<div id="tpm-student-t-test-analysis" class="section level3">
+<h3><span class="header-section-number">1.8.2</span> TPM &amp; Student t-test Analysis</h3>
+<p>Normalized count is represented as TPM values. The statistic model used here is Student’s t-test. The following are analysis steps:</p>
+<ul>
+<li>Input: <em>gene_data/ballgown/</em></li>
+<li>Output: <em>RNASeq_results/TPM_analysis/</em></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>Calculate TPM values from <a href="https://www.bioconductor.org/packages/release/bioc/html/ballgown.html">ballgown</a> FPKM values and save with column name <em><code>sample.pattern.FPKM</code></em>.</li>
+<li>Use Student’s t-test to calculate p-value and saved as column name <code>pval</code>.</li>
+<li><p>Calculate fold change values as dividing average TPM values of control group by average TPM values of case group (Average case TPM / Average control TPM) with column name <code>fc</code>. Log2 fold change is also calculated and stored as <code>log2FC</code>.</p></li>
+<li>A report <code>CSV</code> file combined with normalized TPM count, average of case group, control group and statistic results will be stored as <em>‘RNASeq_results/TPM_analysis/TPM_normalized_result.csv’</em>.</li>
+<li><p>Differential expressed gene result <em>‘RNASeq_results/TPM_analysis/TPM_normalized_DE_result.csv’</em> is reported. Default selecting threshold is <strong><code>pval &lt; 0.05</code> and <code>log2FC &gt; 1 | log2FC &lt; 1</code></strong></p></li>
+<li>Visualization. The following pictures will be plotted.
+<ul>
+<li>Pre differential analysis sample profile related plot
+<ul>
+<li>Frequency Plot: The frequency of normalized TPM values will be drawn by using <a href="https://cran.r-project.org/web/packages/rafalib/index.html">rafalib</a> package. X axis is <code>log2(TPM)</code>; Y axis is <code>Frequency</code>.</li>
+<li>Box Plot &amp; Violin Plot: The distribution normalized TPM values of each sample will be drawn by <a href="https://ggplot2.tidyverse.org">ggplot2</a> package. X axis is <code>Samples</code>; Y axis is <code>Log2(TPM+1)</code>.</li>
+<li>PCA Plot : The principal components analysis(PCA) will be calculated on TPM valueby <a href="http://factominer.free.fr">FactoMineR</a> and <a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> packages. One dimension bar plot (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a>), two PCA plots (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> and <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a>) will be created.</li>
+<li>Correlation Plot : The correlation of each pair of samples will be calculated. One correlation dot plot (<a href="https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html">corrplot</a>), one correlation bar plot (<a href="https://cran.r-project.org/web/packages/PerformanceAnalytics/PerformanceAnalytics.pdf">PerformanceAnalytics</a>) and one correlation heat plot (<a href="https://ggplot2.tidyverse.org">ggplot2</a>) will be created.</li>
+</ul></li>
+<li><p>Differential analysis related plot</p>
+<ul>
+<li>Volcano Plot : The upregulated and downregulated genes will colored with red and green. X axis is <code>log2(Fold Change)</code>; Y axis is <code>log2(p value)</code>. It is drawn by <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a> package.</li>
+<li>MA Plot : The upregulated and downregulated genes will colored with red and green. X axis is <code>log2(Fold Change)</code>; Y axis is <code>log2(p value)</code>. It is drawn by <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a> package.</li>
+<li>PCA Plot : The principal components analysis(PCA) of selected differential expressed genes will be calculated on their TPM values by <a href="http://factominer.free.fr">FactoMineR</a> and <a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> packages. One dimension bar plot (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a>), two PCA plots (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> and <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a>) will be created.</li>
+<li>Heatmap Plot : Heatmap will be ploted by using <a href="https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf">pheatmap</a> package.</li>
+</ul></li>
+</ul></li>
+</ol>
+</div>
+<div id="deseq2-analysis" class="section level3">
+<h3><span class="header-section-number">1.8.3</span> “DESeq2” Analysis</h3>
+<p><a href="https://bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2</a> estimate variance-mean dependence in raw reads count (<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html">DESeq2 document</a>). The statistic model for differential expression is using negative binomial distributionl. <a href="https://bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2</a> package takes sequence depth and RNA composition into consideration and use median of ratios normalization(MRN) method to count normalization (<a href="https://hbctraining.github.io/DGE_workshop/lessons/02_DGE_count_normalization.html">related site</a>). The follwing are the analysis steps.</p>
+<ul>
+<li>Input: <em>gene_data/reads_count_matrix/gene_count_matrix.csv</em></li>
+<li>Output: <em>RNASeq_results/ballgown_analysis/</em></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>Create <code>DESeqDataSet</code> object from raw reads count of genes by running <code>DESeqDataSetFromMatrix()</code> function in DESeq2.</li>
+<li>Run <code>DESeq2()</code> function to do differential gene analysis.</li>
+<li>A report <code>CSV</code> file combined with normalized MRN count, average of case group, control group and statistic results will be stored as <em>‘RNASeq_results/DESeq2_analysis/DESeq2_normalized_result.csv’</em>.</li>
+<li>Differential expressed gene result <em>‘RNASeq_results/DESeq2_analysis/DESeq2_normalized_DE_result.csv’</em> is reported. Default selecting threshold is <strong><code>pval &lt; 0.05</code> and <code>log2FC &gt; 1 | log2FC &lt; 1</code></strong></li>
+<li>Visualization. The following pictures will be plotted.
+<ul>
+<li>Pre differential analysis sample profile related plot
+<ul>
+<li>Frequency Plot: The frequency of normalized FPKM values will be drawn by using <a href="https://cran.r-project.org/web/packages/rafalib/index.html">rafalib</a> package. X axis is <code>log2(MRN)</code>; Y axis is <code>Frequency</code>.</li>
+<li>Box Plot &amp; Violin Plot: The distribution normalized FPKM values of each sample will be drawn by <a href="https://ggplot2.tidyverse.org">ggplot2</a> package. X axis is <code>Samples</code>; Y axis is <code>Log2(MRN+1)</code>.</li>
+<li>PCA Plot : The principal components analysis(PCA) will be calculated on MRN values by <a href="http://factominer.free.fr">FactoMineR</a> and <a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> packages. One dimension bar plot (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a>), two PCA plots (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> and <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a>) will be created.</li>
+<li>Correlation Plot : The correlation of each pair of samples will be calculated. One correlation dot plot (<a href="https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html">corrplot</a>), one correlation bar plot (<a href="https://cran.r-project.org/web/packages/PerformanceAnalytics/PerformanceAnalytics.pdf">PerformanceAnalytics</a>) and one correlation heat plot (<a href="https://ggplot2.tidyverse.org">ggplot2</a>) will be created.</li>
+</ul></li>
+<li>Differential analysis related plot
+<ul>
+<li>Volcano Plot : The upregulated and downregulated genes will colored with red and green. X axis is <code>log2(Fold Change)</code>; Y axis is <code>log2(p value)</code>. It is drawn by <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a> package.</li>
+<li>MA Plot : The upregulated and downregulated genes will colored with red and green. X axis is <code>log2(Fold Change)</code>; Y axis is <code>log2(p value)</code>. It is drawn by <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a> package.</li>
+<li>PCA Plot : The principal components analysis(PCA) of selected differential expressed genes will be calculated on MRN values by <a href="http://factominer.free.fr">FactoMineR</a> and <a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> packages. One dimension bar plot (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a>), two PCA plots (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> and <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a>) will be created.</li>
+<li>Heatmap Plot : Heatmap will be ploted by using <a href="https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf">pheatmap</a> package.</li>
+<li>Dispersion Plot : DESeq2 provide a useful function, <code>plotDispEsts()</code>, to plot the dispersion estimates. X axis is <code>mean of normalized counts</code>; Y axis is <code>dispersion</code>.</li>
+</ul></li>
+</ul></li>
+</ol>
+</div>
+<div id="edger-analysis" class="section level3">
+<h3><span class="header-section-number">1.8.4</span> “edgeR” Analysis</h3>
+<p><a href="https://bioconductor.org/packages/release/bioc/html/edgeR.html">edgeR</a>, a tool for differential expression analysis, implements a range of statistical method based on negative binomial distribution. <a href="https://bioconductor.org/packages/release/bioc/html/edgeR.html">edgeR</a> package normalizes for RNA composition by finding a set of scaling factors for the library sizes, which is computed by trimmed mean of M-values(TMM). Normalized count is represented as cpm with library size scaled by TMM (<a href="https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf">related site</a>). The following are analysis steps:</p>
+<ul>
+<li>Input: <em>gene_data/reads_count_matrix/gene_count_matrix.csv</em></li>
+<li>Output: <em>RNASeq_results/edgeR_analysis/</em></li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>Create <code>DEGList</code> object from raw reads count by running <code>DGEList()</code> function in edgeR.</li>
+<li>Normalize <code>DEGList</code> object with TMM by running <code>calcNormFactors()</code> function in edgeR.</li>
+<li>Run <code>estimateCommonDisp()</code> to maximize the negative binomial conditional common likelihood and then run <code>estimateTagwiseDisp()</code> to estimate tagwise dispersion values by an empirical Bayes method.</li>
+<li>Compute genewise exact tests and get statistic results by running <code>exactTest()</code>.</li>
+<li>Get normalized count by running <code>cpm()</code> on TMM scaled <code>DEGList</code> object.</li>
+<li>A report <code>CSV</code> file combined with normalized TMM count, average of case group, control group and statistic results will be stored as <em>‘RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv’</em>.</li>
+<li>Differential expressed gene result <em>‘RNASeq_results/edgeR_analysis/edgeR_normalized_DE_result.csv’</em> is reported. Default selecting threshold is <strong><code>pval &lt; 0.05</code> and <code>log2FC &gt; 1 | log2FC &lt; 1</code></strong></li>
+<li>Visualization. The following pictures will be plotted.</li>
+</ol>
+<ul>
+<li><p>Pre differential analysis sample profile related plot * Frequency Plot: The frequency of normalized values will be drawn by using <a href="https://cran.r-project.org/web/packages/rafalib/index.html">rafalib</a> package. X axis is <code>log2(MRN)</code>; Y axis is <code>Frequency</code>. * Box Plot &amp; Violin Plot: The distribution normalized values of each sample will be drawn by <a href="https://ggplot2.tidyverse.org">ggplot2</a> package. X axis is <code>Samples</code>; Y axis is <code>Log2(MRN+1)</code>. * PCA Plot : The principal components analysis(PCA) will be calculated by <a href="http://factominer.free.fr">FactoMineR</a> and <a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> packages. One dimension bar plot (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a>), two PCA plots (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> and <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a>) will be created. * MDS Plot : The multidimensional scaling (MDS) visualization is provided by <code>plotMDS.DGEList()</code> in edgeR. Distance between dots in two dimensional scatterplot approximate the expression differences between the samples. * Correlation Plot : The correlation of each pair of samples will be calculated. One correlation dot plot (<a href="https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html">corrplot</a>), one correlation bar plot (<a href="https://cran.r-project.org/web/packages/PerformanceAnalytics/PerformanceAnalytics.pdf">PerformanceAnalytics</a>) and one correlation heat plot (<a href="https://ggplot2.tidyverse.org">ggplot2</a>) will be created. * MeanVar Plot (!!! Question ! preDE or DE ?): Visualize the mean-variance relationship in <code>DEGList</code>. Plot is drawn by run <code>plotMeanVar()</code> in edgeR. * plotBCV (!!! Question ! preDE or DE ?): Plot the genewise biological coefficient of variance(BCV) against gene abundace.</p>
+<ul>
+<li>Differential analysis related plot
+<ul>
+<li>Volcano Plot : The upregulated and downregulated genes will colored with red and green. X axis is <code>log2(Fold Change)</code>; Y axis is <code>log2(p value)</code>. It is drawn by <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a> package.</li>
+<li>MA Plot : The upregulated and downregulated genes will colored with red and green. X axis is <code>log2(Fold Change)</code>; Y axis is <code>log2(p value)</code>. It is drawn by <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a> package.</li>
+<li>PCA Plot : The principal components analysis(PCA) of selected differential expressed genes will be calculated on MRN values by <a href="http://factominer.free.fr">FactoMineR</a> and <a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> packages. One dimension bar plot (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a>), two PCA plots (<a href="https://cran.r-project.org/web/packages/factoextra/index.html">factoextra</a> and <a href="https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html">graphics</a>) will be created.</li>
+<li>Heatmap Plot : Heatmap will be ploted by using <a href="https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf">pheatmap</a> package.</li>
+<li>Dispersion Plot : DESeq2 provide a useful function, <code>plotDispEsts()</code>, to plot the dispersion estimates. X axis is <code>mean of normalized counts</code>; Y axis is <code>dispersion</code>.</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
 </div>
 <div id="functional-analysis-gene-ontology-and-pathway-analysis-kyoto-encyclopedia-of-genes-and-genomes" class="section level2">
 <h2><span class="header-section-number">1.9</span> Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)</h2>
