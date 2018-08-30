@@ -31,15 +31,27 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   de.statistic.result <- data.frame(geneNames=gene_names_for_result, de.statistic.result)
   # Filter statistic
   de.statistic.result <- de.statistic.result[(!is.na(de.statistic.result$pval) & !is.na(de.statistic.result$pval)), ]
+  # Take seprate gene with name and not with name. Furthermore, the first one of duplicated gene name will be selected.
+  de.statistic.result.no.duplicated.withname <- de.statistic.result[!duplicated(de.statistic.result$geneNames), ]
+  de.statistic.result.novel.genename <- de.statistic.result[de.statistic.result$geneNames == ".", ]
+  de.statistic.result <- rbind(de.statistic.result.no.duplicated.withname, de.statistic.result.novel.genename)
   gene.id.data.frame <- data.frame("gene.name" = de.statistic.result$geneNames)
   write.csv(gene.id.data.frame, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv"), row.names=FALSE)
   de.statistic.result$feature <- NULL; de.statistic.result$id <- NULL; de.statistic.result$geneNames <- NULL
   de.statistic.result["log2FC"] <- log2(de.statistic.result$fc)
   write.csv(de.statistic.result, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
-  # Creating ballgown object
   FPKM.data.frame <- ballgown::gexpr(ballgown.object)
   # Filter FPKM row sum == 0
   FPKM.data.frame <- FPKM.data.frame[rowSums(FPKM.data.frame)>0, ]
+
+  indices <- match(row.names(FPKM.data.frame), ballgown.texpr$gene_id)
+  gene_names_for_result <- ballgown.texpr$gene_name[indices]
+  FPKM.data.frame.with.gene.name <- data.frame(geneNames=gene_names_for_result, FPKM.data.frame)
+
+  FPKM.data.frame.no.duplicated.withname <- FPKM.data.frame.with.gene.name[!duplicated(FPKM.data.frame.with.gene.name$geneNames), ]
+  FPKM.data.frame.novel.genename <- FPKM.data.frame.with.gene.name[FPKM.data.frame.with.gene.name$geneNames == ".", ]
+  FPKM.data.frame.result <- rbind(FPKM.data.frame.no.duplicated.withname, FPKM.data.frame.novel.genename)
+
   colnames(FPKM.data.frame) <- gsub("FPKM.", "", colnames(FPKM.data.frame))
   # For case group
   case.FPKM.data.frame <- data.frame(FPKM.data.frame[,colnames(FPKM.data.frame) %in% as.character(pre.de.pheno.data$case.group.data.frame$ids)])
@@ -54,7 +66,10 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.FPKM.data.frame)
   total.data.frame[paste0(case.group, ".", control.group, ".average")]<- rowMeans(total.data.frame[-1])
   ballgown.result <- cbind(total.data.frame, de.statistic.result)
-  ballgown.result <- rbind(ballgown.result[ballgown.result$gene.name != ".",], ballgown.result[ballgown.result$gene.name == ".",])
+  # if there are duplicated gene name ==> only select the first appearance !!!
+  ballgown.result.not.dot <- ballgown.result[ballgown.result$gene.name != ".",]
+  ballgown.result.not.dot <- ballgown.result.not.dot[!duplicated(ballgown.result.not.dot$gene.name), ]
+  ballgown.result <- rbind(ballgown.result.not.dot, ballgown.result[ballgown.result$gene.name == ".",])
   # Filter out pval is NaN and pval is NaN
   write.csv(ballgown.result, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv"), row.names=FALSE)
 

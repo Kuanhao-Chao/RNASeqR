@@ -1,19 +1,23 @@
 # This package will autamatically install org.Hs.eg.db, org.Rn.eg.db, org.Mm.eg.db. If you want to use different OrgDb annotation species, please install that annotation package and attach to your session.
 # How this function works :
 # 1. If there is no Univ terms ==> NA
-# 2. If there are Univ terms but no DE terms ==> Do Gene_set_analysis but not doing classification and enrichment
-# 3. If there are Univ and DE terms ==> Do Gene_set_analysis and classification and enrichment
-GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
+# 2. If there are Univ terms but no DE terms ==> Do Gene_set_analysis but not doing classification and over-representation
+# 3. If there are Univ and DE terms ==> Do Gene_set_analysis and classification and over-representation
+GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species, go.level) {
   cat(paste0("\u2694\u2694 Gene Ontology Analysis \n"))
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/"))){
     dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/"))
   }
   # get return value
-  DEUniv_results <- DEUnivGeneList(which.analysis = which.analysis, path.prefix = path.prefix, OrgDb.species = OrgDb.species)
+  DEUniv_results <- DEUnivGeneList(which.analysis, path.prefix, OrgDb.species)
   gene_list_SYMBOL <- DEUniv_results$gene_list_SYMBOL_rt
+  gene_list_SYMBOL <- gene_list_SYMBOL[(gene_list_SYMBOL != "Inf") & (gene_list_SYMBOL != "-Inf")]
   gene_list_SYMBOL_univ <- DEUniv_results$gene_list_SYMBOL_univ_rt
+  gene_list_SYMBOL_univ <- gene_list_SYMBOL_univ[(gene_list_SYMBOL_univ != "Inf") & (gene_list_SYMBOL_univ != "-Inf")]
   gene_list_ENTREZID <- DEUniv_results$gene_list_ENTREZID_rt
+  gene_list_ENTREZID <- gene_list_ENTREZID[(gene_list_ENTREZID != "Inf") & (gene_list_ENTREZID != "-Inf")]
   gene_list_ENTREZID_univ <- DEUniv_results$gene_list_ENTREZID_univ_rt
+  gene_list_ENTREZID_univ <- gene_list_ENTREZID_univ[(gene_list_ENTREZID_univ != "Inf") & (gene_list_ENTREZID_univ != "-Inf")]
 
   #######################
   #### Checking Univ ####
@@ -40,9 +44,10 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
       gse <- clusterProfiler::gseGO(geneList     = gene_list_ENTREZID_univ,
                                     OrgDb        = OrgDb.species,
                                     ont          = i,
+                                    pvalueCutoff = 0.05,
                                     verbose      = FALSE)
       gse.data.frame <- data.frame(gse)
-      if (length(row.names(gse.data.frame)) > 0) {
+      if (nrow(gse.data.frame) > 0) {
         if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images"))){
           dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images"))
         }
@@ -60,8 +65,8 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
         }
         for(GO.ID in iterate.term) {
           cat(paste0("                    \u25CF GO ID : ", GO.ID, "\n"))
-          png(filename = paste0(path.prefix, "RNASeq_results/",which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/", GO.ID, "_gseGO.png"))
-          cat(paste0("                         \u25CF Plotting '", GO.ID, "_gseGO.png'\n"))
+          png(filename = paste0(path.prefix, "RNASeq_results/",which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/", GO.ID, "_gseGO_Plot_clusterProfiler.png"))
+          cat(paste0("                         \u25CF Plotting '", GO.ID, "_gseGO_Plot_clusterProfiler.png'\n"))
           p <- clusterProfiler::gseaplot(gse, geneSetID = GO.ID)
           print(p)
           dev.off()
@@ -77,11 +82,11 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
       #####################
       # Do GO classification and GO over-representation test
       if(is.na(gene_list_SYMBOL) && is.na(gene_list_ENTREZID)) {
-        # Dot doing anything
+        # Dot doing anything ==> report log will be done in previous checking function !!
       } else {
         cat("     \u25CF Checking differential expression gene number ... \n")
         cat(paste0("          \u25CF Differential expression gene number : ", length(gene_list_SYMBOL), "\n"))
-        dir_name <- paste0("GO_DE_Classification_Erichment")
+        dir_name <- paste0("GO_DE_Classification_Overrepresentation")
         if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name))){
           dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name))
         }
@@ -99,16 +104,18 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
         ggo <- clusterProfiler::groupGO(gene     = names(gene_list_ENTREZID),
                                         OrgDb    = OrgDb.species,   # variable
                                         ont      = i,           # variable
-                                        level    = 3,              # Not sure
+                                        level    = go.level,              # Not sure
                                         readable = TRUE)
         ggo.data.frame <- data.frame(ggo)
+        ggo.data.frame <- ggo.data.frame[order(as.numeric(ggo.data.frame$GeneRatio), decreasing = TRUE),]
+        ggo@result <- ggo.data.frame
         # Condition 1 for GO classification ! Row number have to bigger than 1 !
         if (length(row.names(ggo.data.frame)) > 0) {
           cat(paste0("          \u25CF (\u2714) GO Classification (", i,") result found! \n"))
           cat(paste0("               \u25CF Writing 'GO_", i, "_Classification.csv' \n"))
           write.csv(ggo.data.frame, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i , "/GO_", i, "_Classification.csv"))
-          cat(paste0("               \u25CF Plotting 'GO_", i, "_Classification_Bar_plot.png' \n"))
-          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Classification_Bar_plot.png"))
+          cat(paste0("               \u25CF Plotting 'GO_", i, "_Classification_Bar_Plot_clusterProfiler.png' \n"))
+          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Classification_Bar_Plot_clusterProfiler.png"), width = 1000, height = 1000)
           p1 <- barplot(ggo, drop=TRUE, showCategory=12)
           print(p1)
           dev.off()
@@ -117,69 +124,68 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species) {
           file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_CLASSIFICATION_NO_TERM"))
         }
 
-        #######################
-        #### GO Enrichment ####
-        #######################
-        # GO enrichment test !
-        cat("     \u25CF GO Enrichment Test ... \n")
+        ################################
+        #### GO Over-representation ####
+        ################################
+        # GO over-representation test !
+        cat("     \u25CF GO Over-representation Test ... \n")
         # GO over-representation test
         ego <- clusterProfiler::enrichGO(gene          = names(gene_list_ENTREZID),
-                                         # universe      = geneList,
                                          OrgDb         = OrgDb.species,                   # variable
                                          ont           = i,
                                          pAdjustMethod = "BH",                            # variable : "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
                                          readable      = TRUE)
         ego.data.frame <- data.frame(ego)
-        cat(paste0("          \u25CF (\u2714) GO Enrichment test (", i,") enriched term found : ", length(row.names(ego.data.frame)), "\n"))
+        cat(paste0("          \u25CF (\u2714) GO over-representation test (", i,") enriched term found : ", length(row.names(ego.data.frame)), "\n"))
         if (length(row.names(ego.data.frame)) > 0) {
-          cat(paste0("               \u25CF Writing 'GO_", i, "_Enrichment.csv' \n"))
-          write.csv(ego.data.frame, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Enrichment.csv"))
-        } else {
-          cat(paste0("          \u25CF (\u26A0) No enriched term is found.\n"))
-          file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_ENRICHMENT_NO_TERM"))
-        }
-        # Condition 2 for GO Enrichment analysis ! Row numebr have to bigger or equal to 2 !
-        if (length(row.names(ego.data.frame)) >= 2) {
+          cat(paste0("               \u25CF Writing 'GO_", i, "_Overrepresentation.csv' \n"))
+          write.csv(ego.data.frame, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Overrepresentation.csv"))
+          # visualization
           # bar plot
-          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Bar_plot.png"))
-          cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Bar_plot.png' \n"))
+          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Overrepresentation_Bar_Plot_clusterProfiler.png"), width = 1000, height = 1000)
+          cat(paste0("               \u25CF Plotting 'GO_", i, "_Overrepresentation_Bar_Plot_clusterProfiler.png' \n"))
           p2 <- barplot(ego, showCategory=12)
           print(p2)
           dev.off()
 
           # dot plot
-          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Dot_plot.png"))
-          cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Dot_plot.png' \n"))
+          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Overrepresentation_Dot_Plot_clusterProfiler.png"), width = 1000, height = 1000)
+          cat(paste0("               \u25CF Plotting 'GO_", i, "_Overrepresentation_Dot_Plot_clusterProfiler.png' \n"))
           p3 <- clusterProfiler::dotplot(ego)
           print(p3)
           dev.off()
-
-          # have to check before run
-          # no enriched term found
-          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Map_plot.png"))
-          cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Map_plot.png' \n"))
-          p4 <- clusterProfiler::emapplot(ego)
-          print(p4)
-          dev.off()
-
-          ## categorySize can be scaled by 'pvalue' or 'geneNum'
-          # the data frame should contain at least two columns
-          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Complex_plot.png"))
-          cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Complex_plot.png' \n"))
-          p5 <- clusterProfiler::cnetplot(ego, categorySize="pvalue", foldChange = gene_list_ENTREZID)
-          print(p5)
-          dev.off()
-
-          # keys must be supplied in a character vector with no NAs
-          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Induced_plot.png"))
-          cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Induced_plot.png' \n\n"))
-          p6 <- clusterProfiler::goplot(ego)
-          print(p6)
-          dev.off()
         } else {
-          cat(paste0("               \u25CF Row size of 'GO_", i,"_Enrichment.csv' is smaller than 2. Can't draw.\n\n"))
-          file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_ENRICHMENT_LESS_THAN_2"))
+          cat(paste0("          \u25CF (\u26A0) No enriched term is found.\n"))
+          file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_OVERREPRESENTATION_NO_TERM"))
         }
+        # Condition 2 for GO Over-representationanalysis ! Row numebr have to bigger or equal to 2 !
+        # if (length(row.names(ego.data.frame)) >= 2) {
+        #   # have to check before run
+        #   # no enriched term found
+        #   png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Map_plot.png"))
+        #   cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Map_plot.png' \n"))
+        #   p4 <- clusterProfiler::emapplot(ego)
+        #   print(p4)
+        #   dev.off()
+        #
+        #   ## categorySize can be scaled by 'pvalue' or 'geneNum'
+        #   # the data frame should contain at least two columns
+        #   png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Complex_plot.png"))
+        #   cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Complex_plot.png' \n"))
+        #   p5 <- clusterProfiler::cnetplot(ego, categorySize="pvalue", foldChange = gene_list_ENTREZID)
+        #   print(p5)
+        #   dev.off()
+        #
+        #   # keys must be supplied in a character vector with no NAs
+        #   png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Enrichment_Induced_plot.png"))
+        #   cat(paste0("               \u25CF Plotting 'GO_", i, "_Enrichment_Induced_plot.png' \n\n"))
+        #   p6 <- clusterProfiler::goplot(ego)
+        #   print(p6)
+        #   dev.off()
+        # } else {
+        #   cat(paste0("               \u25CF Row size of 'GO_", i,"_Overrepresentation.csv' is smaller than 2. Can't draw.\n\n"))
+        #   file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_ENRICHMENT_LESS_THAN_2"))
+        # }
       }
     }
   }
@@ -235,8 +241,8 @@ KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organi
       }
       for(KEGG.ID in iterate.terms) {
         cat(paste0("               \u25CF KEGG ID : ", KEGG.ID, "\n"))
-        png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/images/", KEGG.ID, "_gseGO.png"))
-        cat(paste0("                    \u25CF Plotting '", KEGG.ID, "_gseKEGG.png'\n"))
+        png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/images/", KEGG.ID, "_gseKEGG_Plot_clusterProfiler.png"))
+        cat(paste0("                    \u25CF Plotting '", KEGG.ID, "_gseKEGG_Plot_clusterProfiler.png'\n"))
         p <- clusterProfiler::gseaplot(kk.gse, geneSetID = KEGG.ID)
         print(p)
         dev.off()
@@ -251,31 +257,29 @@ KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organi
     #####################
     # Do GO classification and GO over-representation test
     if(is.na(gene_list_SYMBOL) && is.na(gene_list_ENTREZID)) {
-      # Dot doing anything
+      # Dot doing anything! Printing log will be reported by previous check!!
     } else {
       cat("\u25CF Checking differential expression gene number ... \n")
       cat(paste0("     \u25CF Differential expression gene number : ", length(gene_list_SYMBOL), "\n"))
-      dir_name <- paste0("KEGG_DE_Erichment")
+      dir_name <- paste0("KEGG_DE_Overrepresentation")
       if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name))){
         dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name))
       }
-      #########################
-      #### KEGG Enrichment ####
-      #########################
+      ##################################
+      #### KEGG Over-representation ####
+      ##################################
       # Do KEGG over-representation test
       # organism : species supported at 'http://www.genome.jp/kegg/catalog/org_list.html'
-      cat("\u25CF KEGG Enrichment Test ... \n")
-      # KEGG Enrichment test
+      cat("\u25CF KEGG Over-representation Test ... \n")
+      # KEGG Over-representation test
       kk <- clusterProfiler::enrichKEGG(gene     = names(gene_list_ENTREZID),
                                         organism = KEGG.organism)                     # variable
       kk.data.frame <- data.frame(kk)
       # Row size have to bigger than 0!
       if (length(row.names(kk.data.frame)) > 0) {
-        # cat("     \u25CF Printing KEGG Enrichment result \n")
-        # print(head(kk.data.frame))
-        cat(paste0("     \u25CF (\u2714) KEGG Enrichment test enriched term found! \n"))
-        cat(paste0("          \u25CF Writing 'KEGG_Enrichment.csv' \n"))
-        write.csv(kk.data.frame, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/KEGG_Enrichment.csv"))
+        cat(paste0("     \u25CF (\u2714) KEGG over-representation test enriched term found! \n"))
+        cat(paste0("          \u25CF Writing 'KEGG_Overrepresentation.csv' \n"))
+        write.csv(kk.data.frame, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/KEGG_Overrepresentation.csv"))
         for ( i in kk.data.frame$ID) {
           if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/", i))){
             dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/", i))
@@ -300,8 +304,8 @@ KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organi
           on.exit(setwd(current.path))
         }
       } else {
-        cat(paste0("     \u25CF (\u26A0) No enriched term is found.\n"))
-        file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name,"/KEGG_ENRICHMENT_NO_TERM"))
+        cat(paste0("     \u25CF (\u26A0) No over-representation term is found.\n"))
+        file.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name,"/KEGG_OVERREPRESENTATION_NO_TERM"))
       }
     }
   }
@@ -314,31 +318,14 @@ DEUnivGeneList <- function(which.analysis, path.prefix, OrgDb.species) {
   DE.csv <- read.csv(DE.path.csv)
   Univ.csv <- read.csv(Univ.path.csv)
 
-  if (which.analysis == "ballgown_analysis") {
-    # DE gene
-    gene_list_SYMBOL <- DE.csv[DE.csv$gene.name != ".",]$log2FC
-    gene_list_ENTREZID <- DE.csv[DE.csv$gene.name != ".",]$log2FC
-    gene_name <- as.character(DE.csv[DE.csv$gene.name != ".",]$gene.name)
-    gene_list_SYMBOL_univ <- Univ.csv[Univ.csv$gene.name != ".",]$log2FC
-    gene_list_ENTREZID_univ <- Univ.csv[Univ.csv$gene.name != ".",]$log2FC
-    gene_name_univ <- as.character(Univ.csv[Univ.csv$gene.name != ".",]$gene.name)
-  } else if (which.analysis == "DESeq2_analysis") {
-    # DE gene
-    gene_list_SYMBOL <- DE.csv[DE.csv$gene.name != ".",]$log2FoldChange
-    gene_list_ENTREZID <- DE.csv[DE.csv$gene.name != ".",]$log2FoldChange
-    gene_name <- as.character(DE.csv[DE.csv$gene.name != ".",]$gene.name)
-    gene_list_SYMBOL_univ <- Univ.csv[Univ.csv$gene.name != ".",]$log2FoldChange
-    gene_list_ENTREZID_univ <- Univ.csv[Univ.csv$gene.name != ".",]$log2FoldChange
-    gene_name_univ <- as.character(Univ.csv[Univ.csv$gene.name != ".",]$gene.name)
-  } else if (which.analysis == "edgeR_analysis") {
-    # DE gene
-    gene_list_SYMBOL <- DE.csv[DE.csv$gene.name != ".",]$logFC
-    gene_list_ENTREZID <- DE.csv[DE.csv$gene.name != ".",]$logFC
-    gene_name <- as.character(DE.csv[DE.csv$gene.name != ".",]$gene.name)
-    gene_list_SYMBOL_univ <- Univ.csv[Univ.csv$gene.name != ".",]$logFC
-    gene_list_ENTREZID_univ <- Univ.csv[Univ.csv$gene.name != ".",]$logFC
-    gene_name_univ <- as.character(Univ.csv[Univ.csv$gene.name != ".",]$gene.name)
-  }
+  # DE gene
+  gene_list_SYMBOL <- DE.csv[DE.csv$gene.name != ".",]$log2FC
+  gene_list_ENTREZID <- DE.csv[DE.csv$gene.name != ".",]$log2FC
+  gene_name <- as.character(DE.csv[DE.csv$gene.name != ".",]$gene.name)
+  gene_list_SYMBOL_univ <- Univ.csv[Univ.csv$gene.name != ".",]$log2FC
+  gene_list_ENTREZID_univ <- Univ.csv[Univ.csv$gene.name != ".",]$log2FC
+  gene_name_univ <- as.character(Univ.csv[Univ.csv$gene.name != ".",]$gene.name)
+
   # Check the size of "DE.csv" and "Univ.csv"
   # If no terms are found in Univ ==> return NA
   ##############
