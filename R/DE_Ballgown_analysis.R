@@ -13,9 +13,9 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   ###############################################
   ## Creating "ballgown_normalized_result.csv" ##
   ##############################################
-  pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
+  pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
   # make ballgown object
-  ballgown.object <- ballgown::ballgown(dataDir = paste0(path.prefix, "gene_data/ballgown"), samplePattern = sample.pattern, pData = pre.de.pheno.data$pheno_data, meas = 'all')
+  ballgown.object <- ballgown::ballgown(dataDir = paste0(path.prefix, "gene_data/ballgown"), samplePattern = sample.pattern, pData = pheno_data, meas = 'all')
   # save ballgown object
   save(ballgown.object, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/ballgown.rda"))
   # ballgown object do statistic test
@@ -25,6 +25,7 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   write.csv(ballgown.texpr, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/texpr.csv"), row.names=FALSE)
   ballgown.t2g <- ballgown::indexes(ballgown.object)$t2g
   write.csv(ballgown.t2g, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/t2g.csv"), row.names=FALSE)
+  pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
   # Convert gene id to gene name
   indices <- match(de.statistic.result$id, ballgown.texpr$gene_id)
   gene_names_for_result <- ballgown.texpr$gene_name[indices]
@@ -39,7 +40,6 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   write.csv(gene.id.data.frame, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv"), row.names=FALSE)
   de.statistic.result$feature <- NULL; de.statistic.result$id <- NULL; de.statistic.result$geneNames <- NULL
   de.statistic.result["log2FC"] <- log2(de.statistic.result$fc)
-  write.csv(de.statistic.result, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   FPKM.data.frame <- ballgown::gexpr(ballgown.object)
   # Filter FPKM row sum == 0
   FPKM.data.frame <- FPKM.data.frame[rowSums(FPKM.data.frame)>0, ]
@@ -55,17 +55,22 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   # For case group
   case.FPKM.data.frame <- data.frame(FPKM.data.frame[,colnames(FPKM.data.frame) %in% as.character(pre.de.pheno.data$case.group.data.frame$ids)])
   colnames(case.FPKM.data.frame) <- paste0(as.character(pre.de.pheno.data$case.group.data.frame$ids), ".", case.group)
-  write.csv(case.FPKM.data.frame, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_case.csv"), row.names=FALSE)
   # For control group
   control.FPKM.data.frame <- data.frame(FPKM.data.frame[,colnames(FPKM.data.frame) %in% as.character(pre.de.pheno.data$control.group.data.frame$ids)])
   colnames(control.FPKM.data.frame) <- paste0(as.character(pre.de.pheno.data$control.group.data.frame$ids), ".", control.group)
-  write.csv(control.FPKM.data.frame, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_control.csv"), row.names=FALSE)
   total.data.frame <- cbind(gene.id.data.frame, case.FPKM.data.frame, control.FPKM.data.frame)
   total.data.frame[paste0(case.group, ".average")] <- rowMeans(case.FPKM.data.frame)
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.FPKM.data.frame)
   total.data.frame[paste0(case.group, ".", control.group, ".average")]<- rowMeans(total.data.frame[-1])
   ballgown.result <- cbind(total.data.frame, de.statistic.result)
+  # Filter out p-value with na
+  ballgown.result <- ballgown.result[(!is.na(ballgown.result$pval)), ]
   # if there are duplicated gene name ==> only select the first appearance !!!
+  case.group.size <- pre.de.pheno.data$case.group.size
+  control.group.size <- pre.de.pheno.data$control.group.size
+  write.csv(ballgown.result[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_case.csv"), row.names=FALSE)
+  write.csv(ballgown.result[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_control.csv"), row.names=FALSE)
+  write.csv(ballgown.result[,c((2+case.group.size+control.group.size):(length(ballgown.result)))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   write.csv(ballgown.result, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv"), row.names=FALSE)
 
   cat(paste0("     \u25CF Selecting differential expressed genes(ballgown) ==> p-value : ", ballgown.pval, "  log2(Fold Change) : ", ballgown.log2FC, " ...\n"))

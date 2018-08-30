@@ -16,7 +16,7 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
   # create DGEList object (edgeR)
   cat("\u25CF Creating 'DGEList' object from count matrix ... \n")
   gene.data.frame <- data.frame(gene.name = raw.count.gene.name)
-  deglist.object <- edgeR::DGEList(counts=gene.raw.count, group = pre.de.pheno.data$pheno_data[independent.variable][[1]], genes = gene.name.list)
+  deglist.object <- edgeR::DGEList(counts=raw.count, group = pre.de.pheno.data$pheno_data[independent.variable][[1]], genes = raw.count.gene.name)
   # Normalization with TMM (trimmed mean of M-values )
   cat("     \u25CF Normalizing DGEList object (TMM) ... \n")
   deglist.object <- edgeR::calcNormFactors(deglist.object, method="TMM")
@@ -28,24 +28,29 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
   de.statistic.result <- edgeR::exactTest(dgList)
   colnames(de.statistic.result$table)[1] <- "log2FC"
   colnames(de.statistic.result$table)[3] <- "pval"
-  write.csv(de.statistic.result$table, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   #  run the cpm function on a DGEList object which is normalisation by TMM factors ==> get TMM normalized count !!
   # count were first normalized with TMM and then be presented as cpm !
   normalized.count.table <- edgeR::cpm(dgList, normalized.lib.sizes=TRUE)
   # For case group
   case.cpm.data.frame <- data.frame(normalized.count.table[,colnames(normalized.count.table) %in% as.character(pre.de.pheno.data$case.group.data.frame$ids)])
   colnames(case.cpm.data.frame) <- paste0(as.character(pre.de.pheno.data$case.group.data.frame$ids), ".", case.group)
-  write.csv(case.cpm.data.frame, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_case.csv"), row.names=FALSE)
   # For control group
   control.cpm.data.frame <- data.frame(normalized.count.table[,colnames(normalized.count.table) %in% as.character(pre.de.pheno.data$control.group.data.frame$ids)])
   colnames(control.cpm.data.frame) <- paste0(as.character(pre.de.pheno.data$control.group.data.frame$ids), ".", control.group)
-  write.csv(control.cpm.data.frame, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_control.csv"), row.names=FALSE)
   # create whole data.frame
   total.data.frame <- cbind(gene.data.frame, case.cpm.data.frame, control.cpm.data.frame)
   total.data.frame[paste0(case.group, ".average")] <- rowMeans(case.cpm.data.frame)
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.cpm.data.frame)
   total.data.frame[paste0(case.group, ".", control.group, ".average")]<- rowMeans(total.data.frame[-1])
   edgeR.result <- cbind(total.data.frame, de.statistic.result$table)
+  # Filter out p-value that is na
+  edgeR.result <- edgeR.result[(!is.na(edgeR.result$pval)), ]
+  case.group.size <- pre.de.pheno.data$case.group.size
+  control.group.size <- pre.de.pheno.data$control.group.size
+  # Write out csv file
+  write.csv(edgeR.result[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_control.csv"), row.names=FALSE)
+  write.csv(edgeR.result[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_case.csv"), row.names=FALSE)
+  write.csv(edgeR.result[,c((2+case.group.size+control.group.size):(length(edgeR.result)))], file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   # Write result into file (csv)
   write.csv(edgeR.result, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv"), row.names=FALSE)
 

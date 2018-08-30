@@ -16,17 +16,12 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
   gene.name <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv"))
 
   case.TPM <- (case.FPKM/colSums(case.FPKM))*(10**6)
-  write.csv(case.TPM, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_case.csv"), row.names=FALSE)
-
   control.TPM <- (control.FPKM/colSums(case.FPKM))*(10**6)
-  write.csv(control.TPM, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_control.csv"), row.names=FALSE)
-
   gene.id.data.frame <- data.frame(read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv")))
 
   p.value <- unlist(lapply(seq_len(nrow(case.TPM)), function(x) { stats::t.test(case.TPM[x,], control.TPM[x,])$p.value }))
   fold.change <- unlist(lapply(seq_len(nrow(case.TPM)), function(x) { mean(unlist(control.TPM[x,])) / mean(unlist(case.TPM[x,])) }))
   statistic.T.test <- data.frame("pval" = p.value, "fc" = fold.change, "log2FC" = log2(fold.change))
-  write.csv(statistic.T.test, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
 
   total.data.frame <- cbind(gene.id.data.frame, case.TPM, control.TPM)
   total.data.frame[paste0(case.group, ".average")] <- rowMeans(case.TPM)
@@ -35,6 +30,14 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
   TPM_Ttest.result <- cbind(total.data.frame, statistic.T.test)
   TPM_Ttest.result <- rbind(TPM_Ttest.result[TPM_Ttest.result$gene.name != ".",], TPM_Ttest.result[TPM_Ttest.result$gene.name == ".",])
   # Filter out pval is NaN and qval is NaN
+  # Filter out p-value with na
+  TPM_Ttest.result <- TPM_Ttest.result[(!is.na(TPM_Ttest.result$pval)), ]
+  case.group.size <- length(case.FPKM)
+  control.group.size <- length(control.FPKM)
+  # write out csv files
+  write.csv(TPM_Ttest.result[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_case.csv"), row.names=FALSE)
+  write.csv(TPM_Ttest.result[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_control.csv"), row.names=FALSE)
+  write.csv(TPM_Ttest.result[,c((2+case.group.size+control.group.size):(length(TPM_Ttest.result)))], file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   write.csv(TPM_Ttest.result, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/TPM_normalized_result.csv"), row.names=FALSE)
 
   cat(paste0("     \u25CF Selecting differential expressed genes() ==> p-value : ", TPM.pval, "  log2(Fold Change) : ", TPM.log2FC, " ...\n"))

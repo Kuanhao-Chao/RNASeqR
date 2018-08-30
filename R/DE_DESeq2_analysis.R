@@ -22,7 +22,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
   # creat DESeqDataSet
   # Rows of colData correspond to columns of countData
   cat("\u25CF Creating 'DESeqDataSet' object from count matrix ... \n")
-  dds.from.matrix <- DESeq2::DESeqDataSetFromMatrix(countData = gene.raw.count,
+  dds.from.matrix <- DESeq2::DESeqDataSetFromMatrix(countData = raw.count,
                                                     colData = colData,
                                                     design =  ~independent.variable)
   # Run DESeq() function
@@ -33,29 +33,32 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
   statistic.res <- DESeq2::results(dds_de, contrast = c("independent.variable", case.group, control.group))
   colnames(statistic.res)[2] <- "log2FC"
   colnames(statistic.res)[5] <- "pval"
-  write.csv(statistic.res, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   # Normalization method of DESeq2 is Median Ratio Normalization (MRN)
   normalized.count.table <- DESeq2::counts(dds_de, normalized=TRUE)
   # For case group
   case.mrn.data.frame <- data.frame(normalized.count.table[,colnames(normalized.count.table) %in% as.character(pre.de.pheno.data$case.group.data.frame$ids)])
   colnames(case.mrn.data.frame) <- paste0(as.character(pre.de.pheno.data$case.group.data.frame$ids), ".", case.group)
-  write.csv(case.mrn.data.frame, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/MRN_case.csv"), row.names=FALSE)
   # For control group
   control.mrn.data.frame <- data.frame(normalized.count.table[,colnames(normalized.count.table) %in% as.character(pre.de.pheno.data$control.group.data.frame$ids)])
   colnames(control.mrn.data.frame) <- paste0(as.character(pre.de.pheno.data$control.group.data.frame$ids), ".", control.group)
-  write.csv(control.mrn.data.frame, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/MRN_control.csv"), row.names=FALSE)
   # create whole data.frame
   total.data.frame <- cbind(gene.data.frame, case.mrn.data.frame, control.mrn.data.frame)
   total.data.frame[paste0(case.group, ".average")] <- rowMeans(case.mrn.data.frame)
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.mrn.data.frame)
   total.data.frame[paste0(case.group, ".", control.group, ".average")]<- rowMeans(total.data.frame[-1])
   DESeq2.result <- cbind(total.data.frame, statistic.res)
-  DESeq2.result.no.NA <- DESeq2.result[(!is.na(DESeq2.result$pval)), ]
+  # Filter out p-value with na
+  DESeq2.result <- DESeq2.result[(!is.na(DESeq2.result$pval)), ]
   # Write result into file (csv)
-  write.csv(DESeq2.result.no.NA, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_result.csv"), row.names=FALSE)
+  case.group.size <- pre.de.pheno.data$case.group.size
+  control.group.size <- pre.de.pheno.data$control.group.size
+  write.csv(DESeq2.result[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/MRN_case.csv"), row.names=FALSE)
+  write.csv(DESeq2.result[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/MRN_control.csv"), row.names=FALSE)
+  write.csv(DESeq2.result[,c((2+case.group.size+control.group.size):(length(DESeq2.result)))], file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
+  write.csv(DESeq2.result, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_result.csv"), row.names=FALSE)
 
   cat(paste0("     \u25CF Selecting differential expressed genes(DESeq2) ==> padj-value : ", DESeq2.pval, "  log2(Fold Change) : ", DESeq2.log2FC, " ...\n"))
-  DESeq2.result.DE <- DESeq2.result.no.NA[((DESeq2.result.no.NA$log2FC>DESeq2.log2FC) | (DESeq2.result.no.NA$log2FC<(-DESeq2.log2FC))) & (DESeq2.result.no.NA$pval<DESeq2.pval), ]
+  DESeq2.result.DE <- DESeq2.result[((DESeq2.result$log2FC>DESeq2.log2FC) | (DESeq2.result$log2FC<(-DESeq2.log2FC))) & (DESeq2.result$pval<DESeq2.pval), ]
   cat("          \u25CF Total '", length(row.names(DESeq2.result.DE)), "' DEG have been found !!")
   write.csv(DESeq2.result.DE, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_DE_result.csv"), row.names=FALSE)
 

@@ -17,7 +17,6 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species, go.level) {
   gene_list_ENTREZID <- DEUniv_results$gene_list_ENTREZID_rt
   gene_list_ENTREZID <- gene_list_ENTREZID[(gene_list_ENTREZID != "Inf") & (gene_list_ENTREZID != "-Inf")]
   gene_list_ENTREZID_univ <- DEUniv_results$gene_list_ENTREZID_univ_rt
-  gene_list_ENTREZID_univ <- gene_list_ENTREZID_univ[(gene_list_ENTREZID_univ != "Inf") & (gene_list_ENTREZID_univ != "-Inf")]
 
   #######################
   #### Checking Univ ####
@@ -348,8 +347,13 @@ DEUnivGeneList <- function(which.analysis, path.prefix, OrgDb.species) {
                                         OrgDb = OrgDb.species)
   ENTREZID_IDs_Univ <- c()
   ENTREZID_IDs_Univ <- lapply(gene_name_univ, find_ENTREZID_ID_Univ, gene.df.Univ = gene.df.Univ, ENTREZID_IDs_Univ = ENTREZID_IDs_Univ )
+  ENTREZID_IDs_Univ <- unlist(ENTREZID_IDs_Univ)
   names(gene_list_ENTREZID_univ) <- ENTREZID_IDs_Univ
   gene_list_ENTREZID_univ = sort(gene_list_ENTREZID_univ, decreasing = TRUE)
+  ## ! Filter out gene id that converted ENTREZID is NA !
+  gene_list_ENTREZID_univ <- gene_list_ENTREZID_univ[!is.na(names(gene_list_ENTREZID_univ))]
+  # ! Filter out value that is Inf or -Inf
+  gene_list_ENTREZID_univ <- gene_list_ENTREZID_univ[(gene_list_ENTREZID_univ != "Inf") & (gene_list_ENTREZID_univ != "-Inf")]
 
   ############
   #### DE ####
@@ -374,6 +378,9 @@ DEUnivGeneList <- function(which.analysis, path.prefix, OrgDb.species) {
     ENTREZID_IDs.DE <- lapply(gene_name, find_ENTREZID_ID_DE, gene.df.DE = gene.df.DE, ENTREZID_IDs.DE = ENTREZID_IDs.DE)
     names(gene_list_ENTREZID) <- ENTREZID_IDs.DE
     gene_list_ENTREZID = sort(gene_list_ENTREZID, decreasing = TRUE)
+    ## ! Filter out that gene id that converted ENTREZID is NA !
+    gene_list_ENTREZID <- gene_list_ENTREZID[!is.na(names(gene_list_ENTREZID))]
+
     return(list(gene_list_SYMBOL_rt = gene_list_SYMBOL,
                 gene_list_SYMBOL_univ_rt = gene_list_SYMBOL_univ,
                 gene_list_ENTREZID_rt = gene_list_ENTREZID,
@@ -395,6 +402,9 @@ GetKEGGUrl <- function(x, pathID) {
   url <- paste0("http://www.kegg.jp/kegg-bin/show_pathway?", pathID, '/', x[pathID, "geneID"])
   return(url)
 }
-
+##!! HERE!!
+CheckGoLevel <- function(go.level) {
+  is.integer(2)
+}
 
 
