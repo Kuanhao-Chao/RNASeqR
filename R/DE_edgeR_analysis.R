@@ -11,13 +11,11 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
   ############################################
   pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
   raw.count <- pre.de.pheno.data$gene.count.matrix
-  raw.count.result <- RawCountGeneNameChange(raw.count, path.prefix)
-  # Convert gene id to gene name
-  gene.name.list <- raw.count.result$raw.count.name
-  gene.raw.count <- raw.count.result$raw.count
+  raw.count.gene.name <- pre.de.pheno.data$gene.count.name
+
   # create DGEList object (edgeR)
   cat("\u25CF Creating 'DGEList' object from count matrix ... \n")
-  gene.data.frame <- data.frame(gene.name = gene.name.list)
+  gene.data.frame <- data.frame(gene.name = raw.count.gene.name)
   deglist.object <- edgeR::DGEList(counts=gene.raw.count, group = pre.de.pheno.data$pheno_data[independent.variable][[1]], genes = gene.name.list)
   # Normalization with TMM (trimmed mean of M-values )
   cat("     \u25CF Normalizing DGEList object (TMM) ... \n")

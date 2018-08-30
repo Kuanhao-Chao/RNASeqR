@@ -11,14 +11,11 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
   #############################################
   pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
   raw.count <- pre.de.pheno.data$gene.count.matrix
-  raw.count.result <- RawCountGeneNameChange(raw.count, path.prefix)
-  # Convert gene id to gene name
-  gene.name.list <- raw.count.result$raw.count.name
-  gene.raw.count <- raw.count.result$raw.count
+  raw.count.gene.name <- pre.de.pheno.data$gene.count.name
 
   cat("\u25CF Creating 'DGEList' object from count matrix ... \n")
   # creatin gene name data frame
-  gene.data.frame <- data.frame(gene.name = gene.name.list)
+  gene.data.frame <- data.frame(gene.name = raw.count.gene.name)
   # create design data.frame (independent.variable)
   colData <- data.frame("independent.variable" = as.character(pre.de.pheno.data$pheno_data[independent.variable][[1]]))
   rownames(colData) <- as.character(pre.de.pheno.data$pheno_data$ids)
