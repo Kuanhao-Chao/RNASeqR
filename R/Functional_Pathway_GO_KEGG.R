@@ -4,6 +4,7 @@
 # 2. If there are Univ terms but no DE terms ==> Do Gene_set_analysis but not doing classification and over-representation
 # 3. If there are Univ and DE terms ==> Do Gene_set_analysis and classification and over-representation
 GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species, go.level) {
+  CheckGoLevel(go.level)
   cat(paste0("\u2694\u2694 Gene Ontology Analysis \n"))
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/"))){
     dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/"))
@@ -11,11 +12,11 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species, go.level) {
   # get return value
   DEUniv_results <- DEUnivGeneList(which.analysis, path.prefix, OrgDb.species)
   gene_list_SYMBOL <- DEUniv_results$gene_list_SYMBOL_rt
-  gene_list_SYMBOL <- gene_list_SYMBOL[(gene_list_SYMBOL != "Inf") & (gene_list_SYMBOL != "-Inf")]
+  # gene_list_SYMBOL <- gene_list_SYMBOL[(gene_list_SYMBOL != "Inf") & (gene_list_SYMBOL != "-Inf")]
   gene_list_SYMBOL_univ <- DEUniv_results$gene_list_SYMBOL_univ_rt
-  gene_list_SYMBOL_univ <- gene_list_SYMBOL_univ[(gene_list_SYMBOL_univ != "Inf") & (gene_list_SYMBOL_univ != "-Inf")]
+  # gene_list_SYMBOL_univ <- gene_list_SYMBOL_univ[(gene_list_SYMBOL_univ != "Inf") & (gene_list_SYMBOL_univ != "-Inf")]
   gene_list_ENTREZID <- DEUniv_results$gene_list_ENTREZID_rt
-  gene_list_ENTREZID <- gene_list_ENTREZID[(gene_list_ENTREZID != "Inf") & (gene_list_ENTREZID != "-Inf")]
+  # gene_list_ENTREZID <- gene_list_ENTREZID[(gene_list_ENTREZID != "Inf") & (gene_list_ENTREZID != "-Inf")]
   gene_list_ENTREZID_univ <- DEUniv_results$gene_list_ENTREZID_univ_rt
 
   #######################
@@ -353,7 +354,7 @@ DEUnivGeneList <- function(which.analysis, path.prefix, OrgDb.species) {
   ## ! Filter out gene id that converted ENTREZID is NA !
   gene_list_ENTREZID_univ <- gene_list_ENTREZID_univ[!is.na(names(gene_list_ENTREZID_univ))]
   # ! Filter out value that is Inf or -Inf
-  gene_list_ENTREZID_univ <- gene_list_ENTREZID_univ[(gene_list_ENTREZID_univ != "Inf") & (gene_list_ENTREZID_univ != "-Inf")]
+  # gene_list_ENTREZID_univ <- gene_list_ENTREZID_univ[(gene_list_ENTREZID_univ != "Inf") & (gene_list_ENTREZID_univ != "-Inf")]
 
   ############
   #### DE ####
@@ -402,9 +403,16 @@ GetKEGGUrl <- function(x, pathID) {
   url <- paste0("http://www.kegg.jp/kegg-bin/show_pathway?", pathID, '/', x[pathID, "geneID"])
   return(url)
 }
-##!! HERE!!
+
 CheckGoLevel <- function(go.level) {
-  is.integer(2)
+  whether.integer <- go.level%%1 == 0
+  cat(paste0("\u25CF Checking 'go.level' value : ", go.level, "\n"))
+  if (whether.integer) {
+    cat("(\u2714) 'go.level' is integer! Valid\n\n")
+  } else {
+    cat("(\u2718) 'go.level' is not integer!\n\n")
+    stop("'go.level' not integer ERROR")
+  }
 }
 
 

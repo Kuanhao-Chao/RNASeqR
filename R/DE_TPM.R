@@ -20,7 +20,8 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
   gene.id.data.frame <- data.frame(read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv")))
 
   p.value <- unlist(lapply(seq_len(nrow(case.TPM)), function(x) { stats::t.test(case.TPM[x,], control.TPM[x,])$p.value }))
-  fold.change <- unlist(lapply(seq_len(nrow(case.TPM)), function(x) { mean(unlist(control.TPM[x,])) / mean(unlist(case.TPM[x,])) }))
+  ## Fold change -> mean(control + 1 ) / mean(case + 1)
+  fold.change <- unlist(lapply(seq_len(nrow(case.TPM)), function(x) { mean(unlist(control.TPM[x,]) + 1) / mean(unlist(case.TPM[x,]) + 1) }))
   statistic.T.test <- data.frame("pval" = p.value, "fc" = fold.change, "log2FC" = log2(fold.change))
 
   total.data.frame <- cbind(gene.id.data.frame, case.TPM, control.TPM)

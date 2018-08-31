@@ -324,7 +324,9 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
     png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), width = 1000, height = 1000)
     redgreen <- c("blue", "white", "red")
     pal <- colorRampPalette(redgreen)(100)
-    pheatmap::pheatmap(df.new, scale = "row", xlab = "samples", ylab = "transcript names",cexRow=1, cexCol = 1, margins = c(10,8), col = pal, main = "Heatmap Plot (pheatmap)")
+    ## Not change distance , highlight case and control
+    pheatmap::pheatmap(df.new, scale = "row", xlab = "samples", ylab = "transcript names",cexRow=1, cexCol = 1, margins = c(10,8), col = pal, main = "Heatmap Plot (pheatmap)", cluster_rows = TRUE, cluster_cols = FALSE)
+    # grid::grid.abline(intercept = 300, slope = 0)
     # theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
     dev.off()
     cat(paste0("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), "' has been created. \n\n")
