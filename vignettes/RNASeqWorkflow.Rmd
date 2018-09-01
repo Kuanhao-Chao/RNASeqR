@@ -26,11 +26,15 @@ knitr::opts_chunk$set(tidy = FALSE,
                       warning = FALSE,
                       message = FALSE)
 ```
+`code`, `file end`, `value`, `parameter`
+*'file directory'*
+Normal software name
 
 # RNA-Seq workflow
 
 ## Overview
 
+There are many steps in RNA-Seq analysis. 
 1. Each step is a function
 2. Eahc function ==> R shell, background
 3. 
@@ -44,10 +48,10 @@ Support paired-end reads only
 
 ## "RNASeqWorkFlowParam" S4 Object Creation
 
-This is the **pre-step** of RNA-Seq workflow in this package. Before starting RNA-Seq analysis, you have to run the constructor function `RNASeqWorkFlowParam()` and create `RNASeqWorkFlowParam` S4 object first. This object will be used as input parameter in the following analysis function.
+This is the **pre-step** of RNA-Seq workflow in this package. Before starting RNA-Seq analysis, you have to run the constructor function `RNASeqWorkFlowParam()` and create `RNASeqWorkFlowParam` S4 object first. This object, which stores checked parameters, will be used as input parameter in the following analysis function.
 
 ### `RNASeqWorkFlowParam` Slots Explanation
-There are 11 slots in `RNASeqWorkFlowParam`.
+There are 11 slots in `RNASeqWorkFlowParam`: 
 
 1. `os.type` : The operating system type. Value is `linux` or `osx`. This package only support Linux and macOS (no Windows). If other operating system is detected, ERROR will be reported. 
 2. `python.variable` : Python related variable. Value is a list of whether Python is available and Python version (`TRUE` or `FALSE`, `2` or `3`).
@@ -57,15 +61,17 @@ There are 11 slots in `RNASeqWorkFlowParam`.
 
     * ***`genome.name`.fa*** : reference genome in FASTA file formation.
     * ***`genome.name`.gtf*** : gene annotation in GTF file formation.
-    *  ***rawfastq.gz*/**: directory storing FASTQ files. 
+    *  ***rawfastq.gz*/**: directory storing `FASTQ` files. 
     *  Support paired-end reads files only.
-    *  Names of paired-end FASTQ files : *'`sample.pattern`1.fastq.gz'* and *'`sample.pattern`2.fastq.gz'*. `sample.pattern` must be distinct for each sample.
+    *  Names of paired-end `FASTQ` files : *'`sample.pattern`1.fastq.gz'* and *'`sample.pattern`2.fastq.gz'*. `sample.pattern` must be distinct for each sample.
     * ***phenodata.csv*** : information about RNA-Seq experiment design.
-        * First column : Distint ids for each sample. Value of each sample of this column must match `sample.pattern` in FASTQ files in *'rawfastq.gz/'*. Column names must be **ids**.
+        * First column : Distint ids for each sample. Value of each sample of this column must match `sample.pattern` in `FASTQ` files in *'rawfastq.gz/'*. Column names must be **ids**.
         * Second column : independent variable for the RNA-Seq experiment. Value of each sample of this column can only be parameter `case.group` and `control.group`. Column name is parameter `independent.variable`.
-    * ***indices*/** : directory storing `HT2` indices files for hisat2 alignment tool. 
+    * ***indices*/** : directory storing `HT2` indices files for HISAT2 alignment tool. 
         * This directory is **optional**. `HT2` indices files corresponding to target reference genome can be installed at [HISAT2 official website](https://ccb.jhu.edu/software/hisat2/index.shtml). Providing `HT2` files can accelerate the subsequent steps.
         * If `HT2` index files are not provided, *'input_files/indices/'* directory should be deleted.
+![](https://i.imgur.com/FcTDKkq.png)
+
 6. `genome.name` : Variable of genome name defined in this RNA-Seq workflow (ex. '`genome.name`.fa', '`genome.name`.gtf')  
 7. `sample.pattern` : Regular expression of paired-end fastq.gz files under *'input_files/raw_fastq.gz/'*. **IMPORTANT!!** expression shouldn't have `_[1,2].fastq.gz`  in end.
 8. `independent.variable`: Independent variable for the biological experiment design of two-group RNA-Seq workflow.
@@ -75,19 +81,16 @@ There are 11 slots in `RNASeqWorkFlowParam`.
 
 ### `RNASeqWorkFlowParam` Constructor Checking Steps
 
-1. Create a new directory for RNA-Seq analysis.
-    * It is highly recommended to create a new directory without any files inside. The parameter `path.prefix` of `RNASeqWorkFlowParam()` constructor should be the absolute path of this new directory. All the RNA-Seq related files that generated in the following steps will be stored inside of this directory.
+1. Create a new directory for RNA-Seq analysis. It is highly recommended to create a new directory without any files inside. The parameter `path.prefix` of `RNASeqWorkFlowParam()` constructor should be the absolute path of this new directory. All the RNA-Seq related files that generated in the following steps will be stored inside of this directory.
 
-2. Create valid *'input_files/'* directory
-    * You should create a file directory named *'input_files/'* with neccessary files inside. It should follow the rules metioned above.
+2. Create valid *'input_files/'* directory. You should create a file directory named *'input_files/'* with neccessary files inside. It should follow the rules metioned above.
     
-3. Run constructor of `RNASeqWorkFlowParam` S4 object
-    * This constructor will check following things before creating S4 objects
-        * Operating system
-        * Python version
-        * 2to3 command  
-        * Structure, contents and rules of *'inputfiles/'*
-        * Validity of input parameters
+3. Run constructor of `RNASeqWorkFlowParam` S4 object. This constructor will check the validity of input parameters before creating S4 objects.
+    * Operating system
+    * Python version
+    * 2to3 command  
+    * Structure, contents and rules of *'inputfiles/'*
+    * Validity of input parameters
 
 ### Example
 ```{r}
@@ -95,7 +98,7 @@ There are 11 slots in `RNASeqWorkFlowParam`.
 # genome.name = NA, sample.pattern = NA, independent.variable = NA, 
 # control.group = NA, experiment.group = NA)
 ```
-In this example, `RNASeqWorkFlowParam` S4 object is store in `exp` for RNA-Seq analysis steps below. Any ERROR occured in checking steps will terminate the program.
+In this example, `RNASeqWorkFlowParam` S4 object is store in `exp` for subsequent RNA-Seq analysis steps. Any ERROR occured in checking steps will terminate the program.
 
 
 
@@ -104,25 +107,30 @@ In this example, `RNASeqWorkFlowParam` S4 object is store in `exp` for RNA-Seq a
 
 This is the **first necessary step** of RNA-Seq workflow in this package. To set up the environment, run `RNASeqEnvironmentSet_CMD()` to execute process in background or run `RNASeqEnvironmentSet()` to execute process in R shell.
 
-### Files Setup
-1. Create Base Directories *'gene_data/'*, *'RNASeq_bin/'*, *'RNASeq_results'*, *'Rscript'* and *'Rscript_out'* will be created under `path.prefix` directory.
+### Files Set up
+1. Create Base Directories. *'gene_data/'*, *'RNASeq_bin/'*, *'RNASeq_results'*, *'Rscript'* and *'Rscript_out'* will be created under `path.prefix` directory. Here are the usage of these five main directories: 
+    * *'gene_data/'*: Symblic links of *'input_files/'* and files that are created in each step of RNA-Seq analysis will be stored in this directory.  
+    * *'RNASeq_bin/'*: The binaries of necessary tools, HISAT2, SAMtools, StringTie and Gffcompare, are installed in this directory.
+    * *'RNASeq_results'*: The RNA-Seq results, for example, alignment results, quality assessment results, differential analysis results etc., will be stored in this directory.
+    * *'Rscript'*: If your run `XXX_CMD()` function, corresponding R script(`XXX.R`) for certain step will be created in the directory.
+    * *'Rscript_out'*: The corresponding output report for R script(`XXX.Rout`) will be stored in this directory.
 
-2. Copy *'input_files/'* symbolic links will be created from files in *'input_files/'* to `path.prefix` directory. 
+2. Symbolic links will be created from files in *'input_files/'* to `path.prefix` directory. 
 
 ### Necessary Tools Installation
-The operating system of your workstation will be detected. If the operating system is other than `Linux` and `macOS`, ERROR will be reported. `HISAT2`, `SAMtools`, `StringTie` and `Gffcompare` will be installed automatically.
+The operating system of your workstation will be detected. If the operating system is other than `Linux` and `macOS`, ERROR will be reported. HISAT2, SAMtools, StringTie and Gffcompare will be installed automatically.
 
-* `HISAT2`
+* HISAT2
     * Based on your operating system, `hisat2-2.1.0-Linux_x86_64.zip` or `hisat2-2.1.0-OSX_x86_64.zip` zipped file will be installed.
     * Installed file will be unzipped and all binary files will be copied under *'RNASeq_bin/'*
-* *SAMtools*
+* SAMtools
     * `samtools-1.8.tar.bz2` source files will be installed. 
     * Installed files will be unzipped and compiled. If there is any ERROR occurred during compilation, program will be stopped. You should check whether the development environment is OK for SAMtools before rerunning `RNASeqEnvironmentSet_CMD` or `RNASeqEnvironmentSet()` to set up the environment again.
-    * Maked samtools binary will be copied under *'RNASeq_bin/'*.
-* `StringTie`
+    * Maked SAMtools binary will be copied under *'RNASeq_bin/'*.
+* StringTie
     * Based on your operating system, `stringtie-1.3.4d.Linux_x86_64.tar.gz` or `stringtie-1.3.4d.Linux_x86_64` zipped file will be installed.
     * Installed file will be unzipped and all binary files will be copied under *'RNASeq_bin/'*.
-* `Gffcompare`
+* Gffcompare
     * Based on your operating system, `gffcompare-0.10.4.Linux_x86_64.tar.gz` or `gffcompare-0.10.4.Linux_x86_64.tar.gz` zipped file will be installed.
     * Installed file will be unzipped and all binary files will be copied under *'RNASeq_bin/'*.
 
@@ -147,7 +155,7 @@ Result will be reported in R shell. Make sure the environment is successfully se
 
 ## `FASTQ` Files Quality Assessment
 
-This is an **optional step** of RNA-Seq workflow in this package. However, it is strongly recommended to do it before processing raw reads. To assess the quality of raw reads in FASTQ files, run `RNASeqQualityAssessment_CMD()` to execute process in background or run `RNASeqQualityAssessment()` to execute process in R shell.
+This is an **optional step** of RNA-Seq workflow in this package. However, it is strongly recommended to do it before processing raw reads. To assess the quality of raw reads in `FASTQ` files, run `RNASeqQualityAssessment_CMD()` to execute process in background or run `RNASeqQualityAssessment()` to execute process in R shell.
 
 ### "systemPipeR" Quality Assessment
 
@@ -156,7 +164,7 @@ In this process, [systemPipeR](http://bioconductor.org/packages/release/bioc/htm
 1. Check the number of times that user has run quality assessment process and create the corresponding files *'RNASeq_results/QA_results/QA_{times}'*.
 2. RNA-Seq environment set up. *'rnaseq/'* directory will be created by [systemPipeR](http://bioconductor.org/packages/release/bioc/html/systemPipeR.html) package.
 3. Create *'data.list.txt'* file. 
-4. Reading FASTQ files and create *'fastqReport.pdf'* as the report result of quality assessment
+4. Reading `FASTQ` files and create *'fastqReport.pdf'* as the report result of quality assessment
 5. Remove *'rnaseq/'* directory.
 
 ### Example
@@ -174,13 +182,13 @@ Result will be reported in R shell. Make sure quality assessment is successfully
 
 ## `FASTQ` Files Quality Trimming
 
-This is an **optional step** of RNA-Seq workflow in this package. However, it is strongly recommended to do it if the result of quality assessment is unsatisfied. To trim the raw reads in FASTQ files, run `RNASeqQualityTrimming_CMD()` to execute process in background or run `RNASeqQualityTrimming()` to execute process in R shell. After trimming process, it is strongly recommended to redo quality assessment step. Different quality assessment result will be stored in different directories with index of processing order.
+This is an **optional step** of RNA-Seq workflow in this package. However, it is strongly recommended to do it if the result of quality assessment is unsatisfied. To trim the raw reads in `FASTQ` files, run `RNASeqQualityTrimming_CMD()` to execute process in background or run `RNASeqQualityTrimming()` to execute process in R shell. After trimming process, it is strongly recommended to redo quality assessment step. Different quality assessment result will be stored in different directories with index of processing order.
 
 ### "ShortRead" Quality Trimming
 In this process, [ShortRead](http://bioconductor.org/packages/release/bioc/html/ShortRead.html) package is used for quality trimming. Followings are trimming steps and method explanation.
 
-1. `FASTQ` files with `sample.pattern` in *'gene_data/raw_fastq.gz'* will be listed and be check. This trimming function only support paired-end FASTQ files.
-2. The probability of error per each base pair is calculated by Phred Quality in FASTQ files and the cumulative probability of error of each base pair will also be calculated. The threshold cumulative probability `cum.error`, with default value `1`, is used to find the trimming point of paired end files.
+1. `FASTQ` files with `sample.pattern` in *'gene_data/raw_fastq.gz'* will be listed and be check. This trimming function only support paired-end `FASTQ` files.
+2. The probability of error per each base pair is calculated by Phred Quality in `FASTQ` files and the cumulative probability of error of each base pair will also be calculated. The threshold cumulative probability `cum.error`, with default value `1`, is used to find the trimming point of paired end files.
 3. `reads.length.limit`, with default value 36,  determines the minimum base pair length of reads. Length of reads less than `reads.length.limit` will be filtered out.
 4. Untrimmed original `FASTQ` files are moved to *'gene_data/rawfastq.gz/originaluntrimmedfastq.gz'*, and trimmed reads are written to *'gene_data/rawfastq.gz/'*
 5. It is strongly recommended to run `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()` for quality assessment after quality trimming.
@@ -198,11 +206,11 @@ Result will be reported in R shell. Make sure quality assessment is successfully
 # RNASeqQualityAssessment()
 ```
 
-## Raw Reads Process (Alignment, Assembly, Gffcompare, Quantification)
+## Reads Process (Alignment, Assembly, Gffcompare, Quantification)
 
-This is a **second necessary step** of RNA-Seq workflow in this package. Programs installed in environment setting step, `HISAT2`, `SAMtools`, `StringTie` and `Gffcompare`, will be executed. To process raw reads FASTQ files, run `RNASeqRawReadProcess_CMD()` to execute process in background or run `RNASeqRawReadProcess()` to execute process in R shell. For more details about commands that executed during each reads processing step, please check the reported *'RNASeq_results/COMMAND.txt'*.
+This is a **second necessary step** of RNA-Seq workflow in this package. Programs installed in environment setting step, HISAT2, SAMtools, StringTie and Gffcompare, will be executed. To process raw reads `FASTQ` files, run `RNASeqRawReadProcess_CMD()` to execute process in background or run `RNASeqRawReadProcess()` to execute process in R shell. For more details about commands that executed during each reads processing step, please check the reported *'RNASeq_results/COMMAND.txt'*.
 
-### `HISAT2` Index
+### HISAT2 Index
 
 In pre-step(`RNASeqWorkFlowParam` creation step), *'indices/'* directory is checked and the whether `HT2` indices files are provided is known. If not provided, following commands will be executed:
 
@@ -213,25 +221,35 @@ In pre-step(`RNASeqWorkFlowParam` creation step), *'indices/'* directory is chec
     * These two commands are executed to extract splice-site and exon information from gene annotation file.
 
 2. `hisat2-build` index creation
-    * This command build HISAT2 indices files with *`genome.name`.ss* and *`genome.name`.exon* created in the previous step. Be aware that index building step requires a larger amount of memory and longer time than the alignment step, and it might not be possible to run on some personal workstations. It is highly recommended to check the availibility of `HT2` indices files at [HISAT2 official website](https://ccb.jhu.edu/software/hisat2/index.shtml) for your target reference genome beforehands.
+    * This command build HISAT2 indices files with *`genome.name`.ss* and *`genome.name`.exon* created in the previous step. Be aware that index building step requires a larger amount of memory and longer time than steps, and it might not be possible to run on some personal workstations. It is highly recommended to check the availibility of `HT2` indices files at [HISAT2 official website](https://ccb.jhu.edu/software/hisat2/index.shtml) for your target reference genome beforehands. Install `HT2` indices files will greatly shorten the analysis time.
 
-### `HISAT2` Alignment
+3. Write *'RNASeq_results/COMMAND.txt'*
+    * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
+
+
+### HISAT2 Alignment
 
 * Input: *`genome.name`_tran.{number}.ht2*, *`sample.pattern`.fastq.gz*
 * Output: *`sample.pattern`.sam*
 
-1. `hisat2` command is executed on paired end FASTQ files. `SAM` files will be created.
-    * `SAM` files are stored in *'gene_data/raw_bam/'*
+1. `hisat2` command is executed on paired end `FASTQ` files. `SAM` files will be created.
+    * `SAM` files are stored in *'gene_data/raw_bam/'*.
 
-### `SAMtools` `SAM` to `BAM`
+2. Write *'RNASeq_results/COMMAND.txt'*
+    * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
+
+### SAMtools `SAM` to `BAM`
 
 * Input: *`sample.pattern`.sam*
 * Output: *`sample.pattern`.bam*
 
-1. `samtools` command is executed. Output files from `hisat2` `SAM` files will be converted to `BAM` files. 
+1. `samtools` command is executed. Output `SAM` files from HISAT2 will be converted to `BAM` files. 
     * `BAM` files are stored in *'gene_data/raw_sam/'*. 
 
-### `StringTie` Assembly
+2. Write *'RNASeq_results/COMMAND.txt'*
+    * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
+
+### StringTie Assembly
 
 * Input: *`genome.name`.gtf*, *`sample.pattern`.bam*
 * Output: *`sample.pattern`.gtf*
@@ -240,7 +258,10 @@ In pre-step(`RNASeqWorkFlowParam` creation step), *'indices/'* directory is chec
     * Assembler of RNA-Seq alignments into potential transcripts.
     * Output assembled `GTF` files which are from each `FASTQ` files are stored in *'gene_data/raw_gtf/'*
 
-### `StringTie` Merge `GTF`
+2. Write *'RNASeq_results/COMMAND.txt'*
+    * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
+
+### StringTie Merge `GTF`
 
 * Input: *`sample.pattern`.gtf*
 * Output: *stringtiemerged.gtf*, *mergelist.txt*
@@ -251,15 +272,33 @@ In pre-step(`RNASeqWorkFlowParam` creation step), *'indices/'* directory is chec
     *  Transcript merger merges each *`sample.pattern`.gtf* into *stringtiemerged.gtf*
     *  Output files are all stored in *'gene_data/merged/'*
 
-### `Gffcompare` 
+3. Write *'RNASeq_results/COMMAND.txt'*
+    * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
 
-* Input: *`genome.name`.gtf*, *stringtiemerged.gtf*
+### Gffcompare
+
+* Input: *`genome.name`.gtf*, *stringtie_merged.gtf*
 * Output: *merged.annotated.gtf*, *merged.loci*, *merged.stats*, *merged.stringtie_merged.gtf.refmap*, *merged.stringtie_merged.gtf.tmap*, *merged.tracking*
 
 1. `gffcompare` command is executed. 
     * The comparison result of merged `GTF` file and reference annotation file is reported under *'merged/'* directory.
 
-### Raw reads count table creation
+2. Write *'RNASeq_results/COMMAND.txt'*
+    * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
+
+### StringTie Creates Ballgown Input Directories
+
+* Input: *stringtie_merged.gtf*
+* Output: *ballgown/*, *gene_abundance/* 
+
+1. `stringtie` command is executed.
+    * StringTie will create the input directory for ballgown package for the following differential analysis. Ballgown-related files will be stored by each sample name in *'gene_data/ballgown/'*.
+    * StringTie will store gene-related information in `TSV` file by each sample name in *'gene_data/gene_abundance/'*.
+
+2. Write *'RNASeq_results/COMMAND.txt'*
+    * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
+
+### Raw Reads Count Table Creation
 
 Whether this step is executed depends on the availability of Python on your workstation. 
 
@@ -276,6 +315,8 @@ Whether this step is executed depends on the availability of Python on your work
 3. raw reads count creation
     * Raw reads count is created and the results are stored in *'gene_data/reads_count_matrix/'*
 
+4. Write *'RNASeq_results/COMMAND.txt'*
+    * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
 
 ### Example
 1. Run in background
@@ -291,12 +332,32 @@ Result will be reported in R shell. Make sure raw read process is successfully d
 ```
 
 
-## Differential Expressed Genes Analysis
+## Differential Gene Expression Analysis
 
 
-This is the **third necessary step** of RNA-Seq workflow in this package. To do differential analysis(DA), run `RNASeqDifferentialAnalysis_CMD()` to execute process in background or run `RNASeqDifferentialAnalysis()` to execute process in R shell. In `RNASeqWorkflow` package, we provide four ways to do differential analysis.
+This is the **third necessary step** of RNA-Seq workflow in this package. To do differential gene expression analysis, run `RNASeqDifferentialAnalysis_CMD()` to execute process in background or run `RNASeqDifferentialAnalysis()` to execute process in R shell. In `RNASeqWorkflow` package, we provide four ways to do differential analysis: ballgown, TPM & Student t-test, DESeq2 and edgeR.
 
-The reads sum of each row equals `0` in *gene_data/reads_count_matrix/gene_count_matrix.csv*, which is generated in the previous step, will be filtered out.
+Before running this step, the raw reads count *'gene_data/reads_count_matrix/gene_count_matrix.csv'*, which is generated in the previous step, will be trimmed. The reads sum of each row equals `0` will be filtered out. And due to the reason that genes have different isoform, the reads of different gene ID in StringTie that maps to same gene name will be considered as same gene and be added and merged into one row. Trimmed gene raw reads count will be the input of DESeq2 and edgeR.
+
+After finding differential expressed genes, some general plots will be drawn in each differential analysis tool. The following are the plots:
+* Pre differential analysis sample profile related plot:
+    * Frequency Plot:
+        The frequency of normalized values will be drawn by using [rafalib](https://cran.r-project.org/web/packages/rafalib/index.html) package. X axis is `log2(normalized_values)`; Y axis is `Frequency`. 
+    * Box Plot & Violin Plot: 
+        The distribution normalized values of each sample will be drawn by [ggplot2](https://ggplot2.tidyverse.org) package. X axis is `Samples`; Y axis is `Log2(normalized_values+1)`. 
+    * PCA Plot : 
+        The principal components analysis(PCA) will be calculated on normalized values by [FactoMineR](http://factominer.free.fr) and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) packages. One dimension bar plot ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html)), two PCA plots ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html)) will be created.
+    * Correlation Plot : 
+        The correlation of each pair of samples will be calculated. One correlation dot plot ([corrplot](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)), one correlation bar plot ([PerformanceAnalytics](https://cran.r-project.org/web/packages/PerformanceAnalytics/PerformanceAnalytics.pdf)) and one correlation heat plot ([ggplot2](https://ggplot2.tidyverse.org)) will be created.
+            
+* Differential analysis related plot
+    * Volcano Plot : 
+        The upregulated and downregulated genes will colored with red and green. X axis is `log2(Fold Change)`; Y axis is `log2(p value)`. It is drawn by [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html) package. 
+    * PCA Plot : 
+        The principal components analysis(PCA) of selected differential expressed genes will be calculated on their normalized values by [FactoMineR](http://factominer.free.fr) and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) packages. One dimension bar plot ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html)), two PCA plots ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html)) will be created.
+    * Heatmap Plot : 
+        Heatmap will be ploted by using [pheatmap](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) package.
+            
 
 ### "ballgown" Analysis
 
@@ -310,27 +371,11 @@ The reads sum of each row equals `0` in *gene_data/reads_count_matrix/gene_count
 3. The row sum of sample FPKM values equal '0' will be filter out. According to the *'gene_data/phenodata.csv'* file, normalized count will be seperated into case and control group with column name *`sample.pattern.FPKM`*.
 4. A report `CSV` file combined with normalized FPKM count, average of case group, control group and statistic results will be stored as *'RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv'*.
 5. Differential expressed gene result *'RNASeq_results/ballgown_analysis/ballgown_normalized_DE_result.csv'* is reported. Default selecting threshold is **`pval < 0.05` and `log2FC > 1 | log2FC < 1`** 
-6. Visualization. The following pictures will be plotted.
-    * Pre differential analysis sample profile related plot
-        * Frequency Plot:
-            The frequency of normalized FPKM values will be drawn by using [rafalib](https://cran.r-project.org/web/packages/rafalib/index.html) package. X axis is `log2(FPKM)`; Y axis is `Frequency`. 
-        * Box Plot & Violin Plot: 
-            The distribution normalized FPKM values of each sample will be drawn by [ggplot2](https://ggplot2.tidyverse.org) package. X axis is `Samples`; Y axis is `Log2(FPKM+1)`. 
-        * PCA Plot : 
-            The principal components analysis(PCA) will be calculated on FPKM values by [FactoMineR](http://factominer.free.fr) and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) packages. One dimension bar plot ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html)), two PCA plots ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html)) will be created.
-        * Correlation Plot : 
-            The correlation of each pair of samples will be calculated. One correlation dot plot ([corrplot](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)), one correlation bar plot ([PerformanceAnalytics](https://cran.r-project.org/web/packages/PerformanceAnalytics/PerformanceAnalytics.pdf)) and one correlation heat plot ([ggplot2](https://ggplot2.tidyverse.org)) will be created.
-            
+6. Visualization. The plots mentioned above and the following plot will be drawn.
     * Differential analysis related plot
-        * Volcano Plot : 
-            The upregulated and downregulated genes will colored with red and green. X axis is `log2(Fold Change)`; Y axis is `log2(p value)`. It is drawn by [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html) package. 
         * MA Plot : 
             The plot visualizes the differences between case and control by transforming the data onto X axis `log2FC` and Y axis `log2(FPKM.mean)`. It is drawn by [ggplot2](https://ggplot2.tidyverse.org) package.
-        * PCA Plot : 
-            The principal components analysis(PCA) of selected differential expressed genes will be calculated on their FPKM values by [FactoMineR](http://factominer.free.fr) and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) packages. One dimension bar plot ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html)), two PCA plots ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html)) will be created.
-        * Heatmap Plot : 
-            Heatmap will be ploted by using [pheatmap](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) package.
-            
+ 
 ### TPM & Student t-test Analysis
 
 Normalized count is represented as TPM values. The statistic model used here is Student's t-test. The following are analysis steps:
@@ -344,29 +389,11 @@ Normalized count is represented as TPM values. The statistic model used here is 
 
 4. A report `CSV` file combined with normalized TPM count, average of case group, control group and statistic results will be stored as *'RNASeq_results/TPM_analysis/TPM_normalized_result.csv'*.
 5. Differential expressed gene result *'RNASeq_results/TPM_analysis/TPM_normalized_DE_result.csv'* is reported. Default selecting threshold is **`pval < 0.05` and `log2FC > 1 | log2FC < 1`** 
-
-6. Visualization. The following pictures will be plotted.
-    * Pre differential analysis sample profile related plot
-        * Frequency Plot:
-            The frequency of normalized TPM values will be drawn by using [rafalib](https://cran.r-project.org/web/packages/rafalib/index.html) package. X axis is `log2(TPM)`; Y axis is `Frequency`. 
-        * Box Plot & Violin Plot: 
-            The distribution normalized TPM values of each sample will be drawn by [ggplot2](https://ggplot2.tidyverse.org) package. X axis is `Samples`; Y axis is `Log2(TPM+1)`. 
-        * PCA Plot : 
-            The principal components analysis(PCA) will be calculated on TPM valueby [FactoMineR](http://factominer.free.fr) and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) packages. One dimension bar plot ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html)), two PCA plots ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html)) will be created.
-        * Correlation Plot : 
-            The correlation of each pair of samples will be calculated. One correlation dot plot ([corrplot](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)), one correlation bar plot ([PerformanceAnalytics](https://cran.r-project.org/web/packages/PerformanceAnalytics/PerformanceAnalytics.pdf)) and one correlation heat plot ([ggplot2](https://ggplot2.tidyverse.org)) will be created.
+6. Visualization. The plots mentioned above and the following plot will be drawn.
     * Differential analysis related plot
-
-        * Volcano Plot : 
-            The upregulated and downregulated genes will colored with red and green. X axis is `log2(Fold Change)`; Y axis is `log2(p value)`. It is drawn by [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html) package. 
         * MA Plot : 
-            The plot visualizes the differences between case and control by transforming the data onto X axis `log2FC` and Y axis `log2(FPKM.mean)`. It is drawn by [ggplot2](https://ggplot2.tidyverse.org) package.
-        * PCA Plot : 
-            The principal components analysis(PCA) of selected differential expressed genes will be calculated on their TPM values by [FactoMineR](http://factominer.free.fr) and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) packages. One dimension bar plot ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html)), two PCA plots ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html)) will be created.
-        * Heatmap Plot : 
-            Heatmap will be ploted by using [pheatmap](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) package.
-            
-            
+            The plot visualizes the differences between case and control by transforming the data onto X axis `log2FC` and Y axis `log2(TPM.mean)`. It is drawn by [ggplot2](https://ggplot2.tidyverse.org) package.
+
 ### "DESeq2" Analysis
 
 [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) estimate variance-mean dependence in raw reads count ([DESeq2 document](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)). The statistic model for differential expression is using negative binomial distributionl. [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) package takes sequence depth and RNA composition into consideration and use median of ratios normalization(MRN) method to count normalization ([related site](https://hbctraining.github.io/DGE_workshop/lessons/02_DGE_count_normalization.html)). The follwing are the analysis steps.
@@ -378,27 +405,11 @@ Normalized count is represented as TPM values. The statistic model used here is 
 2. Run `DESeq2()` function to do differential gene analysis.
 3. A report `CSV` file combined with normalized MRN count, average of case group, control group and statistic results will be stored as *'RNASeq_results/DESeq2_analysis/DESeq2_normalized_result.csv'*.
 4. Differential expressed gene result *'RNASeq_results/DESeq2_analysis/DESeq2_normalized_DE_result.csv'* is reported. Default selecting threshold is **`pval < 0.05` and `log2FC > 1 | log2FC < 1`** 
-5. Visualization. The following pictures will be plotted.
-    * Pre differential analysis sample profile related plot
-        * Frequency Plot:
-            The frequency of normalized FPKM values will be drawn by using [rafalib](https://cran.r-project.org/web/packages/rafalib/index.html) package. X axis is `log2(MRN)`; Y axis is `Frequency`. 
-        * Box Plot & Violin Plot: 
-            The distribution normalized FPKM values of each sample will be drawn by [ggplot2](https://ggplot2.tidyverse.org) package. X axis is `Samples`; Y axis is `Log2(MRN+1)`. 
-        * PCA Plot : 
-            The principal components analysis(PCA) will be calculated on MRN values by [FactoMineR](http://factominer.free.fr) and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) packages. One dimension bar plot ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html)), two PCA plots ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html)) will be created.
-        * Correlation Plot : 
-            The correlation of each pair of samples will be calculated. One correlation dot plot ([corrplot](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)), one correlation bar plot ([PerformanceAnalytics](https://cran.r-project.org/web/packages/PerformanceAnalytics/PerformanceAnalytics.pdf)) and one correlation heat plot ([ggplot2](https://ggplot2.tidyverse.org)) will be created.
-            
+5. Visualization. The plots mentioned above and the following plots will be drawn.
     * Differential analysis related plot
-        * Volcano Plot : 
-            The upregulated and downregulated genes will colored with red and green. X axis is `log2(Fold Change)`; Y axis is `log2(p value)`. It is drawn by [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html) package. 
         * MA Plot : 
-            The plot visualizes the differences between case and control by transforming the data onto X axis `log2FC` and Y axis `log2(FPKM.mean)`. It is drawn by [ggplot2](https://ggplot2.tidyverse.org) package.
-        * PCA Plot : 
-            The principal components analysis(PCA) of selected differential expressed genes will be calculated on MRN values by [FactoMineR](http://factominer.free.fr) and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) packages. One dimension bar plot ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html)), two PCA plots ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html)) will be created.
-        * Heatmap Plot : 
-            Heatmap will be ploted by using [pheatmap](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) package.
-        * Dispersion Plot : 
+            The plot visualizes the differences between case and control by transforming the data onto X axis `mean of normalized counts` and Y axis `log fold change`. It is created by `plotMA()` function in DESeq2.
+        * Dispersion Plot :  (PreDE or DE ????)
             DESeq2 provide a useful function, `plotDispEsts()`, to plot the dispersion estimates. X axis is `mean of normalized counts`; Y axis is `dispersion`.
 
 ### "edgeR" Analysis
@@ -415,35 +426,17 @@ Normalized count is represented as TPM values. The statistic model used here is 
 5. Get normalized count by running `cpm()` on TMM scaled `DEGList` object.
 6. A report `CSV` file combined with normalized TMM count, average of case group, control group and statistic results will be stored as *'RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv'*.
 7. Differential expressed gene result *'RNASeq_results/edgeR_analysis/edgeR_normalized_DE_result.csv'* is reported. Default selecting threshold is **`pval < 0.05` and `log2FC > 1 | log2FC < 1`** 
-8. Visualization. The following pictures will be plotted.
-    * Pre differential analysis sample profile related plot
-        * Frequency Plot:
-            The frequency of normalized values will be drawn by using [rafalib](https://cran.r-project.org/web/packages/rafalib/index.html) package. X axis is `log2(MRN)`; Y axis is `Frequency`. 
-        * Box Plot & Violin Plot: 
-            The distribution normalized values of each sample will be drawn by [ggplot2](https://ggplot2.tidyverse.org) package. X axis is `Samples`; Y axis is `Log2(MRN+1)`. 
-        * PCA Plot : 
-            The principal components analysis(PCA) will be calculated by [FactoMineR](http://factominer.free.fr) and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) packages. One dimension bar plot ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html)), two PCA plots ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html)) will be created.
-        * MDS Plot : 
-            The multidimensional scaling (MDS) visualization is provided by `plotMDS.DGEList()` in edgeR. Distance between dots in two dimensional scatterplot approximate the expression differences between the samples.
-        * Correlation Plot : 
-            The correlation of each pair of samples will be calculated. One correlation dot plot ([corrplot](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)), one correlation bar plot ([PerformanceAnalytics](https://cran.r-project.org/web/packages/PerformanceAnalytics/PerformanceAnalytics.pdf)) and one correlation heat plot ([ggplot2](https://ggplot2.tidyverse.org)) will be created.
-        * MeanVar Plot (!!! Question ! preDE or DE ?): 
+8. Visualization. The plots mentioned above and the following plots will be drawn.
+
+   * Pre differential analysis sample profile related plot
+        * MeanVar Plot (!!! Question ! preDE or DE ?):  (PreDE or DE ????)
             Visualize the mean-variance relationship in `DEGList`. Plot is drawn by run `plotMeanVar()` in edgeR. 
-        * plotBCV (!!! Question ! preDE or DE ?): 
+        * plotBCV (!!! Question ! preDE or DE ?):  (PreDE or DE ????)
             Plot the genewise biological coefficient of variance(BCV) against gene abundace.
             
     * Differential analysis related plot
-        * Volcano Plot : 
-            The upregulated and downregulated genes will colored with red and green. X axis is `log2(Fold Change)`; Y axis is `log2(p value)`. It is drawn by [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html) package. 
         * MA Plot : 
             The plot visualizes the differences between case and control by transforming the data onto X axis `log2FC` and Y axis `log2(FPKM.mean)`. It is drawn by [ggplot2](https://ggplot2.tidyverse.org) package.
-        * PCA Plot : 
-            The principal components analysis(PCA) of selected differential expressed genes will be calculated on MRN values by [FactoMineR](http://factominer.free.fr) and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) packages. One dimension bar plot ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html)), two PCA plots ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html)) will be created.
-        * Heatmap Plot : 
-            Heatmap will be ploted by using [pheatmap](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) package.
-        * Dispersion Plot : 
-            DESeq2 provide a useful function, `plotDispEsts()`, to plot the dispersion estimates. X axis is `mean of normalized counts`; Y axis is `dispersion`.
-
 
 ### Example
 1. Run in background
@@ -463,12 +456,37 @@ Result will be reported in R shell. Make sure differential expression analysis i
 ## Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)
 
 
-This is the **third optional step** of RNA-Seq workflow in this package. [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) is used in this step. Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis are made based on the differential expressed genes(DEG) that are found in four different differential analyses, ballgown, TPM&t-test, DESeq2 and edgeR. Run `RNASeqGoKegg_CMD()` to execute process in background or run `RNASeqGoKegg()` to execute process in R shell. In `RNASeqWorkflow` package.
+This is the **third optional step** of RNA-Seq workflow in this package. [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) is used in this step. Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis are made based on the differential expressed genes(DEG) that are found in four different differential analyses, ballgown, TPM&t-test, DESeq2 and edgeR. Run `RNASeqGoKegg_CMD()` to execute process in background or run `RNASeqGoKegg()` to execute process in R shell.
+
+The gene names used in StringTie and ballgown are in the type `SYMBOL` in clusterProfiler. In GO functional analysis and KEGG pathway analysis, `SYMBOL` ID type will be converted into `ENTREZID` ID type by `bitr()` function in clusterProfiler first. Those `SYMBOL` with no corresponding `ENTREZID` will return `NA` and be filtered out. The genes with `Inf` or `-Inf` log2 fold change will be filtered out too. ID conversion will be done in each differential analysis tools, ballgown, TPM & Student's t-test, DESeq2 and edgeR.
 
 ### Gene Ontology 
 
+Gene Ontology is the framework for the model of biology. It defines the universe of concepts relating to gene functions(GO terms) along three aspects: molecular function(MF), cellular component(CC), biological process(BP), and how these functions are related to each other(relation) ([GO website](http://www.geneontology.org)). In this process, GO gene set enrichment analysis, GO classification and GO over-representation test are implemented by [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) package.
+
+
+#### GO Gene Set Enrichment Analysis(GSEA)
+GO GSEA is implemented by running `gseGO()` function in [clusterProfiler](https://bioconductor.org/packages/release/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html). As mentioned in the [vignette of clusterProfiler](https://bioconductor.org/packages/release/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html), this approach aggregates the statistic of each gene within gene set, thus make it possible to detect the situation that genes where the difference is small, but evidenced in coordinated way in a set of related genes.
+
+In this step, the input gene set is all genes reported in each differential analysis tools(not just for selected differential expressed genes). If enriched genes are found, the top 5 genes with smallest p-value will be plotted with the function `gseaplot()` in [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html). If not, *'GO_GSE_NO_TERM'* empty file will be created.
+
+
+#### GO Classification
+The input gene set is differential genes that are reported in each differential analysis tools. `groupGO()` function in clusterProfiler is used. Classification result will be stored in `CSV`. The result of classification will be visualized. 12 highest `GeneRatio` functional description will be selected and plotted as bar plot. 
+
+#### GO Over-representation 
+The input gene set is differential genes that are reported in each differential analysis tools. `enrichGO()` function in clusterProfiler is used. GO over-representation result will be stored in `CSV`. The result of GO over-representation will be visualized as bar plot and dot plot. 
 
 ### Kyoto Encyclopedia of Genes and Genomes
+Kyoto Encyclopedia of Genes and Genomes(KEGG) is a database resource for understanding functions and utilities of the biological system from molecular-level information ([KEGG website](https://www.genome.jp/kegg/)). In this process, KEGG gene set enrichment analysis, KEGG over-representation test are implemented by [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) package.
+
+#### KEGG Gene Set Enrichment Analysis(GSEA)
+KEGG GSEA is implemented by running `gseKEGG()` function in [clusterProfiler](https://bioconductor.org/packages/release/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html). In this step,  the input gene set is all genes reported in each differential analysis tools(not just for selected differential expressed genes). If enriched genes are found, the top 5 genes with smallest p-value will be plotted with the function `gseaplot()` in [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html). If not, *'KEGG_GSE_NO_TERM'* empty file will be created.
+
+
+#### KEGG Over-representation
+The input gene set is differential genes that are reported in each differential analysis tools. `enrichKEGG()` function in clusterProfiler is used. KEGG over-representation result will be stored in `CSV`. The result of KEGG over-representation will be visualized as bar plot and dot plot. 
+
 
 ### Example
 1. Run in background
@@ -484,12 +502,4 @@ Result will be reported in R shell.
 ```
 
 ## Conlusion
-
-
-
-
-genome.name Variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
-
-
-sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
 

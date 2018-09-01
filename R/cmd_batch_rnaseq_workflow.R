@@ -7,7 +7,7 @@
 #'   RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam, run = FALSE, check.s4.print = FALSE)
 #'   RNASeqQualityAssessment_CMD(RNASeqWorkFlowParam, run = FALSE, check.s4.print = FALSE)
 #'   RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam, run = FALSE, check.s4.print = FALSE)
-#'   RNASeqRawReadProcess_CMD(RNASeqWorkFlowParam, num.parallel.threads = 1, run = FALSE, check.s4.print = FALSE)
+#'   RNASeqReadProcess_CMD(RNASeqWorkFlowParam, num.parallel.threads = 1, run = FALSE, check.s4.print = FALSE)
 #'   RNASeqBallgownProcess_CMD(RNASeqWorkFlowParam, ballgown.log2FC = 1, ballgown.qval = 0.05, run = FALSE, check.s4.print = FALSE)
 #'   fileConn<-file(paste0(path.prefix, "Rscript/RNASeq_WORKFLOW.R"))
 #'   first <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Environment_Set.R ", path.prefix, "Rscript_out/Environment_Set.Rout"), "\", stdout = \"\", wait = TRUE )")

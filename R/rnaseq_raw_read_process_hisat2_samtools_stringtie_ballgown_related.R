@@ -353,45 +353,45 @@ StringTieToBallgown <- function(path.prefix, genome.name, sample.pattern, num.pa
   }
 }
 
-# stringtie re-estimate the abundance
-StringTieReEstimate <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
-  if (isTRUE(CheckStringTie(print=FALSE))) {
-    check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
-    cat("\n\u2618\u2618\u2618 Re-setimate :\n")
-    cat(paste0("************** Stringtie re-estimate **************\n"))
-    if (check.results$stringtie_merged.gtf.file.df != 0 && isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$stringtie_merged.gtf.file.df) &&
-        check.results$bam.files.number.df != 0){
-      if(!dir.exists(paste0(path.prefix, "gene_data/gene_abundance/"))){
-        dir.create(file.path(paste0(path.prefix, 'gene_data/gene_abundance/')), showWarnings = FALSE)
-      }
-      command.list <- c()
-      command.list <- c(command.list, "* Stringtie Re-etsimate : ")
-      current.path <- getwd()
-      setwd(paste0(path.prefix, "gene_data/"))
-      sample.name <- sort(gsub(paste0(".bam$"), replacement = "", check.results$bam.files.df))
-      iteration.num <- length(sample.name)
-      for( i in seq_len(iteration.num)){
-        whole.command <- paste("-p", num.parallel.threads, "-e -B -G", paste0("merged/stringtie_merged.gtf"), "-o", paste0("ballgown/", sample.name[i], "/",  sample.name[i], ".gtf"), "-A", paste0("gene_abundance/", sample.name[i],"/", sample.name[i], ".tsv"), paste0("raw_bam/", sample.name[i], ".bam"))
-        if (i != 1) cat("\n")
-        main.command <- "stringtie"
-        cat(c("Input command :", paste(main.command, whole.command), "\n"))
-        command.list <- c(command.list, paste("    command :", main.command, whole.command))
-        command.result <- system2(command = main.command, args = whole.command)
-        if (command.result != 0 ) {
-          cat(paste0("(\u2718) '", main.command, "' is failed !!"))
-          stop(paste0("'", main.command, "' ERROR"))
-        }
-      }
-      cat("\n")
-      command.list <- c(command.list, "\n")
-      fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
-      write(command.list, fileConn, append = TRUE)
-      on.exit(setwd(current.path))
-    } else {
-      stop(c(paste0("(\u2718) '", genome.name, ".gtf' "), "or 'XXX.bam' is missing.\n\n"))
-    }
-  }
-}
+# # stringtie re-estimate the abundance
+# StringTieReEstimate <- function(path.prefix, genome.name, sample.pattern, num.parallel.threads = 8) {
+#   if (isTRUE(CheckStringTie(print=FALSE))) {
+#     check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
+#     cat("\n\u2618\u2618\u2618 Re-setimate :\n")
+#     cat(paste0("************** Stringtie re-estimate **************\n"))
+#     if (check.results$stringtie_merged.gtf.file.df != 0 && isTRUE(check.results$gtf.file.logic.df) && isTRUE(check.results$stringtie_merged.gtf.file.df) &&
+#         check.results$bam.files.number.df != 0){
+#       if(!dir.exists(paste0(path.prefix, "gene_data/gene_abundance/"))){
+#         dir.create(file.path(paste0(path.prefix, 'gene_data/gene_abundance/')), showWarnings = FALSE)
+#       }
+#       command.list <- c()
+#       command.list <- c(command.list, "* Stringtie Re-etsimate : ")
+#       current.path <- getwd()
+#       setwd(paste0(path.prefix, "gene_data/"))
+#       sample.name <- sort(gsub(paste0(".bam$"), replacement = "", check.results$bam.files.df))
+#       iteration.num <- length(sample.name)
+#       for( i in seq_len(iteration.num)){
+#         whole.command <- paste("-p", num.parallel.threads, "-e -B -G", paste0("merged/stringtie_merged.gtf"), "-o", paste0("ballgown/", sample.name[i], "/",  sample.name[i], ".gtf"), "-A", paste0("gene_abundance/", sample.name[i],"/", sample.name[i], ".tsv"), paste0("raw_bam/", sample.name[i], ".bam"))
+#         if (i != 1) cat("\n")
+#         main.command <- "stringtie"
+#         cat(c("Input command :", paste(main.command, whole.command), "\n"))
+#         command.list <- c(command.list, paste("    command :", main.command, whole.command))
+#         command.result <- system2(command = main.command, args = whole.command)
+#         if (command.result != 0 ) {
+#           cat(paste0("(\u2718) '", main.command, "' is failed !!"))
+#           stop(paste0("'", main.command, "' ERROR"))
+#         }
+#       }
+#       cat("\n")
+#       command.list <- c(command.list, "\n")
+#       fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
+#       write(command.list, fileConn, append = TRUE)
+#       on.exit(setwd(current.path))
+#     } else {
+#       stop(c(paste0("(\u2718) '", genome.name, ".gtf' "), "or 'XXX.bam' is missing.\n\n"))
+#     }
+#   }
+# }
 
 # Examine how the transcripts compare with the reference annotation
 GffcompareRefSample <- function(path.prefix, genome.name, sample.pattern) {

@@ -8,7 +8,7 @@
 #' 4. 'Gffcompare' : examines how transcripts compare with the reference annotation.
 #' 5. 'Stringtie' : creates input files for ballgown, edgeR and DESeq2.
 #' Before running this function, \code{RNASeqEnvironmentSet_CMD()} or\code{RNASeqEnvironmentSet()} must be executed successfully.
-#' If you want to process raw reads for the following RNA-Seq workflow in R shell, please see \code{RNASeqRawReadProcess()} function.
+#' If you want to process raw reads for the following RNA-Seq workflow in R shell, please see \code{RNASeqReadProcess()} function.
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
 #' @param num.parallel.threads Specify the number of processing threads (CPUs) to use for transcript assembly. The default is 1.
@@ -25,8 +25,8 @@
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' ## Before run this function, make sure \code{RNASeqEnvironmentSet_CMD()} (or\code{RNASeqEnvironmentSet()}) is executed successfully.
-#' RNASeqRawReadProcess_CMD(RNASeqWorkFlowParam = exp)}
-RNASeqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 1, run = TRUE, check.s4.print = TRUE) {
+#' RNASeqReadProcess_CMD(RNASeqWorkFlowParam = exp)}
+RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 1, run = TRUE, check.s4.print = TRUE) {
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
   path.prefix <- RNASeqWorkFlowParam@path.prefix
@@ -43,7 +43,7 @@ RNASeqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
   # ExportPath(path.prefix = path.prefix)
   fileConn<-file(paste0(path.prefix, "Rscript/Raw_Read_Process.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0('RNASeqRawReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", genome.name = "', genome.name, '", sample.pattern = "', sample.pattern, '", python.variable.answer = ', python.variable.answer, ', python.variable.version = ', python.variable.version, ', python.2to3 = ', python.2to3, ', num.parallel.threads = ', num.parallel.threads, ', indices.optional = ', indices.optional, ')')
+  second <- paste0('RNASeqReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", genome.name = "', genome.name, '", sample.pattern = "', sample.pattern, '", python.variable.answer = ', python.variable.answer, ', python.variable.version = ', python.variable.version, ', python.2to3 = ', python.2to3, ', num.parallel.threads = ', num.parallel.threads, ', indices.optional = ', indices.optional, ')')
   writeLines(c(first, second), fileConn)
   close(fileConn)
   cat(paste0("\u2605 '", path.prefix, "Rscript/Raw_Read_Process.R' has been created.\n"))
@@ -57,8 +57,8 @@ RNASeqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
 #' @title Raw reads process (alignment, assembly, expressive quantification) of RNA-Seq in background.
 #'
 #' @description Process raw reads for RNA-Seq workflow in R shell.
-#' It is strongly advised to run \code{RNASeqRawReadProcess_CMD()} directly. Running this function directly is not recommended because the processes of alignment, assembly and quantification take a longer time than other functions.
-#' Running \code{RNASeqRawReadProcess_CMD()} will create 'Raw_Read_Process.Rout' file in 'Rscript_out/' directory.
+#' It is strongly advised to run \code{RNASeqReadProcess_CMD()} directly. Running this function directly is not recommended because the processes of alignment, assembly and quantification take a longer time than other functions.
+#' Running \code{RNASeqReadProcess_CMD()} will create 'Raw_Read_Process.Rout' file in 'Rscript_out/' directory.
 #' This function do following things :
 #' This function do 5 things :
 #' 1. 'Hisat2' : aligns raw reads to reference genome. If \code{indices.optional} in \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indices will be created.
@@ -67,7 +67,7 @@ RNASeqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
 #' 4. 'Gffcompare' : examines how transcripts compare with the reference annotation.
 #' 5. 'Stringtie' : creates input files for ballgown, edgeR and DESeq2.
 #' Before running this function, \code{RNASeqEnvironmentSet_CMD()} or\code{RNASeqEnvironmentSet()} must be executed successfully.
-#' If you want to process raw reads for the following RNA-Seq workflow in background, please see \code{RNASeqRawReadProcess_CMD()} function.
+#' If you want to process raw reads for the following RNA-Seq workflow in background, please see \code{RNASeqReadProcess_CMD()} function.
 #'
 #' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @param input.path.prefix path prefix of 'input_files/' directory
@@ -87,13 +87,13 @@ RNASeqRawReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads =
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' ## Before run this function, make sure \code{RNASeqEnvironmentSet_CMD()} (or\code{RNASeqEnvironmentSet()}) is executed successfully.
-#' RNASeqRawReadProcess(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix,
+#' RNASeqReadProcess(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix,
 #'                      genome.name = exp@@genome.name, sample.pattern = exp@@sample.pattern, python.variable.answer = exp@@python.variable[0],
 #'                      python.variable.version = exp@@python.variable[1], indices.optional = exp@@indices.optional)}
-RNASeqRawReadProcess <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, python.variable.answer, python.variable.version, python.2to3, num.parallel.threads = 1, indices.optional) {
+RNASeqReadProcess <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, python.variable.answer, python.variable.version, python.2to3, num.parallel.threads = 1, indices.optional) {
   CheckOperatingSystem(FALSE)
   ExportPath(path.prefix)
-  PreRNASeqRawReadProcess(path.prefix, genome.name, sample.pattern)
+  PreRNASeqReadProcess(path.prefix, genome.name, sample.pattern)
   check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=FALSE)
   if (check.results$ht2.files.number.df == 0 && !indices.optional) {
     CreateHisat2Index(path.prefix, genome.name, sample.pattern)
@@ -107,11 +107,11 @@ RNASeqRawReadProcess <- function(path.prefix, input.path.prefix, genome.name, sa
   # StringTieReEstimate(path.prefix, genome.name, sample.pattern, num.parallel.threads = num.parallel.threads)
   finals <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
   PreDECountTable(path.prefix= path.prefix, sample.pattern, python.variable.answer, python.variable.version, python.2to3, print=TRUE)
-  PostRNASeqRawReadProcess(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern)
+  PostRNASeqReadProcess(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern)
 }
 
-PreRNASeqRawReadProcess <- function(path.prefix, genome.name, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C RNASeqRawReadProcess()' environment pre-check ...\n")
+PreRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C RNASeqReadProcess()' environment pre-check ...\n")
   phenodata.csv <- file.exists(paste0(path.prefix, "gene_data/phenodata.csv"))
   ref.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/", genome.name, ".gtf"))
   ref.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/", genome.name, ".fa"))
@@ -121,13 +121,13 @@ PreRNASeqRawReadProcess <- function(path.prefix, genome.name, sample.pattern) {
   check.progress.results.bool <- check.results$gtf.file.logic.df && check.results$fa.file.logic.df && (check.results$fastq.gz.files.number.df != 0)
   validity <- phenodata.csv && ref.gtf && ref.fa && check.tool.result && (length(raw.fastq) != 0) && check.progress.results.bool
   if (!isTRUE(validity)) {
-    stop("RNASeqRawReadProcess() environment ERROR")
+    stop("RNASeqReadProcess() environment ERROR")
   }
-  cat("(\u2714) : RNASeqRawReadProcess() pre-check is valid\n\n")
+  cat("(\u2714) : RNASeqReadProcess() pre-check is valid\n\n")
 }
 
-PostRNASeqRawReadProcess <- function(path.prefix, genome.name, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C RNASeqRawReadProcess()' environment post-check ...\n")
+PostRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
+  cat("\u269C\u265C\u265C\u265C RNASeqReadProcess()' environment post-check ...\n")
   # Still need to add condition
   gene_abundance <- dir.exists(paste0(path.prefix, "gene_data/gene_abundance/"))
   check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=FALSE)
@@ -140,9 +140,9 @@ PostRNASeqRawReadProcess <- function(path.prefix, genome.name, sample.pattern) {
   ballgown.bool <- (check.results$ballgown.dirs.number.df) != 0
   validity <- gene_abundance && ht2.bool && sam.bool && bam.bool && gtf.bool && merged.bool && gffcompare.bool && ballgown.bool
   if (!isTRUE(validity)) {
-    stop("RNASeqRawReadProcess() post-check ERROR")
+    stop("RNASeqReadProcess() post-check ERROR")
   }
-  cat("(\u2714) : RNASeqRawReadProcess() post-check is valid\n\n")
+  cat("(\u2714) : RNASeqReadProcess() post-check is valid\n\n")
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
   cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
