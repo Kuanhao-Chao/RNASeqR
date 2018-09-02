@@ -4,8 +4,8 @@
 # Frequency Plot
 FrequencyPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group) {
   cat(paste0("\u25CF Plotting  Frequency plot\n"))
-  if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/preDE/Frequency"))){
-    dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/preDE/Frequency"))
+  if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Frequency"))){
+    dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Frequency"))
   }
   csv.results <- ParseResultCSV(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group)
   case.normalized <- csv.results$case
@@ -259,15 +259,15 @@ DEPCAPlot <- function(which.analysis, which.count.normalization, path.prefix, in
   # load gene name for further usage
   cat(paste0("\u25CF Plotting PCA related plot\n"))
   DE.csv.results <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, split = "_")[[1]][1], "_normalized_DE_result.csv"))
-  pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
+  pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
   # This is to get the result of normalized count
-  DE.csv.normalized.count.only <- DE.csv.results[,2:(pre.de.pheno.data$case.group.size + pre.de.pheno.data$case.group.size + 1)]
+  DE.csv.normalized.count.only <- DE.csv.results[,2:(pre.pheno_data$case.group.size + pre.pheno_data$case.group.size + 1)]
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/"))){
     dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/"))
   }
   my_colors=c("#00AFBB", "#E7B800")
   # The independent.variable group
-  grp = factor(c(rep(case.group, pre.de.pheno.data$case.group.size), rep(control.group,  pre.de.pheno.data$case.group.size)), levels = c(case.group, control.group))
+  grp = factor(c(rep(case.group, pre.pheno_data$case.group.size), rep(control.group,  pre.pheno_data$case.group.size)), levels = c(case.group, control.group))
   # color group
   color.group <- c(rep(1, pre.pheno_data$case.group.size), rep(2, pre.pheno_data$case.group.size))
   normalized.trans <- data.frame(t(DE.csv.normalized.count.only))
@@ -319,9 +319,9 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
   # load gene name for further usage
   cat(paste0("\u25CF Plotting Differential Expressed Heatmap related plot\n"))
   DE.csv.results <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, split = "_")[[1]][1], "_normalized_DE_result.csv"))
-  pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
+  pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
   DE.csv.results <- DE.csv.results[DE.csv.results$gene.name != ".",]
-  DE.csv.normalized.count.only <- DE.csv.results[,2:(pre.de.pheno.data$case.group.size + pre.de.pheno.data$case.group.size + 1)]
+  DE.csv.normalized.count.only <- DE.csv.results[,2:(pre.pheno_data$case.group.size + pre.pheno_data$case.group.size + 1)]
   row.names(DE.csv.normalized.count.only) <- DE.csv.results$gene.name
   cat(paste0("     \u25CF Checking found differential express transcript term.\n"))
   if (nrow(DE.csv.normalized.count.only) == 0) {
@@ -337,7 +337,7 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
   cat(paste0("     \u25CF Calculating log2(", which.count.normalization, "+1).\n"))
   log.data.frame <- log2(DE.csv.normalized.count.only+1)
   # Getting log control mean
-  control.log.average <- rowMeans(log.data.frame[seq_len(pre.de.pheno.data$case.group.size)])
+  control.log.average <- rowMeans(log.data.frame[seq_len(pre.pheno_data$case.group.size)])
   cat(paste0("     \u25CF Each log2(", which.count.normalization, "+1) minus average of control.\n"))
   log.data.frame.minus <- log.data.frame - control.log.average
   df.new <- scale(log.data.frame.minus)

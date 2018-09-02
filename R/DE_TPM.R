@@ -14,9 +14,9 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
   control.FPKM <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_control.csv"))
   statistic.FPKM <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/statistic.csv"))
   gene.name <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv"))
-
-  case.TPM <- (case.FPKM/colSums(case.FPKM))*(10**6)
-  control.TPM <- (control.FPKM/colSums(case.FPKM))*(10**6)
+  options(digits=22)
+  case.TPM <- exp(log(case.FPKM) - log(colSums(case.FPKM)) + log(1e6))
+  control.TPM <- exp(log(case.FPKM) - log(colSums(case.FPKM)) + log(1e6))
   gene.id.data.frame <- data.frame(read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv")))
 
   p.value <- unlist(lapply(seq_len(nrow(case.TPM)), function(x) { stats::t.test(case.TPM[x,], control.TPM[x,])$p.value }))
