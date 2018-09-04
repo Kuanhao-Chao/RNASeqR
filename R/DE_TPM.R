@@ -14,9 +14,8 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
   control.FPKM <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_control.csv"))
   statistic.FPKM <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/statistic.csv"))
   gene.name <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv"))
-  options(digits=22)
   case.TPM <- exp(log(case.FPKM) - log(colSums(case.FPKM)) + log(1e6))
-  control.TPM <- exp(log(case.FPKM) - log(colSums(case.FPKM)) + log(1e6))
+  control.TPM <- exp(log(control.FPKM) - log(colSums(control.FPKM)) + log(1e6))
   gene.id.data.frame <- data.frame(read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv")))
 
   p.value <- unlist(lapply(seq_len(nrow(case.TPM)), function(x) { stats::t.test(case.TPM[x,], control.TPM[x,])$p.value }))
@@ -46,51 +45,52 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
   cat(paste0("          \u25CF Total '", length(row.names(TPM_Ttest.result.DE)), "' DEG have been found !!!\n"))
   write.csv(TPM_Ttest.result.DE, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/TPM_normalized_DE_result.csv"), row.names=FALSE)
 
-  ###########################
-  ## TPM&Ttest visulization ##
-  ###########################
-  if(file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/TPM_normalized_result.csv")) &&
-     file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_case.csv")) &&
-     file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_control.csv")) &&
-     file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/statistic.csv"))){
-    # Transcript Related
-    if(!dir.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/"))){
-      dir.create(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/"))
-    }
+  # Check TPM_Ttest.result.DE before visulization!!
+  if (nrow(TPM_Ttest.result.DE) > 0) {
+    ###########################
+    ## TPM&Ttest visulization ##
+    ###########################
+    if(file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/TPM_normalized_result.csv")) &&
+       file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_case.csv")) &&
+       file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_control.csv")) &&
+       file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/statistic.csv"))){
+      # Transcript Related
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/"))){
+        dir.create(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/"))
+      }
+      ###############
+      #### PreDE ####
+      ###############
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/preDE/"))){
+        dir.create(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/preDE/"))
+      }
+      # Frequency
+      FrequencyPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
+      # Bax and Violin
+      BoxViolinPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
+      # PCA
+      PCAPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
+      #Correlation
+      CorrelationPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
 
-
-    ###############
-    #### PreDE ####
-    ###############
-    if(!dir.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/preDE/"))){
-      dir.create(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/preDE/"))
+      ############
+      #### DE ####
+      ############
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/DE/"))){
+        dir.create(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/DE/"))
+      }
+      # Volcano
+      VolcanoPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group, TPM.pval, TPM.log2FC)
+      # MA
+      MAPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group, TPM.pval)
+      # DE PCA plot
+      DEPCAPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
+      # Heatmap
+      DEHeatmap("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
+    } else {
+      stop("(\u2718) file missing ERROR.\n\n")
     }
-    # Frequency
-    FrequencyPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
-    # Bax and Violin
-    BoxViolinPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
-    # PCA
-    PCAPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
-    #Correlation
-    CorrelationPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
-
-    ############
-    #### DE ####
-    ############
-    if(!dir.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/DE/"))){
-      dir.create(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/DE/"))
-    }
-    # Volcano
-    VolcanoPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group, TPM.pval, TPM.log2FC)
-    # MA
-    MAPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group, TPM.pval)
-    # DE PCA plot
-    DEPCAPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
-    # Heatmap
-    DEHeatmap("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
   } else {
-    stop("(\u2718) file missing ERROR.\n\n")
+    cat ("(\u26A0) No differential expressed gene term found !!! Skip visualization !!! \n\n")
   }
-
-
 }

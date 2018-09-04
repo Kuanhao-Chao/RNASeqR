@@ -14,70 +14,61 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   ## Creating "ballgown_normalized_result.csv" ##
   ##############################################
   pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
+  pheno_data <- pheno_data[order(pheno_data$ids),]
   # make ballgown object
   ballgown.object <- ballgown::ballgown(dataDir = paste0(path.prefix, "gene_data/ballgown"), samplePattern = sample.pattern, pData = pheno_data, meas = 'all')
   # save ballgown object
   save(ballgown.object, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/ballgown.rda"))
-  # ballgown object do statistic test
-  de.statistic.result <- ballgown::stattest(ballgown.object, feature="gene",covariate = independent.variable, getFC=TRUE, meas="FPKM")
   # Save this data for DESeq2 and edgeR gene name conversion !! (and transciprt plot)
   ballgown.texpr <- ballgown::texpr(ballgown.object, 'all')
   write.csv(ballgown.texpr, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/texpr.csv"), row.names=FALSE)
   ballgown.t2g <- ballgown::indexes(ballgown.object)$t2g
   write.csv(ballgown.t2g, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/t2g.csv"), row.names=FALSE)
-  pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
-  # Convert gene id to gene name
-  indices <- match(de.statistic.result$id, ballgown.texpr$gene_id)
-  gene_names_for_result <- ballgown.texpr$gene_name[indices]
-  de.statistic.result <- data.frame(geneNames=gene_names_for_result, de.statistic.result)
-  # Filter statistic
-  de.statistic.result <- de.statistic.result[(!is.na(de.statistic.result$pval) & !is.na(de.statistic.result$pval)), ]
-  # Take seprate gene with name and not with name. Furthermore, the first one of duplicated gene name will be selected.
-  de.statistic.result.no.duplicated.withname <- de.statistic.result[(!duplicated(de.statistic.result$geneNames)) & (de.statistic.result$geneNames != "."), ]
-  de.statistic.result.novel.genename <- de.statistic.result[de.statistic.result$geneNames == ".", ]
-  de.statistic.result <- rbind(de.statistic.result.no.duplicated.withname, de.statistic.result.novel.genename)
-  gene.id.data.frame <- data.frame("gene.name" = de.statistic.result$geneNames)
-  write.csv(gene.id.data.frame, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv"), row.names=FALSE)
-  de.statistic.result$feature <- NULL; de.statistic.result$id <- NULL; de.statistic.result$geneNames <- NULL
+  # ballgown object do statistic test
+  de.statistic.result <- ballgown::stattest(ballgown.object, feature="gene",covariate = independent.variable, getFC=TRUE, meas="FPKM")
+  de.statistic.result$feature <- NULL; de.statistic.result$id <- NULL; de.statistic.result$gene.name <- NULL
   de.statistic.result["log2FC"] <- log2(de.statistic.result$fc)
   FPKM.data.frame <- ballgown::gexpr(ballgown.object)
-  # Filter FPKM row sum == 0
-  FPKM.data.frame <- FPKM.data.frame[rowSums(FPKM.data.frame)>0, ]
-  indices <- match(row.names(FPKM.data.frame), ballgown.texpr$gene_id)
-  gene_names_for_result <- ballgown.texpr$gene_name[indices]
-  FPKM.data.frame.with.gene.name <- data.frame(geneNames=gene_names_for_result, FPKM.data.frame)
-
-  ## My method : choose the first element in repeat row. Genes with name in the front and novel gene in the back.
-  FPKM.data.frame.no.duplicated.withname <- FPKM.data.frame.with.gene.name[(!duplicated(FPKM.data.frame.with.gene.name$geneNames)) & (FPKM.data.frame.with.gene.name$geneNames != "."), ]
-  FPKM.data.frame.novel.genename <- FPKM.data.frame.with.gene.name[FPKM.data.frame.with.gene.name$geneNames == ".", ]
-  FPKM.data.frame <- rbind(FPKM.data.frame.no.duplicated.withname, FPKM.data.frame.novel.genename)
+  # Change name
   colnames(FPKM.data.frame) <- gsub("FPKM.", "", colnames(FPKM.data.frame))
-  # For case group
-  case.FPKM.data.frame <- data.frame(FPKM.data.frame[,colnames(FPKM.data.frame) %in% as.character(pre.de.pheno.data$case.group.data.frame$ids)])
-  colnames(case.FPKM.data.frame) <- paste0(as.character(pre.de.pheno.data$case.group.data.frame$ids), ".", case.group)
-  # For control group
-  control.FPKM.data.frame <- data.frame(FPKM.data.frame[,colnames(FPKM.data.frame) %in% as.character(pre.de.pheno.data$control.group.data.frame$ids)])
-  colnames(control.FPKM.data.frame) <- paste0(as.character(pre.de.pheno.data$control.group.data.frame$ids), ".", control.group)
-  total.data.frame <- cbind(gene.id.data.frame, case.FPKM.data.frame, control.FPKM.data.frame)
-  total.data.frame[paste0(case.group, ".average")] <- rowMeans(case.FPKM.data.frame)
-  total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.FPKM.data.frame)
-  total.data.frame[paste0(case.group, ".", control.group, ".average")]<- rowMeans(total.data.frame[-1])
-  ballgown.result <- cbind(total.data.frame, de.statistic.result)
-  # Filter out p-value with na
-  ballgown.result <- ballgown.result[(!is.na(ballgown.result$pval)), ]
-  # if there are duplicated gene name ==> only select the first appearance !!!
+  ballgown.result <- cbind(FPKM.data.frame, de.statistic.result)
+  pre.de.pheno.data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
   case.group.size <- pre.de.pheno.data$case.group.size
   control.group.size <- pre.de.pheno.data$control.group.size
-  write.csv(ballgown.result[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_case.csv"), row.names=FALSE)
-  write.csv(ballgown.result[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_control.csv"), row.names=FALSE)
-  write.csv(ballgown.result[,c((2+case.group.size+control.group.size):(length(ballgown.result)))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
-  write.csv(ballgown.result, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv"), row.names=FALSE)
+  # Select FPKM sum not 0!!
+  ballgown.result <- ballgown.result[rowSums(ballgown.result[,1:(case.group.size+control.group.size)]) > 0, ]
+  # Map gene id to gene name
+  indices <- match(row.names(ballgown.result), ballgown.texpr$gene_id)
+  gene_names_for_result <- ballgown.texpr$gene_name[indices]
+  ballgown.result <- cbind("gene.name" = gene_names_for_result, ballgown.result)
+  # Store with seperation fo noval gene and gene with name
+  ballgown.result <- rbind(ballgown.result[ballgown.result$gene.name != ".",], ballgown.result[ballgown.result$gene.name == ".",])
+  # Filter out gene (p-value = Na) and (q-value = Na) and (FC = Inf or FC = -Inf or FC = 0)
+  ballgown.result <- ballgown.result[!is.na(ballgown.result$pval) & !is.na(ballgown.result$qval) & (ballgown.result$fc != Inf) & (ballgown.result$fc != -Inf) & (ballgown.result$fc != 0), ]
+  # For case group
+  case.ballgown.result <- data.frame(ballgown.result[,colnames(ballgown.result) %in% as.character(pre.de.pheno.data$case.group.data.frame$ids)])
+  colnames(case.ballgown.result) <- paste0(as.character(pre.de.pheno.data$case.group.data.frame$ids), ".", case.group)
+  # For control group
+  control.ballgown.result <- data.frame(ballgown.result[,colnames(ballgown.result) %in% as.character(pre.de.pheno.data$control.group.data.frame$ids)])
+  colnames(control.ballgown.result) <- paste0(as.character(pre.de.pheno.data$control.group.data.frame$ids), ".", control.group)
+  # Storing whole ballgown report
+  total.data.frame <- cbind("gene.name" = ballgown.result$gene.name, case.ballgown.result, control.ballgown.result)
+  total.data.frame[paste0(case.group, ".average")] = rowMeans(case.ballgown.result)
+  total.data.frame[paste0(control.group, ".average")] = rowMeans(control.ballgown.result)
+  total.data.frame[paste0(case.group, ".", control.group, ".average")] = rowMeans(cbind(case.ballgown.result, control.ballgown.result))
+  total.data.frame <- cbind(total.data.frame, "fc" = ballgown.result$fc, "log2FC" = ballgown.result$log2FC, "pval" = ballgown.result$pval, "qval" = ballgown.result$qval)
+  write.csv(data.frame("gene.name" = total.data.frame[,1]), file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv"), row.names=FALSE)
+  write.csv(total.data.frame[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_case.csv"), row.names=FALSE)
+  write.csv(total.data.frame[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_control.csv"), row.names=FALSE)
+  write.csv(total.data.frame[,c((2+3+case.group.size+control.group.size):(length(total.data.frame)))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
+  write.csv(total.data.frame, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv"), row.names=FALSE)
 
   cat(paste0("     \u25CF Selecting differential expressed genes(ballgown) ==> p-value : ", ballgown.pval, "  log2(Fold Change) : ", ballgown.log2FC, " ...\n"))
-  ballgown.result.DE <- ballgown.result[((ballgown.result$log2FC>ballgown.log2FC) | (ballgown.result$log2FC<(-ballgown.log2FC))) & (ballgown.result$pval<ballgown.pval), ]
-  cat(paste0("          \u25CF Total '", length(row.names(ballgown.result.DE)), "' DEG have been found !!!\n"))
-  write.csv(ballgown.result.DE, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_DE_result.csv"), row.names=FALSE)
+  total.data.frame.DE <- total.data.frame[((total.data.frame$log2FC>ballgown.log2FC) | (total.data.frame$log2FC<(-ballgown.log2FC))) & (total.data.frame$pval<ballgown.pval), ]
+  cat(paste0("          \u25CF Total '", nrow(total.data.frame.DE), "' DEG have been found !!!\n"))
+  write.csv(total.data.frame.DE, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_DE_result.csv"), row.names=FALSE)
 
+  # Check ballgown.result.DE before visulization!!
   ###########################
   ## ballgown visulization ##
   ###########################
@@ -92,7 +83,6 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
     if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/transcript_related/"))){
       dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/transcript_related/"))
     }
-
     ###############
     #### PreDE ####
     ###############
@@ -119,47 +109,54 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
     VolcanoPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group, ballgown.pval, ballgown.log2FC)
     # MA
     MAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group, ballgown.pval)
-    # DE PCA plot
-    DEPCAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
-    # Heatmap
-    DEHeatmap("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
+
+    if (nrow(total.data.frame.DE) > 0) {
+      # DE PCA plot
+      DEPCAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
+      # Heatmap
+      DEHeatmap("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
+    } else {
+      cat ("(\u26A0) No differential expressed gene term found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
+    }
   } else {
-    stop("(\u2718) file missing ERROR.\n\n")
+    cat("(\u2718) necessary file is missing!! Something ERROR happend during ballgown analysis!! Skip visualization!!\n\n")
   }
 }
 
 # Transcription related plot
 BallgownTranscriptRelatedPlot <- function(path.prefix){
   # draw for distribution of transcript count per gene
-  if(file.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv"))){
-    cat(paste0("\u25CF Plotting Transcript related plot\n"))
-    texpr.read.csv <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/texpr.csv"))
-    t2g.read.csv <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/t2g.csv"))
-    transcript_gene_table <- t2g.read.csv
-    count=table(transcript_gene_table[,"g_id"])
-    c_one = length(which(count == 1))
-    c_more_than_one = length(which(count > 1))
-    c_max = max(count)
-    png(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/transcript_related/Distribution_Transcript_Count_per_Gene_Plot.png"))
-    hist(count, breaks=50, col="bisque4", xlab="Transcripts per gene", main="Distribution of Transcript Count per Gene")
-    legend_text = c(paste("Genes with one transcript =", c_one), paste("Genes with more than one transcript =", c_more_than_one), paste("Max transcripts for single gene = ", c_max))
-    legend("topright", legend_text, lty=NULL)
-    dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/Transcript_Related/Distribution_Transcript_Count_per_Gene_Plot.png"), "' has been created. \n"))
+  cat(paste0("\u25CF Plotting Transcript related plot\n"))
+  texpr.read.csv <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/texpr.csv"))
+  t2g.read.csv <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/t2g.csv"))
+  transcript_gene_table <- t2g.read.csv
+  count=table(transcript_gene_table[,"g_id"])
+  c_one = length(which(count == 1))
+  c_more_than_one = length(which(count > 1))
+  c_max = max(count)
+  png(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/transcript_related/Distribution_Transcript_Count_per_Gene_Plot.png"), width=5, height=5, units="in", res=300)
+  hist(count, breaks=50, col="bisque4", xlab="Transcripts per gene", main="Distribution of Transcript Count per Gene", cex.main=0.8, cex.lab=0.7,cex.axis=0.7)
+  cex.before <- par("cex")
+  par(cex = 0.65)
+  legend_text = c(paste("Genes with one transcript =", c_one), paste("Genes with more than one transcript =", c_more_than_one), paste("Max transcripts for single gene = ", c_max))
+  legend("topright", legend_text, lty=NULL)
+  par(cex = cex.before)
+  dev.off()
+  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/Transcript_Related/Distribution_Transcript_Count_per_Gene_Plot.png"), "' has been created. \n"))
 
-    # draw the distribution of transcript length
-    full_table <- texpr.read.csv
-    t.mini.length = min(full_table$length[full_table$length > 0])
-    t.max.length = max(full_table$length[full_table$length > 0])
-    png(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/transcript_related/Distribution_Transcript_Length_Plot.png"))
-    hist(full_table$length, breaks=50, xlab="Transcript length (bp)", main="Distribution of Transcript Lengths", col="steelblue")
-    legend_text = c(paste("Minimum transcript length =", t.mini.length), paste("Maximum transcript length =", t.max.length))
-    legend("topright", legend_text, lty=NULL)
-    dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/Transcript_Related/Distribution_Transcript_Length_Plot.png"), "' has been created. \n\n"))
-  } else {
-    stop("(\u2718) 'ballgown_FPKM_result.csv' haven't created yet.\n\n")
-  }
+  # draw the distribution of transcript length
+  full_table <- texpr.read.csv
+  t.mini.length = min(full_table$length[full_table$length > 0])
+  t.max.length = max(full_table$length[full_table$length > 0])
+  png(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/transcript_related/Distribution_Transcript_Length_Plot.png"), width=5, height=5, units="in", res=300)
+  hist(full_table$length, breaks=50, xlab="Transcript length (bp)", main="Distribution of Transcript Lengths", col="steelblue", cex.main=0.8, cex.lab=0.7,cex.axis=0.7)
+  cex.before <- par("cex")
+  par(cex = 0.65)
+  legend_text = c(paste("Minimum transcript length =", t.mini.length), paste("Maximum transcript length =", t.max.length))
+  legend("topright", legend_text, lty=NULL)
+  par(cex = cex.before)
+  dev.off()
+  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/Transcript_Related/Distribution_Transcript_Length_Plot.png"), "' has been created. \n\n"))
 }
 
 

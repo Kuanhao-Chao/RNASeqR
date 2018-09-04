@@ -206,20 +206,18 @@ RawCountGeneNameChange <- function(raw.count, path.prefix){
   gene.id <- raw.count$gene_id
   ballgown.texpr <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/texpr.csv"))
   indices <- match(gene.id, ballgown.texpr$gene_id)
-  gene_names_for_result <- ballgown.texpr$gene_name[indices]
+  gene_names_for_result <- as.character(ballgown.texpr$gene_name[indices])
   row.names(raw.count) <- raw.count$gene_id
   raw.count$gene_id <- gene_names_for_result
+  colnames(raw.count)[1] <- "gene.name"
   # Pre-filter out rowSums bigger than 0 !!
   raw.count <- raw.count[rowSums(raw.count[-1])>0, ]
   # seperate novel gene and known gene
-  novel.gene.raw.count <- raw.count[raw.count$gene_id == ".", ]
-  known.gene.raw.count <- raw.count[raw.count$gene_id != ".", ]
+  novel.gene.raw.count <- raw.count[raw.count$gene.name == ".", ]
+  known.gene.raw.count <- raw.count[raw.count$gene.name != ".", ]
   # aggregate know gene with same name !
-  know.gene.raw.count.aggregate <- stats::aggregate(data.frame(known.gene.raw.count[-1]), list(known.gene.raw.count$gene_id), sum)
-  names(know.gene.raw.count.aggregate)[1] <- "gene.name"
-  names(novel.gene.raw.count)[1] <- "gene.name"
-  row.names(novel.gene.raw.count) <- NULL
-  novel.know.gene.raw.count <- rbind(know.gene.raw.count.aggregate, novel.gene.raw.count)
+  # know.gene.raw.count.aggregate <- stats::aggregate(data.frame(known.gene.raw.count[-1]), list(known.gene.raw.count$gene_id), sum)
+  novel.know.gene.raw.count <- rbind(known.gene.raw.count, novel.gene.raw.count)
   return(list("raw.count" = novel.know.gene.raw.count[-1], "raw.count.name" = novel.know.gene.raw.count$gene.name))
 }
 

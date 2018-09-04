@@ -60,93 +60,100 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
   cat("          \u25CF Total '", length(row.names(edgeR.result.DE)), "' DEG have been found !!")
   write.csv(edgeR.result.DE, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_DE_result.csv"), row.names=FALSE)
 
-  ########################
-  ## edgeR visulization ##
-  ########################
 
-  # PreDE
-  if(file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv")) &&
-     file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_case.csv")) &&
-     file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_control.csv")) &&
-     file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"))){
-    if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images"))){
-      dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images"))
+
+  # Check edgeR.result.DE before visulization!!
+  if (nrow(edgeR.result.DE) > 0) {
+    ########################
+    ## edgeR visulization ##
+    ########################
+
+    # PreDE
+    if(file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv")) &&
+       file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_case.csv")) &&
+       file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_control.csv")) &&
+       file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"))){
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images"))){
+        dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images"))
+      }
+
+      ###############
+      #### PreDE ####
+      ###############
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/"))){
+        dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/"))
+      }
+      # Frequency
+      FrequencyPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
+      # Bax and Violin
+      BoxViolinPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
+      # PCA
+      PCAPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
+      #Correlation
+      CorrelationPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
+
+      ############
+      #### DE ####
+      ############
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/DE/"))){
+        dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/DE/"))
+      }
+      # Volcano
+      VolcanoPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group, edgeR.pval, edgeR.log2FC)
+
+      # PCA plot
+      DEPCAPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
+
+      # Heatmap
+      DEHeatmap("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
+
+      # MDS plot
+      cat("\u25CF Plotting MDS plot ... \n")
+      png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MDS_Plot.png"))
+      my_colors=c(rgb(50, 147, 255,maxColorValue = 255),
+                  rgb(255, 47, 35,maxColorValue = 255))
+      edgeR::plotMDS.DGEList(deglist.object, top = 1000, labels = NULL, col = my_colors[as.numeric(deglist.object$samples$group)],
+                             pch = 20, cex = 2)
+      par(xpd=TRUE)
+      legend("bottomright",inset=c(0,1), horiz=TRUE, bty="n", legend=levels(deglist.object$samples$group) , col=my_colors, pch=20 )
+      title("MDS Plot")
+      dev.off()
+      cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MDS_Plot.png"), "' has been created. \n\n"))
+
+      # MeanVar plot
+      cat("\u25CF Plotting MeanVar plot ... \n")
+      png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MeanVar_Plot.png"))
+      edgeR::plotMeanVar(dgList, show.tagwise.vars=TRUE, NBline=TRUE)
+      graphics::title("Mean-Variance Plot")
+      dev.off()
+      cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MeanVar_Plot.png"), "' has been created. \n\n"))
+
+      # BCV plot
+      cat("\u25CF Plotting BCV plot ...\n")
+      png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/BCV_Plot.png"))
+      edgeR::plotBCV(dgList)
+      graphics::title("BCV Plot")
+      dev.off()
+      cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/BCV_Plot.png"), "' has been created. \n\n"))
+    } else {
+      stop("(\u2718) file missing ERROR.\n\n")
     }
 
-    ###############
-    #### PreDE ####
-    ###############
-    if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/"))){
-      dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/"))
-    }
-    # Frequency
-    FrequencyPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
-    # Bax and Violin
-    BoxViolinPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
-    # PCA
-    PCAPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
-    #Correlation
-    CorrelationPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
-
-    ############
-    #### DE ####
-    ############
-    if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/DE/"))){
-      dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/DE/"))
-    }
-    # Volcano
-    VolcanoPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group, edgeR.pval, edgeR.log2FC)
-
-    # PCA plot
-    DEPCAPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
-
-    # Heatmap
-    DEHeatmap("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
-
-    # MDS plot
-    cat("\u25CF Plotting MDS plot ... \n")
-    png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MDS_Plot.png"))
-    my_colors=c(rgb(50, 147, 255,maxColorValue = 255),
-                rgb(255, 47, 35,maxColorValue = 255))
-    edgeR::plotMDS.DGEList(deglist.object, top = 1000, labels = NULL, col = my_colors[as.numeric(deglist.object$samples$group)],
-                           pch = 20, cex = 2)
-    par(xpd=TRUE)
-    legend("bottomright",inset=c(0,1), horiz=TRUE, bty="n", legend=levels(deglist.object$samples$group) , col=my_colors, pch=20 )
-    title("MDS Plot")
-    dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MDS_Plot.png"), "' has been created. \n\n"))
-
-    # MeanVar plot
-    cat("\u25CF Plotting MeanVar plot ... \n")
-    png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MeanVar_Plot.png"))
-    edgeR::plotMeanVar(dgList, show.tagwise.vars=TRUE, NBline=TRUE)
-    graphics::title("Mean-Variance Plot")
-    dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MeanVar_Plot.png"), "' has been created. \n\n"))
-
-    # BCV plot
-    cat("\u25CF Plotting BCV plot ...\n")
-    png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/BCV_Plot.png"))
-    edgeR::plotBCV(dgList)
-    graphics::title("BCV Plot")
-    dev.off()
-    cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/BCV_Plot.png"), "' has been created. \n\n"))
+    #   edgeR::plotSmear(de, de.tags = de$genes)
+    #
+    #   # Fit a negative binomial generalized log-linear model
+    #   fit <- edgeR::glmFit(dgList)
+    #   # conducts likelihood ratio tests for one or more coefficients in the linear model
+    #   lrt <- edgeR::glmLRT(fit, coef=2)
+    #   topTags(lrt)
+    #   # MA-plot is a plot of log-intensity ratios (M-values) versus log-intensity averages (A-values)
+    #   # mean-difference plot (aka MA plot)
+    #   cat("\u25CF Plotting MD plot ...\n")
+    #   png(paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/edgeR/images/MD_plot.png"))
+    #   plotMD(lrt, main = "MD (MA) Plot")
+    #   abline(h=c(-1, 1), col="blue")
+    #   dev.off()
   } else {
-    stop("(\u2718) file missing ERROR.\n\n")
+    cat ("(\u26A0) No differential expressed gene term found !!! Skip visualization !!! \n\n")
   }
-
-#   edgeR::plotSmear(de, de.tags = de$genes)
-#
-#   # Fit a negative binomial generalized log-linear model
-#   fit <- edgeR::glmFit(dgList)
-#   # conducts likelihood ratio tests for one or more coefficients in the linear model
-#   lrt <- edgeR::glmLRT(fit, coef=2)
-#   topTags(lrt)
-#   # MA-plot is a plot of log-intensity ratios (M-values) versus log-intensity averages (A-values)
-#   # mean-difference plot (aka MA plot)
-#   cat("\u25CF Plotting MD plot ...\n")
-#   png(paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/edgeR/images/MD_plot.png"))
-#   plotMD(lrt, main = "MD (MA) Plot")
-#   abline(h=c(-1, 1), col="blue")
-#   dev.off()
 }

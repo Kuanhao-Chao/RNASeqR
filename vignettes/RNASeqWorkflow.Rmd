@@ -26,60 +26,81 @@ knitr::opts_chunk$set(tidy = FALSE,
                       warning = FALSE,
                       message = FALSE)
 ```
-`code`, `file end`, `value`, `parameter`
+
+!!! Coding style ~
+`code`, `file suffix`, `value`, `parameter`
 *'file directory'*
+'operating system'
 Normal software name
 
-# RNA-Seq workflow
+# Introduction
+RNA-Seq(RNA sequencing) uses next-generation sequencing(NGS) to provide transcriptome profiling. It has changed our thought about how complex eukaryotic transcriptomes are(Mortazavi et al. 2008).([RNA-Seq Blog](https://www.rna-seqblog.com/introduction-to-rna-sequencing-and-analysis/)). This technique is widely used to look at alternative gene spliced transcripts, post-transcriptional modification, SNPs over time, differences in gene expression in different groups or treatment etc.([wiki](https://en.wikipedia.org/wiki/RNA-Seq)). Among them, differential expressed gene(DEG) analysis is the most common downstream analysis.
 
-## Overview
+`RNASeqWorkflow` provides an easier and R-based approach for running end-to-end two-group RNA-Seq analysis from quality assessment, trimming to downstream differential gene analysis, functional, pathway analysis. Some important features include automated workflow, comprehensive visulization reports, organized, extendable file structure and supporting background process in each step etc. 
 
-There are many steps in RNA-Seq analysis. 
-1. Each step is a function
-2. Eahc function ==> R shell, background
-3. 
+The following are main tools that are used in this package: '[HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml)' for reads alignment; '[StringTie](https://ccb.jhu.edu/software/stringtie/)' for alignments assembly and transcripts quantification; '[systemPipeR](https://bioconductor.org/packages/release/bioc/html/systemPipeR.html)' package for quality assessment; '[ShortRead](shortbread recipe)' package for quality trimming; '[ballgown](https://bioconductor.org/packages/release/bioc/html/ballgown.html)' package, 'TPM & Student's t-test', '[DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)' package and '[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)' package for finding potential DEGs; '[clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)' package for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis.
 
-Support paired-end reads only
+The central concept for designing `RNASeqWorkflow` is that **each step in RNA-Seq analysis is an R function**. First users create a `RNASeqWorkFlowParam` S4 object for all variable checking. Then run the following functions:
 
-## System Requirement
-1. Python, 2to3
-2. C++
-3. 
+1. `RNASeqEnvironmentSet_CMD()` or `RNASeqEnvironmentSet()`: Set up RNA-Seq environment.
+2. `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()`: Optional. Run quality assessment step.
+3. `RNASeqQualityTrimming_CMD()` or `RNASeqQualityTrimming()`: Optional. Run quality trimming step.
+4. `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`: Run `HISAT2`, `SAMtools`, `StringTie`, `Gffcompare`.
+5. `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`: Run differential analysis step.
+6. `RNASeqGoKegg_CMD()` or `RNASeqGoKegg()`: Do GO and KEGG analysis.
 
-## "RNASeqWorkFlowParam" S4 Object Creation
+Functions with `CMD` suffix create an R script and process in background. Functions with no `CMD` suffix process in R shell. After running the above functions, the whole RNA-Seq analysis is done and generated files in each step will be stored in organized file directory. `RNASeqWorkflow` package makes two-group RNA-Seq analysis **more efficient** and **easier** for users.
+
+
+
+# System Requirement
+Necessary:
+
+1. Operating System: 'Linux' and 'macOS' are supported in `RNASeqWorkflow` package. 'Windows' is not supported. (Because `StringTie` and `Hisat2` are not available for 'Windows') 
+2. C Environment for `SAMtools`: `Samtools` source code will be installed and compiled.
+3. `HISAT2` indexex: Users are strongly advised to provide *'indices/'* directory in *'inputfiles/'*. If not provided, `HISAT2` requires at least 160 GB of RAM and several hours to index the entire human genome.
+
+Recommended: 
+
+1. Python: Python2 or Python3.
+2. `2to3`: If the Python version in the system is 3, then this command will be used. Generally, `2to3` is available if Python3 is available. 
+    (Python and `2to3` is used for creating raw reads count for [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) and [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html). If these commands are not available, DESeq2 and edgeR analysis will be skipped.) 
+
+
+# "RNASeqWorkFlowParam" S4 Object Creation
 
 This is the **pre-step** of RNA-Seq workflow in this package. Before starting RNA-Seq analysis, you have to run the constructor function `RNASeqWorkFlowParam()` and create `RNASeqWorkFlowParam` S4 object first. This object, which stores checked parameters, will be used as input parameter in the following analysis function.
 
-### `RNASeqWorkFlowParam` Slots Explanation
+## `RNASeqWorkFlowParam` Slots Explanation
 There are 11 slots in `RNASeqWorkFlowParam`: 
 
-1. `os.type` : The operating system type. Value is `linux` or `osx`. This package only support Linux and macOS (no Windows). If other operating system is detected, ERROR will be reported. 
-2. `python.variable` : Python related variable. Value is a list of whether Python is available and Python version (`TRUE` or `FALSE`, `2` or `3`).
+1. `os.type` : The operating system type. Value is `linux` or `osx`. This package only support 'Linux' and 'macOS' (no 'Windows'). If other operating system is detected, ERROR will be reported. 
+2. `python.variable` : Python-related variable. Value is a list of whether Python is available and Python version (`TRUE` or `FALSE`, `2` or `3`).
 3. `python.2to3` : Availability of `2to3` command. Value is `TRUE` or `FALSE`.
 4. `path.prefix` : Path prefix of *'gene_data/'*, *'RNASeq_bin/'*, *'RNASeq_results/'*, *'Rscript/'* and *'Rscript_out/'* directories. It is recommended to create a new directory with out any file inside and all the following RNA-Seq results will be installed in it.
+![](https://i.imgur.com/kNAHSrN.png)
 5. `input.path.prefix` : Path prefix of *'input_files/'* directory. User have to prepare an *'input_file/'* directory with the following rules:
-
-    * ***`genome.name`.fa*** : reference genome in FASTA file formation.
-    * ***`genome.name`.gtf*** : gene annotation in GTF file formation.
-    *  ***rawfastq.gz*/**: directory storing `FASTQ` files. 
-    *  Support paired-end reads files only.
-    *  Names of paired-end `FASTQ` files : *'`sample.pattern`1.fastq.gz'* and *'`sample.pattern`2.fastq.gz'*. `sample.pattern` must be distinct for each sample.
-    * ***phenodata.csv*** : information about RNA-Seq experiment design.
-        * First column : Distint ids for each sample. Value of each sample of this column must match `sample.pattern` in `FASTQ` files in *'rawfastq.gz/'*. Column names must be **ids**.
+    * **`genome.name`.fa** : reference genome in FASTA file formation.
+    * **`genome.name`.gtf** : gene annotation in GTF file formation.
+    * **raw_fastq.gz/**: directory storing `FASTQ` files. 
+        * Support paired-end reads files only.
+        * Names of paired-end `FASTQ` files : '`sample.pattern`_1.fastq.gz' and '`sample.pattern`_2.fastq.gz'. `sample.pattern` must be distinct for each sample.
+    * **phenodata.csv** : information about RNA-Seq experiment design.
+        * First column : Distinct ids for each sample. Value of each sample of this column must match `sample.pattern` in `FASTQ` files in *'raw_fastq.gz/'*. Column names must be **ids**.
         * Second column : independent variable for the RNA-Seq experiment. Value of each sample of this column can only be parameter `case.group` and `control.group`. Column name is parameter `independent.variable`.
-    * ***indices*/** : directory storing `HT2` indices files for HISAT2 alignment tool. 
-        * This directory is **optional**. `HT2` indices files corresponding to target reference genome can be installed at [HISAT2 official website](https://ccb.jhu.edu/software/hisat2/index.shtml). Providing `HT2` files can accelerate the subsequent steps.
+    * **indices/** : directory storing `HT2` indices files for HISAT2 alignment tool. 
+        * This directory is **optional**. `HT2` indices files corresponding to target reference genome can be installed at [HISAT2 official website](https://ccb.jhu.edu/software/hisat2/index.shtml). Providing `HT2` files can accelerate the subsequent steps. It is highly advised to install `HT2` files.
         * If `HT2` index files are not provided, *'input_files/indices/'* directory should be deleted.
 ![](https://i.imgur.com/FcTDKkq.png)
 
 6. `genome.name` : Variable of genome name defined in this RNA-Seq workflow (ex. '`genome.name`.fa', '`genome.name`.gtf')  
-7. `sample.pattern` : Regular expression of paired-end fastq.gz files under *'input_files/raw_fastq.gz/'*. **IMPORTANT!!** expression shouldn't have `_[1,2].fastq.gz`  in end.
+7. `sample.pattern` : Regular expression of paired-end fastq.gz files under *'input_files/raw_fastq.gz/'*. **IMPORTANT!!** Expression shouldn't have `_[1,2].fastq.gz` in end.
 8. `independent.variable`: Independent variable for the biological experiment design of two-group RNA-Seq workflow.
 9. `case.group` : Group name of the case group.
 10. `control.group` : Group name of the control group.
 11. `indices.optional` : logical value whether *'input_files/indices/'* is exit. Value is `TRUE` or `FALSE`
 
-### `RNASeqWorkFlowParam` Constructor Checking Steps
+## `RNASeqWorkFlowParam` Constructor Checking Steps
 
 1. Create a new directory for RNA-Seq analysis. It is highly recommended to create a new directory without any files inside. The parameter `path.prefix` of `RNASeqWorkFlowParam()` constructor should be the absolute path of this new directory. All the RNA-Seq related files that generated in the following steps will be stored inside of this directory.
 
@@ -92,7 +113,7 @@ There are 11 slots in `RNASeqWorkFlowParam`:
     * Structure, contents and rules of *'inputfiles/'*
     * Validity of input parameters
 
-### Example
+## Example
 ```{r}
 # exp <- RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA, 
 # genome.name = NA, sample.pattern = NA, independent.variable = NA, 
@@ -103,11 +124,11 @@ In this example, `RNASeqWorkFlowParam` S4 object is store in `exp` for subsequen
 
 
 
-## Environment Set up
+# Environment Set up
 
 This is the **first necessary step** of RNA-Seq workflow in this package. To set up the environment, run `RNASeqEnvironmentSet_CMD()` to execute process in background or run `RNASeqEnvironmentSet()` to execute process in R shell.
 
-### Files Set up
+## Files Set up
 1. Create Base Directories. *'gene_data/'*, *'RNASeq_bin/'*, *'RNASeq_results'*, *'Rscript'* and *'Rscript_out'* will be created under `path.prefix` directory. Here are the usage of these five main directories: 
     * *'gene_data/'*: Symblic links of *'input_files/'* and files that are created in each step of RNA-Seq analysis will be stored in this directory.  
     * *'RNASeq_bin/'*: The binaries of necessary tools, HISAT2, SAMtools, StringTie and Gffcompare, are installed in this directory.
@@ -117,7 +138,7 @@ This is the **first necessary step** of RNA-Seq workflow in this package. To set
 
 2. Symbolic links will be created from files in *'input_files/'* to `path.prefix` directory. 
 
-### Necessary Tools Installation
+## Necessary Tools Installation
 The operating system of your workstation will be detected. If the operating system is other than `Linux` and `macOS`, ERROR will be reported. HISAT2, SAMtools, StringTie and Gffcompare will be installed automatically.
 
 * HISAT2
@@ -135,11 +156,11 @@ The operating system of your workstation will be detected. If the operating syst
     * Installed file will be unzipped and all binary files will be copied under *'RNASeq_bin/'*.
 
 
-### Export Path
-*'RNASeq_bin/'* will be added to R PATH so that these binaries can be found in R environment. In the last step of environment setting, `hisat2 --version`,`stringtie --version`,`gffcompare --version` and `samtools --version` commands will be checked in order to make sure the environment is correctly constructed.
+## Export Path
+*'RNASeq_bin/'* will be added to R PATH so that these binaries can be found in R environment. In the last step of environment setting, `hisat2 --version`,`stringtie --version`,`gffcompare --version`,`samtools --version` commands will be checked in order to make sure the environment is correctly constructed.
 
 
-### Example
+## Example
 1. Run in background
 Result will be reported in *'Rscript_out/Environment_Set.Rout'*. Make sure the environment is successfully set up before running the subsequent steps.
 ```{r}
@@ -153,11 +174,11 @@ Result will be reported in R shell. Make sure the environment is successfully se
 ```
 
 
-## `FASTQ` Files Quality Assessment
+# `FASTQ` Files Quality Assessment
 
-This is an **optional step** of RNA-Seq workflow in this package. However, it is strongly recommended to do it before processing raw reads. To assess the quality of raw reads in `FASTQ` files, run `RNASeqQualityAssessment_CMD()` to execute process in background or run `RNASeqQualityAssessment()` to execute process in R shell.
+This is an **optional step** of RNA-Seq workflow in this package. However, it is strongly recommended to do it before processing reads. To assess the quality of raw reads in `FASTQ` files, run `RNASeqQualityAssessment_CMD()` to execute process in background or run `RNASeqQualityAssessment()` to execute process in R shell.
 
-### "systemPipeR" Quality Assessment
+## "systemPipeR" Quality Assessment
 
 In this process, [systemPipeR](http://bioconductor.org/packages/release/bioc/html/systemPipeR.html) package is used for quality assessment. Here are the following steps:
 
@@ -167,7 +188,7 @@ In this process, [systemPipeR](http://bioconductor.org/packages/release/bioc/htm
 4. Reading `FASTQ` files and create *'fastqReport.pdf'* as the report result of quality assessment
 5. Remove *'rnaseq/'* directory.
 
-### Example
+## Example
 1. Run in background
 Result will be reported in *'Rscriptout/Quality_Assessment.Rout'*. Make sure quality assessment is successfully done before running the subsequent steps.
 ```{r}
@@ -180,22 +201,22 @@ Result will be reported in R shell. Make sure quality assessment is successfully
 # RNASeqQualityAssessment()
 ```
 
-## `FASTQ` Files Quality Trimming
+# `FASTQ` Files Quality Trimming
 
 This is an **optional step** of RNA-Seq workflow in this package. However, it is strongly recommended to do it if the result of quality assessment is unsatisfied. To trim the raw reads in `FASTQ` files, run `RNASeqQualityTrimming_CMD()` to execute process in background or run `RNASeqQualityTrimming()` to execute process in R shell. After trimming process, it is strongly recommended to redo quality assessment step. Different quality assessment result will be stored in different directories with index of processing order.
 
-### "ShortRead" Quality Trimming
+## "ShortRead" Quality Trimming
 In this process, [ShortRead](http://bioconductor.org/packages/release/bioc/html/ShortRead.html) package is used for quality trimming. Followings are trimming steps and method explanation.
 
 1. `FASTQ` files with `sample.pattern` in *'gene_data/raw_fastq.gz'* will be listed and be check. This trimming function only support paired-end `FASTQ` files.
 2. The probability of error per each base pair is calculated by Phred Quality in `FASTQ` files and the cumulative probability of error of each base pair will also be calculated. The threshold cumulative probability `cum.error`, with default value `1`, is used to find the trimming point of paired end files.
 3. `reads.length.limit`, with default value 36,  determines the minimum base pair length of reads. Length of reads less than `reads.length.limit` will be filtered out.
-4. Untrimmed original `FASTQ` files are moved to *'gene_data/rawfastq.gz/originaluntrimmedfastq.gz'*, and trimmed reads are written to *'gene_data/rawfastq.gz/'*
+4. Untrimmed original `FASTQ` files are moved to *'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz'*, and trimmed reads are written to *'gene_data/raw_fastq.gz/'*
 5. It is strongly recommended to run `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()` for quality assessment after quality trimming.
 
-### Example
+## Example
 1. Run in background
-Result will be reported in *'Rscriptout/QualityTrimming.Rout'*. Make sure quality trimming is successfully done before running the subsequent steps.
+Result will be reported in *'Rscript_out/Quality_Trimming.Rout'*. Make sure quality trimming is successfully done before running the subsequent steps.
 ```{r}
 # RNASeqQualityAssessment_CMD()
 ```
@@ -206,16 +227,16 @@ Result will be reported in R shell. Make sure quality assessment is successfully
 # RNASeqQualityAssessment()
 ```
 
-## Reads Process (Alignment, Assembly, Gffcompare, Quantification)
+# Reads Process (Alignment, Assembly, Gffcompare, Quantification)
 
 This is a **second necessary step** of RNA-Seq workflow in this package. Programs installed in environment setting step, HISAT2, SAMtools, StringTie and Gffcompare, will be executed. To process raw reads `FASTQ` files, run `RNASeqRawReadProcess_CMD()` to execute process in background or run `RNASeqRawReadProcess()` to execute process in R shell. For more details about commands that executed during each reads processing step, please check the reported *'RNASeq_results/COMMAND.txt'*.
 
-### HISAT2 Index
+## HISAT2 Index
 
 In pre-step(`RNASeqWorkFlowParam` creation step), *'indices/'* directory is checked and the whether `HT2` indices files are provided is known. If not provided, following commands will be executed:
 
-* Input: *`genome.name`.gtf*, *`genome.name`.fa*
-* Output: *`genome.name`.ss*, *`genome.name`.exon*, *`genome.name`_tran.{number}.ht2*
+* Input: `genome.name`.gtf, `genome.name`.fa
+* Output: `genome.name`.ss, `genome.name`.exon, `genome.name`_tran.{number}.ht2
 
 1. `extract_splice_sites.py`, `extract_exons.py` execution
     * These two commands are executed to extract splice-site and exon information from gene annotation file.
@@ -227,10 +248,10 @@ In pre-step(`RNASeqWorkFlowParam` creation step), *'indices/'* directory is chec
     * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
 
 
-### HISAT2 Alignment
+## HISAT2 Alignment
 
-* Input: *`genome.name`_tran.{number}.ht2*, *`sample.pattern`.fastq.gz*
-* Output: *`sample.pattern`.sam*
+* Input: `genome.name`_tran.{number}.ht2, `sample.pattern`.fastq.gz
+* Output: `sample.pattern`.sam
 
 1. `hisat2` command is executed on paired end `FASTQ` files. `SAM` files will be created.
     * `SAM` files are stored in *'gene_data/raw_bam/'*.
@@ -238,10 +259,10 @@ In pre-step(`RNASeqWorkFlowParam` creation step), *'indices/'* directory is chec
 2. Write *'RNASeq_results/COMMAND.txt'*
     * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
 
-### SAMtools `SAM` to `BAM`
+## SAMtools `SAM` to `BAM`
 
-* Input: *`sample.pattern`.sam*
-* Output: *`sample.pattern`.bam*
+* Input: `sample.pattern`.sam
+* Output: `sample.pattern`.bam
 
 1. `samtools` command is executed. Output `SAM` files from HISAT2 will be converted to `BAM` files. 
     * `BAM` files are stored in *'gene_data/raw_sam/'*. 
@@ -249,10 +270,10 @@ In pre-step(`RNASeqWorkFlowParam` creation step), *'indices/'* directory is chec
 2. Write *'RNASeq_results/COMMAND.txt'*
     * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
 
-### StringTie Assembly
+## StringTie Assembly
 
-* Input: *`genome.name`.gtf*, *`sample.pattern`.bam*
-* Output: *`sample.pattern`.gtf*
+* Input: `genome.name`.gtf, `sample.pattern`.bam
+* Output: `sample.pattern`.gtf
 
 1. `stringtie` command is executed. 
     * Assembler of RNA-Seq alignments into potential transcripts.
@@ -261,10 +282,10 @@ In pre-step(`RNASeqWorkFlowParam` creation step), *'indices/'* directory is chec
 2. Write *'RNASeq_results/COMMAND.txt'*
     * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
 
-### StringTie Merge `GTF`
+## StringTie Merge `GTF`
 
-* Input: *`sample.pattern`.gtf*
-* Output: *stringtiemerged.gtf*, *mergelist.txt*
+* Input: `sample.pattern`.gtf
+* Output: stringtiemerged.gtf, mergelist.txt
 
 1. Creating mergelist.txt
     * *gene_data/merged/mergelist.txt* is created for the merging step.
@@ -275,10 +296,10 @@ In pre-step(`RNASeqWorkFlowParam` creation step), *'indices/'* directory is chec
 3. Write *'RNASeq_results/COMMAND.txt'*
     * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
 
-### Gffcompare
+## Gffcompare
 
-* Input: *`genome.name`.gtf*, *stringtie_merged.gtf*
-* Output: *merged.annotated.gtf*, *merged.loci*, *merged.stats*, *merged.stringtie_merged.gtf.refmap*, *merged.stringtie_merged.gtf.tmap*, *merged.tracking*
+* Input: `genome.name`.gtf, stringtie_merged.gtf
+* Output: merged.annotated.gtf, merged.loci, merged.stats, merged.stringtie_merged.gtf.refmap, merged.stringtie_merged.gtf.tmap, merged.tracking
 
 1. `gffcompare` command is executed. 
     * The comparison result of merged `GTF` file and reference annotation file is reported under *'merged/'* directory.
@@ -286,10 +307,10 @@ In pre-step(`RNASeqWorkFlowParam` creation step), *'indices/'* directory is chec
 2. Write *'RNASeq_results/COMMAND.txt'*
     * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
 
-### StringTie Creates Ballgown Input Directories
+## StringTie Creates Ballgown Input Directories
 
-* Input: *stringtie_merged.gtf*
-* Output: *ballgown/*, *gene_abundance/* 
+* Input: stringtie_merged.gtf
+* Output: ballgown/, gene_abundance/
 
 1. `stringtie` command is executed.
     * StringTie will create the input directory for ballgown package for the following differential analysis. Ballgown-related files will be stored by each sample name in *'gene_data/ballgown/'*.
@@ -298,12 +319,12 @@ In pre-step(`RNASeqWorkFlowParam` creation step), *'indices/'* directory is chec
 2. Write *'RNASeq_results/COMMAND.txt'*
     * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
 
-### Raw Reads Count Table Creation
+## Raw Reads Count Table Creation
 
 Whether this step is executed depends on the availability of Python on your workstation. 
 
-* Input: *samplelst.txt*
-* Output: *gene_count_matrix.csv*, *transcript_count_matrix.csv*
+* Input: samplelst.txt
+* Output: gene_count_matrix.csv, transcript_count_matrix.csv
 
 1. Reads count table converter Python script is downloaded as `prepDE.py`
 2. Python checking
@@ -318,7 +339,7 @@ Whether this step is executed depends on the availability of Python on your work
 4. Write *'RNASeq_results/COMMAND.txt'*
     * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
 
-### Example
+## Example
 1. Run in background
 Result will be reported in *'Rscriptout/Raw_Read_Process.Rout'*. Make sure raw read process is successfully done before running the subsequent steps.
 ```{r}
@@ -332,7 +353,7 @@ Result will be reported in R shell. Make sure raw read process is successfully d
 ```
 
 
-## Differential Gene Expression Analysis
+# Differential Gene Expression Analysis
 
 
 This is the **third necessary step** of RNA-Seq workflow in this package. To do differential gene expression analysis, run `RNASeqDifferentialAnalysis_CMD()` to execute process in background or run `RNASeqDifferentialAnalysis()` to execute process in R shell. In `RNASeqWorkflow` package, we provide four ways to do differential analysis: ballgown, TPM & Student t-test, DESeq2 and edgeR.
@@ -359,7 +380,7 @@ After finding differential expressed genes, some general plots will be drawn in 
         Heatmap will be ploted by using [pheatmap](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) package.
             
 
-### "ballgown" Analysis
+## "ballgown" Analysis
 
 [Ballgown](https://www.bioconductor.org/packages/release/bioc/html/ballgown.html) is designed to facilitate flexible differential expression analysis of RNA-Seq data ([ballgown github](https://github.com/alyssafrazee/ballgown)). The default statistical model is a parametric F-test comparing nested linear models. Normalized row count in [ballgown](https://www.bioconductor.org/packages/release/bioc/html/ballgown.html) is represented as FPKM values. The following are [ballgown](https://www.bioconductor.org/packages/release/bioc/html/ballgown.html) analysis steps:
 
@@ -376,7 +397,7 @@ After finding differential expressed genes, some general plots will be drawn in 
         * MA Plot : 
             The plot visualizes the differences between case and control by transforming the data onto X axis `log2FC` and Y axis `log2(FPKM.mean)`. It is drawn by [ggplot2](https://ggplot2.tidyverse.org) package.
  
-### TPM & Student t-test Analysis
+## TPM & Student t-test Analysis
 
 Normalized count is represented as TPM values. The statistic model used here is Student's t-test. The following are analysis steps:
 
@@ -394,7 +415,7 @@ Normalized count is represented as TPM values. The statistic model used here is 
         * MA Plot : 
             The plot visualizes the differences between case and control by transforming the data onto X axis `log2FC` and Y axis `log2(TPM.mean)`. It is drawn by [ggplot2](https://ggplot2.tidyverse.org) package.
 
-### "DESeq2" Analysis
+## "DESeq2" Analysis
 
 [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) estimate variance-mean dependence in raw reads count ([DESeq2 document](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)). The statistic model for differential expression is using negative binomial distributionl. [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) package takes sequence depth and RNA composition into consideration and use median of ratios normalization(MRN) method to count normalization ([related site](https://hbctraining.github.io/DGE_workshop/lessons/02_DGE_count_normalization.html)). The follwing are the analysis steps.
 
@@ -412,7 +433,7 @@ Normalized count is represented as TPM values. The statistic model used here is 
         * Dispersion Plot :  (PreDE or DE ????)
             DESeq2 provide a useful function, `plotDispEsts()`, to plot the dispersion estimates. X axis is `mean of normalized counts`; Y axis is `dispersion`.
 
-### "edgeR" Analysis
+## "edgeR" Analysis
 
 [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html), a tool for differential expression analysis, implements a range of statistical method based on negative binomial distribution. [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html) package normalizes for RNA composition by finding a set of scaling factors for the library sizes, which is computed by trimmed mean of M-values(TMM). Normalized count is represented as cpm with library size scaled by TMM ([related site](https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf)). The following are analysis steps:
 
@@ -438,7 +459,7 @@ Normalized count is represented as TPM values. The statistic model used here is 
         * MA Plot : 
             The plot visualizes the differences between case and control by transforming the data onto X axis `log2FC` and Y axis `log2(FPKM.mean)`. It is drawn by [ggplot2](https://ggplot2.tidyverse.org) package.
 
-### Example
+## Example
 1. Run in background
 Result will be reported in *'Rscriptout/Differential_Analysis.Rout'*. Make sure differential expression analysis is successfully finished before running subsequent steps.
 ```{r}
@@ -453,42 +474,42 @@ Result will be reported in R shell. Make sure differential expression analysis i
 
 
 
-## Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)
+# Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)
 
 
 This is the **third optional step** of RNA-Seq workflow in this package. [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) is used in this step. Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis are made based on the differential expressed genes(DEG) that are found in four different differential analyses, ballgown, TPM&t-test, DESeq2 and edgeR. Run `RNASeqGoKegg_CMD()` to execute process in background or run `RNASeqGoKegg()` to execute process in R shell.
 
 The gene names used in StringTie and ballgown are in the type `SYMBOL` in clusterProfiler. In GO functional analysis and KEGG pathway analysis, `SYMBOL` ID type will be converted into `ENTREZID` ID type by `bitr()` function in clusterProfiler first. Those `SYMBOL` with no corresponding `ENTREZID` will return `NA` and be filtered out. The genes with `Inf` or `-Inf` log2 fold change will be filtered out too. ID conversion will be done in each differential analysis tools, ballgown, TPM & Student's t-test, DESeq2 and edgeR.
 
-### Gene Ontology 
+## Gene Ontology 
 
 Gene Ontology is the framework for the model of biology. It defines the universe of concepts relating to gene functions(GO terms) along three aspects: molecular function(MF), cellular component(CC), biological process(BP), and how these functions are related to each other(relation) ([GO website](http://www.geneontology.org)). In this process, GO gene set enrichment analysis, GO classification and GO over-representation test are implemented by [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) package.
 
 
-#### GO Gene Set Enrichment Analysis(GSEA)
+### GO Gene Set Enrichment Analysis(GSEA)
 GO GSEA is implemented by running `gseGO()` function in [clusterProfiler](https://bioconductor.org/packages/release/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html). As mentioned in the [vignette of clusterProfiler](https://bioconductor.org/packages/release/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html), this approach aggregates the statistic of each gene within gene set, thus make it possible to detect the situation that genes where the difference is small, but evidenced in coordinated way in a set of related genes.
 
 In this step, the input gene set is all genes reported in each differential analysis tools(not just for selected differential expressed genes). If enriched genes are found, the top 5 genes with smallest p-value will be plotted with the function `gseaplot()` in [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html). If not, *'GO_GSE_NO_TERM'* empty file will be created.
 
 
-#### GO Classification
+### GO Classification
 The input gene set is differential genes that are reported in each differential analysis tools. `groupGO()` function in clusterProfiler is used. Classification result will be stored in `CSV`. The result of classification will be visualized. 12 highest `GeneRatio` functional description will be selected and plotted as bar plot. 
 
-#### GO Over-representation 
+### GO Over-representation 
 The input gene set is differential genes that are reported in each differential analysis tools. `enrichGO()` function in clusterProfiler is used. GO over-representation result will be stored in `CSV`. The result of GO over-representation will be visualized as bar plot and dot plot. 
 
-### Kyoto Encyclopedia of Genes and Genomes
+## Kyoto Encyclopedia of Genes and Genomes
 Kyoto Encyclopedia of Genes and Genomes(KEGG) is a database resource for understanding functions and utilities of the biological system from molecular-level information ([KEGG website](https://www.genome.jp/kegg/)). In this process, KEGG gene set enrichment analysis, KEGG over-representation test are implemented by [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) package.
 
-#### KEGG Gene Set Enrichment Analysis(GSEA)
+### KEGG Gene Set Enrichment Analysis(GSEA)
 KEGG GSEA is implemented by running `gseKEGG()` function in [clusterProfiler](https://bioconductor.org/packages/release/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html). In this step,  the input gene set is all genes reported in each differential analysis tools(not just for selected differential expressed genes). If enriched genes are found, the top 5 genes with smallest p-value will be plotted with the function `gseaplot()` in [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html). If not, *'KEGG_GSE_NO_TERM'* empty file will be created.
 
 
-#### KEGG Over-representation
+### KEGG Over-representation
 The input gene set is differential genes that are reported in each differential analysis tools. `enrichKEGG()` function in clusterProfiler is used. KEGG over-representation result will be stored in `CSV`. The result of KEGG over-representation will be visualized as bar plot and dot plot. 
 
 
-### Example
+## Example
 1. Run in background
 Result will be reported in *'Rscriptout/GO_KEGG_Analysis.Rout'*. 
 ```{r}
@@ -501,5 +522,19 @@ Result will be reported in R shell.
 # RNASeqGoKegg()
 ```
 
-## Conlusion
+# Conlusion
+
+
+# Session Information
+```{r}
+sessionInfo()
+```
+
+# Reference
+
+https://www.rna-seqblog.com/introduction-to-rna-sequencing-and-analysis/
+
+https://en.wikipedia.org/wiki/RNA-Seq
+
+Mortazavi, A., Williams, B. A., McCue, K., Schaeffer, L., & Wold, B. (2008). Mapping and quantifying mammalian transcriptomes by RNA-Seq. Nature methods, 5(7), 621.
 

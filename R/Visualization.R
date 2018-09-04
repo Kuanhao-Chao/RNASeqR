@@ -11,38 +11,34 @@ FrequencyPlot <- function(which.analysis, which.count.normalization, path.prefix
   case.normalized <- csv.results$case
   control.normalized <- csv.results$control
   independent.variable.data.frame <- cbind(case.normalized, control.normalized)
-  png(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Frequency/Frequency_Plot_1_rafalib.png")))
   rafalib::mypar(1, 1)
   sample.size <- length(independent.variable.data.frame)
   # , ylim = (-5, )
   # Reorder 'independent.variable.data.frame' by column mean (big to small)
   mns <- colMeans(independent.variable.data.frame, na.rm=TRUE)
   # order(mns, decreasing = FALSE)
-  independent.variable.data.frame <- independent.variable.data.frame[,order(mns, decreasing = FALSE)]
-  rafalib::shist(log2(independent.variable.data.frame[, 1]), unit = 0.5, type = "n", xlab = bquote(~Log[2](.(which.count.normalization))),
-                 main = "Frequency Plot (rafalib)", cex.main = 4, xlim = c(-10, 20))
-  for (i in seq_len(sample.size)){
-    rafalib::shist(log2(independent.variable.data.frame[, i]), unit = 0.5, col = i, add = TRUE, lwd = 2, lty = i, xlim = c(-10, 20))
-  }
-  dev.off()
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Frequency_Plot_1_rafalib.png"), "' has been created. \n\n"))
+  independent.variable.data.frame <- independent.variable.data.frame[,order(mns, decreasing = TRUE)]
 
+  melted.data.normal <- reshape2::melt(independent.variable.data.frame)
+  x.range.normal <- quantile(melted.data.normal$value,probs=c(0,0.8))
+  ggplot(aes(x=value, colour=variable), data = melted.data.normal) +
+    xlim(x.range.normal[1]-20, x.range.normal[2]+20) + geom_density() + theme_bw() + xlab("FPKM") + ylab("Frequency") +
+    ggtitle("Frequency Plot (ggplot2)") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
+    theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
+    theme(legend.position = "none")
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Frequency/Frequency_Plot_normalized_count_ggplot2.png")), dpi = 300)
+  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Frequency_Plot_normalized_count_ggplot2.png"), "' has been created. \n\n"))
 
-  png(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Frequency/Frequency_Plot_2_rafalib.png")))
-  rafalib::mypar(1, 1)
-  sample.size <- length(independent.variable.data.frame)
-  # , ylim = (-5, )
-  # Reorder 'independent.variable.data.frame' by column mean (big to small)
-  mns <- colMeans(independent.variable.data.frame, na.rm=TRUE)
-  # order(mns, decreasing = FALSE)
-  independent.variable.data.frame <- independent.variable.data.frame[,order(mns, decreasing = FALSE)]
-  rafalib::shist(log2(independent.variable.data.frame[, 1]+1), unit = 0.5, type = "n", xlab = bquote(~Log[2](.(which.count.normalization)+1)),
-                 main = "Frequency Plot (rafalib)", cex.main = 4, xlim = c(-10, 20))
-  for (i in seq_len(sample.size)){
-    rafalib::shist(log2(independent.variable.data.frame[, i]+1), unit = 0.5, col = i, add = TRUE, lwd = 2, lty = i, xlim = c(-10, 20))
-  }
-  dev.off()
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Frequency_Plot_2_rafalib.png"), "' has been created. \n\n"))
+  melted.data <- reshape2::melt(log2(independent.variable.data.frame+1))
+  x.range <- quantile(melted.data$value,probs=c(0,.99))
+  ggplot(aes(x=value, colour=variable), data = melted.data) +
+    xlim(x.range[1]-5, x.range[2]+5) + geom_density() + theme_bw() + xlab(bquote(~Log[2](FPKM))) + ylab("Frequency") + ggtitle("Frequency Plot (ggplot2)") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
+    theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
+    theme(legend.position = "none")
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Frequency/Frequency_Plot_log_normalized_count_ggplot2.png")), dpi = 300)
+  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Frequency_Plot_log_normalized_count_ggplot2.png"), "' has been created. \n\n"))
 }
 
 # Box plot and violin plot
@@ -61,25 +57,22 @@ BoxViolinPlot <- function(which.analysis, which.count.normalization, path.prefix
   colnames(log2.normalized.value) <- c("samples", which.count.normalization)
   # Box plot
   cat(paste0("\u25CF Plotting Box plot\n"))
-  png(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Box_Plot_ggplot2.png")))
-  p1 <- ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.count.normalization][[1]]), las = 2) + geom_boxplot(fill=my_colors[as.numeric(color.group)]) +
-    xlab("Samples") + ylab(bquote(~Log[2](.(which.count.normalization)+1))) + ggtitle("Box Plot (ggplot2)") +
+  ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.count.normalization][[1]]), las = 2) + geom_boxplot(fill=my_colors[as.numeric(color.group)]) +
+    theme_bw() + xlab("Samples") + ylab(bquote(~Log[2](.(which.count.normalization)+1))) + ggtitle("Box Plot (ggplot2)") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-  print(p1)
-  dev.off()
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Box_Plot_ggplot2.png")), dpi = 300)
+  # dev.off()
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Box_Plot_ggplot2.png"), "' has been created. \n\n"))
   # Violin plot
   cat(paste0("\u25CF Plotting Violin plot\n"))
-  png(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Violin_Plot_ggplot2.png")))
-  p2 <- ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.count.normalization][[1]], color=log2.normalized.value$samples), las = 2) + geom_violin() +
+  ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.count.normalization][[1]], color=log2.normalized.value$samples), las = 2) + geom_violin() +
     scale_color_manual(values=my_colors[as.numeric(color.group)]) + stat_summary(fun.y=mean, geom="point", shape=23, size=2) +
-    xlab("Samples") + ylab(bquote(~Log[2](.(which.count.normalization)+1))) + ggtitle("Violin Plot (ggplot2)") +
+    theme_bw() + xlab("Samples") + ylab(bquote(~Log[2](.(which.count.normalization)+1))) + ggtitle("Violin Plot (ggplot2)") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
     theme(legend.position = "none")
-  print(p2)
-  dev.off()
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Violin_Plot_ggplot2.png")), dpi = 300)
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Violin_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
@@ -104,19 +97,17 @@ PCAPlot <- function(which.analysis, which.count.normalization, path.prefix, inde
   normalized.trans$attribute <- grp
   pca = FactoMineR::PCA(normalized.trans, ncp=2, quali.sup=length(normalized.trans), graph = FALSE)
   eig.val <- factoextra::get_eigenvalue(pca)
-  png(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/PCA/Dimension_PCA_Plot_factoextra.png")))
-  p1 <- factoextra::fviz_eig(pca, addlabels = TRUE, ylim = c(0, 50), main = "PCA Dimensions") +
+  factoextra::fviz_eig(pca, addlabels = TRUE, ylim = c(0, 50), main = "PCA Dimensions") +
     labs(title ="PCA Dimensions Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-  print(p1)
-  dev.off()
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/PCA/Dimension_PCA_Plot_factoextra.png")), dpi = 300)
+
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/Dimension_PCA_Plot_factoextra.png"), "' has been created. \n"))
   #var$coord: coordinates of variables to create a scatter plot
   #var$cos2: represents the quality of representation for variables on the factor map. It’s calculated as the squared coordinates: var.cos2 = var.coord * var.coord.
   #var$contrib: contains the contributions (in percentage) of the variables to the principal components. The contribution of a variable (var) to a given principal component is (in percentage) : (var.cos2 * 100) / (total cos2 of the component).
   #var <- get_pca_var(res.pca)
-  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_factoextra.png"))
-  p2 <- factoextra::fviz_pca_ind(pca, xlab = paste0("PC1(", round(data.frame(eig.val)$variance.percent[1], 2), "%)"),
+  factoextra::fviz_pca_ind(pca, xlab = paste0("PC1(", round(data.frame(eig.val)$variance.percent[1], 2), "%)"),
                                  ylab = paste0("PC2(", round(data.frame(eig.val)$variance.percent[2],2), "%)"),
                                  legend.title = "Treatment variable", legend.position = "top",
                                  pointshape = 21, pointsize = 3.5, geom.ind = "point", # show points only (nbut not "text")
@@ -127,23 +118,24 @@ PCAPlot <- function(which.analysis, which.count.normalization, path.prefix, inde
                                  ) +
     labs(title ="PCA Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-  print(p2)
-  dev.off()
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_factoextra.png"), dpi = 300)
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_factoextra.png"), "' has been created. \n"))
 
-  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_graphics.png"))
   normalized.res.PCA = FactoMineR::PCA(normalized.trans, scale.unit=TRUE, ncp=2, quali.sup=length(normalized.trans), graph = FALSE)
-  my_colors=c("#00AFBB", "#E7B800")
-  plot(normalized.res.PCA$ind$coord[,1] , normalized.res.PCA$ind$coord[,2], main = "PCA Plot (graphics)",
-       xlab=paste0("PC1(", round(normalized.res.PCA$eig[,2][1], 2), "%)") ,
-       ylab=paste0("PC2(", round(normalized.res.PCA$eig[,2][2], 2), "%)") ,
-       pch=20 , cex=3 , col=my_colors[as.numeric(color.group)] )
-  #my_colors[as.numeric(res.PCA$call$quali.sup$quali.sup[,1])]
-  abline(h=0 , v=0, lty= 2)
-  par(xpd=TRUE)
-  legend("bottomright",inset=c(0,1), horiz=TRUE, bty="n", legend=c(case.group, control.group) , col=my_colors, pch=20 )
-  dev.off()
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_graphics.png"), "' has been created. \n\n"))
+  groups=c(case.group, control.group)
+  PCA.data.frame <- data.frame("PC1" = normalized.res.PCA$ind$coord[,1], "PC2" = normalized.res.PCA$ind$coord[,2])
+  ggplot(PCA.data.frame, aes(x=normalized.res.PCA$ind$coord[,1] , y=normalized.res.PCA$ind$coord[,2])) +
+    geom_point(aes(color = factor(groups[as.numeric(color.group)], levels = c(case.group, control.group))), size = 3.5) +
+    scale_color_manual(values = c("#00AFBB", "#E7B800")) +
+    theme_bw() + xlab(paste0("PC1(", round(normalized.res.PCA$eig[,2][1], 2), "%)")) + ylab(paste0("PC2(", round(normalized.res.PCA$eig[,2][2], 2), "%)")) + ggtitle("PCA Plot (ggplot2)") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
+    theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
+    theme(legend.position="top") +
+    labs(color = independent.variable) +
+    geom_hline(yintercept=0, linetype="dashed", color = "black") +
+    geom_vline(xintercept=0, linetype="dashed", color = "black")
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_ggplot2.png"), dpi = 300)
+  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
 #Correlation plot
@@ -163,29 +155,27 @@ CorrelationPlot <- function(which.analysis, which.count.normalization, path.pref
   min.value <- min(res)
   # Correlation_dot_plot.png
   col <- colorRampPalette(c("#4477AA", "#FFFFFF", "#BB4444"))
-  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Dot_Plot_corrplot.png"), width = 1000, height = 1000)
+  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Dot_Plot_corrplot.png"), width=5, height=5, units="in", res=300)
   cex.before <- par("cex")
-  par(cex = 0.7)
-  corrplot::corrplot(res, col=col(200), type = "upper", tl.col = "black", tl.srt = 45, addCoef.col = "black", cl.cex = 1/par("cex"), mar=c(0,0,1,0), cl.lim = c(min.value, max.value), is.corr = FALSE)
-  mtext("Correlation Dot Plot (corrplot)", at=7, line=-0.5, cex=1.5)
+  par(cex = 0.5)
+  corrplot::corrplot(res, col=col(200), type = "upper", tl.col = "black", tl.srt = 45, addCoef.col = "black", cl.cex = 1/par("cex"), mar=c(0,0,4,0), cl.lim = c(min.value, max.value), is.corr = FALSE)
+  mtext(expression(bold("Correlation Dot Plot (corrplot)")))
   par(cex = cex.before)
   dev.off()
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Dot_Plot_corrplot.png"), "' has been created. \n"))
 
   # Correlation_plot.png
-  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Bar_Plot_PerformanceAnalytics.png"), width = 1000, height = 1000)
-  p2 <- PerformanceAnalytics::chart.Correlation(res, histogram=TRUE, pch=19)
-  print(p2)
+  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Bar_Plot_PerformanceAnalytics.png"), width=5, height=5, units="in", res=300)
+  PerformanceAnalytics::chart.Correlation(res, histogram=TRUE, pch=19)
   dev.off()
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Bar_Plot_PerformanceAnalytics.png"), "' has been created. \n"))
 
   # Correlation_heat_plot.png
-  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Heat_Plot_ggplot2.png"), width = 1000, height = 1000)
   melted_res <- reshape2::melt(res)
   max.value <- max(melted_res$value)
   min.value <- min(melted_res$value)
   colnames(melted_res) <- c("Var1", "Var2", "value")
-  ggheatmap <- ggplot(melted_res, aes(melted_res$Var1, melted_res$Var2, fill = melted_res$value))+
+  ggplot(melted_res, aes(melted_res$Var1, melted_res$Var2, fill = melted_res$value))+
     xlab("Samples") + ylab("Samples") +
     geom_tile(color = "white")+
     scale_fill_gradient2(low = "blue",mid ="white"  ,high = "red",
@@ -198,8 +188,7 @@ CorrelationPlot <- function(which.analysis, which.count.normalization, path.pref
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10 ), axis.title.y = element_text(size = 10)) +
     coord_fixed()
   # Print the heatmap
-  print(ggheatmap)
-  dev.off()
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Heat_Plot_ggplot2.png"), dpi = 300)
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Heat_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
@@ -213,14 +202,14 @@ VolcanoPlot <- function(which.analysis, which.count.normalization, path.prefix, 
   normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv"))
   ## Volcano plot
   # Make a basic volcano plot
-  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot_graphics.png"))
-  par(mar=c(5,7,5,5), cex=0.6, cex.main=2, cex.axis=1.5, cex.lab=1.5)
+  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot_graphics.png"), width=5, height=5, units="in", res=300)
+  par(mar=c(4,4,4,4), cex.main=0.8, cex.lab=0.7,cex.axis=0.7)
   topT <- as.data.frame(normalized_dataset)
-  with(topT, plot(topT$log2FC, -log10(topT$pval), pch=20, main="Volcano Plot (graphics)", xlab=bquote(~Log[2](fold~change)), ylab=bquote(~-log[10](p-value)), xlim=c(-15,15), ylim = c(0,12)))
+  with(topT, plot(topT$log2FC, -log10(topT$pval), pch=20, cex=0.6, main="Volcano Plot (graphics)", xlab=bquote(~Log[2](fold~change)), ylab=bquote(~-log[10](p-value)), xlim=c(-15,15), ylim = c(0,12)))
   subset.result.red <- subset(topT, topT$pval<condition.pval & topT$log2FC>=condition.log2FC)
-  with(subset.result.red, points(subset.result.red$log2FC, -log10(subset.result.red$pval), pch=20, cex=1, col="red"))
+  with(subset.result.red, points(subset.result.red$log2FC, -log10(subset.result.red$pval), pch=20, cex=0.6, col="red"))
   subset.result.green <- subset(topT, topT$pval<condition.pval & topT$log2FC<=-1*condition.log2FC)
-  with(subset.result.green, points(subset.result.green$log2FC, -log10(subset.result.green$pval), pch=20, cex=1, col="green"))
+  with(subset.result.green, points(subset.result.green$log2FC, -log10(subset.result.green$pval), pch=20, cex=0.6, col="green"))
   # hight = -log10(pavl) = height
   abline(v=c(-1*condition.log2FC,condition.log2FC), h=-1*log10(condition.pval), col="black", lty='dashed')
   dev.off()
@@ -236,20 +225,19 @@ MAPlot <- function(which.analysis, which.count.normalization, path.prefix, indep
   cat(paste0("\u25CF Plotting MA plot\n"))
   normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv"))
   ## Ma plot
-  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/MA_Plot_ggplot2.png"))
-  p <- ggplot(normalized_dataset, aes(x = log2(normalized_dataset[paste0(case.group, ".", control.group, ".average")][[1]]), y = normalized_dataset$log2FC, colour = normalized_dataset$pval<condition.pval)) +
+  ggplot(normalized_dataset, aes(x = log2(normalized_dataset[paste0(case.group, ".", control.group, ".average")][[1]]), y = normalized_dataset$log2FC, colour = normalized_dataset$pval<condition.pval)) +
     xlab(bquote(~Log[2](.(which.count.normalization)))) +
-    ylab(bquote(~Log[2](fold~change))) +
-    theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
-    labs(title = "MA Plot (ggplot2)") +
+    ylab(bquote(~Log[2](fold~change))) + theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
+    theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
+    ggtitle("MA Plot (ggplot2)") +
     scale_color_manual(values=c("#999999", "#FF0000")) +
     geom_point(size = 0.8) +
     geom_hline(yintercept=0, color="blue") +
     ylim(-6, 6) +
     theme(legend.position="top") +
     labs(color=paste0("p-value < ", condition.pval))
-  print(p)
-  dev.off()
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/MA_Plot_ggplot2.png"), dpi = 300)
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/MA_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
@@ -274,45 +262,44 @@ DEPCAPlot <- function(which.analysis, which.count.normalization, path.prefix, in
   normalized.trans$attribute <- grp
   pca = FactoMineR::PCA(normalized.trans, ncp=2, quali.sup=length(normalized.trans), graph = FALSE)
   eig.val <- factoextra::get_eigenvalue(pca)
-  png(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/DE/PCA/Dimension_PCA_Plot_factoextra.png")))
-  p1 <- factoextra::fviz_eig(pca, addlabels = TRUE, ylim = c(0, 50)) +
+  factoextra::fviz_eig(pca, addlabels = TRUE, ylim = c(0, 50)) +
     labs(title ="PCA Dimensions Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-  print(p1)
-  dev.off()
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/DE/PCA/Dimension_PCA_Plot_factoextra.png")), dpi = 300)
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/Dimension_PCA_Plot_factoextra.png"), "' has been created. \n"))
   #var$coord: coordinates of variables to create a scatter plot
   #var$cos2: represents the quality of representation for variables on the factor map. It’s calculated as the squared coordinates: var.cos2 = var.coord * var.coord.
   #var$contrib: contains the contributions (in percentage) of the variables to the principal components. The contribution of a variable (var) to a given principal component is (in percentage) : (var.cos2 * 100) / (total cos2 of the component).
   #var <- get_pca_var(res.pca)
-  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_factoextra.png"))
-  p2 <- factoextra::fviz_pca_ind(pca, xlab = paste0("PC1(", round(data.frame(eig.val)$variance.percent[1], 2), "%)"),
-                                 ylab = paste0("PC2(", round(data.frame(eig.val)$variance.percent[2],2), "%)"),
-                                 legend.title = "Treatment variable", legend.position = "top",
-                                 pointshape = 21, pointsize = 3.5, geom.ind = "point", # show points only (nbut not "text")
-                                 fill.ind = normalized.trans$attribute,
-                                 palette = my_colors,
-                                 habillage = normalized.trans$attribute,
-                                 addEllipses = TRUE
+  factoextra::fviz_pca_ind(pca, xlab = paste0("PC1(", round(data.frame(eig.val)$variance.percent[1], 2), "%)"),
+                           ylab = paste0("PC2(", round(data.frame(eig.val)$variance.percent[2],2), "%)"),
+                           legend.title = "Treatment variable", legend.position = "top",
+                           pointshape = 21, pointsize = 3.5, geom.ind = "point", # show points only (nbut not "text")
+                           fill.ind = normalized.trans$attribute,
+                           palette = c("#00AFBB", "#E7B800"),
+                           habillage = normalized.trans$attribute,
+                           addEllipses = TRUE
   ) +
-    labs(title = "PCA Plot (factoextra)") +
+    labs(title ="PCA Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-  print(p2)
-  dev.off()
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_factoextra.png"), dpi = 300)
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_factoextra.png"), "' has been created. \n"))
 
-  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_graphics.png"))
   normalized.res.PCA = FactoMineR::PCA(normalized.trans, scale.unit=TRUE, ncp=2, quali.sup=length(normalized.trans), graph = FALSE)
-  plot(normalized.res.PCA$ind$coord[,1] , normalized.res.PCA$ind$coord[,2], main = "PCA Plot (graphics)",
-       xlab=paste0("PC1(", round(normalized.res.PCA$eig[,2][1], 2), "%)") ,
-       ylab=paste0("PC2(", round(normalized.res.PCA$eig[,2][2], 2), "%)") ,
-       pch=20 , cex=3 , col=my_colors[as.numeric(color.group)] )
-  #my_colors[as.numeric(res.PCA$call$quali.sup$quali.sup[,1])]
-  abline(h=0 , v=0, lty= 2)
-  par(xpd=TRUE)
-  legend("bottomright",inset=c(0,1), horiz=TRUE, bty="n", legend=c(case.group, control.group) , col=my_colors, pch=20 )
-  dev.off()
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_graphics.png"), "' has been created. \n\n"))
+  groups=c(case.group, control.group)
+  PCA.data.frame <- data.frame("PC1" = normalized.res.PCA$ind$coord[,1], "PC2" = normalized.res.PCA$ind$coord[,2])
+  ggplot(PCA.data.frame, aes(x=normalized.res.PCA$ind$coord[,1] , y=normalized.res.PCA$ind$coord[,2])) +
+    geom_point(aes(color = factor(groups[as.numeric(color.group)], levels = c(case.group, control.group))), size = 3.5) +
+    scale_color_manual(values = c("#00AFBB", "#E7B800")) +
+    theme_bw() + xlab(paste0("PC1(", round(normalized.res.PCA$eig[,2][1], 2), "%)")) + ylab(paste0("PC2(", round(normalized.res.PCA$eig[,2][2], 2), "%)")) + ggtitle("PCA Plot (ggplot2)") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
+    theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
+    theme(legend.position="top") +
+    labs(color = independent.variable) +
+    geom_hline(yintercept=0, linetype="dashed", color = "black") +
+    geom_vline(xintercept=0, linetype="dashed", color = "black")
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_ggplot2.png"), dpi = 300)
+  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
 DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group) {
@@ -320,12 +307,17 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
   cat(paste0("\u25CF Plotting Differential Expressed Heatmap related plot\n"))
   DE.csv.results <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, split = "_")[[1]][1], "_normalized_DE_result.csv"))
   pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
+
+  ## Maybe change !!!! temp !!
   DE.csv.results <- DE.csv.results[DE.csv.results$gene.name != ".",]
+  DE.csv.results <- DE.csv.results[order(abs(DE.csv.results$log2FC), decreasing = TRUE),]
+  DE.csv.results <- DE.csv.results[!duplicated(DE.csv.results$gene.name),]
+
   DE.csv.normalized.count.only <- DE.csv.results[,2:(pre.pheno_data$case.group.size + pre.pheno_data$case.group.size + 1)]
   row.names(DE.csv.normalized.count.only) <- DE.csv.results$gene.name
   cat(paste0("     \u25CF Checking found differential express transcript term.\n"))
   if (nrow(DE.csv.normalized.count.only) == 0) {
-    cat(paste0("          \u25CF (\u26A0) No term were found.\n"))
+    cat(paste0("          \u25CF (\u26A0) No term were found.\n\n"))
   } else {
     if (length(row.names(DE.csv.normalized.count.only)) > 50) {
       cat(paste0("          \u25CF Found ", length(row.names(DE.csv.normalized.count.only)), " terms. More than 50 terms (Only plot top 50 smallest p value).\n"))
@@ -333,37 +325,37 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
     } else {
       cat(paste0("          \u25CF Found ", length(row.names(DE.csv.normalized.count.only)), " terms.\n"))
     }
-  }
-  cat(paste0("     \u25CF Calculating log2(", which.count.normalization, "+1).\n"))
-  log.data.frame <- log2(DE.csv.normalized.count.only+1)
-  # Getting log control mean
-  control.log.average <- rowMeans(log.data.frame[seq_len(pre.pheno_data$case.group.size)])
-  cat(paste0("     \u25CF Each log2(", which.count.normalization, "+1) minus average of control.\n"))
-  log.data.frame.minus <- log.data.frame - control.log.average
-  df.new <- scale(log.data.frame.minus)
-  pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
-  # The independent.variable group
-  annotation_list = factor(c(rep(case.group, pre.pheno_data$case.group.size), rep(control.group,  pre.pheno_data$case.group.size)), levels = c(case.group, control.group))
-  annotation <- data.frame(Var1 = annotation_list)
-  colnames(annotation) <- independent.variable
-  rownames(annotation) <- colnames(df.new) # check out the row names of annotation
-  my_colors_list <- c( male = "#00AFBB", female = "#E7B800")
-  names(my_colors_list) <- c(case.group, control.group)
-  anno_colors <- list(Var1 = my_colors_list)
-  names(anno_colors) <- independent.variable
-  # Check Na(list) or Infinite(numeric)
-  if (any(is.na((df.new)) | is.infinite((df.new)))) {
-    cat(paste0("(\u26A0) : There are invalid value after scaling DEG dataframe. Heatmap can't be drawn !\n\n"))
-  } else {
-    png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), width = 1200, height = 1200)
-    redgreen <- c("blue", "white", "red")
-    pal <- colorRampPalette(redgreen)(100)
-    ## Not change distance , highlight case and control
-    pheatmap::pheatmap(df.new, scale = "row", xlab = "samples", ylab = "transcript names",cexRow=1, cexCol = 1, margins = c(10,8), col = pal, main = "Heatmap Plot (pheatmap)", cluster_rows = TRUE, cluster_cols = FALSE, annotation_col = annotation, annotation_colors = anno_colors)
-    # grid::grid.abline(intercept = 300, slope = 0)
-    # theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-    dev.off()
-    cat(paste0("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), "' has been created. \n\n")
+    cat(paste0("     \u25CF Calculating log2(", which.count.normalization, "+1).\n"))
+    log.data.frame <- log2(DE.csv.normalized.count.only+1)
+    # Getting log control mean
+    control.log.average <- rowMeans(log.data.frame[seq_len(pre.pheno_data$case.group.size)])
+    cat(paste0("     \u25CF Each log2(", which.count.normalization, "+1) minus average of control.\n"))
+    log.data.frame.minus <- log.data.frame - control.log.average
+    df.new <- scale(log.data.frame.minus)
+    pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
+    # The independent.variable group
+    annotation_list = factor(c(rep(case.group, pre.pheno_data$case.group.size), rep(control.group,  pre.pheno_data$case.group.size)), levels = c(case.group, control.group))
+    annotation <- data.frame(Var1 = annotation_list)
+    colnames(annotation) <- independent.variable
+    rownames(annotation) <- colnames(df.new) # check out the row names of annotation
+    my_colors_list <- c( male = "#00AFBB", female = "#E7B800")
+    names(my_colors_list) <- c(case.group, control.group)
+    anno_colors <- list(Var1 = my_colors_list)
+    names(anno_colors) <- independent.variable
+    # Check Na(list) or Infinite(numeric)
+    if (any(is.na((df.new)) | is.infinite((df.new)))) {
+      cat(paste0("(\u26A0) : There are invalid value after scaling DEG dataframe. Heatmap can't be drawn !\n\n"))
+    } else {
+      png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), width=5, height=5, units="in", res=300)
+      redgreen <- c("blue", "white", "red")
+      pal <- colorRampPalette(redgreen)(100)
+      ## Not change distance , highlight case and control
+      pheatmap::pheatmap(df.new, scale = "row", xlab = "samples", ylab = "transcript names",cexRow=1, cexCol = 1, margins = c(10,8), col = pal, main = "Heatmap Plot (pheatmap)", cluster_rows = TRUE, cluster_cols = FALSE, annotation_col = annotation, annotation_colors = anno_colors)
+      # grid::grid.abline(intercept = 300, slope = 0)
+      # theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
+      dev.off()
+      cat(paste0("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), "' has been created. \n\n")
+    }
   }
 }
 
