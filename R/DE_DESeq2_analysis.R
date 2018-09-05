@@ -100,7 +100,12 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
       # dispersion plot
       cat(paste0("\u25CF Plotting  Dispersion plot\n"))
       png(paste0(path.prefix, paste0("RNASeq_results/DESeq2_analysis/images/preDE/Dispersion_Plot.png")), width=5, height=5, units="in", res=300)
-      plotDispEsts(dds_de, main="Dispersion plot")
+      cex.before <- par("cex")
+      par(xpd=TRUE, cex = 0.7)
+      plotDispEsts(dds_de)
+      par(cex = 0.8)
+      title("Dispersion plot")
+      par(cex = cex.before)
       dev.off()
       cat(paste0("(\u2714) : '", paste0("RNASeq_results/DESeq2_analysis/images/DE/Dispersion_Plot.png"), "' has been created. \n\n"))
 
@@ -116,8 +121,12 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
       # MA plot
       cat(paste0("\u25CF Plotting  MA plot\n"))
       png(paste0(path.prefix, paste0("RNASeq_results/DESeq2_analysis/images/DE/MA_Plot.png")), width=5, height=5, units="in", res=300)
-      p1 <- DESeq2::plotMA(dds_de, main = "MA (MD) Plot")
-      print(p1)
+      cex.before <- par("cex")
+      par(xpd=TRUE, cex = 0.7)
+      DESeq2::plotMA(dds_de)
+      par(cex = 0.8)
+      title("MA (MD) Plot")
+      par(cex = cex.before)
       dev.off()
       cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/DE/MA_Plot.png"), "' has been created. \n\n"))
 

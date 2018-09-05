@@ -99,27 +99,38 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
       png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MDS_Plot.png"), width=5, height=5, units="in", res=300)
       my_colors=c(rgb(50, 147, 255,maxColorValue = 255),
                   rgb(255, 47, 35,maxColorValue = 255))
+      cex.before <- par("cex")
+      par(xpd=TRUE, cex = 0.7)
       edgeR::plotMDS.DGEList(deglist.object, top = 1000, labels = NULL, col = my_colors[as.numeric(deglist.object$samples$group)],
-                             pch = 20, cex = 2)
-      par(xpd=TRUE)
+                             pch = 20)
       legend("bottomright",inset=c(0,1), horiz=TRUE, bty="n", legend=levels(deglist.object$samples$group) , col=my_colors, pch=20 )
+      par(cex = 0.8)
       title("MDS Plot")
+      par(cex = cex.before)
       dev.off()
       cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MDS_Plot.png"), "' has been created. \n\n"))
 
       # MeanVar plot
       cat("\u25CF Plotting MeanVar plot ... \n")
       png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MeanVar_Plot.png"), width=5, height=5, units="in", res=300)
+      cex.before <- par("cex")
+      par(xpd=TRUE, cex = 0.7)
       edgeR::plotMeanVar(dgList, show.tagwise.vars=TRUE, NBline=TRUE)
+      par(cex = 0.8)
       graphics::title("Mean-Variance Plot")
+      par(cex = cex.before)
       dev.off()
       cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MeanVar_Plot.png"), "' has been created. \n\n"))
 
       # BCV plot
       cat("\u25CF Plotting BCV plot ...\n")
       png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/BCV_Plot.png"), width=5, height=5, units="in", res=300)
+      cex.before <- par("cex")
+      par(xpd=TRUE, cex = 0.7)
       edgeR::plotBCV(dgList)
+      par(cex = 0.8)
       graphics::title("BCV Plot")
+      par(cex = cex.before)
       dev.off()
       cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/BCV_Plot.png"), "' has been created. \n\n"))
       ############

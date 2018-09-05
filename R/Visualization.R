@@ -205,13 +205,24 @@ VolcanoPlot <- function(which.analysis, which.count.normalization, path.prefix, 
   log2FC.pval <- data.frame("log2FC" = normalized_dataset$log2FC, "pval" = normalized_dataset$pval)
   down.regulated.gene <- log2FC.pval[((log2FC.pval$log2FC < -condition.log2FC) & (log2FC.pval$pval < condition.pval)),]
   up.regulated.gene <- log2FC.pval[((log2FC.pval$log2FC > condition.log2FC) & (log2FC.pval$pval < condition.pval)),]
-  ggplot(log2FC.pval, aes(x = log2FC.pval$log2FC, y=-log10(log2FC.pval$pval))) + geom_point() +
+
+
+  all.x.value <- c(down.regulated.gene$log2FC, up.regulated.gene$log2FC)
+  x.range <- quantile(all.x.value, probs=c(0.05,0.95))
+  x.limit <- max(abs(x.range)) + 5
+
+  all.y.value <- c(-log10(down.regulated.gene$pval), -log10(up.regulated.gene$pval))
+  y.range <- quantile(all.y.value, probs=c(0.05,0.95))
+  y.limit <- max(abs(y.range)) + 5
+  ggplot(log2FC.pval, aes(x = log2FC.pval$log2FC, y=-log10(log2FC.pval$pval))) + geom_point(size = 0.8) +
+    xlim(-x.limit, x.limit) +
+    ylim(0, y.limit) +
     theme_bw() + xlab(bquote(~Log[2](fold~change))) + ylab(bquote(~-Log[10](p-value))) + ggtitle("Volcano (ggplot2)") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
     theme(legend.position="top") +
-    geom_point(data = down.regulated.gene,  aes(x = down.regulated.gene$log2FC, y=-log10(down.regulated.gene$pval)), colour = "green") +
-    geom_point(data = up.regulated.gene,  aes(x = up.regulated.gene$log2FC, y=-log10(up.regulated.gene$pval)), colour = "red") +
+    geom_point(data = down.regulated.gene,  aes(x = down.regulated.gene$log2FC, y=-log10(down.regulated.gene$pval)), colour = "#00cc00", size = 0.8) +
+    geom_point(data = up.regulated.gene,  aes(x = up.regulated.gene$log2FC, y=-log10(up.regulated.gene$pval)), colour = "red", size = 0.8) +
     geom_hline(yintercept=-log10(condition.pval), linetype="dashed", color = "black") +
     geom_vline(xintercept=1, linetype="dashed", color = "black") +
     geom_vline(xintercept=-1, linetype="dashed", color = "black")
@@ -338,14 +349,17 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
     df.new <- scale(log.data.frame.minus)
     pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
     # The independent.variable group
+    # Do for annotation ! (grouping in pheatmap)
     annotation_list = factor(c(rep(case.group, pre.pheno_data$case.group.size), rep(control.group,  pre.pheno_data$case.group.size)), levels = c(case.group, control.group))
     annotation <- data.frame(Var1 = annotation_list)
     colnames(annotation) <- independent.variable
     rownames(annotation) <- colnames(df.new) # check out the row names of annotation
-    my_colors_list <- c( male = "#00AFBB", female = "#E7B800")
+
+    my_colors_list <- c("#00AFBB","#E7B800")
     names(my_colors_list) <- c(case.group, control.group)
     anno_colors <- list(Var1 = my_colors_list)
     names(anno_colors) <- independent.variable
+
     # Check Na(list) or Infinite(numeric)
     if (any(is.na((df.new)) | is.infinite((df.new)))) {
       cat(paste0("(\u26A0) : There are invalid value after scaling DEG dataframe. Heatmap can't be drawn !\n\n"))
@@ -354,12 +368,17 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
       redgreen <- c("blue", "white", "red")
       pal <- colorRampPalette(redgreen)(100)
       ## Not change distance , highlight case and control
-      png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), width=5, height=5, units="in", res=300)
-      pheatmap::pheatmap(df.new, scale = "row", xlab = "samples", ylab = "transcript names",cexRow=1, cexCol = 1, margins = c(10,8), col = pal, main = "Heatmap Plot (pheatmap)", cluster_rows = TRUE, cluster_cols = FALSE, annotation_col = annotation, annotation_colors = anno_colors)
+      pheatmap::pheatmap(df.new, scale = "row", xlab = "samples", ylab = "transcript names",
+                         margins = c(10,8), col = pal,
+                         main = "Heatmap Plot (pheatmap)",
+                         cluster_rows = TRUE, cluster_cols = FALSE,
+                         annotation_col = annotation,
+                         annotation_colors = anno_colors,
+                         filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"),
+                         units="in", fontsize = 10)
       # grid::grid.abline(intercept = 300, slope = 0)
       # theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
       # ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), dpi = 300)
-      dev.off()
       cat(paste0("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), "' has been created. \n\n")
     }
   }
