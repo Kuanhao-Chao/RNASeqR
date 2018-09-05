@@ -16,10 +16,14 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
   # create DGEList object (edgeR)
   cat("\u25CF Creating 'DGEList' object from count matrix ... \n")
   gene.data.frame <- data.frame(gene.name = raw.count.gene.name)
-  deglist.object <- edgeR::DGEList(counts=raw.count, group = pre.de.pheno.data$pheno_data[independent.variable][[1]], genes = raw.count.gene.name)
+  pheno.data <- pre.de.pheno.data$pheno_data
+  pheno.data <- pheno.data[order(pheno.data$ids),]
+  deglist.object <- edgeR::DGEList(counts=raw.count, group = pheno.data[independent.variable][[1]], genes = raw.count.gene.name)
   # Normalization with TMM (trimmed mean of M-values )
   cat("     \u25CF Normalizing DGEList object (TMM) ... \n")
   deglist.object <- edgeR::calcNormFactors(deglist.object, method="TMM")
+  deglist.object$samples$normalized.lib.size <- deglist.object$samples$lib.size*deglist.object$samples$norm.factors
+  write.csv(deglist.object$samples, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM.csv"))
   # estimating Dispersions
   # quantile-adjusted conditional maximum likelihood (qCML) method for experiments with single factor.
   dgList <- edgeR::estimateCommonDisp(deglist.object)
@@ -41,16 +45,17 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
   total.data.frame <- cbind(gene.data.frame, case.cpm.data.frame, control.cpm.data.frame)
   total.data.frame[paste0(case.group, ".average")] <- rowMeans(case.cpm.data.frame)
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.cpm.data.frame)
-  total.data.frame[paste0(case.group, ".", control.group, ".average")]<- rowMeans(total.data.frame[-1])
+  total.data.frame[paste0(case.group, ".", control.group, ".average")]<- rowMeans(cbind(case.cpm.data.frame, control.cpm.data.frame))
   edgeR.result <- cbind(total.data.frame, de.statistic.result$table)
-  # Filter out p-value that is na
-  edgeR.result <- edgeR.result[(!is.na(edgeR.result$pval)), ]
+  edgeR.result <- rbind(edgeR.result[edgeR.result$gene.name != ".", ], edgeR.result[edgeR.result$gene.name == ".", ])
+  # Filter out gene (p-value = Na) and (log2FC = Inf or log2FC = Na or log2FC = -Inf)
+  edgeR.result <- edgeR.result[!is.na(edgeR.result$pval) & (edgeR.result$log2FC != Inf) & !is.na(edgeR.result$log2FC) & (edgeR.result$log2FC != -Inf), ]
   case.group.size <- pre.de.pheno.data$case.group.size
   control.group.size <- pre.de.pheno.data$control.group.size
   # Write out csv file
   write.csv(edgeR.result[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_control.csv"), row.names=FALSE)
   write.csv(edgeR.result[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_case.csv"), row.names=FALSE)
-  write.csv(edgeR.result[,c((2+case.group.size+control.group.size):(length(edgeR.result)))], file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
+  write.csv(edgeR.result[,c((2+3+case.group.size+control.group.size):(length(edgeR.result)))], file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   # Write result into file (csv)
   write.csv(edgeR.result, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv"), row.names=FALSE)
 
@@ -60,23 +65,20 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
   cat("          \u25CF Total '", length(row.names(edgeR.result.DE)), "' DEG have been found !!")
   write.csv(edgeR.result.DE, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_DE_result.csv"), row.names=FALSE)
 
-
-
   # Check edgeR.result.DE before visulization!!
-  if (nrow(edgeR.result.DE) > 0) {
+
     ########################
     ## edgeR visulization ##
     ########################
-
-    # PreDE
-    if(file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv")) &&
-       file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_case.csv")) &&
-       file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_control.csv")) &&
-       file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"))){
-      if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images"))){
-        dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images"))
-      }
-
+  # PreDE
+  if(file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv")) &&
+     file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_case.csv")) &&
+     file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_control.csv")) &&
+     file.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"))){
+    if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images"))){
+      dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images"))
+    }
+    if (nrow(edgeR.result) > 0) {
       ###############
       #### PreDE ####
       ###############
@@ -92,24 +94,9 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
       #Correlation
       CorrelationPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
 
-      ############
-      #### DE ####
-      ############
-      if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/DE/"))){
-        dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/DE/"))
-      }
-      # Volcano
-      VolcanoPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group, edgeR.pval, edgeR.log2FC)
-
-      # PCA plot
-      DEPCAPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
-
-      # Heatmap
-      DEHeatmap("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
-
       # MDS plot
       cat("\u25CF Plotting MDS plot ... \n")
-      png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MDS_Plot.png"))
+      png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MDS_Plot.png"), width=5, height=5, units="in", res=300)
       my_colors=c(rgb(50, 147, 255,maxColorValue = 255),
                   rgb(255, 47, 35,maxColorValue = 255))
       edgeR::plotMDS.DGEList(deglist.object, top = 1000, labels = NULL, col = my_colors[as.numeric(deglist.object$samples$group)],
@@ -122,7 +109,7 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
 
       # MeanVar plot
       cat("\u25CF Plotting MeanVar plot ... \n")
-      png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MeanVar_Plot.png"))
+      png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/MeanVar_Plot.png"), width=5, height=5, units="in", res=300)
       edgeR::plotMeanVar(dgList, show.tagwise.vars=TRUE, NBline=TRUE)
       graphics::title("Mean-Variance Plot")
       dev.off()
@@ -130,15 +117,36 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
 
       # BCV plot
       cat("\u25CF Plotting BCV plot ...\n")
-      png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/BCV_Plot.png"))
+      png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/BCV_Plot.png"), width=5, height=5, units="in", res=300)
       edgeR::plotBCV(dgList)
       graphics::title("BCV Plot")
       dev.off()
       cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/BCV_Plot.png"), "' has been created. \n\n"))
-    } else {
-      stop("(\u2718) file missing ERROR.\n\n")
-    }
+      ############
+      #### DE ####
+      ############
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/DE/"))){
+        dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/DE/"))
+      }
+      # Volcano
+      VolcanoPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group, edgeR.pval, edgeR.log2FC)
 
+      if (nrow(edgeR.result.DE) > 0) {
+        # PCA plot
+        DEPCAPlot("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
+
+        # Heatmap
+        DEHeatmap("edgeR_analysis", "TMM&CPM", path.prefix, independent.variable, case.group, control.group)
+
+      } else {
+        cat ("(\u26A0) No differential expressed gene term found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
+      }
+    } else {
+      cat ("(\u26A0) No gene terms found !!! Skip visualization step !!! \n\n")
+    }
+  } else {
+    cat("(\u2718) necessary file is missing!! Something ERROR happend during edgeR analysis!! Skip visualization!!\n\n")
+  }
     #   edgeR::plotSmear(de, de.tags = de$genes)
     #
     #   # Fit a negative binomial generalized log-linear model
@@ -153,7 +161,4 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
     #   plotMD(lrt, main = "MD (MA) Plot")
     #   abline(h=c(-1, 1), col="blue")
     #   dev.off()
-  } else {
-    cat ("(\u26A0) No differential expressed gene term found !!! Skip visualization !!! \n\n")
-  }
 }

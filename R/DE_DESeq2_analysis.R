@@ -17,10 +17,11 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
   # creatin gene name data frame
   gene.data.frame <- data.frame(gene.name = raw.count.gene.name)
   # create design data.frame (independent.variable)
-  colData <- pre.de.pheno.data$pheno_data
-  row.names(colData) <- colData$ids
-  colData <- colData[order(row.names(colData)),]
-  colData$ids <- NULL
+  # !! reorder (sort)
+  pheno.data <- pre.de.pheno.data$pheno_data
+  pheno.data <- pheno.data[order(pheno.data$ids),]
+  colData <- pheno.data[independent.variable]
+  row.names(colData) <- pheno.data$ids
   colnames(colData) <- "independent.variable"
 
   # creat DESeqDataSet
@@ -49,16 +50,17 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
   total.data.frame <- cbind(gene.data.frame, case.mrn.data.frame, control.mrn.data.frame)
   total.data.frame[paste0(case.group, ".average")] <- rowMeans(case.mrn.data.frame)
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.mrn.data.frame)
-  total.data.frame[paste0(case.group, ".", control.group, ".average")]<- rowMeans(total.data.frame[-1])
+  total.data.frame[paste0(case.group, ".", control.group, ".average")]<- rowMeans(cbind(case.mrn.data.frame, control.mrn.data.frame))
   DESeq2.result <- cbind(total.data.frame, statistic.res)
-  # Filter out p-value with na
-  DESeq2.result <- DESeq2.result[(!is.na(DESeq2.result$pval)), ]
+  DESeq2.result <- rbind(DESeq2.result[DESeq2.result$gene.name != ".", ], DESeq2.result[DESeq2.result$gene.name == ".", ])
+  # Filter out gene (p-value = Na) and (q-value = Na) and (log2FC = Inf or log2FC = Na or log2FC = -Inf)
+  DESeq2.result <- DESeq2.result[!is.na(DESeq2.result$pval) & !is.na(DESeq2.result$padj) & (DESeq2.result$log2FC != Inf) & !is.na(DESeq2.result$log2FC) & (DESeq2.result$log2FC != -Inf), ]
   # Write result into file (csv)
   case.group.size <- pre.de.pheno.data$case.group.size
   control.group.size <- pre.de.pheno.data$control.group.size
   write.csv(DESeq2.result[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/MRN_case.csv"), row.names=FALSE)
   write.csv(DESeq2.result[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/MRN_control.csv"), row.names=FALSE)
-  write.csv(DESeq2.result[,c((2+case.group.size+control.group.size):(length(DESeq2.result)))], file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
+  write.csv(DESeq2.result[,c((2+3+case.group.size+control.group.size):(length(DESeq2.result)))], file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   write.csv(DESeq2.result, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_result.csv"), row.names=FALSE)
 
   cat(paste0("     \u25CF Selecting differential expressed genes(DESeq2) ==> padj-value : ", DESeq2.pval, "  log2(Fold Change) : ", DESeq2.log2FC, " ...\n"))
@@ -67,19 +69,19 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
   write.csv(DESeq2.result.DE, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_DE_result.csv"), row.names=FALSE)
 
 
-  # Check DESeq2.result.DE before visulization!!
-  if (nrow(DESeq2.result.DE) > 0) {
-    #########################
-    ## DESeq2 visulization ##
-    #########################
 
-    if(file.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_result.csv")) &&
-       file.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/MRN_case.csv")) &&
-       file.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/MRN_control.csv")) &&
-       file.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/statistic.csv"))){
-      if(!dir.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/"))){
-        dir.create(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/"))
-      }
+  #########################
+  ## DESeq2 visulization ##
+  #########################
+
+  if(file.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_result.csv")) &&
+     file.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/MRN_case.csv")) &&
+     file.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/MRN_control.csv")) &&
+     file.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/statistic.csv"))){
+    if(!dir.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/"))){
+      dir.create(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/"))
+    }
+    if (nrow(DESeq2.result) > 0) {
       ###############
       #### PreDE ####
       ###############
@@ -97,7 +99,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
 
       # dispersion plot
       cat(paste0("\u25CF Plotting  Dispersion plot\n"))
-      png(paste0(path.prefix, paste0("RNASeq_results/DESeq2_analysis/images/preDE/Dispersion_Plot.png")))
+      png(paste0(path.prefix, paste0("RNASeq_results/DESeq2_analysis/images/preDE/Dispersion_Plot.png")), width=5, height=5, units="in", res=300)
       plotDispEsts(dds_de, main="Dispersion plot")
       dev.off()
       cat(paste0("(\u2714) : '", paste0("RNASeq_results/DESeq2_analysis/images/DE/Dispersion_Plot.png"), "' has been created. \n\n"))
@@ -113,54 +115,57 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
 
       # MA plot
       cat(paste0("\u25CF Plotting  MA plot\n"))
-      png(paste0(path.prefix, paste0("RNASeq_results/DESeq2_analysis/images/DE/MA_Plot.png")))
+      png(paste0(path.prefix, paste0("RNASeq_results/DESeq2_analysis/images/DE/MA_Plot.png")), width=5, height=5, units="in", res=300)
       p1 <- DESeq2::plotMA(dds_de, main = "MA (MD) Plot")
       print(p1)
       dev.off()
       cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/DE/MA_Plot.png"), "' has been created. \n\n"))
 
-      # PCA plot
-      DEPCAPlot("DESeq2_analysis", "MRN", path.prefix, independent.variable, case.group, control.group)
+      # Check DESeq2.result.DE before visulization!!
+      if (nrow(DESeq2.result.DE) > 0) {
+        # PCA plot
+        DEPCAPlot("DESeq2_analysis", "MRN", path.prefix, independent.variable, case.group, control.group)
 
-      # Heatmap
-      DEHeatmap("DESeq2_analysis", "MRN", path.prefix, independent.variable, case.group, control.group)
+        # Heatmap
+        DEHeatmap("DESeq2_analysis", "MRN", path.prefix, independent.variable, case.group, control.group)
 
+      } else {
+        cat ("(\u26A0) No differential expressed gene term found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
+      }
     } else {
-      stop("(\u2718) file missing ERROR.\n\n")
+      cat ("(\u26A0) No gene terms found !!! Skip visualization step !!! \n\n")
     }
-
-
-    # # result function
-    # #Set to Inf or FALSE to disable the resetting of p-values to NA.
-    # # cooksCutoff : this test excludes the Cook's distance of samples belonging to experimental groups with only 2 samples.
-    # # independentFiltering : whether independent filtering should be applied automatically
-    # res <- DESeq2::results(dds, cooksCutoff=FALSE, independentFiltering=FALSE, contrast = c("independent.variable", case.group, control.group))
-    # cat(paste0("\n\u25CF Writing '", path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2_", case.group, "_vs_", control.group, "'\n"))
-    # write.csv(res, file = paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2/DESeq2_", case.group, "_vs_", control.group, ".csv"), row.names=FALSE)
-    # cat(paste0("\u25CF Plotting DESeq2 MA plot\n"))
-    # png(paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2/images/DESeq2_MA_plot.png"))
-    # DESeq2::plotMA(dds,main="MAplot")
-    # dev.off()
-    #
-    # resOrdered <- res[order(res$pvalue),]
-    # summary(res)
-    #
-    # # reorder the result by padj !!
-    # res.sort.padj <- res[order(res$padj),]
-    #
-    # DESeq2::plotcount(dds, gene=which.min(res$padj), intgroup="independent.variable")
-    #
-    #
-    # # filter out res.sort.padj (padj not null, padj < value, log2FoldChange >= 1)
-    # sig <-res.sort.padj[(!is.na(res.sort.padj$padj)) && (res.sort.padj$padj < DESeq2.pval) && (abs(res.sort.padj$log2FoldChange) >= DESeq2.log2FC)]
-    #
-    # # plot plotDispEsts
-    # # plotDispEsts
-    # cat(paste0("\u25CF Plotting DESeq2 Dispersion plot\n"))
-    # png(paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2/images/DESeq2_Dispersion_plot.png"))
-    # DESeq2::plotDispEsts(dds, main="Dispersion plot")
-    # dev.off()
   } else {
-    cat ("(\u26A0) No differential expressed gene term found !!! Skip visualization !!! \n\n")
+    cat("(\u2718) necessary file is missing!! Something ERROR happend during DESeq2 analysis!! Skip visualization!!\n\n")
   }
+  # # result function
+  # #Set to Inf or FALSE to disable the resetting of p-values to NA.
+  # # cooksCutoff : this test excludes the Cook's distance of samples belonging to experimental groups with only 2 samples.
+  # # independentFiltering : whether independent filtering should be applied automatically
+  # res <- DESeq2::results(dds, cooksCutoff=FALSE, independentFiltering=FALSE, contrast = c("independent.variable", case.group, control.group))
+  # cat(paste0("\n\u25CF Writing '", path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2_", case.group, "_vs_", control.group, "'\n"))
+  # write.csv(res, file = paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2/DESeq2_", case.group, "_vs_", control.group, ".csv"), row.names=FALSE)
+  # cat(paste0("\u25CF Plotting DESeq2 MA plot\n"))
+  # png(paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2/images/DESeq2_MA_plot.png"))
+  # DESeq2::plotMA(dds,main="MAplot")
+  # dev.off()
+  #
+  # resOrdered <- res[order(res$pvalue),]
+  # summary(res)
+  #
+  # # reorder the result by padj !!
+  # res.sort.padj <- res[order(res$padj),]
+  #
+  # DESeq2::plotcount(dds, gene=which.min(res$padj), intgroup="independent.variable")
+  #
+  #
+  # # filter out res.sort.padj (padj not null, padj < value, log2FoldChange >= 1)
+  # sig <-res.sort.padj[(!is.na(res.sort.padj$padj)) && (res.sort.padj$padj < DESeq2.pval) && (abs(res.sort.padj$log2FoldChange) >= DESeq2.log2FC)]
+  #
+  # # plot plotDispEsts
+  # # plotDispEsts
+  # cat(paste0("\u25CF Plotting DESeq2 Dispersion plot\n"))
+  # png(paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2/images/DESeq2_Dispersion_plot.png"))
+  # DESeq2::plotDispEsts(dds, main="Dispersion plot")
+  # dev.off()
 }

@@ -43,8 +43,8 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   ballgown.result <- cbind("gene.name" = gene_names_for_result, ballgown.result)
   # Store with seperation fo noval gene and gene with name
   ballgown.result <- rbind(ballgown.result[ballgown.result$gene.name != ".",], ballgown.result[ballgown.result$gene.name == ".",])
-  # Filter out gene (p-value = Na) and (q-value = Na) and (FC = Inf or FC = -Inf or FC = 0)
-  ballgown.result <- ballgown.result[!is.na(ballgown.result$pval) & !is.na(ballgown.result$qval) & (ballgown.result$fc != Inf) & (ballgown.result$fc != -Inf) & (ballgown.result$fc != 0), ]
+  # Filter out gene (p-value = Na) and (log2FC = Inf or log2FC = Na or log2FC = -Inf)
+  ballgown.result <- ballgown.result[!is.na(ballgown.result$pval) & (ballgown.result$log2FC != Inf) & !is.na(ballgown.result$log2FC) & (ballgown.result$log2FC != -Inf), ]
   # For case group
   case.ballgown.result <- data.frame(ballgown.result[,colnames(ballgown.result) %in% as.character(pre.de.pheno.data$case.group.data.frame$ids)])
   colnames(case.ballgown.result) <- paste0(as.character(pre.de.pheno.data$case.group.data.frame$ids), ".", case.group)
@@ -56,17 +56,18 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   total.data.frame[paste0(case.group, ".average")] = rowMeans(case.ballgown.result)
   total.data.frame[paste0(control.group, ".average")] = rowMeans(control.ballgown.result)
   total.data.frame[paste0(case.group, ".", control.group, ".average")] = rowMeans(cbind(case.ballgown.result, control.ballgown.result))
-  total.data.frame <- cbind(total.data.frame, "fc" = ballgown.result$fc, "log2FC" = ballgown.result$log2FC, "pval" = ballgown.result$pval, "qval" = ballgown.result$qval)
-  write.csv(data.frame("gene.name" = total.data.frame[,1]), file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv"), row.names=FALSE)
-  write.csv(total.data.frame[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_case.csv"), row.names=FALSE)
-  write.csv(total.data.frame[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_control.csv"), row.names=FALSE)
-  write.csv(total.data.frame[,c((2+3+case.group.size+control.group.size):(length(total.data.frame)))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
-  write.csv(total.data.frame, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv"), row.names=FALSE)
+  ballgown.result <- cbind(total.data.frame, "fc" = ballgown.result$fc, "log2FC" = ballgown.result$log2FC, "pval" = ballgown.result$pval, "qval" = ballgown.result$qval)
+  ballgown.result <- rbind(ballgown.result[ballgown.result$gene.name != ".", ], ballgown.result[ballgown.result$gene.name == ".", ])
+  write.csv(data.frame("gene.name" = ballgown.result[,1]), file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv"), row.names=FALSE)
+  write.csv(ballgown.result[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_case.csv"), row.names=FALSE)
+  write.csv(ballgown.result[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_control.csv"), row.names=FALSE)
+  write.csv(ballgown.result[,c((2+3+case.group.size+control.group.size):(length(total.data.frame)))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
+  write.csv(ballgown.result, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv"), row.names=FALSE)
 
   cat(paste0("     \u25CF Selecting differential expressed genes(ballgown) ==> p-value : ", ballgown.pval, "  log2(Fold Change) : ", ballgown.log2FC, " ...\n"))
-  total.data.frame.DE <- total.data.frame[((total.data.frame$log2FC>ballgown.log2FC) | (total.data.frame$log2FC<(-ballgown.log2FC))) & (total.data.frame$pval<ballgown.pval), ]
-  cat(paste0("          \u25CF Total '", nrow(total.data.frame.DE), "' DEG have been found !!!\n"))
-  write.csv(total.data.frame.DE, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_DE_result.csv"), row.names=FALSE)
+  ballgown.result.DE <- ballgown.result[((ballgown.result$log2FC>ballgown.log2FC) | (ballgown.result$log2FC<(-ballgown.log2FC))) & (ballgown.result$pval<ballgown.pval), ]
+  cat(paste0("          \u25CF Total '", nrow(ballgown.result.DE), "' DEG have been found !!!\n"))
+  write.csv(ballgown.result.DE, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_DE_result.csv"), row.names=FALSE)
 
   # Check ballgown.result.DE before visulization!!
   ###########################
@@ -83,40 +84,44 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
     if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/transcript_related/"))){
       dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/transcript_related/"))
     }
+    BallgownTranscriptRelatedPlot(path.prefix)
     ###############
     #### PreDE ####
     ###############
-    BallgownTranscriptRelatedPlot(path.prefix)
-    if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/preDE/"))){
-      dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/preDE/"))
-    }
-    # Frequency
-    FrequencyPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
-    # Bax and Violin
-    BoxViolinPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
-    # PCA
-    PCAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
-    #Correlation
-    CorrelationPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
+    if (nrow(ballgown.result) > 0) {
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/preDE/"))){
+        dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/preDE/"))
+      }
+      # Frequency
+      FrequencyPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
+      # Bax and Violin
+      BoxViolinPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
+      # PCA
+      PCAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
+      #Correlation
+      CorrelationPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
 
-    ############
-    #### DE ####
-    ############
-    if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/DE/"))){
-      dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/DE/"))
-    }
-    # Volcano
-    VolcanoPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group, ballgown.pval, ballgown.log2FC)
-    # MA
-    MAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group, ballgown.pval)
+      ############
+      #### DE ####
+      ############
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/DE/"))){
+        dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/DE/"))
+      }
+      # Volcano
+      VolcanoPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group, ballgown.pval, ballgown.log2FC)
+      # MA
+      MAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group, ballgown.pval)
 
-    if (nrow(total.data.frame.DE) > 0) {
-      # DE PCA plot
-      DEPCAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
-      # Heatmap
-      DEHeatmap("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
+      if (nrow(ballgown.result.DE) > 0) {
+        # DE PCA plot
+        DEPCAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
+        # Heatmap
+        DEHeatmap("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
+      } else {
+        cat ("(\u26A0) No differential expressed gene terms found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
+      }
     } else {
-      cat ("(\u26A0) No differential expressed gene term found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
+      cat ("(\u26A0) No gene terms found !!! Skip visualization step !!! \n\n")
     }
   } else {
     cat("(\u2718) necessary file is missing!! Something ERROR happend during ballgown analysis!! Skip visualization!!\n\n")

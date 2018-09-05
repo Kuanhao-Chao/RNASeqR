@@ -14,10 +14,11 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
   control.FPKM <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/FPKM_control.csv"))
   statistic.FPKM <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/statistic.csv"))
   gene.name <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv"))
-  case.TPM <- exp(log(case.FPKM) - log(colSums(case.FPKM)) + log(1e6))
-  control.TPM <- exp(log(control.FPKM) - log(colSums(control.FPKM)) + log(1e6))
-  gene.id.data.frame <- data.frame(read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv")))
 
+
+  case.TPM <- t(t(case.FPKM) / colSums(case.FPKM))
+  control.TPM <- t(t(control.FPKM) / colSums(control.FPKM))
+  gene.id.data.frame <- data.frame(read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/gene_name.csv")))
   p.value <- unlist(lapply(seq_len(nrow(case.TPM)), function(x) { stats::t.test(case.TPM[x,], control.TPM[x,])$p.value }))
   ## Fold change -> mean(control + 1 ) / mean(case + 1)
   fold.change <- unlist(lapply(seq_len(nrow(case.TPM)), function(x) { mean(unlist(control.TPM[x,]) + 1) / mean(unlist(case.TPM[x,]) + 1) }))
@@ -26,18 +27,17 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
   total.data.frame <- cbind(gene.id.data.frame, case.TPM, control.TPM)
   total.data.frame[paste0(case.group, ".average")] <- rowMeans(case.TPM)
   total.data.frame[paste0(control.group, ".average")] <- rowMeans(control.TPM)
-  total.data.frame[paste0(case.group, ".", control.group, ".average")]<- rowMeans(total.data.frame[-1])
+  total.data.frame[paste0(case.group, ".", control.group, ".average")]<- rowMeans(cbind(case.TPM, control.TPM))
   TPM_Ttest.result <- cbind(total.data.frame, statistic.T.test)
   TPM_Ttest.result <- rbind(TPM_Ttest.result[TPM_Ttest.result$gene.name != ".",], TPM_Ttest.result[TPM_Ttest.result$gene.name == ".",])
-  # Filter out pval is NaN and qval is NaN
-  # Filter out p-value with na
-  TPM_Ttest.result <- TPM_Ttest.result[(!is.na(TPM_Ttest.result$pval)), ]
+  # Filter out gene (p-value = Na) and (log2FC = Inf or log2FC = Na or log2FC = -Inf)
+  TPM_Ttest.result <- TPM_Ttest.result[!is.na(TPM_Ttest.result$pval) & (TPM_Ttest.result$log2FC != Inf) & !is.na(TPM_Ttest.result$log2FC) & (TPM_Ttest.result$log2FC != -Inf), ]
   case.group.size <- length(case.FPKM)
   control.group.size <- length(control.FPKM)
   # write out csv files
   write.csv(TPM_Ttest.result[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_case.csv"), row.names=FALSE)
   write.csv(TPM_Ttest.result[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_control.csv"), row.names=FALSE)
-  write.csv(TPM_Ttest.result[,c((2+case.group.size+control.group.size):(length(TPM_Ttest.result)))], file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
+  write.csv(TPM_Ttest.result[,c((2+3+case.group.size+control.group.size):(length(TPM_Ttest.result)))], file = paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   write.csv(TPM_Ttest.result, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/TPM_normalized_result.csv"), row.names=FALSE)
 
   cat(paste0("     \u25CF Selecting differential expressed genes() ==> p-value : ", TPM.pval, "  log2(Fold Change) : ", TPM.log2FC, " ...\n"))
@@ -46,18 +46,19 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
   write.csv(TPM_Ttest.result.DE, file = paste0(path.prefix, "RNASeq_results/TPM_analysis/TPM_normalized_DE_result.csv"), row.names=FALSE)
 
   # Check TPM_Ttest.result.DE before visulization!!
-  if (nrow(TPM_Ttest.result.DE) > 0) {
-    ###########################
-    ## TPM&Ttest visulization ##
-    ###########################
-    if(file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/TPM_normalized_result.csv")) &&
-       file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_case.csv")) &&
-       file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_control.csv")) &&
-       file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/statistic.csv"))){
-      # Transcript Related
-      if(!dir.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/"))){
-        dir.create(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/"))
-      }
+
+  ###########################
+  ## TPM&Ttest visulization ##
+  ###########################
+  if(file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/TPM_normalized_result.csv")) &&
+     file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_case.csv")) &&
+     file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/TPM_control.csv")) &&
+     file.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/normalized_&_statistic/statistic.csv"))){
+    # Transcript Related
+    if(!dir.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/"))){
+      dir.create(paste0(path.prefix, "RNASeq_results/TPM_analysis/images/"))
+    }
+    if (nrow(TPM_Ttest.result) > 0) {
       ###############
       #### PreDE ####
       ###############
@@ -83,14 +84,18 @@ TPMNormalizationAnalysis <- function(path.prefix, genome.name, sample.pattern, i
       VolcanoPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group, TPM.pval, TPM.log2FC)
       # MA
       MAPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group, TPM.pval)
-      # DE PCA plot
-      DEPCAPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
-      # Heatmap
-      DEHeatmap("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
+      if (nrow(TPM_Ttest.result.DE) > 0) {
+        # DE PCA plot
+        DEPCAPlot("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
+        # Heatmap
+        DEHeatmap("TPM_analysis", "TPM", path.prefix, independent.variable, case.group, control.group)
+      } else {
+        cat ("(\u26A0) No differential expressed gene term found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
+      }
     } else {
-      stop("(\u2718) file missing ERROR.\n\n")
+      cat ("(\u26A0) No gene terms found !!! Skip visualization step !!! \n\n")
     }
   } else {
-    cat ("(\u26A0) No differential expressed gene term found !!! Skip visualization !!! \n\n")
+    cat("(\u2718) necessary file is missing!! Something ERROR happend during edgeR analysis!! Skip visualization!!\n\n")
   }
 }

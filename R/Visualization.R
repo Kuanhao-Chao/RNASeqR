@@ -20,7 +20,7 @@ FrequencyPlot <- function(which.analysis, which.count.normalization, path.prefix
   independent.variable.data.frame <- independent.variable.data.frame[,order(mns, decreasing = TRUE)]
 
   melted.data.normal <- reshape2::melt(independent.variable.data.frame)
-  x.range.normal <- quantile(melted.data.normal$value,probs=c(0,0.8))
+  x.range.normal <- quantile(melted.data.normal$value,probs=c(0,0.9))
   ggplot(aes(x=value, colour=variable), data = melted.data.normal) +
     xlim(x.range.normal[1]-20, x.range.normal[2]+20) + geom_density() + theme_bw() + xlab("FPKM") + ylab("Frequency") +
     ggtitle("Frequency Plot (ggplot2)") +
@@ -202,18 +202,21 @@ VolcanoPlot <- function(which.analysis, which.count.normalization, path.prefix, 
   normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv"))
   ## Volcano plot
   # Make a basic volcano plot
-  png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot_graphics.png"), width=5, height=5, units="in", res=300)
-  par(mar=c(4,4,4,4), cex.main=0.8, cex.lab=0.7,cex.axis=0.7)
-  topT <- as.data.frame(normalized_dataset)
-  with(topT, plot(topT$log2FC, -log10(topT$pval), pch=20, cex=0.6, main="Volcano Plot (graphics)", xlab=bquote(~Log[2](fold~change)), ylab=bquote(~-log[10](p-value)), xlim=c(-15,15), ylim = c(0,12)))
-  subset.result.red <- subset(topT, topT$pval<condition.pval & topT$log2FC>=condition.log2FC)
-  with(subset.result.red, points(subset.result.red$log2FC, -log10(subset.result.red$pval), pch=20, cex=0.6, col="red"))
-  subset.result.green <- subset(topT, topT$pval<condition.pval & topT$log2FC<=-1*condition.log2FC)
-  with(subset.result.green, points(subset.result.green$log2FC, -log10(subset.result.green$pval), pch=20, cex=0.6, col="green"))
-  # hight = -log10(pavl) = height
-  abline(v=c(-1*condition.log2FC,condition.log2FC), h=-1*log10(condition.pval), col="black", lty='dashed')
-  dev.off()
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot_graphics.png"), "' has been created. \n\n"))
+  log2FC.pval <- data.frame("log2FC" = normalized_dataset$log2FC, "pval" = normalized_dataset$pval)
+  down.regulated.gene <- log2FC.pval[((log2FC.pval$log2FC < -condition.log2FC) & (log2FC.pval$pval < condition.pval)),]
+  up.regulated.gene <- log2FC.pval[((log2FC.pval$log2FC > condition.log2FC) & (log2FC.pval$pval < condition.pval)),]
+  ggplot(log2FC.pval, aes(x = log2FC.pval$log2FC, y=-log10(log2FC.pval$pval))) + geom_point() +
+    theme_bw() + xlab(bquote(~Log[2](fold~change))) + ylab(bquote(~-Log[10](p-value))) + ggtitle("Volcano (ggplot2)") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
+    theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
+    theme(legend.position="top") +
+    geom_point(data = down.regulated.gene,  aes(x = down.regulated.gene$log2FC, y=-log10(down.regulated.gene$pval)), colour = "green") +
+    geom_point(data = up.regulated.gene,  aes(x = up.regulated.gene$log2FC, y=-log10(up.regulated.gene$pval)), colour = "red") +
+    geom_hline(yintercept=-log10(condition.pval), linetype="dashed", color = "black") +
+    geom_vline(xintercept=1, linetype="dashed", color = "black") +
+    geom_vline(xintercept=-1, linetype="dashed", color = "black")
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot_graphics.png"), dpi = 300)
+  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
 # MA plot
@@ -310,20 +313,21 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
 
   ## Maybe change !!!! temp !!
   DE.csv.results <- DE.csv.results[DE.csv.results$gene.name != ".",]
-  DE.csv.results <- DE.csv.results[order(abs(DE.csv.results$log2FC), decreasing = TRUE),]
-  DE.csv.results <- DE.csv.results[!duplicated(DE.csv.results$gene.name),]
-
-  DE.csv.normalized.count.only <- DE.csv.results[,2:(pre.pheno_data$case.group.size + pre.pheno_data$case.group.size + 1)]
-  row.names(DE.csv.normalized.count.only) <- DE.csv.results$gene.name
   cat(paste0("     \u25CF Checking found differential express transcript term.\n"))
-  if (nrow(DE.csv.normalized.count.only) == 0) {
+  if (nrow(DE.csv.results) == 0) {
     cat(paste0("          \u25CF (\u26A0) No term were found.\n\n"))
   } else {
-    if (length(row.names(DE.csv.normalized.count.only)) > 50) {
-      cat(paste0("          \u25CF Found ", length(row.names(DE.csv.normalized.count.only)), " terms. More than 50 terms (Only plot top 50 smallest p value).\n"))
+    DE.csv.results <- DE.csv.results[!is.na(DE.csv.results$log2FC), ]
+    DE.csv.results <- DE.csv.results[order(abs(DE.csv.results$log2FC), decreasing = TRUE),]
+    DE.csv.results <- DE.csv.results[!duplicated(DE.csv.results$gene.name),]
+
+    DE.csv.normalized.count.only <- DE.csv.results[,2:(pre.pheno_data$case.group.size + pre.pheno_data$case.group.size + 1)]
+    row.names(DE.csv.normalized.count.only) <- DE.csv.results$gene.name
+    if (nrow(DE.csv.normalized.count.only) > 50) {
+      cat(paste0("          \u25CF Found ", nrow(DE.csv.normalized.count.only), " terms. More than 50 terms (Only plot top 50 smallest p value).\n"))
       DE.csv.normalized.count.only <- DE.csv.normalized.count.only[seq_len(50),]
     } else {
-      cat(paste0("          \u25CF Found ", length(row.names(DE.csv.normalized.count.only)), " terms.\n"))
+      cat(paste0("          \u25CF Found ", nrow(DE.csv.normalized.count.only), " terms.\n"))
     }
     cat(paste0("     \u25CF Calculating log2(", which.count.normalization, "+1).\n"))
     log.data.frame <- log2(DE.csv.normalized.count.only+1)
@@ -346,13 +350,15 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
     if (any(is.na((df.new)) | is.infinite((df.new)))) {
       cat(paste0("(\u26A0) : There are invalid value after scaling DEG dataframe. Heatmap can't be drawn !\n\n"))
     } else {
-      png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), width=5, height=5, units="in", res=300)
+      # png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), width=5, height=5, units="in", res=300)
       redgreen <- c("blue", "white", "red")
       pal <- colorRampPalette(redgreen)(100)
       ## Not change distance , highlight case and control
+      png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), width=5, height=5, units="in", res=300)
       pheatmap::pheatmap(df.new, scale = "row", xlab = "samples", ylab = "transcript names",cexRow=1, cexCol = 1, margins = c(10,8), col = pal, main = "Heatmap Plot (pheatmap)", cluster_rows = TRUE, cluster_cols = FALSE, annotation_col = annotation, annotation_colors = anno_colors)
       # grid::grid.abline(intercept = 300, slope = 0)
       # theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
+      # ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), dpi = 300)
       dev.off()
       cat(paste0("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), "' has been created. \n\n")
     }
