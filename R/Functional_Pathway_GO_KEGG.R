@@ -65,7 +65,7 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species, go.level) {
         }
         for(GO.ID in iterate.term) {
           cat(paste0("                    \u25CF GO ID : ", GO.ID, "\n"))
-          png(filename = paste0(path.prefix, "RNASeq_results/",which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/", GO.ID, "_gseGO_Plot_clusterProfiler.png"))
+          png(filename = paste0(path.prefix, "RNASeq_results/",which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/", GO.ID, "_gseGO_Plot_clusterProfiler.png"), res = 300)
           cat(paste0("                         \u25CF Plotting '", GO.ID, "_gseGO_Plot_clusterProfiler.png'\n"))
           p <- clusterProfiler::gseaplot(gse, geneSetID = GO.ID)
           print(p)
@@ -115,7 +115,7 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species, go.level) {
           cat(paste0("               \u25CF Writing 'GO_", i, "_Classification.csv' \n"))
           write.csv(ggo.data.frame, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i , "/GO_", i, "_Classification.csv"))
           cat(paste0("               \u25CF Plotting 'GO_", i, "_Classification_Bar_Plot_clusterProfiler.png' \n"))
-          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Classification_Bar_Plot_clusterProfiler.png"), width = 1000, height = 1000)
+          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Classification_Bar_Plot_clusterProfiler.png"), width=5, height=5, units="in", res=300)
           p1 <- barplot(ggo, drop=TRUE, showCategory=12)
           print(p1)
           dev.off()
@@ -142,14 +142,14 @@ GOAnalysis <- function(which.analysis, path.prefix, OrgDb.species, go.level) {
           write.csv(ego.data.frame, file = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/GO_", i, "_Overrepresentation.csv"))
           # visualization
           # bar plot
-          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Overrepresentation_Bar_Plot_clusterProfiler.png"), width = 1000, height = 1000)
+          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Overrepresentation_Bar_Plot_clusterProfiler.png"), width=5, height=5, units="in", res=300)
           cat(paste0("               \u25CF Plotting 'GO_", i, "_Overrepresentation_Bar_Plot_clusterProfiler.png' \n"))
           p2 <- barplot(ego, showCategory=12)
           print(p2)
           dev.off()
 
           # dot plot
-          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Overrepresentation_Dot_Plot_clusterProfiler.png"), width = 1000, height = 1000)
+          png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/GO_analysis/", dir_name, "/", i, "/images/GO_", i, "_Overrepresentation_Dot_Plot_clusterProfiler.png"), width=5, height=5, units="in", res=300)
           cat(paste0("               \u25CF Plotting 'GO_", i, "_Overrepresentation_Dot_Plot_clusterProfiler.png' \n"))
           p3 <- clusterProfiler::dotplot(ego)
           print(p3)
@@ -241,7 +241,7 @@ KEGGAnalysis <- function(which.analysis, path.prefix, OrgDb.species, KEGG.organi
       }
       for(KEGG.ID in iterate.terms) {
         cat(paste0("               \u25CF KEGG ID : ", KEGG.ID, "\n"))
-        png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/images/", KEGG.ID, "_gseKEGG_Plot_clusterProfiler.png"))
+        png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/KEGG_analysis/", dir_name, "/images/", KEGG.ID, "_gseKEGG_Plot_clusterProfiler.png"), res = 300)
         cat(paste0("                    \u25CF Plotting '", KEGG.ID, "_gseKEGG_Plot_clusterProfiler.png'\n"))
         p <- clusterProfiler::gseaplot(kk.gse, geneSetID = KEGG.ID)
         print(p)
@@ -319,12 +319,28 @@ DEUnivGeneList <- function(which.analysis, path.prefix, OrgDb.species) {
   Univ.csv <- read.csv(Univ.path.csv)
 
   # DE gene
-  gene_list_SYMBOL <- DE.csv[DE.csv$gene.name != ".",]$log2FC
-  gene_list_ENTREZID <- DE.csv[DE.csv$gene.name != ".",]$log2FC
-  gene_name <- as.character(DE.csv[DE.csv$gene.name != ".",]$gene.name)
-  gene_list_SYMBOL_univ <- Univ.csv[Univ.csv$gene.name != ".",]$log2FC
-  gene_list_ENTREZID_univ <- Univ.csv[Univ.csv$gene.name != ".",]$log2FC
-  gene_name_univ <- as.character(Univ.csv[Univ.csv$gene.name != ".",]$gene.name)
+  # First filter out "." gene name
+  DE.csv <- DE.csv[DE.csv$gene.name != ".",]
+  # Second sort row by the values of log2FC (from big to small)
+  DE.csv <- DE.csv[order(abs(DE.csv$log2FC), decreasing = TRUE),]
+  # If gene name is repeat, choose the first one!!
+  DE.csv <- DE.csv[!duplicated(DE.csv$gene.name),]
+  ## ==> So every gene in DE would be distinct (with the larget log2FC)
+  gene_name <- as.character(DE.csv$gene.name)
+  gene_list_SYMBOL <- DE.csv$log2FC
+  gene_list_ENTREZID <- DE.csv$log2FC
+
+  # Univ gene
+  # First filter out "." gene name
+  Univ.csv <- Univ.csv[Univ.csv$gene.name != ".",]
+  # Second sort row by the values of log2FC (from big to small)
+  Univ.csv <- Univ.csv[order(abs(Univ.csv$log2FC), decreasing = TRUE),]
+  # If gene name is repeat, choose the first one!!
+  Univ.csv <- Univ.csv[!duplicated(Univ.csv$gene.name),]
+  ## ==> So every gene in Univ would be distinct (with the larget log2FC)
+  gene_name_univ <- as.character(Univ.csv$gene.name)
+  gene_list_SYMBOL_univ <- Univ.csv$log2FC
+  gene_list_ENTREZID_univ <- Univ.csv$log2FC
 
   # Check the size of "DE.csv" and "Univ.csv"
   # If no terms are found in Univ ==> return NA
@@ -351,10 +367,8 @@ DEUnivGeneList <- function(which.analysis, path.prefix, OrgDb.species) {
   ENTREZID_IDs_Univ <- unlist(ENTREZID_IDs_Univ)
   names(gene_list_ENTREZID_univ) <- ENTREZID_IDs_Univ
   gene_list_ENTREZID_univ = sort(gene_list_ENTREZID_univ, decreasing = TRUE)
-  ## ! Filter out gene id that converted ENTREZID is NA !
+  ## ! Filter out gene id that converted to ENTREZID is NA !
   gene_list_ENTREZID_univ <- gene_list_ENTREZID_univ[!is.na(names(gene_list_ENTREZID_univ))]
-  # ! Filter out value that is Inf or -Inf
-  # gene_list_ENTREZID_univ <- gene_list_ENTREZID_univ[(gene_list_ENTREZID_univ != "Inf") & (gene_list_ENTREZID_univ != "-Inf")]
 
   ############
   #### DE ####
@@ -377,6 +391,7 @@ DEUnivGeneList <- function(which.analysis, path.prefix, OrgDb.species) {
     # Get ENTREZID for DE and Univ
     ENTREZID_IDs.DE <- c()
     ENTREZID_IDs.DE <- lapply(gene_name, find_ENTREZID_ID_DE, gene.df.DE = gene.df.DE, ENTREZID_IDs.DE = ENTREZID_IDs.DE)
+    ENTREZID_IDs.DE <- unlist(ENTREZID_IDs.DE)
     names(gene_list_ENTREZID) <- ENTREZID_IDs.DE
     gene_list_ENTREZID = sort(gene_list_ENTREZID, decreasing = TRUE)
     ## ! Filter out that gene id that converted ENTREZID is NA !

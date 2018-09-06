@@ -33,7 +33,7 @@ FrequencyPlot <- function(which.analysis, which.count.normalization, path.prefix
   melted.data <- reshape2::melt(log2(independent.variable.data.frame+1))
   x.range <- quantile(melted.data$value,probs=c(0,.99))
   ggplot(aes(x=value, colour=variable), data = melted.data) +
-    xlim(x.range[1]-5, x.range[2]+5) + geom_density() + theme_bw() + xlab(bquote(~Log[2](FPKM))) + ylab("Frequency") + ggtitle("Frequency Plot (ggplot2)") +
+    xlim(x.range[1]-5, x.range[2]+5) + geom_density() + theme_bw() + xlab(bquote(~Log[2](FPKM+1))) + ylab("Frequency") + ggtitle("Frequency Plot (ggplot2)") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
     theme(legend.position = "none")
@@ -328,7 +328,6 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
   if (nrow(DE.csv.results) == 0) {
     cat(paste0("          \u25CF (\u26A0) No term were found.\n\n"))
   } else {
-    DE.csv.results <- DE.csv.results[!is.na(DE.csv.results$log2FC), ]
     DE.csv.results <- DE.csv.results[order(abs(DE.csv.results$log2FC), decreasing = TRUE),]
     DE.csv.results <- DE.csv.results[!duplicated(DE.csv.results$gene.name),]
 

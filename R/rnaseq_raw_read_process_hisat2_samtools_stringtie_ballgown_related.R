@@ -155,7 +155,7 @@ Hisat2ReportAssemble <- function(path.prefix, genome.name, sample.pattern){
   check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=FALSE)
   cat(paste0("\n************** Reporting Hisat2 Alignment **************\n"))
   if (isTRUE(check.results$phenodata.file.df) && check.results$bam.files.number.df != 0){
-    file.read <- paste0(path.prefix, "Rscript_out/Raw_Read_Process.Rout")
+    file.read <- paste0(path.prefix, "Rscript_out/Read_Process.Rout")
     sample.name <- sort(gsub(paste0(".bam$"), replacement = "", check.results$bam.files.df))
     iteration.num <- length(sample.name)
     load.data <- readChar(file.read, file.info(file.read)$size)
@@ -186,7 +186,7 @@ Hisat2ReportAssemble <- function(path.prefix, genome.name, sample.pattern){
       dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
     }
     write.csv(report.data.frame, file = paste0(path.prefix, "RNASeq_results/Alignment_Report/Alignment_report.csv"))
-    png(paste0(path.prefix, "RNASeq_results/Alignment_Report/Alignment_report.png"), width = iteration.num*100 + 200, height = 40*4)
+    png(paste0(path.prefix, "RNASeq_results/Alignment_Report/Alignment_report.png"), width = iteration.num*25 + 50, height = 4*4, res = 288)
     p <- gridExtra::grid.table(report.data.frame)
     print(p)
     dev.off()

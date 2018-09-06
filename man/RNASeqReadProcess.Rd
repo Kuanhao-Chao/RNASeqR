@@ -6,7 +6,11 @@
 \usage{
 RNASeqReadProcess(path.prefix, input.path.prefix, genome.name,
   sample.pattern, python.variable.answer, python.variable.version,
-  python.2to3, num.parallel.threads = 1, indices.optional)
+  python.2to3, num.parallel.threads = 1, indices.optional,
+  Hisat2.Index.run = TRUE, Hisat2.Alignment.run = TRUE,
+  Samtools.Bam.run = TRUE, StringTie.Assemble.run = TRUE,
+  StringTie.Merge.Trans.run = TRUE, Gffcompare.Ref.Sample.run = TRUE,
+  StringTie.Ballgown.run = TRUE, PreDECountTable.run = TRUE)
 }
 \arguments{
 \item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
@@ -31,7 +35,7 @@ None
 \description{
 Process raw reads for RNA-Seq workflow in R shell.
 It is strongly advised to run \code{RNASeqReadProcess_CMD()} directly. Running this function directly is not recommended because the processes of alignment, assembly and quantification take a longer time than other functions.
-Running \code{RNASeqReadProcess_CMD()} will create 'Raw_Read_Process.Rout' file in 'Rscript_out/' directory.
+Running \code{RNASeqReadProcess_CMD()} will create 'Read_Process.Rout' file in 'Rscript_out/' directory.
 This function do following things :
 This function do 5 things :
 1. 'Hisat2' : aligns raw reads to reference genome. If \code{indices.optional} in \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indices will be created.

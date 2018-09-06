@@ -14,16 +14,16 @@
 #' @slot control.group group name of the control group
 #' @slot indices.optional logical value whether 'indices/' is exit in 'input_files/'
 #'
-#' @name RNASeqWorkFlowParam-class
+#' @name RNASeqWorkflowParam-class
 #'
-#' @rdname RNASeqWorkFlowParam-class
+#' @rdname RNASeqWorkflowParam-class
 #'
-#' @exportClass RNASeqWorkFlowParam
+#' @exportClass RNASeqWorkflowParam
 #' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
 #' data(workflowParam)
-#' class(workflowParam) #"RNASeqWorkFlowParam"
+#' class(workflowParam) #"RNASeqWorkflowParam"
 #' workflowParam@@path.prefix
 #' workflowParam@@input.path.prefix
 #' workflowParam@@genome.name
@@ -31,7 +31,7 @@
 #' workflowParam@@independent.variable
 #' workflowParam@@case.group
 #' workflowParam@@control.group}
-setClass("RNASeqWorkFlowParam",
+setClass("RNASeqWorkflowParam",
          representation(
            os.type = "character",
            python.variable = "list",
@@ -48,9 +48,9 @@ setClass("RNASeqWorkFlowParam",
 )
 
 
-#' Constructor function for RNASeqWorkFlowParam objects
+#' Constructor function for RNASeqWorkflowParam objects
 #'
-#' @name RNASeqWorkFlowParam-constructor
+#' @name RNASeqWorkflowParam-constructor
 #'
 #' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @param input.path.prefix path prefix of 'input_files/' directory
@@ -60,20 +60,20 @@ setClass("RNASeqWorkFlowParam",
 #' @param case.group group name of the case group
 #' @param control.group group name of the control group
 #'
-#' @return an object of class \code{RNASeqWorkFlowParam}
+#' @return an object of class \code{RNASeqWorkflowParam}
 #'
 #' @author kuan-hao Chao
 #'
-#' @rdname RNASeqWorkFlowParam-constructor
+#' @rdname RNASeqWorkflowParam-constructor
 #'
 #' @export
 #' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
+#' exp <- RNASeqWorkflowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            independent.variable = "two.group", case.group = "treatment", control.group = "cell")
 #' }
-RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome.name = NA, sample.pattern = NA,
+RNASeqWorkflowParam <- function(path.prefix = NA, input.path.prefix = NA, genome.name = NA, sample.pattern = NA,
                                 independent.variable = NA, case.group = NA, control.group = NA) {
   # check input parameters
   CheckInputParamNa(path.prefix, input.path.prefix, genome.name, sample.pattern,
@@ -124,7 +124,7 @@ RNASeqWorkFlowParam <- function(path.prefix = NA, input.path.prefix = NA, genome
     cat(paste0("\n**************************************\n"))
     cat(paste0("************** Success! **************\n"))
     cat(paste0("**************************************\n"))
-    new("RNASeqWorkFlowParam",os.type = characters.os.type, python.variable = python.version.list, python.2to3 = two.to.three.result,
+    new("RNASeqWorkflowParam",os.type = characters.os.type, python.variable = python.version.list, python.2to3 = two.to.three.result,
         path.prefix = path.prefix, input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern,
         independent.variable = independent.variable, case.group = case.group, control.group = control.group,
         indices.optional = bool.input.dir.indices)
@@ -449,14 +449,14 @@ CheckCaseControlGroup <- function(input.path.prefix, independent.variable, case.
 }
 
 #
-CheckS4Object <- function(RNASeqWorkFlowParam, print = TRUE) {
-  if (isS4(RNASeqWorkFlowParam) && class(RNASeqWorkFlowParam)[1] == "RNASeqWorkFlowParam") {
+CheckS4Object <- function(RNASeqWorkflowParam, print = TRUE) {
+  if (isS4(RNASeqWorkflowParam) && class(RNASeqWorkflowParam)[1] == "RNASeqWorkflowParam") {
     if (print) {
       cat(c("************** Checking validity of S4 input ************\n"))
-      cat(paste0("     (\u2714) : input is valid 'RNASeqWorkFlowParam' instance! \n\n"))
+      cat(paste0("     (\u2714) : input is valid 'RNASeqWorkflowParam' instance! \n\n"))
     }
   } else {
-    cat(paste0("(\u2718) : input is not a valid 'RNASeqWorkFlowParam' instance!.\n" ))
-    stop("Invalid 'RNASeqWorkFlowParam' input ERROR")
+    cat(paste0("(\u2718) : input is not a valid 'RNASeqWorkflowParam' instance!.\n" ))
+    stop("Invalid 'RNASeqWorkflowParam' input ERROR")
   }
 }

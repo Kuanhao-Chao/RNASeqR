@@ -13,7 +13,7 @@
 #'   first <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Environment_Set.R ", path.prefix, "Rscript_out/Environment_Set.Rout"), "\", stdout = \"\", wait = TRUE )")
 #'   second <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Quality_Trimming.R ", path.prefix, "Rscript_out/Quality_Trimming.Rout"), "\", stdout = \"\", wait = TRUE )")
 #'   third <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Quality_Assessment.R ", path.prefix, "Rscript_out/Quality_Assessment.Rout"), "\", stdout = \"\", wait = TRUE )")
-#'   fourth <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Raw_Read_Process.R ", path.prefix, "Rscript_out/Raw_Read_Process.Rout"), "\", stdout = \"\", wait = TRUE )")
+#'   fourth <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Read_Process.R ", path.prefix, "Rscript_out/Read_Process.Rout"), "\", stdout = \"\", wait = TRUE )")
 #'   fifth <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Ballgown_Process.R ", path.prefix, "Rscript_out/Ballgown_Process.Rout"), "\", stdout = \"\", wait = TRUE )")
 #'   writeLines(c(first, second, third, fourth, fifth), fileConn)
 #'   close(fileConn)

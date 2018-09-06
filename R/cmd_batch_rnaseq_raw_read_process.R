@@ -26,7 +26,15 @@
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' ## Before run this function, make sure \code{RNASeqEnvironmentSet_CMD()} (or\code{RNASeqEnvironmentSet()}) is executed successfully.
 #' RNASeqReadProcess_CMD(RNASeqWorkFlowParam = exp)}
-RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 1, run = TRUE, check.s4.print = TRUE) {
+RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 1, run = TRUE, check.s4.print = TRUE,
+                                  Hisat2.Index.run=TRUE,
+                                  Hisat2.Alignment.run=TRUE,
+                                  Samtools.Bam.run=TRUE,
+                                  StringTie.Assemble.run=TRUE,
+                                  StringTie.Merge.Trans.run=TRUE,
+                                  Gffcompare.Ref.Sample.run=TRUE,
+                                  StringTie.Ballgown.run=TRUE,
+                                  PreDECountTable.run=TRUE) {
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
   path.prefix <- RNASeqWorkFlowParam@path.prefix
@@ -41,15 +49,23 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 1,
   # not print but if the prefix is invalid, then 'Prefix path '", path.prefix, "' is invalid. Please try another one.' will be printed.
   # If precheck doesn't have .ht2 files is fine
   # ExportPath(path.prefix = path.prefix)
-  fileConn<-file(paste0(path.prefix, "Rscript/Raw_Read_Process.R"))
+  fileConn<-file(paste0(path.prefix, "Rscript/Read_Process.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0('RNASeqReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", genome.name = "', genome.name, '", sample.pattern = "', sample.pattern, '", python.variable.answer = ', python.variable.answer, ', python.variable.version = ', python.variable.version, ', python.2to3 = ', python.2to3, ', num.parallel.threads = ', num.parallel.threads, ', indices.optional = ', indices.optional, ')')
+  second <- paste0('RNASeqReadProcess(path.prefix = "', path.prefix, '", input.path.prefix = "', input.path.prefix, '", genome.name = "', genome.name, '", sample.pattern = "', sample.pattern, '", python.variable.answer = ', python.variable.answer, ', python.variable.version = ', python.variable.version, ', python.2to3 = ', python.2to3, ', num.parallel.threads = ', num.parallel.threads, ', indices.optional = ', indices.optional,
+                   ', Hisat2.Index.run = ', Hisat2.Index.run,
+                   ', Hisat2.Alignment.run = ', Hisat2.Alignment.run,
+                   ', Samtools.Bam.run = ', Samtools.Bam.run,
+                   ', StringTie.Assemble.run = ', StringTie.Assemble.run,
+                   ', StringTie.Merge.Trans.run = ', StringTie.Merge.Trans.run,
+                   ', Gffcompare.Ref.Sample.run = ', Gffcompare.Ref.Sample.run,
+                   ', StringTie.Ballgown.run = ', StringTie.Ballgown.run,
+                   ', PreDECountTable.run = ', PreDECountTable.run, ')')
   writeLines(c(first, second), fileConn)
   close(fileConn)
-  cat(paste0("\u2605 '", path.prefix, "Rscript/Raw_Read_Process.R' has been created.\n"))
+  cat(paste0("\u2605 '", path.prefix, "Rscript/Read_Process.R' has been created.\n"))
   if (run) {
-    system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Raw_Read_Process.R ", path.prefix, "Rscript_out/Raw_Read_Process.Rout"), stdout = "", wait = FALSE)
-    cat(paste0("\u2605 RNASeq alignment, assembly, quantification, mergence, comparison, reads process are doing in the background. Check current progress in '", path.prefix, "Rscript_out/Raw_Read_Process.Rout'\n\n"))
+    system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Read_Process.R ", path.prefix, "Rscript_out/Read_Process.Rout"), stdout = "", wait = FALSE)
+    cat(paste0("\u2605 RNASeq alignment, assembly, quantification, mergence, comparison, reads process are doing in the background. Check current progress in '", path.prefix, "Rscript_out/Read_Process.Rout'\n\n"))
   }
 }
 
@@ -58,7 +74,7 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 1,
 #'
 #' @description Process raw reads for RNA-Seq workflow in R shell.
 #' It is strongly advised to run \code{RNASeqReadProcess_CMD()} directly. Running this function directly is not recommended because the processes of alignment, assembly and quantification take a longer time than other functions.
-#' Running \code{RNASeqReadProcess_CMD()} will create 'Raw_Read_Process.Rout' file in 'Rscript_out/' directory.
+#' Running \code{RNASeqReadProcess_CMD()} will create 'Read_Process.Rout' file in 'Rscript_out/' directory.
 #' This function do following things :
 #' This function do 5 things :
 #' 1. 'Hisat2' : aligns raw reads to reference genome. If \code{indices.optional} in \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indices will be created.
@@ -90,23 +106,45 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 1,
 #' RNASeqReadProcess(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix,
 #'                      genome.name = exp@@genome.name, sample.pattern = exp@@sample.pattern, python.variable.answer = exp@@python.variable[0],
 #'                      python.variable.version = exp@@python.variable[1], indices.optional = exp@@indices.optional)}
-RNASeqReadProcess <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, python.variable.answer, python.variable.version, python.2to3, num.parallel.threads = 1, indices.optional) {
+RNASeqReadProcess <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, python.variable.answer, python.variable.version, python.2to3, num.parallel.threads = 1, indices.optional,
+                              Hisat2.Index.run=TRUE,
+                              Hisat2.Alignment.run=TRUE,
+                              Samtools.Bam.run=TRUE,
+                              StringTie.Assemble.run=TRUE,
+                              StringTie.Merge.Trans.run=TRUE,
+                              Gffcompare.Ref.Sample.run=TRUE,
+                              StringTie.Ballgown.run=TRUE,
+                              PreDECountTable.run=TRUE) {
   CheckOperatingSystem(FALSE)
   ExportPath(path.prefix)
   PreRNASeqReadProcess(path.prefix, genome.name, sample.pattern)
   check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=FALSE)
-  if (check.results$ht2.files.number.df == 0 && !indices.optional) {
+  if (check.results$ht2.files.number.df == 0 && !indices.optional & Hisat2.Index.run) {
     CreateHisat2Index(path.prefix, genome.name, sample.pattern)
   }
-  Hisat2AlignmentDefault(path.prefix, genome.name, sample.pattern, num.parallel.threads)
-  SamtoolsToBam(path.prefix, genome.name, sample.pattern, num.parallel.threads)
-  StringTieAssemble(path.prefix, genome.name, sample.pattern, num.parallel.threads)
-  StringTieMergeTrans(path.prefix, genome.name, sample.pattern, num.parallel.threads)
-  GffcompareRefSample(path.prefix, genome.name, sample.pattern)
-  StringTieToBallgown(path.prefix, genome.name, sample.pattern, num.parallel.threads)
+  if (Hisat2.Alignment.run) {
+    Hisat2AlignmentDefault(path.prefix, genome.name, sample.pattern, num.parallel.threads)
+  }
+  if (Samtools.Bam.run) {
+    SamtoolsToBam(path.prefix, genome.name, sample.pattern, num.parallel.threads)
+  }
+  if (StringTie.Assemble.run) {
+    StringTieAssemble(path.prefix, genome.name, sample.pattern, num.parallel.threads)
+  }
+  if (StringTie.Merge.Trans.run) {
+    StringTieMergeTrans(path.prefix, genome.name, sample.pattern, num.parallel.threads)
+  }
+  if (Gffcompare.Ref.Sample.run) {
+    GffcompareRefSample(path.prefix, genome.name, sample.pattern)
+  }
+  if (StringTie.Ballgown.run) {
+    StringTieToBallgown(path.prefix, genome.name, sample.pattern, num.parallel.threads)
+  }
   # StringTieReEstimate(path.prefix, genome.name, sample.pattern, num.parallel.threads = num.parallel.threads)
   finals <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
-  PreDECountTable(path.prefix= path.prefix, sample.pattern, python.variable.answer, python.variable.version, python.2to3, print=TRUE)
+  if (PreDECountTable.run) {
+    PreDECountTable(path.prefix= path.prefix, sample.pattern, python.variable.answer, python.variable.version, python.2to3, print=TRUE)
+  }
   PostRNASeqReadProcess(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern)
 }
 

@@ -5,7 +5,11 @@
 \title{Raw reads process (alignment, assembly, expressive quantification) of RNA-Seq in background.}
 \usage{
 RNASeqReadProcess_CMD(RNASeqWorkFlowParam, num.parallel.threads = 1,
-  run = TRUE, check.s4.print = TRUE)
+  run = TRUE, check.s4.print = TRUE, Hisat2.Index.run = TRUE,
+  Hisat2.Alignment.run = TRUE, Samtools.Bam.run = TRUE,
+  StringTie.Assemble.run = TRUE, StringTie.Merge.Trans.run = TRUE,
+  Gffcompare.Ref.Sample.run = TRUE, StringTie.Ballgown.run = TRUE,
+  PreDECountTable.run = TRUE)
 }
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}

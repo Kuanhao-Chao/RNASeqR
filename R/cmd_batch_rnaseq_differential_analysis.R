@@ -106,7 +106,7 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam, ballgown.pval = 
 RNASeqDifferentialAnalysis <- function(path.prefix, genome.name, sample.pattern, independent.variable, case.group, control.group, ballgown.pval = 0.05, ballgown.log2FC = 1, TPM.pval = 0.05, TPM.log2FC = 1, DESeq2.pval = 0.1, DESeq2.log2FC = 1, edgeR.pval = 0.05, edgeR.log2FC = 1) {
   CheckOperatingSystem(FALSE)
   PreRNASeqDifferentialAnalysis(path.prefix = path.prefix, sample.pattern = sample.pattern)
-  if (file.exists(paste0(path.prefix, "Rscript_out/Raw_Read_Process.Rout"))) {
+  if (file.exists(paste0(path.prefix, "Rscript_out/Read_Process.Rout"))) {
     Hisat2ReportAssemble(path.prefix, genome.name, sample.pattern)
   }
   cat("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  Start 'ballgown', 'DESeq2' 'edgeR' analyses  \u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
