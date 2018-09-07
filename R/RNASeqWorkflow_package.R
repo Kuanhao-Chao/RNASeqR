@@ -1,13 +1,12 @@
 #' RNASeqWorkflow-package
 #'
 #' @name RNASeqWorkflow
+#' @importFrom stats quantile
 #' @importFrom tools file_ext
 #' @importFrom reticulate py_available py_config
 #' @importFrom ballgown ballgown texpr subset stattest geneNames geneIDs transcriptNames indexes structure
 #' @importFrom dplyr arrange count
-#' @importFrom genefilter rowVars
 #' @importFrom gridExtra grid.table
-#' @importFrom rafalib mypar shist
 #' @importFrom reshape2 melt
 #' @importFrom FactoMineR PCA
 #' @importFrom factoextra get_eigenvalue fviz_eig fviz_pca_ind
@@ -16,8 +15,6 @@
 #' @importFrom clusterProfiler bitr enrichGO groupGO dotplot emapplot cnetplot goplot enrichKEGG gseGO gseaplot gseKEGG
 #' @importFrom pathview pathview
 #' @importFrom refGenome tableSeqids extractSeqids tableFeatures ensemblGenome read.gtf
-#' @importFrom genefilter rowVars
-#' @importFrom rtracklayer import
 #' @importFrom Rqc rqcQA rqcReport
 #' @importFrom systemPipeRdata genWorkenvir
 #' @importFrom systemPipeR systemArgs seeFastq infile1 seeFastqPlot
@@ -32,15 +29,12 @@
 #' @importFrom graphics abline barplot hist legend mtext par plot title points
 #' @importFrom grDevices colorRampPalette dev.off pdf png rgb
 #' @importFrom methods new
-#' @importFrom stats cor heatmap model.matrix t.test
+#' @importFrom stats cor heatmap model.matrix t.test aggregate
 #' @importFrom utils data download.file head read.csv read.delim write.csv write.table
 #' @importFrom clusterProfiler gseGO gseaplot
-#' @importFrom rtracklayer mcols
 #' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results plotMA plotDispEsts counts
-#' @importFrom edgeR DGEList calcNormFactors estimateCommonDisp estimateTagwiseDisp exactTest cpm plotMeanVar plotBCV
-#' @importFrom limma plotMDS
+#' @importFrom edgeR DGEList calcNormFactors estimateCommonDisp estimateTagwiseDisp exactTest cpm plotMeanVar plotBCV plotMDS.DGEList
 #' @importFrom ShortRead readFastq narrow width writeFastq files
 #' @importFrom Biostrings quality
-#' @importFrom stats aggregate
 NULL
 

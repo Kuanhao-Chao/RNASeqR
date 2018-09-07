@@ -36,7 +36,7 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   case.group.size <- pre.de.pheno.data$case.group.size
   control.group.size <- pre.de.pheno.data$control.group.size
   # Select FPKM sum not 0!!
-  ballgown.result <- ballgown.result[rowSums(ballgown.result[,1:(case.group.size+control.group.size)]) > 0, ]
+  ballgown.result <- ballgown.result[rowSums(ballgown.result[,seq_len(case.group.size+control.group.size)]) > 0, ]
   # Map gene id to gene name
   indices <- match(row.names(ballgown.result), ballgown.texpr$gene_id)
   gene_names_for_result <- ballgown.texpr$gene_name[indices]

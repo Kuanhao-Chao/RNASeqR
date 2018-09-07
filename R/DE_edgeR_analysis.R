@@ -18,6 +18,8 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
   gene.data.frame <- data.frame(gene.name = raw.count.gene.name)
   pheno.data <- pre.de.pheno.data$pheno_data
   pheno.data <- pheno.data[order(pheno.data$ids),]
+  pheno.data[independent.variable][[1]] <- factor(as.character(pheno.data[independent.variable][[1]]), levels = c(case.group, control.group))
+
   deglist.object <- edgeR::DGEList(counts=raw.count, group = pheno.data[independent.variable][[1]], genes = raw.count.gene.name)
   # Normalization with TMM (trimmed mean of M-values )
   cat("     \u25CF Normalizing DGEList object (TMM) ... \n")
@@ -53,8 +55,8 @@ edgeRRawCountAnalysis <- function(path.prefix, independent.variable, case.group,
   case.group.size <- pre.de.pheno.data$case.group.size
   control.group.size <- pre.de.pheno.data$control.group.size
   # Write out csv file
-  write.csv(edgeR.result[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_control.csv"), row.names=FALSE)
-  write.csv(edgeR.result[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_case.csv"), row.names=FALSE)
+  write.csv(edgeR.result[,c(2:(case.group.size+1))], file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_case.csv"), row.names=FALSE)
+  write.csv(edgeR.result[,c((2+case.group.size):(case.group.size+control.group.size+1))], file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/TMM&CPM_control.csv"), row.names=FALSE)
   write.csv(edgeR.result[,c((2+3+case.group.size+control.group.size):(length(edgeR.result)))], file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   # Write result into file (csv)
   write.csv(edgeR.result, file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/edgeR_normalized_result.csv"), row.names=FALSE)

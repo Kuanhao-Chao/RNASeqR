@@ -20,8 +20,8 @@ FrequencyPlot <- function(which.analysis, which.count.normalization, path.prefix
   independent.variable.data.frame <- independent.variable.data.frame[,order(mns, decreasing = TRUE)]
 
   melted.data.normal <- reshape2::melt(independent.variable.data.frame)
-  x.range.normal <- quantile(melted.data.normal$value,probs=c(0,0.9))
-  ggplot(aes(x=value, colour=variable), data = melted.data.normal) +
+  x.range.normal <- stats::quantile(melted.data.normal$value,probs=c(0,0.9))
+  ggplot(aes(x=melted.data.normal$value, colour=melted.data.normal$variable), data = melted.data.normal) +
     xlim(x.range.normal[1]-20, x.range.normal[2]+20) + geom_density() + theme_bw() + xlab("FPKM") + ylab("Frequency") +
     ggtitle("Frequency Plot (ggplot2)") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
@@ -31,8 +31,8 @@ FrequencyPlot <- function(which.analysis, which.count.normalization, path.prefix
   cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Frequency_Plot_normalized_count_ggplot2.png"), "' has been created. \n\n"))
 
   melted.data <- reshape2::melt(log2(independent.variable.data.frame+1))
-  x.range <- quantile(melted.data$value,probs=c(0,.99))
-  ggplot(aes(x=value, colour=variable), data = melted.data) +
+  x.range <- stats::quantile(melted.data$value,probs=c(0,.99))
+  ggplot(aes(x=melted.data$value, colour=melted.data$variable), data = melted.data) +
     xlim(x.range[1]-5, x.range[2]+5) + geom_density() + theme_bw() + xlab(bquote(~Log[2](FPKM+1))) + ylab("Frequency") + ggtitle("Frequency Plot (ggplot2)") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
@@ -211,11 +211,11 @@ VolcanoPlot <- function(which.analysis, which.count.normalization, path.prefix, 
 
 
   all.x.value <- c(down.regulated.gene$log2FC, up.regulated.gene$log2FC)
-  x.range <- quantile(all.x.value, probs=c(0.05,0.95))
+  x.range <- stats::quantile(all.x.value, probs=c(0.05,0.95))
   x.limit <- max(abs(x.range)) + 5
 
   all.y.value <- c(-log10(down.regulated.gene$pval), -log10(up.regulated.gene$pval))
-  y.range <- quantile(all.y.value, probs=c(0.05,0.95))
+  y.range <- stats::quantile(all.y.value, probs=c(0.05,0.95))
   y.limit <- max(abs(y.range)) + 5
   ggplot(log2FC.pval, aes(x = log2FC.pval$log2FC, y=-log10(log2FC.pval$pval))) + geom_point(size = 0.8) +
     xlim(-x.limit, x.limit) +

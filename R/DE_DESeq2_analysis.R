@@ -23,6 +23,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
   colData <- pheno.data[independent.variable]
   row.names(colData) <- pheno.data$ids
   colnames(colData) <- "independent.variable"
+  colData$independent.variable <- factor(as.character(colData$independent.variable), levels = c(case.group, control.group))
 
   # creat DESeqDataSet
   # Rows of colData correspond to columns of countData
