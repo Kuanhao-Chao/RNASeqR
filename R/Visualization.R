@@ -55,15 +55,18 @@ BoxViolinPlot <- function(which.analysis, which.count.normalization, path.prefix
   log2.normalized.value = log2(independent.variable.data.frame+1)
   log2.normalized.value <- reshape2::melt(log2.normalized.value)
   colnames(log2.normalized.value) <- c("samples", which.count.normalization)
+  if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Distribution/"))){
+    dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Distribution/"))
+  }
   # Box plot
   cat(paste0("\u25CF Plotting Box plot\n"))
   ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.count.normalization][[1]]), las = 2) + geom_boxplot(fill=my_colors[as.numeric(color.group)]) +
     theme_bw() + xlab("Samples") + ylab(bquote(~Log[2](.(which.count.normalization)+1))) + ggtitle("Box Plot (ggplot2)") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Box_Plot_ggplot2.png")), dpi = 300)
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Distribution/Box_Plot_ggplot2.png")), dpi = 300)
   # dev.off()
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Box_Plot_ggplot2.png"), "' has been created. \n\n"))
+  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Distribution/Box_Plot_ggplot2.png"), "' has been created. \n\n"))
   # Violin plot
   cat(paste0("\u25CF Plotting Violin plot\n"))
   ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.count.normalization][[1]], color=log2.normalized.value$samples), las = 2) + geom_violin() +
@@ -72,8 +75,8 @@ BoxViolinPlot <- function(which.analysis, which.count.normalization, path.prefix
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
     theme(legend.position = "none")
-  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Violin_Plot_ggplot2.png")), dpi = 300)
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Violin_Plot_ggplot2.png"), "' has been created. \n\n"))
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Distribution/Violin_Plot_ggplot2.png")), dpi = 300)
+  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Distribution/Violin_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
 # PCA plot

@@ -186,7 +186,7 @@ Hisat2ReportAssemble <- function(path.prefix, genome.name, sample.pattern){
       dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
     }
     write.csv(report.data.frame, file = paste0(path.prefix, "RNASeq_results/Alignment_Report/Alignment_report.csv"))
-    png(paste0(path.prefix, "RNASeq_results/Alignment_Report/Alignment_report.png"), width = iteration.num*25 + 50, height = 4*4, res = 288)
+    png(paste0(path.prefix, "RNASeq_results/Alignment_Report/Alignment_report.png"), width = iteration.num*100 + 200, height = 16*4)
     p <- gridExtra::grid.table(report.data.frame)
     print(p)
     dev.off()

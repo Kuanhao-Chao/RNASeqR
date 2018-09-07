@@ -62,58 +62,78 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
       cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/indices/', genome.name, '_tran.*.ht2\''), "is not exit\n"))
     }
   }
-  sam.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_sam/'), pattern = paste0( "^[A-Z, a-z]*", "[0-9]*", "[A-Z, a-z]*", ".sam$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
-  sam.files.number <- length(sam.files)
+  # Target sam files !!
+  target.sam.files <- unique(gsub("_[1,2].fastq.gz", ".sam", fastq.gz.files))
+  # Check whether sam file is exist !
+  actual.found.sam.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_sam/'), pattern = "*.sam$", all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  sam.files.number <- length(actual.found.sam.files)
   if (sam.files.number != 0){
     if (print) {
-      for (i in sam.files){
-        cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_sam/', i, "'"), "is exit\n"))
+      sam.check <- identical(target.sam.files, actual.found.sam.files)
+      if (sam.check) {
+        for ( i in actual.found.sam.files ) {
+          cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_sam/', i, "'"), "is exit\n"))
+        }
+        cat(c("Total:", sam.files.number, "files\n\n"))
+      } else {
+        cat(c("(\u2718) : .SAM files checking is invalid!! \n\n"))
+        stop("SAM files checking ERROR")
       }
-      cat(c("Total:", sam.files.number, "files\n\n"))
     }
-  }else {
+  } else {
     if (print) {
       cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_sam/XXX.sam\''), "is not exit\n"))
     }
   }
-  bam.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_bam/'), pattern = paste0( "^[A-Z, a-z]*", "[0-9]*", "[A-Z, a-z]*", ".bam$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
-  bam.files.number <- length(bam.files)
+
+  # Target bam file
+  target.bam.files <- unique(gsub("_[1,2].fastq.gz", ".bam", fastq.gz.files))
+  actual.found.bam.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_bam/'), pattern = paste0("*.bam$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  bam.files.number <- length(actual.found.bam.files)
   if (bam.files.number != 0){
     if (print) {
-      for (i in bam.files){
-        cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_bam/', i, "'"), "is exit\n"))
+      bam.check <- identical(target.bam.files, actual.found.bam.files)
+      if (bam.check) {
+        for (i in actual.found.bam.files){
+          cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_bam/', i, "'"), "is exit\n"))
+        }
+        cat(c("Total:", bam.files.number, "files\n\n"))
+      } else {
+        cat(c("(\u2718) : .BAM files checking is invalid!! \n\n"))
+        stop("BAM files checking ERROR")
       }
-      cat(c("Total:", bam.files.number, "files\n\n"))
     }
   }else {
     if (print) {
-      cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_sam/XXX.bam\''), "is not exit\n"))
+      cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_bam/XXX.bam\''), "is not exit\n"))
     }
   }
-  gtf.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_gtf/'), pattern = paste0("^[A-Z, a-z]*", "[0-9]*", "[A-Z, a-z]*", ".gtf$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
-  gtf.files.number <- length(gtf.files)
+
+  # Target gtf file
+  target.gtf.files <- unique(gsub("_[1,2].fastq.gz", ".gtf", fastq.gz.files))
+  actual.found.gtf.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_gtf/'), pattern = paste0("*.gtf$"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  gtf.files.number <- length(actual.found.gtf.files)
   if (gtf.files.number != 0){
     if (print) {
-      for (i in gtf.files){
-        cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_gtf/', i, "'"), "is exit\n"))
+      gtf.check <- identical(target.gtf.files, actual.found.gtf.files)
+      if (gtf.check) {
+        for (i in actual.found.gtf.files){
+          cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_gtf/', i, "'"), "is exit\n"))
+        }
+        cat(c("Total:", gtf.files.number, "files\n\n"))
+      } else {
+        cat(c("(\u2718) : .GTF files checking is invalid!! \n\n"))
+        stop("GTF files checking ERROR")
       }
-      cat(c("Total:", gtf.files.number, "files\n\n"))
     }
   }else {
     if (print) {
-      cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/raw_gtf/XXX.gtf\''), "is not exit\n"))
+      cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_gtf/XXX.gtf\''), "is not exit\n"))
     }
   }
-  stringtie_merged.gtf.file <- file.exists(paste0(path.prefix, "gene_data", '/merged/stringtie_merged.gtf'))
-  if (isTRUE(stringtie_merged.gtf.file)) {
-    if (print) {
-      cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", "/merged/stringtie_merged.gtf", "'"), "is exit\n\n"))
-    }
-  } else {
-    if (print) {
-      cat(c("(\u231B) :", paste0("'", path.prefix, "gene_data", "/merged/stringtie_merged.gtf", "'"), "is not exit\n"))
-    }
-  }
+  # Check stringtie merged gtf
+  stringtie_merged.gtf.file <- file.exists(paste0(path.prefix, "gene_data/merged/stringtie_merged.gtf"))
+  # Check gffcompare result
   gffcompare.related.dirs <- list.files(path = paste0(path.prefix, "gene_data", '/merged/'), pattern = "^merged.", all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   gffcompare.related.dirs.number <- length(gffcompare.related.dirs)
   if (gffcompare.related.dirs.number != 0){
@@ -149,11 +169,11 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
               ht2.files.number.df = ht2.files.number,
               ht2.files.df = ht2.files,
               sam.files.number.df = sam.files.number,
-              sam.files.df = sam.files,
+              sam.files.df = actual.found.sam.files,
               bam.files.number.df = bam.files.number,
-              bam.files.df = bam.files,
+              bam.files.df = actual.found.bam.files,
               gtf.files.number.df = gtf.files.number,
-              gtf.files.df = gtf.files,
+              gtf.files.df = actual.found.gtf.files,
               stringtie_merged.gtf.file.df = stringtie_merged.gtf.file,
               gffcompare.related.dirs.df = gffcompare.related.dirs,
               gffcompare.related.dirs.number.df = gffcompare.related.dirs.number,
