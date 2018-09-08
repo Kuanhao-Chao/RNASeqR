@@ -19,11 +19,10 @@
 #' @export
 #' @author Kuan-Hao Chao
 #' @examples
-#' \dontrun{
-#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
+#' input_files.path <- system.file("extdata/", package = "RNASeqWorkflowData")
+#' rnaseq_result.path <- "/tmp/yeast_example/"
+#' dir.create(rnaseq_result.path)
+#' RNASeqEnvironmentSet_CMD(exp)
 RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
@@ -201,29 +200,25 @@ MkdirAll <- function(path.prefix) {
 
 # inner function : Copy input files directory
 CopyInputDir <- function(path.prefix, input.path.prefix, genome.name, sample.pattern, indices.optional = indices.optional) {
-  current.path <- getwd()
-  setwd(paste0(path.prefix, "gene_data/"))
   cat(c("************** Directory Copying ************\n"))
   cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", genome.name, ".gtf"), "\n"))
-  file.symlink(paste0(input.path.prefix, "input_files/", genome.name, ".gtf"), paste0(getwd(), "/ref_genes/", genome.name, ".gtf"))
-  cat(c("     \u25CF           To :"), paste0(getwd(), "/ref_genes/", genome.name, ".gtf", "\n"))
+  file.symlink(paste0(input.path.prefix, "input_files/", genome.name, ".gtf"), paste0(path.prefix, "gene_data/ref_genes/", genome.name, ".gtf"))
+  cat(c("     \u25CF           To :"), paste0(path.prefix, "gene_data/ref_genes/", genome.name, ".gtf", "\n"))
   cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", genome.name, ".fa"),  "\n"))
-  file.symlink(paste0(input.path.prefix, "input_files/", genome.name, ".fa"), paste0(getwd(), "/ref_genome/", genome.name, ".fa"))
-  cat(c("     \u25CF           To :"), paste0(getwd(), "/ref_genome/", genome.name, ".fa", "\n"))
+  file.symlink(paste0(input.path.prefix, "input_files/", genome.name, ".fa"), paste0(path.prefix, "gene_data/ref_genome/", genome.name, ".fa"))
+  cat(c("     \u25CF           To :"), paste0(path.prefix, "gene_data/ref_genome/", genome.name, ".fa", "\n"))
   cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", "raw_fastq.gz/"),  "\n"))
   raw_fastq.gz.subfiles <- list.files(path = paste0(input.path.prefix, "input_files/", "raw_fastq.gz"), pattern = sample.pattern, recursive = TRUE, full.names = TRUE)
-  # file.symlink(paste0(input.path.prefix, "input_files/", "raw_fastq.gz/"), paste0(getwd(), "/"))
-  vapply(raw_fastq.gz.subfiles, function(x) file.symlink(x, paste0(getwd(), "/raw_fastq.gz")), FUN.VALUE = TRUE)
-  cat(c("     \u25CF           To :", paste0(getwd(),"/raw_fastq.gz/"), "\n"))
+  vapply(raw_fastq.gz.subfiles, function(x) file.symlink(x, paste0(path.prefix, "gene_data/raw_fastq.gz")), FUN.VALUE = TRUE)
+  cat(c("     \u25CF           To :", paste0(path.prefix,"gene_data/raw_fastq.gz/"), "\n"))
   cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/phenodata.csv"),  "\n"))
-  file.symlink(paste0(input.path.prefix, "input_files/phenodata.csv"), paste0(getwd(), "/phenodata.csv"))
-  cat(c("     \u25CF           To :"), paste0(getwd(), "/phenodata.csv\n"))
-  on.exit(setwd(current.path))
+  file.symlink(paste0(input.path.prefix, "input_files/phenodata.csv"), paste0(path.prefix, "gene_data/phenodata.csv"))
+  cat(c("     \u25CF           To :"), paste0(path.prefix, "gene_data/phenodata.csv\n"))
   if (isTRUE(indices.optional)) {
     cat(c("     \u25CF Copying From :", paste0(input.path.prefix, "input_files/", "indices/"),  "\n"))
     indices.subfiles <- list.files(path = paste0(input.path.prefix, "input_files/", "indices"), pattern = paste0(genome.name, "_tran.[0-9].ht2"), recursive = TRUE, full.names = TRUE)
-    vapply(indices.subfiles, function(x) file.symlink(x, paste0(getwd(), "/indices")), FUN.VALUE = TRUE)
-    cat(c("     \u25CF           To :", paste0(getwd(),"/indices/"), "\n\n"))
+    vapply(indices.subfiles, function(x) file.symlink(x, paste0(path.prefix, "gene_data/indices")), FUN.VALUE = TRUE)
+    cat(c("     \u25CF           To :", paste0(path.prefix,"gene_data/indices/"), "\n\n"))
   } else {
     cat("\n")
   }

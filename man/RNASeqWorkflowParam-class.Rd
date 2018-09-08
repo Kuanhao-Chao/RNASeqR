@@ -4,10 +4,10 @@
 \name{RNASeqWorkflowParam-class}
 \alias{RNASeqWorkflowParam-class}
 \alias{RNASeq}
-\title{RNASeq workflow
+\title{RNASeqWorkflow
 An S4 class for checking and storing RNA-Seq workflow parameters of this package}
 \description{
-RNASeq workflow
+RNASeqWorkflow
 An S4 class for checking and storing RNA-Seq workflow parameters of this package
 }
 \section{Slots}{

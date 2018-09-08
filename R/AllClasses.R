@@ -1,4 +1,4 @@
-#' RNASeq workflow
+#' RNASeqWorkflow
 #' An S4 class for checking and storing RNA-Seq workflow parameters of this package
 #' @aliases RNASeq
 #'
@@ -69,12 +69,15 @@ setClass("RNASeqWorkflowParam",
 #' @export
 #' @author Kuan-Hao Chao
 #' @examples
-#' \dontrun{
-#' exp <- RNASeqWorkflowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            independent.variable = "two.group", case.group = "treatment", control.group = "cell")
-#' }
-RNASeqWorkflowParam <- function(path.prefix = NA, input.path.prefix = NA, genome.name = NA, sample.pattern = NA,
-                                independent.variable = NA, case.group = NA, control.group = NA) {
+#' input_files.path <- system.file("extdata/", package = "RNASeqWorkflowData")
+#' rnaseq_result.path <- "/tmp/yeast_example/"
+#' dir.create(rnaseq_result.path)
+#' exp <- RNASeqWorkflowParam(path.prefix = rnaseq_result.path, input.path.prefix = input_files.path, genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", sample.pattern = "SRR[0-9]*_XV",
+#'                            independent.variable = "state", case.group = "60mins_ID20_amphotericin_B", control.group = "60mins_ID20_control")
+RNASeqWorkflowParam <- function(path.prefix = NA, input.path.prefix = NA,
+                                genome.name = NA, sample.pattern = NA,
+                                independent.variable = NA, case.group = NA,
+                                control.group = NA) {
   # check input parameters
   CheckInputParamNa(path.prefix, input.path.prefix, genome.name, sample.pattern,
                     independent.variable, case.group, control.group)
@@ -83,59 +86,80 @@ RNASeqWorkflowParam <- function(path.prefix = NA, input.path.prefix = NA, genome
   # 2. check python version
   python.version.list <- CheckPython()
   bool.python.avail <- python.version.list$check.answer
-  numeric.python.version <- python.version.list$python.version
   two.to.three.result <- Check2to3()
   # 3. check validity of path.prefix
   bool.prefix.path <- CheckPrefixPath(path.prefix = path.prefix)
   if (bool.prefix.path){
     # add '/' to the path.prefix
-    if (substr(path.prefix, nchar(path.prefix), nchar(path.prefix)) != '/') {
-      path.prefix <- paste0(path.prefix, '/')
+    if (substr(path.prefix, nchar(path.prefix), nchar(path.prefix)) != "/") {
+      path.prefix <- paste0(path.prefix, "/")
     }
   }
   # 4. check input.path.prefix
-  bool.input.path.prefix <- CheckInputPrefixPath(input.path.prefix = input.path.prefix)
+  bool.input.path.prefix <- CheckInputPrefixPath(input.path.prefix)
   if (bool.input.path.prefix){
     # add '/' to the path.prefix
-    if (substr(input.path.prefix, nchar(input.path.prefix), nchar(input.path.prefix)) != '/') {
-      input.path.prefix <- paste0(input.path.prefix, '/')
+    if (substr(input.path.prefix,
+               nchar(input.path.prefix),
+               nchar(input.path.prefix)) != "/") {
+      input.path.prefix <- paste0(input.path.prefix, "/")
     }
   }
   # check sample.pattern is valid file name !!
   # 5. check sample.pattern that can't have '.fastq.gz'
   fast.gz.extend <- tools::file_ext(sample.pattern)
   if (fast.gz.extend == "gz" || fast.gz.extend == "fastq") {
-    cat("(\u2718) : 'sample.pattern' can't include file extension(.gz or .fastq or .fastq.gz)\n\n")
+    cat("(\u2718) : 'sample.pattern' can't include file extension(.gz or .fastq)\n\n")
     stop("'sample.pattern' with extension error.")
   }
   # 6. check 'input_files/' necessary files with 'genome.name', 'sample.pattern'
-  input.dir.files.list <- CheckInputDirFiles(input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern)
+  input.dir.files.list <- CheckInputDirFiles(input.path.prefix,
+                                             genome.name,
+                                             sample.pattern)
   bool.input.dir.files <- input.dir.files.list$check.answer
   # This determine whether to run 'CreateHisat2Index'
   bool.input.dir.indices <- input.dir.files.list$optional.indices.bool
   # below still need to fix
   # 7. check 'phenodata'
-  bool.phenodata <- CheckPhenodata(input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern, independent.variable = independent.variable)
+  bool.phenodata <- CheckPhenodata(input.path.prefix,
+                                   genome.name,
+                                   sample.pattern,
+                                   independent.variable)
   # 8. check 'case.group' and 'control.group'
-  bool.check.control.control.group <- CheckCaseControlGroup(input.path.prefix = input.path.prefix, independent.variable = independent.variable, case.group = case.group, control.group = control.group)
+  bool.control.control.group <- CheckCaseControlGroup(input.path.prefix,
+                                                      independent.variable,
+                                                      case.group, control.group)
 
-  if ((characters.os.type == "linux" || characters.os.type == "osx") && bool.python.avail && bool.prefix.path &&
-      bool.input.path.prefix && bool.input.dir.files && bool.phenodata && bool.check.control.control.group) {
+  if ( (characters.os.type == "linux" || characters.os.type == "osx") &&
+      bool.python.avail && bool.prefix.path && bool.input.path.prefix &&
+      bool.input.dir.files && bool.phenodata && bool.control.control.group) {
     cat(paste0("\n**************************************\n"))
     cat(paste0("************** Success! **************\n"))
     cat(paste0("**************************************\n"))
-    new("RNASeqWorkflowParam",os.type = characters.os.type, python.variable = python.version.list, python.2to3 = two.to.three.result,
-        path.prefix = path.prefix, input.path.prefix = input.path.prefix, genome.name = genome.name, sample.pattern = sample.pattern,
-        independent.variable = independent.variable, case.group = case.group, control.group = control.group,
+    new("RNASeqWorkflowParam",
+        os.type = characters.os.type,
+        python.variable = python.version.list,
+        python.2to3 = two.to.three.result,
+        path.prefix = path.prefix,
+        input.path.prefix = input.path.prefix,
+        genome.name = genome.name,
+        sample.pattern = sample.pattern,
+        independent.variable = independent.variable,
+        case.group = case.group,
+        control.group = control.group,
         indices.optional = bool.input.dir.indices)
   }
 }
 
 # inner function : check whether input values are NA
-CheckInputParamNa <- function(path.prefix, input.path.prefix, genome.name, sample.pattern,
-                            independent.variable, case.group, control.group) {
+CheckInputParamNa <- function(path.prefix, input.path.prefix,
+                              genome.name, sample.pattern,
+                              independent.variable, case.group, control.group) {
   cat(c("************** Checking input parameters ************\n"))
-  if (is.na(path.prefix) || is.na(input.path.prefix) || is.na(genome.name) || is.na(sample.pattern) || is.na(independent.variable) || is.na(case.group) || is.na(control.group)) {
+  if (is.na(path.prefix) || is.na(input.path.prefix) ||
+      is.na(genome.name) || is.na(sample.pattern) ||
+      is.na(independent.variable) ||
+      is.na(case.group) || is.na(control.group)) {
     if (is.na(path.prefix)) {
       cat("(\u2718) : 'path.prefix' is missing.\n\n")
     }
@@ -170,10 +194,11 @@ CheckOperatingSystem <- function(print = TRUE){
   }
   sysinf <- Sys.info()
   if (!is.null(sysinf)){
-    os <- sysinf['sysname']
-    if (os == 'Darwin')
+    os <- sysinf["sysname"]
+    if (os == "Darwin")
       os <- "osx"
-  } else { ## mystery machine
+  } else {
+    ## mystery machine
     os <- .Platform$OS.type
     if (grepl("^darwin", R.version$os))
       os <- "osx"
@@ -196,11 +221,11 @@ CheckOperatingSystem <- function(print = TRUE){
 CheckPython <- function() {
   cat(c("************** Checking python version ************\n"))
   # have to check python !!!
-  if(reticulate::py_available(initialize = "TRUE")){
+  if (reticulate::py_available(initialize = "TRUE") ){
     cat("(\u2714) : Python is available on your device!\n")
     python.version <- as.numeric(reticulate::py_config()$version)
     cat(paste0("       \u25CF Python version : ", reticulate::py_config()$version, "\n\n"))
-    if(python.version >= 3) {
+    if (python.version >= 3) {
       return.value <- list("check.answer" = TRUE, "python.version" = 3)
     } else if (python.version < 3 && python.version >= 2 ){
       return.value <- list("check.answer" = TRUE, "python.version" = 2)
@@ -230,8 +255,8 @@ CheckPrefixPath <- function(path.prefix) {
   # Check the prefix exist
   if (isTRUE(dir.exists(path.prefix))){
     cat(c("************** Setting prefix path ************\n"))
-    if (substr(path.prefix, nchar(path.prefix), nchar(path.prefix)) != '/') {
-      path.prefix <- paste0(path.prefix, '/')
+    if (substr(path.prefix, nchar(path.prefix), nchar(path.prefix)) != "/") {
+      path.prefix <- paste0(path.prefix, "/")
     }
     cat(paste0("(\u270e) : The following files will be installed under '", path.prefix, "'\n\n"))
     return(TRUE)
@@ -248,8 +273,8 @@ CheckPrefixPath <- function(path.prefix) {
 CheckInputPrefixPath <- function(input.path.prefix) {
   # Check the prefix exist
   if (isTRUE(dir.exists(input.path.prefix))){
-    if (substr(input.path.prefix, nchar(input.path.prefix), nchar(input.path.prefix)) != '/') {
-      input.path.prefix <- paste0(input.path.prefix, '/')
+    if (substr(input.path.prefix, nchar(input.path.prefix), nchar(input.path.prefix)) != "/") {
+      input.path.prefix <- paste0(input.path.prefix, "/")
     }
     path.prefix.input_files <- paste0(input.path.prefix, "input_files/")
     if (isTRUE(dir.exists(path.prefix.input_files))){
@@ -272,11 +297,11 @@ CheckInputPrefixPath <- function(input.path.prefix) {
 
 # inner function : check input.path.prefix
 CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
-  cat(c("************** Checking hierarchy of", paste0("'", input.path.prefix, 'input_files/\''), "************\n"))
+  cat(c("************** Checking hierarchy of", paste0("'", input.path.prefix, "input_files/'"), "************\n"))
   # only check whether exist
   gtf.file <- file.exists(paste0(input.path.prefix, "input_files/",genome.name, ".gtf"))
   # only check whether exist
-  fa.file <- file.exists(paste0(input.path.prefix, "input_files/",genome.name, ".fa"))
+  fa.file <- file.exists(paste0(input.path.prefix, "input_files/", genome.name, ".fa"))
   # check exist and rules
   raw.fastq.dir <- dir.exists(paste0(input.path.prefix, "input_files/raw_fastq.gz/"))
   # check exist and rules
@@ -286,7 +311,7 @@ CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
   optional.indices.bool <- FALSE
   # check whether sample pattern matches the file names~
   if (isTRUE(raw.fastq.dir)) {
-    raw.fastq <- list.files(path = paste0(input.path.prefix, 'input_files/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+    raw.fastq <- list.files(path = paste0(input.path.prefix, "input_files/raw_fastq.gz/"), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
     extract.fastq.gz.sample.names <- unique(gsub("_[1-2]*.fastq.gz", "", raw.fastq))
     check.fastq.gz.1 <- vapply(extract.fastq.gz.sample.names, function(x) paste0(x, "_1.fastq.gz"), USE.NAMES=FALSE, FUN.VALUE = "a")
     check.fastq.gz.2 <- vapply(extract.fastq.gz.sample.names, function(x) paste0(x, "_2.fastq.gz"), USE.NAMES=FALSE, FUN.VALUE = "a")
@@ -360,9 +385,9 @@ CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
       cat(paste0("(\u2714) : 'indices/", i, "'"), "is in 'input_files/'\n")
     }
   }
-  if (isTRUE(gtf.file) && isTRUE(raw.fastq.dir) && isTRUE(raw.fastq.dir) && raw.fastq.number != 0 && isTRUE(phenodata.file)) {
+  if (gtf.file && raw.fastq.dir && raw.fastq.dir && raw.fastq.number != 0 && phenodata.file) {
     cat(c(paste0("\n(\u2714) : '", input.path.prefix,"input_files/", "'"), "is valid !\n"))
-    if (isTRUE(ht2.dir) && ht2.files.number != 0) {
+    if (ht2.dir && (ht2.files.number != 0) ) {
       cat(paste0("(\u2714) : optional directory 'indices/' is valid !\n"))
       optional.indices.bool <- TRUE
     }
@@ -388,7 +413,6 @@ CheckPhenodata <- function(input.path.prefix, genome.name, sample.pattern, indep
     cat(paste0("(\u2718) : 'ids' can't find in the column of phenodata.csv.\n\n"))
     stop("'ids' invalid ERROR")
   }
-  pheno_data.ids.list <- pheno_data["ids"]
   # "id" : must be distinct, same as input_files raw reads name !
   cat("\u25B6 Checking whether \"raw_fastq.gz files\" matches \"'ids' of phenodata.csv\" \n")
   raw.fastq <- list.files(path = paste0(input.path.prefix, 'input_files/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
@@ -423,9 +447,9 @@ CheckPhenodata <- function(input.path.prefix, genome.name, sample.pattern, indep
 # inner function
 CheckCaseControlGroup <- function(input.path.prefix, independent.variable, case.group, control.group) {
   cat(c("************** Checking 'case.group' & 'control.group' ************\n"))
-  pheno_data <- read.csv(paste0(input.path.prefix, "/input_files/phenodata.csv"))
+  pheno_data <- read.csv(paste0(input.path.prefix, "input_files/phenodata.csv"))
   # Covert all column to character
-  pheno_data <- data.frame(lapply(pheno_data, as.character), stringsAsFactors=FALSE)
+  pheno_data <- data.frame(lapply(pheno_data, as.character), stringsAsFactors = FALSE)
   cont.in <- case.group %in% as.character(data.frame(table(pheno_data[independent.variable]))$Var1)
   exp.in <- control.group %in% as.character(data.frame(table(pheno_data[independent.variable]))$Var1)
   # Check 'case.group' is on group of 'independent.variable'

@@ -31,10 +31,11 @@ an object of class \code{RNASeqWorkflowParam}
 Constructor function for RNASeqWorkflowParam objects
 }
 \examples{
-\dontrun{
-exp <- RNASeqWorkflowParam(path.prefix = "/home/RNASeq", input.path.prefix = "/home", genome.name = "hg19", sample.pattern = "SRR[0-9]",
-                           independent.variable = "two.group", case.group = "treatment", control.group = "cell")
-}
+input_files.path <- system.file("extdata/", package = "RNASeqWorkflowData")
+rnaseq_result.path <- "/tmp/yeast_example/"
+dir.create(rnaseq_result.path)
+exp <- RNASeqWorkflowParam(path.prefix = rnaseq_result.path, input.path.prefix = input_files.path, genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", sample.pattern = "SRR[0-9]*_XV",
+                           independent.variable = "state", case.group = "60mins_ID20_amphotericin_B", control.group = "60mins_ID20_control")
 }
 \author{
 kuan-hao Chao

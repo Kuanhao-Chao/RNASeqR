@@ -153,7 +153,7 @@ CorrelationPlot <- function(which.analysis, which.count.normalization, path.pref
   }
   pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
   independent.variable.data.frame <- cbind(case.normalized, control.normalized)
-  res <- round(cor(independent.variable.data.frame, method = c("pearson", "kendall", "spearman")), 3)
+  res <- round(stats::cor(independent.variable.data.frame, method = c("pearson", "kendall", "spearman")), 3)
   max.value <- max(res)
   min.value <- min(res)
   # Correlation_dot_plot.png
