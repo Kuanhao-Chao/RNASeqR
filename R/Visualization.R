@@ -238,11 +238,13 @@ MAPlot <- function(which.analysis, which.count.normalization, path.prefix, indep
   # load gene name for further usage
   csv.results <- ParseResultCSV(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group)
   case.normalized <- csv.results$case
+  case.size <- length(case.normalized)
   control.normalized <- csv.results$control
+  control.size <- length(control.normalized)
   cat(paste0("\u25CF Plotting MA plot\n"))
   normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv"))
   ## Ma plot
-  ggplot(normalized_dataset, aes(x = log2(normalized_dataset[paste0(case.group, ".", control.group, ".average")][[1]]), y = normalized_dataset$log2FC, colour = normalized_dataset$pval<condition.pval)) +
+  ggplot(normalized_dataset, aes(x = log2(normalized_dataset[,1+case.size+control.size+3]), y = normalized_dataset$log2FC, colour = normalized_dataset$pval<condition.pval)) +
     xlab(bquote(~Log[2](.(which.count.normalization)))) +
     ylab(bquote(~Log[2](fold~change))) + theme_bw() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +

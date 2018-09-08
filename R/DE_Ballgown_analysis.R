@@ -15,9 +15,11 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   ##############################################
   pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
   pheno_data <- pheno_data[order(pheno_data$ids),]
+  pheno_data[independent.variable][[1]] <- factor(as.character(pheno_data[independent.variable][[1]]), levels = c(case.group, control.group))
+
   # make ballgown object
   ballgown.object <- ballgown::ballgown(dataDir = paste0(path.prefix, "gene_data/ballgown"), samplePattern = sample.pattern, pData = pheno_data, meas = 'all')
-  # save ballgown object
+  # save ballgown object"
   save(ballgown.object, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/ballgown.rda"))
   # Save this data for DESeq2 and edgeR gene name conversion !! (and transciprt plot)
   ballgown.texpr <- ballgown::texpr(ballgown.object, 'all')

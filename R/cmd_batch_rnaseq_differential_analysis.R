@@ -64,7 +64,7 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam, ballgown.pval = 
 #'
 #' @description This function will run differential analysis on ballgown, DESeq2 and edgeR. TPM values will be converted from ballgown FPKM values, and T-test will be made to calculate pvalue.
 #' It is strongly advised to run \code{RNASeqDifferentialAnalysis_CMD()} directly. Running \code{RNASeqDifferentialAnalysis_CMD()} will create 'Differential_Analysis.Rout' file in 'Rscript_out/' directory.
-#' This function do following things :
+#' This function do fo+llowing things :
 #' 1. ballgown analysis
 #'    Raw reads are normalized into FPKM values
 #'    The main statistic test in ballgown is paramatic F-test comparing nested linear models
