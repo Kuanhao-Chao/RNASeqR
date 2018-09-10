@@ -4,8 +4,9 @@
 \alias{RNASeqEnvironmentSet_CMD}
 \title{Environment setting for RNA-Seq workflow in background}
 \usage{
-RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam, run = TRUE,
-  check.s4.print = TRUE)
+RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam, install.hisat2 = TRUE,
+  install.stringtie = TRUE, install.gffcompare = TRUE,
+  install.samtools = TRUE, run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}
@@ -33,8 +34,7 @@ If you want to set up the environment for the following RNA-Seq workflow in R sh
 input_files.path <- system.file("extdata/", package = "RNASeqWorkflowData")
 rnaseq_result.path <- "/tmp/yeast_example/"
 dir.create(rnaseq_result.path)
-exp <- RNASeqWorkflowParam(path.prefix = rnaseq_result.path, input.path.prefix = input_files.path, genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", sample.pattern = "SRR[0-9]*_XV",
-                           independent.variable = "state", case.group = "60mins_ID20_amphotericin_B", control.group = "60mins_ID20_control")
+RNASeqEnvironmentSet_CMD(exp)
 }
 \author{
 Kuan-Hao Chao

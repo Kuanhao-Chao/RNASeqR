@@ -5,7 +5,7 @@
 \title{GO functional analysis and KEGG pathway analysis for RNA-Seq workflow in background}
 \usage{
 RNASeqGoKegg_CMD(RNASeqWorkFlowParam, OrgDb.species, go.level = 3,
-  KEGG.organism, run = TRUE, check.s4.print = TRUE)
+  input.TYPE.ID, KEGG.organism, run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}

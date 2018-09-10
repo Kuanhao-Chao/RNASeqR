@@ -3,7 +3,7 @@
 ###################################################
 # Frequency Plot
 FrequencyPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group) {
-  cat(paste0("\u25CF Plotting  Frequency plot\n"))
+  message(paste0("\u25CF Plotting  Frequency plot\n"))
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Frequency"))){
     dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Frequency"))
   }
@@ -28,7 +28,7 @@ FrequencyPlot <- function(which.analysis, which.count.normalization, path.prefix
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
     theme(legend.position = "none")
   ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Frequency/Frequency_Plot_normalized_count_ggplot2.png")), dpi = 300)
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Frequency_Plot_normalized_count_ggplot2.png"), "' has been created. \n\n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Frequency_Plot_normalized_count_ggplot2.png"), "' has been created. \n\n"))
 
   melted.data <- reshape2::melt(log2(independent.variable.data.frame+1))
   x.range <- stats::quantile(melted.data$value,probs=c(0,.99))
@@ -38,7 +38,7 @@ FrequencyPlot <- function(which.analysis, which.count.normalization, path.prefix
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
     theme(legend.position = "none")
   ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Frequency/Frequency_Plot_log_normalized_count_ggplot2.png")), dpi = 300)
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Frequency_Plot_log_normalized_count_ggplot2.png"), "' has been created. \n\n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Frequency_Plot_log_normalized_count_ggplot2.png"), "' has been created. \n\n"))
 }
 
 # Box plot and violin plot
@@ -59,16 +59,16 @@ BoxViolinPlot <- function(which.analysis, which.count.normalization, path.prefix
     dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Distribution/"))
   }
   # Box plot
-  cat(paste0("\u25CF Plotting Box plot\n"))
+  message(paste0("\u25CF Plotting Box plot\n"))
   ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.count.normalization][[1]]), las = 2) + geom_boxplot(fill=my_colors[as.numeric(color.group)]) +
     theme_bw() + xlab("Samples") + ylab(bquote(~Log[2](.(which.count.normalization)+1))) + ggtitle("Box Plot (ggplot2)") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
   ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Distribution/Box_Plot_ggplot2.png")), dpi = 300)
   # dev.off()
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Distribution/Box_Plot_ggplot2.png"), "' has been created. \n\n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Distribution/Box_Plot_ggplot2.png"), "' has been created. \n\n"))
   # Violin plot
-  cat(paste0("\u25CF Plotting Violin plot\n"))
+  message(paste0("\u25CF Plotting Violin plot\n"))
   ggplot(data = log2.normalized.value,  aes(x=log2.normalized.value$samples, y=log2.normalized.value[which.count.normalization][[1]], color=log2.normalized.value$samples), las = 2) + geom_violin() +
     scale_color_manual(values=my_colors[as.numeric(color.group)]) + stat_summary(fun.y=mean, geom="point", shape=23, size=2) +
     theme_bw() + xlab("Samples") + ylab(bquote(~Log[2](.(which.count.normalization)+1))) + ggtitle("Violin Plot (ggplot2)") +
@@ -76,14 +76,14 @@ BoxViolinPlot <- function(which.analysis, which.count.normalization, path.prefix
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
     theme(legend.position = "none")
   ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Distribution/Violin_Plot_ggplot2.png")), dpi = 300)
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Distribution/Violin_Plot_ggplot2.png"), "' has been created. \n\n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Distribution/Violin_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
 # PCA plot
 PCAPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/
   # load gene name for further usage
-  cat(paste0("\u25CF Plotting PCA related plot\n"))
+  message(paste0("\u25CF Plotting PCA related plot\n"))
   csv.results <- ParseResultCSV(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group)
   case.normalized <- csv.results$case
   control.normalized <- csv.results$control
@@ -105,7 +105,7 @@ PCAPlot <- function(which.analysis, which.count.normalization, path.prefix, inde
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
   ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/PCA/Dimension_PCA_Plot_factoextra.png")), dpi = 300)
 
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/Dimension_PCA_Plot_factoextra.png"), "' has been created. \n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/Dimension_PCA_Plot_factoextra.png"), "' has been created. \n"))
   #var$coord: coordinates of variables to create a scatter plot
   #var$cos2: represents the quality of representation for variables on the factor map. It’s calculated as the squared coordinates: var.cos2 = var.coord * var.coord.
   #var$contrib: contains the contributions (in percentage) of the variables to the principal components. The contribution of a variable (var) to a given principal component is (in percentage) : (var.cos2 * 100) / (total cos2 of the component).
@@ -122,7 +122,7 @@ PCAPlot <- function(which.analysis, which.count.normalization, path.prefix, inde
     labs(title ="PCA Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
   ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_factoextra.png"), dpi = 300)
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_factoextra.png"), "' has been created. \n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_factoextra.png"), "' has been created. \n"))
 
   normalized.res.PCA = FactoMineR::PCA(normalized.trans, scale.unit=TRUE, ncp=2, quali.sup=length(normalized.trans), graph = FALSE)
   groups=c(case.group, control.group)
@@ -138,13 +138,13 @@ PCAPlot <- function(which.analysis, which.count.normalization, path.prefix, inde
     geom_hline(yintercept=0, linetype="dashed", color = "black") +
     geom_vline(xintercept=0, linetype="dashed", color = "black")
   ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_ggplot2.png"), dpi = 300)
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_ggplot2.png"), "' has been created. \n\n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
 #Correlation plot
 CorrelationPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group){
   # load gene name for further usage
-  cat(paste0("\u25CF Plotting Correlation plot\n"))
+  message(paste0("\u25CF Plotting Correlation plot\n"))
   csv.results <- ParseResultCSV(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group)
   case.normalized <- csv.results$case
   control.normalized <- csv.results$control
@@ -165,13 +165,13 @@ CorrelationPlot <- function(which.analysis, which.count.normalization, path.pref
   mtext(expression(bold("Correlation Dot Plot (corrplot)")))
   par(cex = cex.before)
   dev.off()
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Dot_Plot_corrplot.png"), "' has been created. \n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Dot_Plot_corrplot.png"), "' has been created. \n"))
 
   # Correlation_plot.png
   png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Bar_Plot_PerformanceAnalytics.png"), width=5, height=5, units="in", res=300)
   PerformanceAnalytics::chart.Correlation(res, histogram=TRUE, pch=19)
   dev.off()
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Bar_Plot_PerformanceAnalytics.png"), "' has been created. \n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Bar_Plot_PerformanceAnalytics.png"), "' has been created. \n"))
 
   # Correlation_heat_plot.png
   melted_res <- reshape2::melt(res)
@@ -192,7 +192,7 @@ CorrelationPlot <- function(which.analysis, which.count.normalization, path.pref
     coord_fixed()
   # Print the heatmap
   ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Heat_Plot_ggplot2.png"), dpi = 300)
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Heat_Plot_ggplot2.png"), "' has been created. \n\n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Heat_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
 ###################################################
@@ -201,7 +201,7 @@ CorrelationPlot <- function(which.analysis, which.count.normalization, path.pref
 # Volcano plot
 VolcanoPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group, condition.pval, condition.log2FC) {
   # load gene name for further usage
-  cat(paste0("\u25CF Plotting Volcano plot\n"))
+  message(paste0("\u25CF Plotting Volcano plot\n"))
   normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv"))
   ## Volcano plot
   # Make a basic volcano plot
@@ -230,7 +230,7 @@ VolcanoPlot <- function(which.analysis, which.count.normalization, path.prefix, 
     geom_vline(xintercept=1, linetype="dashed", color = "black") +
     geom_vline(xintercept=-1, linetype="dashed", color = "black")
   ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot_graphics.png"), dpi = 300)
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot_ggplot2.png"), "' has been created. \n\n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
 # MA plot
@@ -241,7 +241,7 @@ MAPlot <- function(which.analysis, which.count.normalization, path.prefix, indep
   case.size <- length(case.normalized)
   control.normalized <- csv.results$control
   control.size <- length(control.normalized)
-  cat(paste0("\u25CF Plotting MA plot\n"))
+  message(paste0("\u25CF Plotting MA plot\n"))
   normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, "_")[[1]][1], "_normalized_result.csv"))
   ## Ma plot
   ggplot(normalized_dataset, aes(x = log2(normalized_dataset[,1+case.size+control.size+3]), y = normalized_dataset$log2FC, colour = normalized_dataset$pval<condition.pval)) +
@@ -257,14 +257,14 @@ MAPlot <- function(which.analysis, which.count.normalization, path.prefix, indep
     theme(legend.position="top") +
     labs(color=paste0("p-value < ", condition.pval))
   ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/MA_Plot_ggplot2.png"), dpi = 300)
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/MA_Plot_ggplot2.png"), "' has been created. \n\n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/MA_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
 # PCA plot
 DEPCAPlot <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/
   # load gene name for further usage
-  cat(paste0("\u25CF Plotting PCA related plot\n"))
+  message(paste0("\u25CF Plotting PCA related plot\n"))
   DE.csv.results <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, split = "_")[[1]][1], "_normalized_DE_result.csv"))
   pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
   # This is to get the result of normalized count
@@ -285,7 +285,7 @@ DEPCAPlot <- function(which.analysis, which.count.normalization, path.prefix, in
     labs(title ="PCA Dimensions Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
   ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/DE/PCA/Dimension_PCA_Plot_factoextra.png")), dpi = 300)
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/Dimension_PCA_Plot_factoextra.png"), "' has been created. \n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/Dimension_PCA_Plot_factoextra.png"), "' has been created. \n"))
   #var$coord: coordinates of variables to create a scatter plot
   #var$cos2: represents the quality of representation for variables on the factor map. It’s calculated as the squared coordinates: var.cos2 = var.coord * var.coord.
   #var$contrib: contains the contributions (in percentage) of the variables to the principal components. The contribution of a variable (var) to a given principal component is (in percentage) : (var.cos2 * 100) / (total cos2 of the component).
@@ -302,7 +302,7 @@ DEPCAPlot <- function(which.analysis, which.count.normalization, path.prefix, in
     labs(title ="PCA Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
   ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_factoextra.png"), dpi = 300)
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_factoextra.png"), "' has been created. \n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_factoextra.png"), "' has been created. \n"))
 
   normalized.res.PCA = FactoMineR::PCA(normalized.trans, scale.unit=TRUE, ncp=2, quali.sup=length(normalized.trans), graph = FALSE)
   groups=c(case.group, control.group)
@@ -318,20 +318,20 @@ DEPCAPlot <- function(which.analysis, which.count.normalization, path.prefix, in
     geom_hline(yintercept=0, linetype="dashed", color = "black") +
     geom_vline(xintercept=0, linetype="dashed", color = "black")
   ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_ggplot2.png"), dpi = 300)
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_ggplot2.png"), "' has been created. \n\n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
 DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group) {
   # load gene name for further usage
-  cat(paste0("\u25CF Plotting Differential Expressed Heatmap related plot\n"))
+  message(paste0("\u25CF Plotting Differential Expressed Heatmap related plot\n"))
   DE.csv.results <- read.csv(paste0(path.prefix, "RNASeq_results/", which.analysis, "/", strsplit(which.analysis, split = "_")[[1]][1], "_normalized_DE_result.csv"))
   pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
 
   ## Maybe change !!!! temp !!
   DE.csv.results <- DE.csv.results[DE.csv.results$gene.name != ".",]
-  cat(paste0("     \u25CF Checking found differential express transcript term.\n"))
+  message(paste0("     \u25CF Checking found differential express transcript term.\n"))
   if (nrow(DE.csv.results) == 0) {
-    cat(paste0("          \u25CF (\u26A0) No term were found.\n\n"))
+    message(paste0("          \u25CF (\u26A0) No term were found.\n\n"))
   } else {
     DE.csv.results <- DE.csv.results[order(abs(DE.csv.results$log2FC), decreasing = TRUE),]
     DE.csv.results <- DE.csv.results[!duplicated(DE.csv.results$gene.name),]
@@ -339,16 +339,16 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
     DE.csv.normalized.count.only <- DE.csv.results[,2:(pre.pheno_data$case.group.size + pre.pheno_data$case.group.size + 1)]
     row.names(DE.csv.normalized.count.only) <- DE.csv.results$gene.name
     if (nrow(DE.csv.normalized.count.only) > 50) {
-      cat(paste0("          \u25CF Found ", nrow(DE.csv.normalized.count.only), " terms. More than 50 terms (Only plot top 50 smallest p value).\n"))
+      message(paste0("          \u25CF Found ", nrow(DE.csv.normalized.count.only), " terms. More than 50 terms (Only plot top 50 smallest p value).\n"))
       DE.csv.normalized.count.only <- DE.csv.normalized.count.only[seq_len(50),]
     } else {
-      cat(paste0("          \u25CF Found ", nrow(DE.csv.normalized.count.only), " terms.\n"))
+      message(paste0("          \u25CF Found ", nrow(DE.csv.normalized.count.only), " terms.\n"))
     }
-    cat(paste0("     \u25CF Calculating log2(", which.count.normalization, "+1).\n"))
+    message(paste0("     \u25CF Calculating log2(", which.count.normalization, "+1).\n"))
     log.data.frame <- log2(DE.csv.normalized.count.only+1)
     # Getting log control mean
     control.log.average <- rowMeans(log.data.frame[seq_len(pre.pheno_data$case.group.size)])
-    cat(paste0("     \u25CF Each log2(", which.count.normalization, "+1) minus average of control.\n"))
+    message(paste0("     \u25CF Each log2(", which.count.normalization, "+1) minus average of control.\n"))
     log.data.frame.minus <- log.data.frame - control.log.average
     df.new <- scale(log.data.frame.minus)
     pre.pheno_data <- RawCountPreData(path.prefix, independent.variable, case.group, control.group)
@@ -366,7 +366,7 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
 
     # Check Na(list) or Infinite(numeric)
     if (any(is.na((df.new)) | is.infinite((df.new)))) {
-      cat(paste0("(\u26A0) : There are invalid value after scaling DEG dataframe. Heatmap can't be drawn !\n\n"))
+      message(paste0("(\u26A0) : There are invalid value after scaling DEG dataframe. Heatmap can't be drawn !\n\n"))
     } else {
       # png(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), width=5, height=5, units="in", res=300)
       redgreen <- c("blue", "white", "red")
@@ -379,11 +379,11 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
                          annotation_col = annotation,
                          annotation_colors = anno_colors,
                          filename = paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"),
-                         units="in", fontsize = 10)
+                         units="in", fontsize = 7)
       # grid::grid.abline(intercept = 300, slope = 0)
       # theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
       # ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), dpi = 300)
-      cat(paste0("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), "' has been created. \n\n")
+      message(paste0("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), "' has been created. \n\n")
     }
   }
 }

@@ -5,7 +5,9 @@
 \title{Environment setting for RNA-Seq workflow in R shell}
 \usage{
 RNASeqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
-  sample.pattern, indices.optional, os.type, mkdir.bool = TRUE)
+  sample.pattern, indices.optional, os.type, install.hisat2 = TRUE,
+  install.stringtie = TRUE, install.gffcompare = TRUE,
+  install.samtools = TRUE, mkdir.bool = TRUE)
 }
 \arguments{
 \item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}

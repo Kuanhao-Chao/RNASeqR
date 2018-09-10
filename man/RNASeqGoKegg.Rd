@@ -5,7 +5,7 @@
 \title{GO functional analysis and KEGG pathway analysis for RNA-Seq workflow in R shell}
 \usage{
 RNASeqGoKegg(path.prefix, independent.variable, OrgDb.species,
-  go.level = 3, KEGG.organism)
+  go.level = 3, input.TYPE.ID, KEGG.organism)
 }
 \arguments{
 \item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}

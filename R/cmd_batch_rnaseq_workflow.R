@@ -17,9 +17,9 @@
 #'   fifth <- paste0("system2(command = 'nohup', args = \"", paste0("R CMD BATCH ", path.prefix, "Rscript/Ballgown_Process.R ", path.prefix, "Rscript_out/Ballgown_Process.Rout"), "\", stdout = \"\", wait = TRUE )")
 #'   writeLines(c(first, second, third, fourth, fifth), fileConn)
 #'   close(fileConn)
-#'   cat(paste0("\u2605 '", path.prefix, "Rscript/RNASeq_WORKFLOW.R' has been created.\n"))
+#'   message(paste0("\u2605 '", path.prefix, "Rscript/RNASeq_WORKFLOW.R' has been created.\n"))
 #'   if (run) {
 #'     system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/RNASeq_WORKFLOW.R ", path.prefix, "Rscript_out/RNASeq_WORKFLOW.Rout"), stdout = "", wait = FALSE )
-#'     cat(paste0("\u2605 RNASeq workflow is running in the background. Check current progress in '", path.prefix, "Rscript_out/'\n\n"))
+#'     message(paste0("\u2605 RNASeq workflow is running in the background. Check current progress in '", path.prefix, "Rscript_out/'\n\n"))
 #'   }
 #' }

@@ -1,6 +1,6 @@
 # Run ballgown analysi
 BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independent.variable, case.group, control.group, ballgown.pval, ballgown.log2FC) {
-  cat("\n\u2618\u2618 ballgown analysis ...\n")
+  message("\n\u2618\u2618 ballgown analysis ...\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/"))){
     dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/"))
   }
@@ -66,9 +66,9 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
   write.csv(ballgown.result[,c((2+3+case.group.size+control.group.size):(length(total.data.frame)))], file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   write.csv(ballgown.result, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv"), row.names=FALSE)
 
-  cat(paste0("     \u25CF Selecting differential expressed genes(ballgown) ==> p-value : ", ballgown.pval, "  log2(Fold Change) : ", ballgown.log2FC, " ...\n"))
+  message(paste0("     \u25CF Selecting differential expressed genes(ballgown) ==> p-value : ", ballgown.pval, "  log2(Fold Change) : ", ballgown.log2FC, " ...\n"))
   ballgown.result.DE <- ballgown.result[((ballgown.result$log2FC>ballgown.log2FC) | (ballgown.result$log2FC<(-ballgown.log2FC))) & (ballgown.result$pval<ballgown.pval), ]
-  cat(paste0("          \u25CF Total '", nrow(ballgown.result.DE), "' DEG have been found !!!\n"))
+  message(paste0("          \u25CF Total '", nrow(ballgown.result.DE), "' DEG have been found !!!\n"))
   write.csv(ballgown.result.DE, file = paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_normalized_DE_result.csv"), row.names=FALSE)
 
   # Check ballgown.result.DE before visulization!!
@@ -90,7 +90,7 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
     ###############
     #### PreDE ####
     ###############
-    if (nrow(ballgown.result) > 0) {
+    if (nrow(ballgown.result) > 1) {
       if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/preDE/"))){
         dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/preDE/"))
       }
@@ -114,26 +114,26 @@ BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independe
       # MA
       MAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group, ballgown.pval)
 
-      if (nrow(ballgown.result.DE) > 0) {
+      if (nrow(ballgown.result.DE) > 1) {
         # DE PCA plot
         DEPCAPlot("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
         # Heatmap
         DEHeatmap("ballgown_analysis", "FPKM", path.prefix, independent.variable, case.group, control.group)
       } else {
-        cat ("(\u26A0) No differential expressed gene terms found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
+        cat ("(\u26A0) Less than one differential expressed gene terms found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
       }
     } else {
-      cat ("(\u26A0) No gene terms found !!! Skip visualization step !!! \n\n")
+      cat ("(\u26A0) Less than one gene terms are found !!! Skip visualization step !!! \n\n")
     }
   } else {
-    cat("(\u2718) necessary file is missing!! Something ERROR happend during ballgown analysis!! Skip visualization!!\n\n")
+    message("(\u2718) necessary file is missing!! Something ERROR happend during ballgown analysis!! Skip visualization!!\n\n")
   }
 }
 
 # Transcription related plot
 BallgownTranscriptRelatedPlot <- function(path.prefix){
   # draw for distribution of transcript count per gene
-  cat(paste0("\u25CF Plotting Transcript related plot\n"))
+  message(paste0("\u25CF Plotting Transcript related plot\n"))
   texpr.read.csv <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/texpr.csv"))
   t2g.read.csv <- read.csv(paste0(path.prefix, "RNASeq_results/ballgown_analysis/ballgown_R_object/t2g.csv"))
   transcript_gene_table <- t2g.read.csv
@@ -149,7 +149,7 @@ BallgownTranscriptRelatedPlot <- function(path.prefix){
   legend("topright", legend_text, lty=NULL)
   par(cex = cex.before)
   dev.off()
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/Transcript_Related/Distribution_Transcript_Count_per_Gene_Plot.png"), "' has been created. \n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/Transcript_Related/Distribution_Transcript_Count_per_Gene_Plot.png"), "' has been created. \n"))
 
   # draw the distribution of transcript length
   full_table <- texpr.read.csv
@@ -163,7 +163,7 @@ BallgownTranscriptRelatedPlot <- function(path.prefix){
   legend("topright", legend_text, lty=NULL)
   par(cex = cex.before)
   dev.off()
-  cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/Transcript_Related/Distribution_Transcript_Length_Plot.png"), "' has been created. \n\n"))
+  message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/Transcript_Related/Distribution_Transcript_Length_Plot.png"), "' has been created. \n\n"))
 }
 
 

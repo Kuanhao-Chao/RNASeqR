@@ -62,10 +62,10 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam, num.parallel.threads = 1,
                    ', PreDECountTable.run = ', PreDECountTable.run, ')')
   writeLines(c(first, second), fileConn)
   close(fileConn)
-  cat(paste0("\u2605 '", path.prefix, "Rscript/Read_Process.R' has been created.\n"))
+  message(paste0("\u2605 '", path.prefix, "Rscript/Read_Process.R' has been created.\n"))
   if (run) {
     system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Read_Process.R ", path.prefix, "Rscript_out/Read_Process.Rout"), stdout = "", wait = FALSE)
-    cat(paste0("\u2605 RNASeq alignment, assembly, quantification, mergence, comparison, reads process are doing in the background. Check current progress in '", path.prefix, "Rscript_out/Read_Process.Rout'\n\n"))
+    message(paste0("\u2605 RNASeq alignment, assembly, quantification, mergence, comparison, reads process are doing in the background. Check current progress in '", path.prefix, "Rscript_out/Read_Process.Rout'\n\n"))
   }
 }
 
@@ -149,7 +149,7 @@ RNASeqReadProcess <- function(path.prefix, input.path.prefix, genome.name, sampl
 }
 
 PreRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C RNASeqReadProcess()' environment pre-check ...\n")
+  message("\u269C\u265C\u265C\u265C RNASeqReadProcess()' environment pre-check ...\n")
   phenodata.csv <- file.exists(paste0(path.prefix, "gene_data/phenodata.csv"))
   ref.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/", genome.name, ".gtf"))
   ref.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/", genome.name, ".fa"))
@@ -161,11 +161,11 @@ PreRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
   if (!isTRUE(validity)) {
     stop("RNASeqReadProcess() environment ERROR")
   }
-  cat("(\u2714) : RNASeqReadProcess() pre-check is valid\n\n")
+  message("(\u2714) : RNASeqReadProcess() pre-check is valid\n\n")
 }
 
 PostRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C RNASeqReadProcess()' environment post-check ...\n")
+  message("\u269C\u265C\u265C\u265C RNASeqReadProcess()' environment post-check ...\n")
   # Still need to add condition
   gene_abundance <- dir.exists(paste0(path.prefix, "gene_data/gene_abundance/"))
   check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=FALSE)
@@ -180,9 +180,9 @@ PostRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
   if (!isTRUE(validity)) {
     stop("RNASeqReadProcess() post-check ERROR")
   }
-  cat("(\u2714) : RNASeqReadProcess() post-check is valid\n\n")
-  cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-  cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-  cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  message("(\u2714) : RNASeqReadProcess() post-check is valid\n\n")
+  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
 }
 

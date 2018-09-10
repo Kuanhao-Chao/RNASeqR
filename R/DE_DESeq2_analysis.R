@@ -1,5 +1,5 @@
 DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.group, control.group, DESeq2.pval, DESeq2.log2FC) {
-  cat("\n\u2618\u2618 DESeq2 analysis ...\n")
+  message("\n\u2618\u2618 DESeq2 analysis ...\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis"))){
     dir.create(paste0(path.prefix, "RNASeq_results/DESeq2_analysis"))
   }
@@ -13,7 +13,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
   raw.count <- pre.de.pheno.data$gene.count.matrix
   raw.count.gene.name <- pre.de.pheno.data$gene.count.name
 
-  cat("\u25CF Creating 'DGEList' object from count matrix ... \n")
+  message("\u25CF Creating 'DGEList' object from count matrix ... \n")
   # creatin gene name data frame
   gene.data.frame <- data.frame(gene.name = raw.count.gene.name)
   # create design data.frame (independent.variable)
@@ -27,7 +27,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
 
   # creat DESeqDataSet
   # Rows of colData correspond to columns of countData
-  cat("\u25CF Creating 'DESeqDataSet' object from count matrix ... \n")
+  message("\u25CF Creating 'DESeqDataSet' object from count matrix ... \n")
   dds.from.matrix <- DESeq2::DESeqDataSetFromMatrix(countData = raw.count,
                                                     colData = colData,
                                                     design =  ~independent.variable)
@@ -64,9 +64,9 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
   write.csv(DESeq2.result[,c((2+3+case.group.size+control.group.size):(length(DESeq2.result)))], file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/normalized_&_statistic/statistic.csv"), row.names=FALSE)
   write.csv(DESeq2.result, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_result.csv"), row.names=FALSE)
 
-  cat(paste0("     \u25CF Selecting differential expressed genes(DESeq2) ==> padj-value : ", DESeq2.pval, "  log2(Fold Change) : ", DESeq2.log2FC, " ...\n"))
+  message(paste0("     \u25CF Selecting differential expressed genes(DESeq2) ==> padj-value : ", DESeq2.pval, "  log2(Fold Change) : ", DESeq2.log2FC, " ...\n"))
   DESeq2.result.DE <- DESeq2.result[((DESeq2.result$log2FC>DESeq2.log2FC) | (DESeq2.result$log2FC<(-DESeq2.log2FC))) & (DESeq2.result$pval<DESeq2.pval), ]
-  cat("          \u25CF Total '", length(row.names(DESeq2.result.DE)), "' DEG have been found !!")
+  message("          \u25CF Total '", length(row.names(DESeq2.result.DE)), "' DEG have been found !!")
   write.csv(DESeq2.result.DE, file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/DESeq2_normalized_DE_result.csv"), row.names=FALSE)
 
 
@@ -82,7 +82,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
     if(!dir.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/"))){
       dir.create(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/"))
     }
-    if (nrow(DESeq2.result) > 0) {
+    if (nrow(DESeq2.result) > 1) {
       ###############
       #### PreDE ####
       ###############
@@ -99,7 +99,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
       CorrelationPlot("DESeq2_analysis", "MRN", path.prefix, independent.variable, case.group, control.group)
 
       # dispersion plot
-      cat(paste0("\u25CF Plotting  Dispersion plot\n"))
+      message(paste0("\u25CF Plotting  Dispersion plot\n"))
       png(paste0(path.prefix, paste0("RNASeq_results/DESeq2_analysis/images/preDE/Dispersion_Plot.png")), width=5, height=5, units="in", res=300)
       cex.before <- par("cex")
       par(xpd=TRUE, cex = 0.7)
@@ -108,7 +108,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
       title("Dispersion plot")
       par(cex = cex.before)
       dev.off()
-      cat(paste0("(\u2714) : '", paste0("RNASeq_results/DESeq2_analysis/images/DE/Dispersion_Plot.png"), "' has been created. \n\n"))
+      message(paste0("(\u2714) : '", paste0("RNASeq_results/DESeq2_analysis/images/DE/Dispersion_Plot.png"), "' has been created. \n\n"))
 
       ############
       #### DE ####
@@ -120,7 +120,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
       VolcanoPlot("DESeq2_analysis", "MRN", path.prefix, independent.variable, case.group, control.group, DESeq2.pval, DESeq2.log2FC)
 
       # MA plot
-      cat(paste0("\u25CF Plotting  MA plot\n"))
+      message(paste0("\u25CF Plotting  MA plot\n"))
       png(paste0(path.prefix, paste0("RNASeq_results/DESeq2_analysis/images/DE/MA_Plot.png")), width=5, height=5, units="in", res=300)
       cex.before <- par("cex")
       par(xpd=TRUE, cex = 0.7)
@@ -129,10 +129,10 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
       title("MA (MD) Plot")
       par(cex = cex.before)
       dev.off()
-      cat(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/DE/MA_Plot.png"), "' has been created. \n\n"))
+      message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/DESeq2_analysis/images/DE/MA_Plot.png"), "' has been created. \n\n"))
 
       # Check DESeq2.result.DE before visulization!!
-      if (nrow(DESeq2.result.DE) > 0) {
+      if (nrow(DESeq2.result.DE) > 1) {
         # PCA plot
         DEPCAPlot("DESeq2_analysis", "MRN", path.prefix, independent.variable, case.group, control.group)
 
@@ -140,22 +140,22 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
         DEHeatmap("DESeq2_analysis", "MRN", path.prefix, independent.variable, case.group, control.group)
 
       } else {
-        cat ("(\u26A0) No differential expressed gene term found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
+        cat ("(\u26A0) Less than one differential expressed gene term found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
       }
     } else {
-      cat ("(\u26A0) No gene terms found !!! Skip visualization step !!! \n\n")
+      cat ("(\u26A0) Less than one gene terms found !!! Skip visualization step !!! \n\n")
     }
   } else {
-    cat("(\u2718) necessary file is missing!! Something ERROR happend during DESeq2 analysis!! Skip visualization!!\n\n")
+    message("(\u2718) necessary file is missing!! Something ERROR happend during DESeq2 analysis!! Skip visualization!!\n\n")
   }
   # # result function
   # #Set to Inf or FALSE to disable the resetting of p-values to NA.
   # # cooksCutoff : this test excludes the Cook's distance of samples belonging to experimental groups with only 2 samples.
   # # independentFiltering : whether independent filtering should be applied automatically
   # res <- DESeq2::results(dds, cooksCutoff=FALSE, independentFiltering=FALSE, contrast = c("independent.variable", case.group, control.group))
-  # cat(paste0("\n\u25CF Writing '", path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2_", case.group, "_vs_", control.group, "'\n"))
+  # message(paste0("\n\u25CF Writing '", path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2_", case.group, "_vs_", control.group, "'\n"))
   # write.csv(res, file = paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2/DESeq2_", case.group, "_vs_", control.group, ".csv"), row.names=FALSE)
-  # cat(paste0("\u25CF Plotting DESeq2 MA plot\n"))
+  # message(paste0("\u25CF Plotting DESeq2 MA plot\n"))
   # png(paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2/images/DESeq2_MA_plot.png"))
   # DESeq2::plotMA(dds,main="MAplot")
   # dev.off()
@@ -174,7 +174,7 @@ DESeq2RawCountAnalysis <- function(path.prefix, independent.variable,  case.grou
   #
   # # plot plotDispEsts
   # # plotDispEsts
-  # cat(paste0("\u25CF Plotting DESeq2 Dispersion plot\n"))
+  # message(paste0("\u25CF Plotting DESeq2 Dispersion plot\n"))
   # png(paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2/images/DESeq2_Dispersion_plot.png"))
   # DESeq2::plotDispEsts(dds, main="Dispersion plot")
   # dev.off()

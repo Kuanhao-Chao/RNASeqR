@@ -1,28 +1,28 @@
 # check 'gene_data' and subdirectory files exit
 ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print = TRUE) {
   if (print) {
-    cat("\uD83D\uDD0D\uD83D\uDD0D\uD83D\uDD0D Checking Files ...\n")
-    cat(paste0("************** Current progress of RNA-seq files in '", paste0(path.prefix, "gene_data/'"), " **************\n"))
+    message("\uD83D\uDD0D\uD83D\uDD0D\uD83D\uDD0D Checking Files ...\n")
+    message(paste0("************** Current progress of RNA-seq files in '", paste0(path.prefix, "gene_data/'"), " **************\n"))
   }
   # 1. Check .gtf file
   gtf.file <- file.exists(paste0(path.prefix, "gene_data", '/ref_genes/', genome.name, '.gtf'))
   if (isTRUE(gtf.file)) {
     if(print){
-      cat(c("(\u2714) :", paste0("'",path.prefix, "gene_data", '/ref_genes/', genome.name, '.gtf', "'"), "is exit\n\n"))
+      message(c("(\u2714) :", paste0("'",path.prefix, "gene_data", '/ref_genes/', genome.name, '.gtf', "'"), "is exit\n\n"))
     }
   } else {
-    cat(c("(\u2718) :", paste0("'",path.prefix, "gene_data", '/ref_genes/', genome.name, '.gtf', "'"), "is not exit\n"))
-    cat(c("     Put the", paste0("'",genome.name,".gtf", "'"), "file in", paste0("'",path.prefix, "gene_data", '/ref_genes/', "'"), "to fix the error.\n\n"))
+    message(c("(\u2718) :", paste0("'",path.prefix, "gene_data", '/ref_genes/', genome.name, '.gtf', "'"), "is not exit\n"))
+    message(c("     Put the", paste0("'",genome.name,".gtf", "'"), "file in", paste0("'",path.prefix, "gene_data", '/ref_genes/', "'"), "to fix the error.\n\n"))
   }
   # 2. Check .fa file
   fa.file <- file.exists(paste0(path.prefix, "gene_data", '/ref_genome/', genome.name, '.fa'))
   if (isTRUE(fa.file)) {
     if(print){
-      cat(c("(\u2714) :",paste0("'", path.prefix, "gene_data", '/ref_genome/', genome.name, '.fa', "'"), "is exit\n\n"))
+      message(c("(\u2714) :",paste0("'", path.prefix, "gene_data", '/ref_genome/', genome.name, '.fa', "'"), "is exit\n\n"))
     }
   } else {
-    cat(c("(\u2718) :",paste0("'", path.prefix, "gene_data", '/ref_genome/', genome.name, '.fa', "'"), "is not exit\n"))
-    cat(c("     Put the", paste0("'",genome.name,".fa", "'"), "file in", paste0("'",path.prefix, "gene_data", '/ref_genome/', "'"), "to fix the error.\n\n"))
+    message(c("(\u2718) :",paste0("'", path.prefix, "gene_data", '/ref_genome/', genome.name, '.fa', "'"), "is not exit\n"))
+    message(c("     Put the", paste0("'",genome.name,".fa", "'"), "file in", paste0("'",path.prefix, "gene_data", '/ref_genome/', "'"), "to fix the error.\n\n"))
   }
   # 3. Check .fastq.gz file
   fastq.gz.files <- list.files(path = paste0(path.prefix, "gene_data", '/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
@@ -30,36 +30,36 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
   if (fastq.gz.files.number != 0){
     if(print){
       for (i in fastq.gz.files){
-        cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_fastq.gz/', i, "'"), "is exit\n"))
+        message(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_fastq.gz/', i, "'"), "is exit\n"))
       }
-      cat(c("Total:", fastq.gz.files.number, "files\n\n"))
+      message(c("Total:", fastq.gz.files.number, "files\n\n"))
     }
   }else {
-    cat(c("(\u2718) :", paste0('\'',path.prefix, "gene_data", '/raw_fastq.gz/XXX_*.fastq.gz\''), "is not exit\n"))
-    cat(c("     Put the", paste0('XXX_*.fastq.gz'), "file in", paste0("'",path.prefix, "gene_data", '/raw_fastq.gz/', "'"), "to fix the error.\n\n"))
+    message(c("(\u2718) :", paste0('\'',path.prefix, "gene_data", '/raw_fastq.gz/XXX_*.fastq.gz\''), "is not exit\n"))
+    message(c("     Put the", paste0('XXX_*.fastq.gz'), "file in", paste0("'",path.prefix, "gene_data", '/raw_fastq.gz/', "'"), "to fix the error.\n\n"))
   }
   # 4. Check phenodata file
   phenodata.file <- file.exists(paste0(path.prefix, "gene_data", '/phenodata.csv'))
   if (isTRUE(phenodata.file)) {
     if(print){
-      cat(c("(\u2714) :", paste0("'",path.prefix, "gene_data", '/phenodata.csv', "'"), "is exit\n\n"))
+      message(c("(\u2714) :", paste0("'",path.prefix, "gene_data", '/phenodata.csv', "'"), "is exit\n\n"))
     }
   } else {
-    cat(c("(\u2718) :", paste0("'",path.prefix, "gene_data", '/phenodata.csv', "'"), "is not exit\n"))
-    cat(c("     Put the", paste0("'phenodata.csv'"), "file in", paste0("'",path.prefix, "gene_data", '/', "'"), "to fix the error.\n\n"))
+    message(c("(\u2718) :", paste0("'",path.prefix, "gene_data", '/phenodata.csv', "'"), "is not exit\n"))
+    message(c("     Put the", paste0("'phenodata.csv'"), "file in", paste0("'",path.prefix, "gene_data", '/', "'"), "to fix the error.\n\n"))
   }
   ht2.files <- list.files(path = paste0(path.prefix, "gene_data", '/indices/'), pattern = paste0("^", genome.name, "_tran.[0-9]*.ht2"), all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
   ht2.files.number <- length(ht2.files)
   if (ht2.files.number != 0) {
     if (print) {
       for (i in ht2.files){
-        cat(c("(\u2714) :",paste0("'",path.prefix, "gene_data", '/indices/', i, "'"), "is exit\n"))
+        message(c("(\u2714) :",paste0("'",path.prefix, "gene_data", '/indices/', i, "'"), "is exit\n"))
       }
-      cat(c("Total:", ht2.files.number, "files\n\n"))
+      message(c("Total:", ht2.files.number, "files\n\n"))
     }
   } else {
     if (print) {
-      cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/indices/', genome.name, '_tran.*.ht2\''), "is not exit\n"))
+      message(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/indices/', genome.name, '_tran.*.ht2\''), "is not exit\n"))
     }
   }
   # Target sam files !!
@@ -72,17 +72,17 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
       sam.check <- identical(target.sam.files, actual.found.sam.files)
       if (sam.check) {
         for ( i in actual.found.sam.files ) {
-          cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_sam/', i, "'"), "is exit\n"))
+          message(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_sam/', i, "'"), "is exit\n"))
         }
-        cat(c("Total:", sam.files.number, "files\n\n"))
+        message(c("Total:", sam.files.number, "files\n\n"))
       } else {
-        cat(c("(\u2718) : .SAM files checking is invalid!! \n\n"))
+        message(c("(\u2718) : .SAM files checking is invalid!! \n\n"))
         stop("SAM files checking ERROR")
       }
     }
   } else {
     if (print) {
-      cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_sam/XXX.sam\''), "is not exit\n"))
+      message(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_sam/XXX.sam\''), "is not exit\n"))
     }
   }
 
@@ -95,17 +95,17 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
       bam.check <- identical(target.bam.files, actual.found.bam.files)
       if (bam.check) {
         for (i in actual.found.bam.files){
-          cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_bam/', i, "'"), "is exit\n"))
+          message(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_bam/', i, "'"), "is exit\n"))
         }
-        cat(c("Total:", bam.files.number, "files\n\n"))
+        message(c("Total:", bam.files.number, "files\n\n"))
       } else {
-        cat(c("(\u2718) : .BAM files checking is invalid!! \n\n"))
+        message(c("(\u2718) : .BAM files checking is invalid!! \n\n"))
         stop("BAM files checking ERROR")
       }
     }
   }else {
     if (print) {
-      cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_bam/XXX.bam\''), "is not exit\n"))
+      message(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_bam/XXX.bam\''), "is not exit\n"))
     }
   }
 
@@ -118,17 +118,17 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
       gtf.check <- identical(target.gtf.files, actual.found.gtf.files)
       if (gtf.check) {
         for (i in actual.found.gtf.files){
-          cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_gtf/', i, "'"), "is exit\n"))
+          message(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/raw_gtf/', i, "'"), "is exit\n"))
         }
-        cat(c("Total:", gtf.files.number, "files\n\n"))
+        message(c("Total:", gtf.files.number, "files\n\n"))
       } else {
-        cat(c("(\u2718) : .GTF files checking is invalid!! \n\n"))
+        message(c("(\u2718) : .GTF files checking is invalid!! \n\n"))
         stop("GTF files checking ERROR")
       }
     }
   }else {
     if (print) {
-      cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_gtf/XXX.gtf\''), "is not exit\n"))
+      message(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/raw_gtf/XXX.gtf\''), "is not exit\n"))
     }
   }
   # Check stringtie merged gtf
@@ -139,13 +139,13 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
   if (gffcompare.related.dirs.number != 0){
     if (print) {
       for (i in gffcompare.related.dirs){
-        cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/merged/', i, "'"), "is exit\n"))
+        message(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/merged/', i, "'"), "is exit\n"))
       }
-      cat(c("Total:", gffcompare.related.dirs.number, "files\n\n"))
+      message(c("Total:", gffcompare.related.dirs.number, "files\n\n"))
     }
   }else {
     if (print) {
-      cat(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/merged/', "merged.", "XXX/"), "is not exit\n"))
+      message(c("(\u231B) :", paste0('\'', path.prefix, "gene_data", '/merged/', "merged.", "XXX/"), "is not exit\n"))
     }
   }
   ballgown.dirs <- list.files(path = paste0(path.prefix, "gene_data", '/ballgown/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
@@ -153,13 +153,13 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
   if (ballgown.dirs.number != 0){
     if (print) {
       for (i in ballgown.dirs){
-        cat(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/ballgown/', i, "'"), "is exit\n"))
+        message(c("(\u2714) :", paste0("'", path.prefix, "gene_data", '/ballgown/', i, "'"), "is exit\n"))
       }
-      cat(c("Total:", ballgown.dirs.number, "directories\n\n"))
+      message(c("Total:", ballgown.dirs.number, "directories\n\n"))
     }
   }else {
     if (print) {
-      cat(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/ballgown/', gsub(".fastq.gz", replacement = "", sample.pattern), "/"), "is not exit\n"))
+      message(c("(\u231B) :", paste0('\'',path.prefix, "gene_data", '/ballgown/', gsub(".fastq.gz", replacement = "", sample.pattern), "/"), "is not exit\n"))
     }
   }
   return(list(gtf.file.logic.df = gtf.file, fa.file.logic.df = fa.file,
@@ -183,12 +183,12 @@ ProgressGenesFiles <- function(path.prefix, genome.name, sample.pattern, print =
 
 # Add '~/RNASeq_bin/ to R environment "PATH"
 ExportPath <- function(path.prefix) {
-  cat("************** Adding PATH to R environment ************\n")
+  message("************** Adding PATH to R environment ************\n")
   old.path <- Sys.getenv("PATH")
   Sys.setenv(
     PATH = paste(old.path, paste0(path.prefix, "RNASeq_bin"), sep = ":")
   )
-  cat("\u27a4\u27a4 R environment 'PATH' : ", Sys.getenv("PATH"), "\n\n")
+  message("\u27a4\u27a4 R environment 'PATH' : ", Sys.getenv("PATH"), "\n\n")
 }
 
 ParseResultCSV <- function(which.analysis, which.count.normalization, path.prefix, independent.variable, case.group, control.group) {

@@ -34,7 +34,7 @@
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
-RNASeqGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, go.level = 3, KEGG.organism, run = TRUE, check.s4.print = TRUE) {
+RNASeqGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, go.level = 3, input.TYPE.ID, KEGG.organism, run = TRUE, check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -42,13 +42,13 @@ RNASeqGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, go.level = 3, K
   independent.variable <- RNASeqWorkFlowParam@independent.variable
   fileConn<-file(paste0(path.prefix, "Rscript/GO_KEGG_Analysis.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNASeqGoKegg(path.prefix = '", path.prefix, "', independent.variable = '", independent.variable, "', OrgDb.species = '", OrgDb.species, "', go.level = ", go.level, ", KEGG.organism = '",KEGG.organism, "')")
+  second <- paste0("RNASeqGoKegg(path.prefix = '", path.prefix, "', independent.variable = '", independent.variable, "', OrgDb.species = '", OrgDb.species, "', go.level = ", go.level, ", input.TYPE.ID = '", input.TYPE.ID, "', KEGG.organism = '",KEGG.organism, "')")
   writeLines(c(first, second), fileConn)
   close(fileConn)
-  cat(paste0("\u2605 '", path.prefix, "Rscript/GO_KEGG_Analysis.R' has been created.\n"))
+  message(paste0("\u2605 '", path.prefix, "Rscript/GO_KEGG_Analysis.R' has been created.\n"))
   if (run) {
     system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/GO_KEGG_Analysis.R ", path.prefix, "Rscript_out/GO_KEGG_Analysis.Rout"), stdout = "", wait = FALSE)
-    cat(paste0("\u2605 Tools are installing in the background. Check current progress in '", path.prefix, "Rscript_out/GO_KEGG_Analysis.Rout'\n\n"))
+    message(paste0("\u2605 Tools are installing in the background. Check current progress in '", path.prefix, "Rscript_out/GO_KEGG_Analysis.Rout'\n\n"))
   }
 }
 
@@ -86,7 +86,7 @@ RNASeqGoKegg_CMD <- function(RNASeqWorkFlowParam, OrgDb.species, go.level = 3, K
 #' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
 #'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
 #' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
-RNASeqGoKegg <- function(path.prefix, independent.variable, OrgDb.species, go.level = 3, KEGG.organism) {
+RNASeqGoKegg <- function(path.prefix, independent.variable, OrgDb.species, go.level = 3, input.TYPE.ID, KEGG.organism) {
   CheckOperatingSystem(FALSE)
   PreRNASeqGoKegg()
   raw.read.avail <- RawReadCountAvailability(path.prefix)
@@ -95,32 +95,32 @@ RNASeqGoKegg <- function(path.prefix, independent.variable, OrgDb.species, go.le
   } else {
     which.analyses <- c("ballgown_analysis", "TPM_analysis")
   }
-  cat("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  Start 'Gene Ontology', 'Kyoto Encyclopedia of Genes and Genomes' analyses  \u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
+  message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  Start 'Gene Ontology', 'Kyoto Encyclopedia of Genes and Genomes' analyses  \u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
   for(which.analysis in which.analyses) {
-    cat("\u2618\u2618 ", strsplit(which.analysis, "_")[[1]][1] , " analysis ...\n")
-    GOAnalysis(which.analysis, path.prefix, OrgDb.species, go.level)
-    KEGGAnalysis(which.analysis, path.prefix, OrgDb.species, KEGG.organism)
+    message("\u2618\u2618 ", strsplit(which.analysis, "_")[[1]][1] , " analysis ...\n")
+    GOAnalysis(which.analysis, path.prefix, OrgDb.species, go.level, input.TYPE.ID)
+    KEGGAnalysis(which.analysis, path.prefix, OrgDb.species, input.TYPE.ID, KEGG.organism)
   }
   PostRNASeqGoKegg()
 }
 
 PreRNASeqGoKegg <- function() {
-  cat("\u269C\u265C\u265C\u265C RNASeqGoKegg()' environment pre-check ...\n")
+  message("\u269C\u265C\u265C\u265C RNASeqGoKegg()' environment pre-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
     stop("RNASeqGoKegg() environment ERROR")
   }
-  cat("(\u2714) : RNASeqGoKegg() pre-check is valid\n\n")
+  message("(\u2714) : RNASeqGoKegg() pre-check is valid\n\n")
 }
 
 PostRNASeqGoKegg <- function() {
-  cat("\u269C\u265C\u265C\u265C RNASeqGoKegg()' environment post-check ...\n")
+  message("\u269C\u265C\u265C\u265C RNASeqGoKegg()' environment post-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
     stop("RNASeqGoKegg() post-check ERROR")
   }
-  cat("(\u2714) : RNASeqGoKegg() post-check is valid\n\n")
-  cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-  cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-  cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  message("(\u2714) : RNASeqGoKegg() post-check is valid\n\n")
+  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
 }

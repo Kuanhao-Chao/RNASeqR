@@ -53,10 +53,10 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam, ballgown.pval = 
   second <- paste0("RNASeqDifferentialAnalysis(path.prefix = '", path.prefix, "', genome.name = '", genome.name, "', sample.pattern = '", sample.pattern, "', independent.variable = '",independent.variable,  "', case.group = '",case.group,  "', control.group = '",control.group, "', ballgown.log2FC = ", ballgown.log2FC, ", ballgown.pval = ", ballgown.pval, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
-  cat(paste0("\u2605 '", path.prefix, "Rscript/Differential_Analysis.R' has been created.\n"))
+  message(paste0("\u2605 '", path.prefix, "Rscript/Differential_Analysis.R' has been created.\n"))
   if (run) {
     system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Differential_Analysis.R ", path.prefix, "Rscript_out/Differential_Analysis.Rout"), stdout = "", wait = FALSE)
-    cat(paste0("\u2605 Tools are installing in the background. Check current progress in '", path.prefix, "Rscript_out/Differential_Analysis.Rout'\n\n"))
+    message(paste0("\u2605 Tools are installing in the background. Check current progress in '", path.prefix, "Rscript_out/Differential_Analysis.Rout'\n\n"))
   }
 }
 
@@ -109,7 +109,7 @@ RNASeqDifferentialAnalysis <- function(path.prefix, genome.name, sample.pattern,
   if (file.exists(paste0(path.prefix, "Rscript_out/Read_Process.Rout"))) {
     Hisat2ReportAssemble(path.prefix, genome.name, sample.pattern)
   }
-  cat("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  Start 'ballgown', 'DESeq2' 'edgeR' analyses  \u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
+  message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  Start 'ballgown', 'DESeq2' 'edgeR' analyses  \u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
   BallgownAnalysis(path.prefix, genome.name, sample.pattern, independent.variable, case.group, control.group, ballgown.pval, ballgown.log2FC)
   TPMNormalizationAnalysis(path.prefix, genome.name, sample.pattern, independent.variable, case.group, control.group, TPM.pval, TPM.log2FC)
   raw.read.avail <- RawReadCountAvailability(path.prefix)
@@ -122,22 +122,22 @@ RNASeqDifferentialAnalysis <- function(path.prefix, genome.name, sample.pattern,
 
 
 PreRNASeqDifferentialAnalysis <- function(path.prefix, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C RNASeqDifferentialAnalysis()' environment pre-check ...\n")
+  message("\u269C\u265C\u265C\u265C RNASeqDifferentialAnalysis()' environment pre-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
     stop("RNASeqDifferentialAnalysis() environment ERROR")
   }
-  cat("(\u2714) : RNASeqDifferentialAnalysis() pre-check is valid\n\n")
+  message("(\u2714) : RNASeqDifferentialAnalysis() pre-check is valid\n\n")
 }
 
 PostRNASeqDifferentialAnalysis <- function(path.prefix, sample.pattern) {
-  cat("\u269C\u265C\u265C\u265C RNASeqDifferentialAnalysis()' environment post-check ...\n")
+  message("\u269C\u265C\u265C\u265C RNASeqDifferentialAnalysis()' environment post-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
     stop("RNASeqDifferentialAnalysis() post-check ERROR")
   }
-  cat("(\u2714) : RNASeqDifferentialAnalysis() post-check is valid\n\n")
-  cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-  cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-  cat(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  message("(\u2714) : RNASeqDifferentialAnalysis() post-check is valid\n\n")
+  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
 }

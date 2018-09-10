@@ -49,21 +49,23 @@ The central concept for designing `RNASeqWorkflow` is that **each step in RNA-Se
 5. `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`: Run differential analysis step.
 6. `RNASeqGoKegg_CMD()` or `RNASeqGoKegg()`: Do GO and KEGG analysis.
 
-Functions with `CMD` suffix create an R script and process in background. Functions with no `CMD` suffix process in R shell. After running the above functions, the whole RNA-Seq analysis is done and generated files in each step will be stored in organized file directory. `RNASeqWorkflow` package makes two-group RNA-Seq analysis **more efficient** and **easier** for users.
+Functions with `CMD` suffix create an R script and run `nohup R CMD BATCH script.R` in background. Functions with no `CMD` suffix process in R shell. After running the above functions, the whole RNA-Seq analysis is done and generated files in each step will be stored in organized file directory. `RNASeqWorkflow` package makes two-group RNA-Seq analysis **more efficient** and **easier** for users.
 
-
+# Samples
 
 # System Requirement
 Necessary:
 
 1. Operating System: 'Linux' and 'macOS' are supported in `RNASeqWorkflow` package. 'Windows' is not supported. (Because `StringTie` and `Hisat2` are not available for 'Windows') 
-2. C Environment for `SAMtools`: `Samtools` source code will be installed and compiled.
-3. `HISAT2` indexex: Users are strongly advised to provide *'indices/'* directory in *'inputfiles/'*. If not provided, `HISAT2` requires at least 160 GB of RAM and several hours to index the entire human genome.
+2. During 'Environment Setup' step, you can choose whether you want to skip the installation of `HISAT2`, `StringTie`, `Gffcompare` and `SAMtools`. If you want to skip certain program installation, please make sure the command of program that you skip is available by running `system2()` through R shell. 
+3. By default, `HISAT2`, `StringTie` and `Gffcomapre` binaries will be installed based on your operating system. 
+4. C Environment for `SAMtools`. Different from `HISAT2`, `StringTie` and `Gffcomapre`, `SAMtools` source code will be installed and compiled rather than binaries. More details about [SAMtools requirement](https://github.com/samtools/samtools/blob/develop/INSTALL).
+5. `HISAT2` indexex: Users are advised to provide *'indices/'* directory in *'inputfiles/'*. `HISAT2` requires at least 160 GB of RAM and several hours to index the entire human genome.
 
 Recommended: 
 
 1. Python: Python2 or Python3.
-2. `2to3`: If the Python version in the system is 3, then this command will be used. Generally, `2to3` is available if Python3 is available. 
+2. `2to3`: If the Python version in the system is 3, then this command will be used in the following analysis step. Generally, `2to3` is available if Python3 is available. 
     (Python and `2to3` is used for creating raw reads count for [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) and [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html). If these commands are not available, DESeq2 and edgeR analysis will be skipped.) 
 
 
@@ -79,6 +81,7 @@ There are 11 slots in `RNASeqWorkFlowParam`:
 3. `python.2to3` : Availability of `2to3` command. Value is `TRUE` or `FALSE`.
 4. `path.prefix` : Path prefix of *'gene_data/'*, *'RNASeq_bin/'*, *'RNASeq_results/'*, *'Rscript/'* and *'Rscript_out/'* directories. It is recommended to create a new directory with out any file inside and all the following RNA-Seq results will be installed in it.
 ![](https://i.imgur.com/kNAHSrN.png)
+
 5. `input.path.prefix` : Path prefix of *'input_files/'* directory. User have to prepare an *'input_file/'* directory with the following rules:
     * **`genome.name`.fa** : reference genome in FASTA file formation.
     * **`genome.name`.gtf** : gene annotation in GTF file formation.
@@ -115,20 +118,34 @@ There are 11 slots in `RNASeqWorkFlowParam`:
 
 ## Example
 ```{r}
-# exp <- RNASeqWorkFlowParam(path.prefix = NA, input.path.prefix = NA, 
-# genome.name = NA, sample.pattern = NA, independent.variable = NA, 
-# control.group = NA, experiment.group = NA)
+library(RNASeqWorkflow)
+library(RNASeqWorkflowData)
+```
+```{r}
+input_files.path <- system.file("extdata/", package = "RNASeqWorkflowData")
+rnaseq_result.path <- "/tmp/yeast_example/"
+dir.create(rnaseq_result.path)
+list.files(input_files.path, recursive = TRUE)
+```
+Check the files in *'inputfiles/'* directory.
+
+```{r}
+exp <- RNASeqWorkflowParam(path.prefix = rnaseq_result.path, 
+                           input.path.prefix = input_files.path, 
+                           genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", 
+                           sample.pattern = "SRR[0-9]*_XV",
+                           independent.variable = "state", 
+                           case.group = "60mins_ID20_amphotericin_B", 
+                           control.group = "60mins_ID20_control")
 ```
 In this example, `RNASeqWorkFlowParam` S4 object is store in `exp` for subsequent RNA-Seq analysis steps. Any ERROR occured in checking steps will terminate the program.
 
 
-
-
-# Environment Set up
+# Environment Setup
 
 This is the **first necessary step** of RNA-Seq workflow in this package. To set up the environment, run `RNASeqEnvironmentSet_CMD()` to execute process in background or run `RNASeqEnvironmentSet()` to execute process in R shell.
 
-## Files Set up
+## Files Setup
 1. Create Base Directories. *'gene_data/'*, *'RNASeq_bin/'*, *'RNASeq_results'*, *'Rscript'* and *'Rscript_out'* will be created under `path.prefix` directory. Here are the usage of these five main directories: 
     * *'gene_data/'*: Symblic links of *'input_files/'* and files that are created in each step of RNA-Seq analysis will be stored in this directory.  
     * *'RNASeq_bin/'*: The binaries of necessary tools, HISAT2, SAMtools, StringTie and Gffcompare, are installed in this directory.
@@ -139,8 +156,9 @@ This is the **first necessary step** of RNA-Seq workflow in this package. To set
 2. Symbolic links will be created from files in *'input_files/'* to `path.prefix` directory. 
 
 ## Necessary Tools Installation
-The operating system of your workstation will be detected. If the operating system is other than `Linux` and `macOS`, ERROR will be reported. HISAT2, SAMtools, StringTie and Gffcompare will be installed automatically.
+The operating system of your workstation will be detected. If the operating system is other than `Linux` and `macOS`, ERROR will be reported. You can choose whether you want to install programs automatically or not. Four programs, HISAT2, SAMtools, StringTie and Gffcompare, are necessary for the following analysis workflow. In `RNASeqEnvironmentSet_CMD()` and `RNASeqEnvironmentSet()` functions, there are four parameters, `install.hisat2`, `install.stringtie`, `install.gffcompare`, and `install.samtools`, that you can set to determin whether particular softwares are going to be installed automatically or not. Defualt values are `TRUE` and these four programs will be installed by default. If you want to skip the installation process of particular program, you can set the parameter value to `FALSE`. But please make sure that the program you skipped in installation process is available by running `system2()` through R shell. Availability of these commands will be checked at the end of this environment setup function. Any unavailability of the commands will cause fail in 'Environment Setup' step.
 
+If the parameter values are `TRUE`, these four tools will be installed:
 * HISAT2
     * Based on your operating system, `hisat2-2.1.0-Linux_x86_64.zip` or `hisat2-2.1.0-OSX_x86_64.zip` zipped file will be installed.
     * Installed file will be unzipped and all binary files will be copied under *'RNASeq_bin/'*
@@ -161,16 +179,21 @@ The operating system of your workstation will be detected. If the operating syst
 
 
 ## Example
+Run `RNASeqEnvironmentSet_CMD()` or `RNASeqEnvironmentSet()`. 
 1. Run in background
 Result will be reported in *'Rscript_out/Environment_Set.Rout'*. Make sure the environment is successfully set up before running the subsequent steps.
-```{r}
-# RNASeqEnvironmentSet_CMD()
+```{r, eval=FALSE}
+RNASeqEnvironmentSet_CMD(exp)
 ```
 
 2. Run in R shell 
 Result will be reported in R shell. Make sure the environment is successfully set up before running the subsequent steps.
 ```{r}
-# RNASeqEnvironmentSet()
+RNASeqEnvironmentSet(exp@path.prefix, 
+                     exp@input.path.prefix, 
+                     exp@genome.name, 
+                     exp@sample.pattern, 
+                     exp@indices.optional, exp@os.type)
 ```
 
 
@@ -189,21 +212,24 @@ In this process, [systemPipeR](http://bioconductor.org/packages/release/bioc/htm
 5. Remove *'rnaseq/'* directory.
 
 ## Example
+Run `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()`. 
 1. Run in background
 Result will be reported in *'Rscriptout/Quality_Assessment.Rout'*. Make sure quality assessment is successfully done before running the subsequent steps.
-```{r}
-# RNASeqQualityAssessment_CMD()
+```{r, eval=FALSE}
+RNASeqQualityAssessment_CMD(exp)
 ```
 
 2. Run in R shell 
 Result will be reported in R shell. Make sure quality assessment is successfully done before running the subsequent steps.
 ```{r}
-# RNASeqQualityAssessment()
+RNASeqQualityAssessment(exp@path.prefix,
+                        exp@input.path.prefix, 
+                        exp@sample.pattern)
 ```
 
 # `FASTQ` Files Quality Trimming
 
-This is an **optional step** of RNA-Seq workflow in this package. However, it is strongly recommended to do it if the result of quality assessment is unsatisfied. To trim the raw reads in `FASTQ` files, run `RNASeqQualityTrimming_CMD()` to execute process in background or run `RNASeqQualityTrimming()` to execute process in R shell. After trimming process, it is strongly recommended to redo quality assessment step. Different quality assessment result will be stored in different directories with index of processing order.
+This is an **optional step** of RNA-Seq workflow in this package. However, it is recommended to do it if the result of quality assessment is unsatisfied. To trim the raw reads in `FASTQ` files, run `RNASeqQualityTrimming_CMD()` to execute process in background or run `RNASeqQualityTrimming()` to execute process in R shell. After trimming process, it is strongly recommended to redo quality assessment step. Different quality assessment result will be stored in different directories with index of processing order.
 
 ## "ShortRead" Quality Trimming
 In this process, [ShortRead](http://bioconductor.org/packages/release/bioc/html/ShortRead.html) package is used for quality trimming. Followings are trimming steps and method explanation.
@@ -215,16 +241,20 @@ In this process, [ShortRead](http://bioconductor.org/packages/release/bioc/html/
 5. It is strongly recommended to run `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()` for quality assessment after quality trimming.
 
 ## Example
+Run `RNASeqQualityTrimming_CMD()` or `RNASeqQualityTrimming()`. 
 1. Run in background
 Result will be reported in *'Rscript_out/Quality_Trimming.Rout'*. Make sure quality trimming is successfully done before running the subsequent steps.
-```{r}
-# RNASeqQualityAssessment_CMD()
+```{r, eval=FALSE}
+RNASeqQualityTrimming_CMD(exp)
 ```
 
 2. Run in R shell 
 Result will be reported in R shell. Make sure quality assessment is successfully done before running the subsequent steps.
-```{r}
-# RNASeqQualityAssessment()
+```{r, eval=FALSE}
+RNASeqQualityTrimming(exp@path.prefix, 
+                      exp@sample.pattern,
+                      cum.error = 1, 
+                      reads.length.limit = 36)
 ```
 
 # Reads Process (Alignment, Assembly, Gffcompare, Quantification)
@@ -339,46 +369,112 @@ Whether this step is executed depends on the availability of Python on your work
 4. Write *'RNASeq_results/COMMAND.txt'*
     * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
 
+
+
 ## Example
+Run `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`. 
 1. Run in background
 Result will be reported in *'Rscriptout/Raw_Read_Process.Rout'*. Make sure raw read process is successfully done before running the subsequent steps.
-```{r}
-# RNASeqRawReadProcess_CMD()
+```{r, eval=FALSE}
+RNASeqReadProcess_CMD(exp)
 ```
 
 2. Run in R shell 
 Result will be reported in R shell. Make sure raw read process is successfully done before running the subsequent steps.
 ```{r}
-# RNASeqRawReadProcess()
+python.variable <- exp@python.variable
+python.variable.answer <- python.variable$check.answer
+python.variable.version <- python.variable$python.version
+RNASeqReadProcess(exp@path.prefix, 
+                  exp@input.path.prefix, 
+                  exp@genome.name, 
+                  exp@sample.pattern, 
+                  python.variable.answer, 
+                  python.variable.version, 
+                  exp@python.2to3, 
+                  num.parallel.threads = 10, 
+                  exp@indices.optional)
 ```
 
 
-# Differential Gene Expression Analysis
+# Differential Expression Analysis
+This is the **third necessary step** of RNA-Seq workflow in this package. To do differential expression analysis, run `RNASeqDifferentialAnalysis_CMD()` to execute process in background or run `RNASeqDifferentialAnalysis()` to execute process in R shell. In `RNASeqWorkflow` package, we provide four ways to do differential expression analysis: ballgown, TPM & Student t-test, DESeq2 and edgeR. Gene ids reported by StringTie(raw reads count) and ballgown(result) will be mapped to 'gene_name' provided in `GTF` file. 'gene_name' will be used to do gene functional analysis and pathway analysis in the next step.(!!!Functional 還有一些問題～ 這週要和學姊討論一下!!!)
+
+## Alignment Report
+If you run `RNASeqRawReadProcess_CMD()` in the previous step, *'Rscript_out/Read_Process.Rout'* will be created and in the beginning of this step, alignment results, a`CSV` file and a `PNG` file, will be reported. 
+![](https://i.imgur.com/nnukigW.png)
 
 
-This is the **third necessary step** of RNA-Seq workflow in this package. To do differential gene expression analysis, run `RNASeqDifferentialAnalysis_CMD()` to execute process in background or run `RNASeqDifferentialAnalysis()` to execute process in R shell. In `RNASeqWorkflow` package, we provide four ways to do differential analysis: ballgown, TPM & Student t-test, DESeq2 and edgeR.
+## General Visualization
+'ballgown', 'TPM & Student t-test', 'DESeq2' and 'edgeR' will be processed in order in this step. After doing differential expression analysis, results of each method will be visualized and stored in *'RNASeq_results/'*. The pictures showed in the following steps are the visualization result of data in `RNASeqWorkflowData` experiment package. The detail steps and the method-specific plots in each method will be discussed sperately later. Here we focus on the some general plots that will be created and stored in the directories of these four differential analysis tools. We only show ballgown result plots as an example. The following are the general plots(ballgown): 
 
-Before running this step, the raw reads count *'gene_data/reads_count_matrix/gene_count_matrix.csv'*, which is generated in the previous step, will be trimmed. The reads sum of each row equals `0` will be filtered out. And due to the reason that genes have different isoform, the reads of different gene ID in StringTie that maps to same gene name will be considered as same gene and be added and merged into one row. Trimmed gene raw reads count will be the input of DESeq2 and edgeR.
-
-After finding differential expressed genes, some general plots will be drawn in each differential analysis tool. The following are the plots:
 * Pre differential analysis sample profile related plot:
-    * Frequency Plot:
-        The frequency of normalized values will be drawn by using [rafalib](https://cran.r-project.org/web/packages/rafalib/index.html) package. X axis is `log2(normalized_values)`; Y axis is `Frequency`. 
-    * Box Plot & Violin Plot: 
-        The distribution normalized values of each sample will be drawn by [ggplot2](https://ggplot2.tidyverse.org) package. X axis is `Samples`; Y axis is `Log2(normalized_values+1)`. 
-    * PCA Plot : 
-        The principal components analysis(PCA) will be calculated on normalized values by [FactoMineR](http://factominer.free.fr) and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) packages. One dimension bar plot ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html)), two PCA plots ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html)) will be created.
+    * Frequency Plots:
+        * *'Frequency_Plot_normalized_count_ggplot2.png'*
+            The frequency of normalized reads count(In ballgown is **FPKM**). The range of x axis(**FPKM**) is from 0% of data minus 20(smallest **FPKM** values - 20) to 90% of data plus 20. It is drawn by [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html).
+            ![](https://i.imgur.com/pUpNdP9.png)
+
+        * *'Frequency_Plot_log_normalized_count_ggplot2.png'* 
+            The frequency of log base two of normalized reads count plus one(in ballgown is **log<sub>2</sub>(FPKM+1)**). The range of x axis(**log<sub>2</sub>(FPKM+1)**) is from 0% of data minus 5(smallest **log<sub>2</sub>(FPKM+1)** - 5) to 99% of data plus 5. It is drawn by [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html).
+            ![](https://i.imgur.com/gtMiRxD.png)
+
+    * Distribution Plots:
+        * *'Box_Plot_ggplot2.png'*
+            The distribution of log base two of normalized reads count plus one(in ballgown is **log<sub>2</sub>(FPKM+1)**) depicting groups of numerical . Case is on left-hand side in turquoise and control is on right-hand side in yellow. It is drawn by [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html).
+            ![](https://i.imgur.com/TdarWeN.png)
+
+        * *'Violin_Plot_ggplot2.png'*
+            The distribution of log base two of normalized reads count plus one(in ballgown is **log<sub>2</sub>(FPKM+1)**) of each sample. Case is on left-hand side in green and control is on right-hand side in yellow. It is drawn by [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html).
+            ![](https://i.imgur.com/jRutkEJ.png)
+
+    * PCA Plots:
+        In principal component analysis(PCA) test before differential expression analysis, we use [FactoMineR](https://cran.r-project.org/web/packages/FactoMineR/index.html) package to calculate principal component scores and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) to extract and visualize the results of principal component scores. Three plots are provided.
+        * *'Dimension_PCA_Plot_factoextra.png'*
+            Percentage of explained variances in top five dimensions are plotted. The top two percentage of explained variance will be used to plot PCA plot.
+            ![](https://i.imgur.com/9afaxiL.png)
+
+        * *'PCA_Plot_factoextra.png'*
+            This PCA plot is drawn by `fviz_pca_ind()` function in [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html). Case group is in green and control group is in yellow. The smaller points represent the individual samples and the bigger points represent the average of case group samples and control group samples. Ellipses will be added for case and control group samples.
+            ![](https://i.imgur.com/Ca5ccih.png)
+
+        * *'PCA_Plot_ggplot2.png'*
+            This PCA plot is drawn directly by [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) with principal component scores calculated by [FactoMineR](https://cran.r-project.org/web/packages/FactoMineR/index.html) package. Case group is in green and control group is in yellow.
+            ![](https://i.imgur.com/gxtupGV.png)
+
     * Correlation Plot : 
-        The correlation of each pair of samples will be calculated. One correlation dot plot ([corrplot](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)), one correlation bar plot ([PerformanceAnalytics](https://cran.r-project.org/web/packages/PerformanceAnalytics/PerformanceAnalytics.pdf)) and one correlation heat plot ([ggplot2](https://ggplot2.tidyverse.org)) will be created.
-            
+        * *'Correlation_Heat_Plot_ggplot2.png'*
+            Correlations between each pair of samples is calculated by using [R Stats](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/00Index.html#S) package and drawn by [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html). Maximum correlation(1) is in red and minimum correlation in all sample pairs is in blue. 
+            ![](https://i.imgur.com/RZiNOAV.png)
+
+        * *'Correlation_Dot_Plot_corrplot.png'*
+            Correlation dot plot is drawn by `corrplot()` function in [corrplot](https://cran.r-project.org/web/packages/corrplot/index.html) package. Maximum correlation(1) is in red and minimum correlation in all sample pairs is in blue. 
+            ![](https://i.imgur.com/Lp8H2Ax.png)
+
+        * *'Correlation_Bar_Plot_PerformanceAnalytics.png'*
+            Correlation bar plot is drawn by `chart.Correlation()` function in [PerformanceAnalytics](https://cran.r-project.org/web/packages/PerformanceAnalytics/index.html) package. 
+            ![](https://i.imgur.com/NIMH2l7.png)
+
 * Differential analysis related plot
     * Volcano Plot : 
-        The upregulated and downregulated genes will colored with red and green. X axis is `log2(Fold Change)`; Y axis is `log2(p value)`. It is drawn by [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html) package. 
+        * *'Volcano_Plot_graphics.png'*
+            Volcano plot is drawn by [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html). X axis is log base two of fold change(**log<sub>2</sub>(fold change)**); Y axis is negative log base ten of p-value(**log<sub>10</sub>(p-value)**). The upregulated and downregulated genes are colored with red and green.
+            ![](https://i.imgur.com/VBWAaDn.png)
+
     * PCA Plot : 
-        The principal components analysis(PCA) of selected differential expressed genes will be calculated on their normalized values by [FactoMineR](http://factominer.free.fr) and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) packages. One dimension bar plot ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html)), two PCA plots ([factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [graphics](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/00Index.html)) will be created.
-    * Heatmap Plot : 
-        Heatmap will be ploted by using [pheatmap](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) package.
+        After differential expression(DE) analysis, principal component analysis is done again. Same as pre-DE PCA, we use [FactoMineR](https://cran.r-project.org/web/packages/FactoMineR/index.html) package to calculate principal component scores and [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) to extract and visualize the results of principal component scores. Three plots are provided.
+        * *'Dimension_PCA_Plot_factoextra.png'*
+            ![](https://i.imgur.com/mlhYyfo.png)
+
+        * *'PCA_Plot_factoextra.png'*
+            ![](https://i.imgur.com/8Dm7RLz.png)
+
+        * *'PCA_Plot_ggplot2.png'*
+            ![](https://i.imgur.com/OSIp8t1.png)
             
+    * Heatmap Plot :
+        * *'Heatmap_Plot_pheatmap.png'* 
+            Heatmap is drawn by `pheatmap()` function in [pheatmap](https://cran.r-project.org/web/packages/pheatmap/index.html) package. Log base 2 of normalized count plus one(**log<sub>2</sub>(FPKM+1)** for ballgown) is calculated first. All calculated sample values substract mean of case group sample values(**log<sub>2</sub>(case_mean_FPKM+1) - log<sub>2</sub>(each_FPKM+1)** ) will be used to drawn this heatamp. Case group samples are on the left in green and control group samples are on the right in yellow. 
+            ![](https://i.imgur.com/8e8F1mn.png)
 
 ## "ballgown" Analysis
 
@@ -389,13 +485,14 @@ After finding differential expressed genes, some general plots will be drawn in 
 
 1. `ballgown` object is created and written in *'RNASeqresults/ballgownanalysis/ballgownRobject/ballgown.rda'*. 
 2. Row of extracted statistic results from created ballgown object with `pval` equals `0` or `qval` equals `0` will be filterd out. Log 2 fold change value will be calculated as column name `log2FC`.
-3. The row sum of sample FPKM values equal '0' will be filter out. According to the *'gene_data/phenodata.csv'* file, normalized count will be seperated into case and control group with column name *`sample.pattern.FPKM`*.
+3. The row sum of sample FPKM values equals '0' will be filter out. Moreover, row of extracted statistic results from created ballgown object with `pval` equals `0` or `qval` equals `0` will be filterd out. Log 2 fold change value will be calculated as column name `log2FC`. According to the *'gene_data/phenodata.csv'* file, normalized count will be seperated into case and control group with column name *`sample.pattern.FPKM`*.
 4. A report `CSV` file combined with normalized FPKM count, average of case group, control group and statistic results will be stored as *'RNASeq_results/ballgown_analysis/ballgown_normalized_result.csv'*.
 5. Differential expressed gene result *'RNASeq_results/ballgown_analysis/ballgown_normalized_DE_result.csv'* is reported. Default selecting threshold is **`pval < 0.05` and `log2FC > 1 | log2FC < 1`** 
-6. Visualization. The plots mentioned above and the following plot will be drawn.
+6. Visualization. The general plots mentioned above and the following plot will be drawn.
     * Differential analysis related plot
         * MA Plot : 
             The plot visualizes the differences between case and control by transforming the data onto X axis `log2FC` and Y axis `log2(FPKM.mean)`. It is drawn by [ggplot2](https://ggplot2.tidyverse.org) package.
+            ![](https://i.imgur.com/dGVeXzE.png)
  
 ## TPM & Student t-test Analysis
 
@@ -404,40 +501,47 @@ Normalized count is represented as TPM values. The statistic model used here is 
 * Input: *gene_data/ballgown/*
 * Output: *RNASeq_results/TPM_analysis/*
 
-1. Calculate TPM values from [ballgown](https://www.bioconductor.org/packages/release/bioc/html/ballgown.html) FPKM values and save with column name *`sample.pattern.FPKM`*.
+1. Calculate TPM values from [ballgown](https://www.bioconductor.org/packages/release/bioc/html/ballgown.html) FPKM values and save with column name *`sample.pattern.FPKM`* FPKM values.
 2. Use Student's t-test to calculate p-value and saved as column name `pval`.
 3. Calculate fold change values as dividing average TPM values of control group by average TPM values of case group (Average case TPM / Average control TPM) with column name `fc`. Log2 fold change is also calculated and stored as `log2FC`.
-
 4. A report `CSV` file combined with normalized TPM count, average of case group, control group and statistic results will be stored as *'RNASeq_results/TPM_analysis/TPM_normalized_result.csv'*.
 5. Differential expressed gene result *'RNASeq_results/TPM_analysis/TPM_normalized_DE_result.csv'* is reported. Default selecting threshold is **`pval < 0.05` and `log2FC > 1 | log2FC < 1`** 
-6. Visualization. The plots mentioned above and the following plot will be drawn.
+6. Visualization. The general plots mentioned above and the following plot will be drawn.
     * Differential analysis related plot
         * MA Plot : 
             The plot visualizes the differences between case and control by transforming the data onto X axis `log2FC` and Y axis `log2(TPM.mean)`. It is drawn by [ggplot2](https://ggplot2.tidyverse.org) package.
+            ![](https://i.imgur.com/MdJgEzO.png)
 
 ## "DESeq2" Analysis
 
 [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) estimate variance-mean dependence in raw reads count ([DESeq2 document](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)). The statistic model for differential expression is using negative binomial distributionl. [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) package takes sequence depth and RNA composition into consideration and use median of ratios normalization(MRN) method to count normalization ([related site](https://hbctraining.github.io/DGE_workshop/lessons/02_DGE_count_normalization.html)). The follwing are the analysis steps.
 
 * Input: *gene_data/reads_count_matrix/gene_count_matrix.csv*
+    (Row sum of gene raw reads count that equals `o` will be filtered out)
 * Output: *RNASeq_results/ballgown_analysis/*
 
 1. Create `DESeqDataSet` object from raw reads count of genes by running `DESeqDataSetFromMatrix()` function in DESeq2.
 2. Run `DESeq2()` function to do differential gene analysis.
 3. A report `CSV` file combined with normalized MRN count, average of case group, control group and statistic results will be stored as *'RNASeq_results/DESeq2_analysis/DESeq2_normalized_result.csv'*.
 4. Differential expressed gene result *'RNASeq_results/DESeq2_analysis/DESeq2_normalized_DE_result.csv'* is reported. Default selecting threshold is **`pval < 0.05` and `log2FC > 1 | log2FC < 1`** 
-5. Visualization. The plots mentioned above and the following plots will be drawn.
+5. Visualization. The general plots mentioned above and the following plots will be drawn.
+   * Pre differential analysis sample profile related plot:
+        * Dispersion Plot : 
+            DESeq2 provides a useful function, `plotDispEsts()`, to plot the dispersion estimates. X axis is `mean of normalized counts`; Y axis is `dispersion`.
+            ![](https://i.imgur.com/2EPISqf.png)
+
     * Differential analysis related plot
         * MA Plot : 
-            The plot visualizes the differences between case and control by transforming the data onto X axis `mean of normalized counts` and Y axis `log fold change`. It is created by `plotMA()` function in DESeq2.
-        * Dispersion Plot :  (PreDE or DE ????)
-            DESeq2 provide a useful function, `plotDispEsts()`, to plot the dispersion estimates. X axis is `mean of normalized counts`; Y axis is `dispersion`.
+            The plot visualizes the differences between case and control by transforming the data onto X axis `mean of normalized counts` and Y axis `log fold change`. It is created by `plotMA()` function in [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html).
+            ![](https://i.imgur.com/FNcQImD.png)
+
 
 ## "edgeR" Analysis
 
 [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html), a tool for differential expression analysis, implements a range of statistical method based on negative binomial distribution. [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html) package normalizes for RNA composition by finding a set of scaling factors for the library sizes, which is computed by trimmed mean of M-values(TMM). Normalized count is represented as cpm with library size scaled by TMM ([related site](https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf)). The following are analysis steps:
 
 * Input: *gene_data/reads_count_matrix/gene_count_matrix.csv*
+    (Row sum of gene raw reads count that equals `o` will be filtered out)
 * Output: *RNASeq_results/edgeR_analysis/*
 
 1. Create `DEGList` object from raw reads count by running `DGEList()` function in edgeR.
@@ -450,32 +554,48 @@ Normalized count is represented as TPM values. The statistic model used here is 
 8. Visualization. The plots mentioned above and the following plots will be drawn.
 
    * Pre differential analysis sample profile related plot
-        * MeanVar Plot (!!! Question ! preDE or DE ?):  (PreDE or DE ????)
-            Visualize the mean-variance relationship in `DEGList`. Plot is drawn by run `plotMeanVar()` in edgeR. 
-        * plotBCV (!!! Question ! preDE or DE ?):  (PreDE or DE ????)
-            Plot the genewise biological coefficient of variance(BCV) against gene abundace.
+        * MeanVar Plot
+            [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html) provides a useful function `plotMeanVar()` to visualize the mean-variance relationship in `DEGList`. 
+            ![](https://i.imgur.com/YvDrC1R.png)
             
-    * Differential analysis related plot
-        * MA Plot : 
-            The plot visualizes the differences between case and control by transforming the data onto X axis `log2FC` and Y axis `log2(FPKM.mean)`. It is drawn by [ggplot2](https://ggplot2.tidyverse.org) package.
+        * BCV Plot
+            [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html) provides a useful function `plotBCV()` to plot the genewise biological coefficient of variance(BCV) against gene abundace.
+            ![](https://i.imgur.com/FeZdcDf.png)
+            
+        * MDS Plot
+            [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html) provides a useful function `plotMDS.DGEList()` to plot samples on a 2D scatterplot with distances representing expression differences between the samples.
+            ![](https://i.imgur.com/j9XC9v9.png)
 
 ## Example
+Run `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`. 
 1. Run in background
 Result will be reported in *'Rscriptout/Differential_Analysis.Rout'*. Make sure differential expression analysis is successfully finished before running subsequent steps.
-```{r}
-# RNASeqDifferentialAnalysis_CMD()
+```{r, eval=FALSE}
+RNASeqDifferentialAnalysis_CMD(exp)
 ```
 
 2. Run in R shell 
 Result will be reported in R shell. Make sure differential expression analysis is successfully finished before running subsequent steps.
 ```{r}
-# RNASeqDifferentialAnalysis()
+RNASeqDifferentialAnalysis(exp@path.prefix,
+exp@genome.name,
+exp@sample.pattern,
+exp@independent.variable,
+exp@case.group,
+exp@control.group, 
+ballgown.pval = 0.05, 
+ballgown.log2FC = 1, 
+TPM.pval = 0.05, 
+TPM.log2FC = 1, 
+DESeq2.pval = 0.1, 
+DESeq2.log2FC = 1, 
+edgeR.pval = 0.05, 
+edgeR.log2FC = 1)
 ```
 
 
 
 # Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)
-
 
 This is the **third optional step** of RNA-Seq workflow in this package. [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) is used in this step. Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis are made based on the differential expressed genes(DEG) that are found in four different differential analyses, ballgown, TPM&t-test, DESeq2 and edgeR. Run `RNASeqGoKegg_CMD()` to execute process in background or run `RNASeqGoKegg()` to execute process in R shell.
 
@@ -512,14 +632,14 @@ The input gene set is differential genes that are reported in each differential 
 ## Example
 1. Run in background
 Result will be reported in *'Rscriptout/GO_KEGG_Analysis.Rout'*. 
-```{r}
-# RNASeqGoKegg_CMD()
+```{r, eval = TRUE}
+# RNASeqGoKegg_CMD(exp, OrgDb.species = "org.Sc.sgd.db", KEGG.organism = "sce")
 ```
 
 2. Run in R shell 
 Result will be reported in R shell.
-```{r}
-# RNASeqGoKegg()
+```{r, eval = TRUE}
+# RNASeqGoKegg(exp@path.prefix, exp@independent.variable, OrgDb.species = "org.Sc.sgd.db", KEGG.organism = "sce")
 ```
 
 # Conlusion
@@ -537,4 +657,6 @@ https://www.rna-seqblog.com/introduction-to-rna-sequencing-and-analysis/
 https://en.wikipedia.org/wiki/RNA-Seq
 
 Mortazavi, A., Williams, B. A., McCue, K., Schaeffer, L., & Wold, B. (2008). Mapping and quantifying mammalian transcriptomes by RNA-Seq. Nature methods, 5(7), 621.
+
+H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
 

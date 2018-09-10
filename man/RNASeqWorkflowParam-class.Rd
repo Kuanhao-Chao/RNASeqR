@@ -37,16 +37,7 @@ An S4 class for checking and storing RNA-Seq workflow parameters of this package
 }}
 
 \examples{
-\dontrun{
-data(workflowParam)
-class(workflowParam) #"RNASeqWorkflowParam"
-workflowParam@path.prefix
-workflowParam@input.path.prefix
-workflowParam@genome.name
-workflowParam@sample.pattern
-workflowParam@independent.variable
-workflowParam@case.group
-workflowParam@control.group}
+
 }
 \author{
 Kuan-Hao Chao
