@@ -7,29 +7,32 @@
 RNASeqQualityAssessment(path.prefix, input.path.prefix, sample.pattern)
 }
 \arguments{
-\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
+\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
+'Rscript/' and 'Rscript_out/' directories}
 
 \item{input.path.prefix}{path prefix of 'input_files/' directory}
 
-\item{sample.pattern}{sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
+\item{sample.pattern}{sample.pattern  Regular expression of paired-end fastq.gz files under
+'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 }
 \value{
 None
 }
 \description{
-Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
-It is strongly advised to run \code{RNASeqQualityAssessment_CMD()} directly. Running \code{RNASeqQualityAssessment_CMD()} will create 'Quality_Assessment.Rout' file in 'Rscript_out/' directory.
-This function reports the quality assessment result in one packages \code{systemPipeR}
-For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
-If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in background, please see \code{RNASeqQualityAssessment_CMD()} function.
+Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell.
+  This step is optional in the whole RNA-Seq workflow.
+  It is strongly advised to run \code{RNASeqQualityAssessment_CMD()} directly.
+  Running \code{RNASeqQualityAssessment_CMD()} will create 'Quality_Assessment.Rout' file in 'Rscript_out/' directory.
+  This function reports the quality assessment result in one packages \code{systemPipeR}
+  For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
+  If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in background,
+  please see \code{RNASeqQualityAssessment_CMD()} function.
 }
 \examples{
-\dontrun{
-input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-                           experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-RNASeqEnvironmentSet(path.prefix = exp@path.prefix, input.path.prefix = exp@input.path.prefix,
-                     sample.pattern = exp@sample.pattern)}
+data(yeast)
+RNASeqEnvironmentSet(path.prefix       = yeast@path.prefix,
+                     input.path.prefix = yeast@input.path.prefix,
+                     sample.pattern    = yeast@sample.pattern)
 }
 \author{
 Kuan-Hao Chao

@@ -8,9 +8,11 @@ RNASeqQualityTrimming(path.prefix, sample.pattern, cum.error = 1,
   reads.length.limit = 36)
 }
 \arguments{
-\item{path.prefix}{Path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
+\item{path.prefix}{Path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
+'Rscript/' and 'Rscript_out/' directories}
 
-\item{sample.pattern}{sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
+\item{sample.pattern}{sample.pattern  Regular expression of paired-end fastq.gz files under
+'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 
 \item{cum.error}{Default \code{1}. Cut of threshold of cumulative probability of error per base.}
 
@@ -20,17 +22,19 @@ RNASeqQualityTrimming(path.prefix, sample.pattern, cum.error = 1,
 None
 }
 \description{
-Trim '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
-It is strongly advised to run \code{RNASeqQualityTrimming_CMD()} directly. Running \code{RNASeqQualityTrimming_CMD()} will create 'Quality_Trimming.Rout' file in 'Rscript_out/' directory.
-The trimming method is implemented by R package \code{ShortReads}
-If you want to trim '.fastq.gz' files for the RNA-Seq workflow in background, please see \code{RNASeqQualityTrimming_CMD()} function.
+Trim '.fastq.gz' files for RNA-Seq workflow in R shell.
+  This step is optional in the whole RNA-Seq workflow.
+  It is strongly advised to run \code{RNASeqQualityTrimming_CMD()} directly.
+  Running \code{RNASeqQualityTrimming_CMD()} will create 'Quality_Trimming.Rout' file in 'Rscript_out/' directory.
+  The trimming method is implemented by R package \code{ShortReads}
+  If you want to trim '.fastq.gz' files for the RNA-Seq workflow in background,
+  please see \code{RNASeqQualityTrimming_CMD()} function.
 }
 \examples{
 \dontrun{
-input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-                           experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-RNASeqEnvironmentSet(path.prefix = exp@path.prefix, sample.pattern = exp@sample.pattern)}
+data(yeast)
+RNASeqEnvironmentSet(path.prefix    = yeast@path.prefix,
+                     sample.pattern = yeast@sample.pattern)}
 }
 \author{
 Kuan-Hao Chao

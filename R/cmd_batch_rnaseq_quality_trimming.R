@@ -1,26 +1,32 @@
 #' @title Quality trimming of '.fastq.gz' files for RNA-Seq workflow in background.
 #'
-#' @description Trim '.fastq.gz' files for RNA-Seq workflow in background. This step is optional in the whole RNA-Seq workflow.
-#' The trimming method is implemented by R package \code{ShortRead}
-#' If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNASeqQualityTrimming()} function.
+#' @description Trim '.fastq.gz' files for RNA-Seq workflow in background.
+#'   This step is optional in the whole RNA-Seq workflow.
+#'   The trimming method is implemented by R package \code{ShortRead}
+#'   If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNASeqQualityTrimming()} function.
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
 #' @param cum.error Default \code{1}. Cut of threshold of cumulative probability of error per base.
 #' @param reads.length.limit Default \code{36}. The shortest base pair length of short reads
-#' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
-#' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
-#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
+#' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed.
+#'   The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+#'   If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam}
+#'   will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
+#'   \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
 #'
 #' @return None
 #' @export
 #' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
-#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam = exp)}
-RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, cum.error = 1, reads.length.limit = 36, run = TRUE, check.s4.print = TRUE) {
+#' data(yeast)
+#' RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam = yeast)}
+RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam,
+                                      cum.error          = 1,
+                                      reads.length.limit = 36,
+                                      run                = TRUE,
+                                      check.s4.print     = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -28,7 +34,10 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, cum.error = 1, reads.
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Trimming.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNASeqQualityTrimming(path.prefix = '", path.prefix, "', sample.pattern = '", sample.pattern, "', cum.error = ", cum.error, ", reads.length.limit = ", reads.length.limit, ")")
+  second <- paste0("RNASeqQualityTrimming(path.prefix = '", path.prefix,
+                   "', sample.pattern = '", sample.pattern,
+                   "', cum.error = ", cum.error,
+                   ", reads.length.limit = ", reads.length.limit, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   message(paste0("\u2605 '", path.prefix, "Rscript/Quality_Trimming.R' has been created.\n"))
@@ -41,13 +50,18 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, cum.error = 1, reads.
 
 #' @title Quality trimming of '.fastq.gz' files for RNA-Seq workflow in R shell
 #'
-#' @description Trim '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
-#' It is strongly advised to run \code{RNASeqQualityTrimming_CMD()} directly. Running \code{RNASeqQualityTrimming_CMD()} will create 'Quality_Trimming.Rout' file in 'Rscript_out/' directory.
-#' The trimming method is implemented by R package \code{ShortReads}
-#' If you want to trim '.fastq.gz' files for the RNA-Seq workflow in background, please see \code{RNASeqQualityTrimming_CMD()} function.
+#' @description Trim '.fastq.gz' files for RNA-Seq workflow in R shell.
+#'   This step is optional in the whole RNA-Seq workflow.
+#'   It is strongly advised to run \code{RNASeqQualityTrimming_CMD()} directly.
+#'   Running \code{RNASeqQualityTrimming_CMD()} will create 'Quality_Trimming.Rout' file in 'Rscript_out/' directory.
+#'   The trimming method is implemented by R package \code{ShortReads}
+#'   If you want to trim '.fastq.gz' files for the RNA-Seq workflow in background,
+#'   please see \code{RNASeqQualityTrimming_CMD()} function.
 #'
-#' @param path.prefix Path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
-#' @param sample.pattern  sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
+#' @param path.prefix Path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
+#'   'Rscript/' and 'Rscript_out/' directories
+#' @param sample.pattern  sample.pattern  Regular expression of paired-end fastq.gz files under
+#'    'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
 #' @param cum.error Default \code{1}. Cut of threshold of cumulative probability of error per base.
 #' @param reads.length.limit Default \code{36}. The shortest base pair length of short reads
 #'
@@ -56,11 +70,13 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam, cum.error = 1, reads.
 #' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
-#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNASeqEnvironmentSet(path.prefix = exp@@path.prefix, sample.pattern = exp@@sample.pattern)}
-RNASeqQualityTrimming <- function(path.prefix, sample.pattern, cum.error = 1, reads.length.limit = 36) {
+#' data(yeast)
+#' RNASeqEnvironmentSet(path.prefix    = yeast@@path.prefix,
+#'                      sample.pattern = yeast@@sample.pattern)}
+RNASeqQualityTrimming <- function(path.prefix,
+                                  sample.pattern,
+                                  cum.error = 1,
+                                  reads.length.limit = 36) {
   CheckOperatingSystem(FALSE)
   PreCheckRNASeqQualityTrimming(path.prefix = path.prefix, sample.pattern = sample.pattern)
   message(paste0("************** Quality Trimming **************\n"))

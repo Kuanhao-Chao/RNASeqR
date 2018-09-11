@@ -1,25 +1,31 @@
 #' @title Quality assessment of '.fastq.gz' files for RNA-Seq workflow in background.
 #'
-#' @description Assess the quality of '.fastq.gz' files for RNA-Seq workflow in background. This step is optional in the whole RNA-Seq workflow.
-#' This function reports the quality assessment result in packages \code{systemPipeR}
-#' For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
-#' If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in R shell, please see \code{RNASeqQualityAssessment()} function.
+#' @description Assess the quality of '.fastq.gz' files for RNA-Seq workflow in background.
+#'   This step is optional in the whole RNA-Seq workflow.
+#'   This function reports the quality assessment result in packages \code{systemPipeR}
+#'   For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
+#'   If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in
+#'   R shell, please see \code{RNASeqQualityAssessment()} function.
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
-#' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
-#' If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
-#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
+#' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R'
+#'   will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+#'   If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking
+#'   \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'.
+#'    If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not
+#'    be in 'Rscript_out/Environment_Set.Rout'
 #'
 #' @return None
 #' @export
 #' @author Kuan-Hao Chao
 #' @examples
 #' \dontrun{
-#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+#' data(yeast)
 #' RNASeqQualityAssessment_CMD(RNASeqWorkFlowParam = exp)}
-RNASeqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s4.print = TRUE) {
+RNASeqQualityAssessment_CMD <- function(RNASeqWorkFlowParam,
+                                        run                 = TRUE,
+                                        check.s4.print      = TRUE) {
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
@@ -28,7 +34,9 @@ RNASeqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
   sample.pattern <- RNASeqWorkFlowParam@sample.pattern
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Assessment.R"))
   first <- "library(RNASeqWorkflow)"
-  second <- paste0("RNASeqQualityAssessment(path.prefix = '", path.prefix, "', input.path.prefix = '", input.path.prefix, "', sample.pattern = '", sample.pattern, "')")
+  second <- paste0("RNASeqQualityAssessment(path.prefix = '", path.prefix,
+                   "', input.path.prefix = '", input.path.prefix,
+                   "', sample.pattern = '", sample.pattern, "')")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   message(paste0("\u2605 '", path.prefix, "Rscript/Quality_Assessment.R' has been created.\n"))
@@ -40,26 +48,29 @@ RNASeqQualityAssessment_CMD <- function(RNASeqWorkFlowParam, run = TRUE, check.s
 
 #' @title Quality assessment of '.fastq.gz' files for RNA-Seq workflow in R shell
 #'
-#' @description Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell. This step is optional in the whole RNA-Seq workflow.
-#' It is strongly advised to run \code{RNASeqQualityAssessment_CMD()} directly. Running \code{RNASeqQualityAssessment_CMD()} will create 'Quality_Assessment.Rout' file in 'Rscript_out/' directory.
-#' This function reports the quality assessment result in one packages \code{systemPipeR}
-#' For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
-#' If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in background, please see \code{RNASeqQualityAssessment_CMD()} function.
+#' @description Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell.
+#'   This step is optional in the whole RNA-Seq workflow.
+#'   It is strongly advised to run \code{RNASeqQualityAssessment_CMD()} directly.
+#'   Running \code{RNASeqQualityAssessment_CMD()} will create 'Quality_Assessment.Rout' file in 'Rscript_out/' directory.
+#'   This function reports the quality assessment result in one packages \code{systemPipeR}
+#'   For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
+#'   If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in background,
+#'   please see \code{RNASeqQualityAssessment_CMD()} function.
 #'
-#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
+#'   'Rscript/' and 'Rscript_out/' directories
 #' @param input.path.prefix path prefix of 'input_files/' directory
-#' @param sample.pattern  sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
+#' @param sample.pattern  sample.pattern  Regular expression of paired-end fastq.gz files under
+#'   'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
 #'
 #' @return None
 #' @export
 #' @author Kuan-Hao Chao
 #' @examples
-#' \dontrun{
-#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNASeqEnvironmentSet(path.prefix = exp@@path.prefix, input.path.prefix = exp@@input.path.prefix,
-#'                      sample.pattern = exp@@sample.pattern)}
+#' data(yeast)
+#' RNASeqEnvironmentSet(path.prefix       = yeast@@path.prefix,
+#'                      input.path.prefix = yeast@@input.path.prefix,
+#'                      sample.pattern    = yeast@@sample.pattern)
 RNASeqQualityAssessment <- function(path.prefix, input.path.prefix, sample.pattern) {
   CheckOperatingSystem(FALSE)
   PreCheckRNASeqQualityAssessment(path.prefix, sample.pattern)

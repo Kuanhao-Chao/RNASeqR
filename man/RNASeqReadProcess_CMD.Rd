@@ -14,34 +14,64 @@ RNASeqReadProcess_CMD(RNASeqWorkFlowParam, num.parallel.threads = 1,
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}
 
-\item{num.parallel.threads}{Specify the number of processing threads (CPUs) to use for transcript assembly. The default is 1.}
+\item{num.parallel.threads}{Specify the number of processing threads (CPUs)
+to use for transcript assembly. The default is 1.}
 
-\item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+\item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R'
+will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
 If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
 
-\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
+\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam}
+will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE},
+the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
+
+\item{Hisat2.Index.run}{Whether to run 'HISAT2 index' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'HISAT2 index' step.}
+
+\item{Hisat2.Alignment.run}{Whether to run 'HISAT2 alignment' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'HISAT2 alignment' step.}
+
+\item{Samtools.Bam.run}{Whether to run 'SAMTools SAM to BAM' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'SAMTools SAM to BAM' step.}
+
+\item{StringTie.Assemble.run}{Whether to run 'StringTie assembly' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'StringTie assembly' step.}
+
+\item{StringTie.Merge.Trans.run}{Whether to run 'StringTie GTF merging' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'StringTie GTF merging' step.}
+
+\item{Gffcompare.Ref.Sample.run}{Whether to run 'Gffcompare comparison' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'Gffcompare comparison' step.}
+
+\item{StringTie.Ballgown.run}{Whether to run 'StringTie ballgown creation' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'StringTie ballgown creation' step.}
+
+\item{PreDECountTable.run}{Whether to run 'gene raw reads count creation' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'gene raw reads count creation' step.}
 }
 \value{
 None
 }
 \description{
 Process raw reads for RNA-Seq workflow in background.
-This function do 5 things :
-1. 'Hisat2' : aligns raw reads to reference genome. If \code{indices.optional} in \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indices will be created.
-2. 'Samtools' : converts '.sam' files to '.bam' files.
-3. 'Stringtie' : assembles alignments into transcript.
-4. 'Gffcompare' : examines how transcripts compare with the reference annotation.
-5. 'Stringtie' : creates input files for ballgown, edgeR and DESeq2.
-Before running this function, \code{RNASeqEnvironmentSet_CMD()} or\code{RNASeqEnvironmentSet()} must be executed successfully.
-If you want to process raw reads for the following RNA-Seq workflow in R shell, please see \code{RNASeqReadProcess()} function.
+  This function do 5 things :
+    1. 'Hisat2' : aligns raw reads to reference genome. If \code{indices.optional} in
+      \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indices will be created.
+    2. 'Samtools' : converts '.sam' files to '.bam' files.
+    3. 'Stringtie' : assembles alignments into transcript.
+    4. 'Gffcompare' : examines how transcripts compare with the reference annotation.
+    5. 'Stringtie' : creates input files for ballgown, edgeR and DESeq2.
+  Before running this function, \code{RNASeqEnvironmentSet_CMD()} or
+  \code{RNASeqEnvironmentSet()} must be executed successfully.
+  If you want to process raw reads for the following RNA-Seq workflow in R shell,
+  please see \code{RNASeqReadProcess()} function.
 }
 \examples{
 \dontrun{
-input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-                           experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+data(yeast)
 ## Before run this function, make sure \\code{RNASeqEnvironmentSet_CMD()} (or\\code{RNASeqEnvironmentSet()}) is executed successfully.
-RNASeqReadProcess_CMD(RNASeqWorkFlowParam = exp)}
+RNASeqReadProcess_CMD(RNASeqWorkFlowParam = exp,
+                      num.parallel.threads = 10)}
 }
 \author{
 Kuan-Hao Chao

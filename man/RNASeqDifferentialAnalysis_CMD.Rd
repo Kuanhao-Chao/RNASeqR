@@ -12,53 +12,67 @@ RNASeqDifferentialAnalysis_CMD(RNASeqWorkFlowParam, ballgown.pval = 0.05,
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}
 
-\item{ballgown.pval}{Default \code{0.05}. Set the threshold of ballgown p-value to filter out differential expressed gene.}
+\item{ballgown.pval}{Default \code{0.05}. Set the threshold of ballgown p-value to
+filter out differential expressed gene.}
 
-\item{ballgown.log2FC}{Default \code{1}. Set the threshold of ballgown log2 fold change to filter out differential expressed gene.}
+\item{ballgown.log2FC}{Default \code{1}. Set the threshold of ballgown log2 fold change to
+filter out differential expressed gene.}
 
-\item{TPM.pval}{Default \code{0.05}. Set the threshold of TPM & student t-test p-value to filter out differential expressed gene.}
+\item{TPM.pval}{Default \code{0.05}. Set the threshold of TPM & student t-test p-value to
+filter out differential expressed gene.}
 
-\item{TPM.log2FC}{Default \code{1}. Set the threshold of TPM & student t-test log2 fold change to filter out differential expressed gene.}
+\item{TPM.log2FC}{Default \code{1}. Set the threshold of TPM & student t-test log2 fold change to
+filter out differential expressed gene.}
 
-\item{DESeq2.pval}{Default \code{0.05}. Set the threshold of DESeq2 p-value to filter out differential expressed gene.}
+\item{DESeq2.pval}{Default \code{0.05}. Set the threshold of DESeq2 p-value to filter out
+differential expressed gene.}
 
-\item{DESeq2.log2FC}{Default \code{1}. Set the threshold of DESeq2 log2 fold change to filter out differential expressed gene.}
+\item{DESeq2.log2FC}{Default \code{1}. Set the threshold of DESeq2 log2 fold change to
+filter out differential expressed gene.}
 
-\item{edgeR.pval}{Default \code{0.05}. Set the threshold of edgeR p-value to filter out differential expressed gene.}
+\item{edgeR.pval}{Default \code{0.05}. Set the threshold of edgeR p-value to filter
+out differential expressed gene.}
 
-\item{edgeR.log2FC}{Default \code{1}. Set the threshold of edgeR log2 fold change to filter out differential expressed gene.}
+\item{edgeR.log2FC}{Default \code{1}. Set the threshold of edgeR log2 fold change to
+filter out differential expressed gene.}
 
-\item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+\item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed.
+The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
 If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
 
-\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
+\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam}
+will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
+\code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
 }
 \value{
 None
 }
 \description{
-This function will run differential analysis on ballgown, DESeq2 and edgeR. TPM values will be converted from ballgown FPKM values, and T-test will be made to calculate pvalue.
-This function do following things :
-1. ballgown analysis
-   Raw reads are normalized into FPKM values
-   The main statistic test in ballgown is paramatic F-test comparing nested linear models
-2. TPM & Student's t-test analysis
-   TPM normalization is calculated from the FPKM values produced by ballgown.
-   Independent sample t-test is used with TPM values as input. P-values will be produced after t-test. Fold change values are calculated by the formula : "average TPM experiment group values divide average TPM control group values".
-3. DESeq2 analysis
-   Median of rations normalization(MRN) is used in DESeq2 for raw read count normalization. Sequencing depth and RNA composition is taken into consideration is this normalization method.
-   The main statistic test in DESeq2 is negative binomial distribution.
-4. edgeR analysis
-   Raw reads are normalized by TMM and library size. (run \code{calcNormFactors()} to get a DGEList, and then run \code{cpm()} on that DGEList)
-   The main statistic test in edgeR is trimmed mean of M-values(TMM).
-If you want to run differential analysis on ballgown, TPM normalization, DESeq2, edgeR for the following RNA-Seq workflow in R shell, please see \code{RNASeqDifferentialAnalysis()} function.
+This function will run differential analysis on ballgown, DESeq2 and edgeR.
+  TPM values will be converted from ballgown FPKM values, and T-test will be made to calculate pvalue.
+  This function do following things :
+  1. ballgown analysis
+     Raw reads are normalized into FPKM values
+     The main statistic test in ballgown is paramatic F-test comparing nested linear models
+  2. TPM & Student's t-test analysis
+     TPM normalization is calculated from the FPKM values produced by ballgown.
+     Independent sample t-test is used with TPM values as input. P-values will be produced after t-test.
+      Fold change values are calculated by the formula : "average TPM experiment group values divide
+      average TPM control group values".
+  3. DESeq2 analysis
+     Median of rations normalization(MRN) is used in DESeq2 for raw read count normalization.
+     Sequencing depth and RNA composition is taken into consideration is this normalization method.
+     The main statistic test in DESeq2 is negative binomial distribution.
+  4. edgeR analysis
+     Raw reads are normalized by TMM and library size. (run \code{calcNormFactors()} to get a DGEList,
+     and then run \code{cpm()} on that DGEList)
+     The main statistic test in edgeR is trimmed mean of M-values(TMM).
+  If you want to run differential analysis on ballgown, TPM normalization, DESeq2, edgeR
+  for the following RNA-Seq workflow in R shell, please see \code{RNASeqDifferentialAnalysis()} function.
 }
 \examples{
-\dontrun{
-input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-                           experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
+data(yeast)
+RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = yeast)
 }
 \author{
 Kuan-Hao Chao

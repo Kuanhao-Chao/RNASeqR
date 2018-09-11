@@ -14,25 +14,27 @@ RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam, cum.error = 1,
 
 \item{reads.length.limit}{Default \code{36}. The shortest base pair length of short reads}
 
-\item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+\item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed.
+The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
 If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
 
-\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
+\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam}
+will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
+\code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
 }
 \value{
 None
 }
 \description{
-Trim '.fastq.gz' files for RNA-Seq workflow in background. This step is optional in the whole RNA-Seq workflow.
-The trimming method is implemented by R package \code{ShortRead}
-If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNASeqQualityTrimming()} function.
+Trim '.fastq.gz' files for RNA-Seq workflow in background.
+  This step is optional in the whole RNA-Seq workflow.
+  The trimming method is implemented by R package \code{ShortRead}
+  If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNASeqQualityTrimming()} function.
 }
 \examples{
 \dontrun{
-input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-                           experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam = exp)}
+data(yeast)
+RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam = yeast)}
 }
 \author{
 Kuan-Hao Chao

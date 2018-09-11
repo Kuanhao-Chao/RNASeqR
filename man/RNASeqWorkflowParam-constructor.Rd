@@ -10,15 +10,19 @@ RNASeqWorkflowParam(path.prefix = NA, input.path.prefix = NA,
   case.group = NA, control.group = NA)
 }
 \arguments{
-\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
+\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
+'Rscript/' and 'Rscript_out/' directories}
 
 \item{input.path.prefix}{path prefix of 'input_files/' directory}
 
-\item{genome.name}{variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
+\item{genome.name}{variable of genome name defined in this RNA-Seq workflow
+(ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
 
-\item{sample.pattern}{Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
+\item{sample.pattern}{Regular expression of paired-end fastq.gz files under
+'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 
-\item{independent.variable}{independent variable for the biological experiment design of two-group RNA-Seq workflow}
+\item{independent.variable}{independent variable for the biological experiment design of
+two-group RNA-Seq workflow}
 
 \item{case.group}{group name of the case group}
 
@@ -34,8 +38,13 @@ Constructor function for RNASeqWorkflowParam objects
 input_files.path <- system.file("extdata/", package = "RNASeqWorkflowData")
 rnaseq_result.path <- "/tmp/yeast_example/"
 dir.create(rnaseq_result.path)
-exp <- RNASeqWorkflowParam(path.prefix = rnaseq_result.path, input.path.prefix = input_files.path, genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", sample.pattern = "SRR[0-9]*_XV",
-                           independent.variable = "state", case.group = "60mins_ID20_amphotericin_B", control.group = "60mins_ID20_control")
+exp <- RNASeqWorkflowParam(path.prefix          = rnaseq_result.path,
+                           input.path.prefix    = input_files.path,
+                           genome.name          = "Saccharomyces_cerevisiae_XV_Ensembl",
+                           sample.pattern       = "SRR[0-9]*_XV",
+                           independent.variable = "state",
+                           case.group           = "60mins_ID20_amphotericin_B",
+                           control.group        = "60mins_ID20_control")
 }
 \author{
 kuan-hao Chao

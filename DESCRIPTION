@@ -1,12 +1,16 @@
 Package: RNASeqWorkflow
 Type: Package
-Title: RNASeqWorkflow: RNA-Seq workflow and visualization with Hisat2, Stringtie, Gffcompare, Ballgown, EdgeR and DESeq2
+Title: RNASeqWorkflow: RNA-Seq workflow for case-control study
 Version: 0.99.0
 Date: 2018-8-7
 Author: Kuan-Hao Chao
 Maintainer: Kuan-Hao Chao <ntueeb05howard@gmail.com>
-biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, GeneExpression, GeneSetEnrichment, Alignment, QualityControl, DifferentialExpression, FunctionalPrediction, ExperimentalDesign, GO, KEGG, Visualization, Normalization, Pathways, Clustering, 
-Description: R package for RNA-Seq workflow.
+biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, 
+           GeneExpression, GeneSetEnrichment, Alignment, QualityControl, 
+           DifferentialExpression, FunctionalPrediction, ExperimentalDesign, 
+           GO, KEGG, Visualization, Normalization, Pathways, Clustering
+Description: This R package is designed for case-control study RNA-Seq analysis. 
+  Five steps: Environment Setup, Quality Assessment, Quality Trimming, Reads Processing, Differential Expression Analysis.
 License: Artistic-2.0
 Encoding: UTF-8
 RoxygenNote: 6.1.0
@@ -55,10 +59,11 @@ Suggests:
 VignetteBuilder: 
   knitr
 SystemRequirements: 
-  RNASeqWorkflow only support Linux and OS X. Window is not supported. 
-  RNASeqWorkflow will check your machine and install 'Hisat2', 'Stringtie', 'Gffcompare' binaries based on the operating system. 
-  Samtools source code will be installed and compiled on your machine. Make sure the required C++ libraries are installed on your machine. 
+  RNASeqWorkflow only support Linux and macOS. Window is not supported. 
+  SAMtools source code will be installed and compiled on your machine. More information about SAMtools requirement(https://github.com/samtools/samtools/blob/develop/INSTALL)
   Python2 is required. If your machine is Python3, make sure '2to3' command is available.
+BugReports: 
+  https://github.com/HowardChao/RNASeqWorkflow/issues
 URL: 
   https://github.com/HowardChao/RNASeqWorkflow
 NeedsCompilation:

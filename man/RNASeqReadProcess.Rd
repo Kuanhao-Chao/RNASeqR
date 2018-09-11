@@ -13,48 +13,84 @@ RNASeqReadProcess(path.prefix, input.path.prefix, genome.name,
   StringTie.Ballgown.run = TRUE, PreDECountTable.run = TRUE)
 }
 \arguments{
-\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
+\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
+'Rscript/' and 'Rscript_out/' directories}
 
 \item{input.path.prefix}{path prefix of 'input_files/' directory}
 
-\item{genome.name}{Variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
+\item{genome.name}{Variable of genome name defined in this RNA-Seq workflow
+(ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
 
-\item{sample.pattern}{Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
+\item{sample.pattern}{Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'.
+Expression not includes \code{_[1,2].fastq.gz}.}
 
 \item{python.variable.answer}{logical value whether python is available on the device}
 
 \item{python.variable.version}{python version of the device}
 
+\item{python.2to3}{logical value whether \code{2to3} is available on the device}
+
 \item{num.parallel.threads}{Specify the number of processing threads (CPUs) to use for transcript assembly. The default is 1.}
 
 \item{indices.optional}{logical value whether 'indices/' is exit in 'input_files/'}
+
+\item{Hisat2.Index.run}{Whether to run 'HISAT2 index' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'HISAT2 index' step.}
+
+\item{Hisat2.Alignment.run}{Whether to run 'HISAT2 alignment' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'HISAT2 alignment' step.}
+
+\item{Samtools.Bam.run}{Whether to run 'SAMTools SAM to BAM' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'SAMTools SAM to BAM' step.}
+
+\item{StringTie.Assemble.run}{Whether to run 'StringTie assembly' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'StringTie assembly' step.}
+
+\item{StringTie.Merge.Trans.run}{Whether to run 'StringTie GTF merging' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'StringTie GTF merging' step.}
+
+\item{Gffcompare.Ref.Sample.run}{Whether to run 'Gffcompare comparison' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'Gffcompare comparison' step.}
+
+\item{StringTie.Ballgown.run}{Whether to run 'StringTie ballgown creation' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'StringTie ballgown creation' step.}
+
+\item{PreDECountTable.run}{Whether to run 'gene raw reads count creation' step in this function step. Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'gene raw reads count creation' step.}
 }
 \value{
 None
 }
 \description{
 Process raw reads for RNA-Seq workflow in R shell.
-It is strongly advised to run \code{RNASeqReadProcess_CMD()} directly. Running this function directly is not recommended because the processes of alignment, assembly and quantification take a longer time than other functions.
-Running \code{RNASeqReadProcess_CMD()} will create 'Read_Process.Rout' file in 'Rscript_out/' directory.
-This function do following things :
-This function do 5 things :
-1. 'Hisat2' : aligns raw reads to reference genome. If \code{indices.optional} in \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indices will be created.
-2. 'Samtools' : converts '.sam' files to '.bam' files.
-3. 'Stringtie' : assembles alignments into transcript.
-4. 'Gffcompare' : examines how transcripts compare with the reference annotation.
-5. 'Stringtie' : creates input files for ballgown, edgeR and DESeq2.
-Before running this function, \code{RNASeqEnvironmentSet_CMD()} or\code{RNASeqEnvironmentSet()} must be executed successfully.
-If you want to process raw reads for the following RNA-Seq workflow in background, please see \code{RNASeqReadProcess_CMD()} function.
+  It is strongly advised to run \code{RNASeqReadProcess_CMD()} directly.
+  Running this function directly is not recommended because the processes of alignment,
+  assembly and quantification take a longer time than other functions.
+  Running \code{RNASeqReadProcess_CMD()} will create 'Read_Process.Rout' file in 'Rscript_out/' directory.
+  This function do following 5 things :
+    1. 'Hisat2' : aligns raw reads to reference genome. If \code{indices.optional} in
+      \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indices will be created.
+    2. 'Samtools' : converts '.sam' files to '.bam' files.
+    3. 'Stringtie' : assembles alignments into transcript.
+    4. 'Gffcompare' : examines how transcripts compare with the reference annotation.
+    5. 'Stringtie' : creates input files for ballgown, edgeR and DESeq2.
+  Before running this function, \code{RNASeqEnvironmentSet_CMD()} or
+  \code{RNASeqEnvironmentSet()} must be executed successfully.
+  If you want to process raw reads for the following RNA-Seq workflow in background,
+  please see \code{RNASeqReadProcess_CMD()} function.
 }
 \examples{
 \dontrun{
-input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-                           experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
+data(yeast)
 ## Before run this function, make sure \\code{RNASeqEnvironmentSet_CMD()} (or\\code{RNASeqEnvironmentSet()}) is executed successfully.
-RNASeqReadProcess(path.prefix = exp@path.prefix, input.path.prefix = exp@input.path.prefix,
-                     genome.name = exp@genome.name, sample.pattern = exp@sample.pattern, python.variable.answer = exp@python.variable[0],
-                     python.variable.version = exp@python.variable[1], indices.optional = exp@indices.optional)}
+RNASeqReadProcess(path.prefix             = yeast@path.prefix,
+                  input.path.prefix       = yeast@input.path.prefix,
+                  genome.name             = yeast@genome.name,
+                  sample.pattern          = yeast@sample.pattern,
+                  python.variable.answer  = yeast@python.variable[0],
+                  python.variable.version = yeast@python.variable[1],
+                  indices.optional        = yeast@indices.optional,
+                  num.parallel.threads    = 10)}
 }
 \author{
 Kuan-Hao Chao

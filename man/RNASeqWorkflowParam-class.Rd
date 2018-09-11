@@ -4,10 +4,8 @@
 \name{RNASeqWorkflowParam-class}
 \alias{RNASeqWorkflowParam-class}
 \alias{RNASeq}
-\title{RNASeqWorkflow
-An S4 class for checking and storing RNA-Seq workflow parameters of this package}
+\title{RNASeqWorkflow}
 \description{
-RNASeqWorkflow
 An S4 class for checking and storing RNA-Seq workflow parameters of this package
 }
 \section{Slots}{
@@ -19,15 +17,19 @@ An S4 class for checking and storing RNA-Seq workflow parameters of this package
 
 \item{\code{python.2to3}}{logical value whether \code{2to3} command is available on the workstation}
 
-\item{\code{path.prefix}}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
+\item{\code{path.prefix}}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
+'Rscript/' and 'Rscript_out/' directories}
 
 \item{\code{input.path.prefix}}{path prefix of 'input_files/' directory}
 
-\item{\code{genome.name}}{Variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
+\item{\code{genome.name}}{Variable of genome name defined in this RNA-Seq workflow
+(ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
 
-\item{\code{sample.pattern}}{Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
+\item{\code{sample.pattern}}{Regular expression of paired-end fastq.gz files under
+'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 
-\item{\code{independent.variable}}{independent variable for the biological experiment design of two-group RNA-Seq workflow}
+\item{\code{independent.variable}}{independent variable for the biological experiment design of
+two-group RNA-Seq workflow}
 
 \item{\code{case.group}}{group name of the case group}
 
@@ -37,7 +39,18 @@ An S4 class for checking and storing RNA-Seq workflow parameters of this package
 }}
 
 \examples{
-
+data(yeast)
+yeast@os.type
+yeast@python.variable
+yeast@python.2to3
+yeast@path.prefix
+yeast@input.path.prefix
+yeast@genome.name
+yeast@sample.pattern
+yeast@independent.variable
+yeast@case.group
+yeast@control.group
+yeast@indices.optional
 }
 \author{
 Kuan-Hao Chao

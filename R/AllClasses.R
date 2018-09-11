@@ -1,15 +1,21 @@
 #' RNASeqWorkflow
+#'
 #' An S4 class for checking and storing RNA-Seq workflow parameters of this package
+#'
 #' @aliases RNASeq
 #'
 #' @slot os.type 'linux' or 'osx'. The operating system type
 #' @slot python.variable A list storing python environment. \code{(check.answer, python.version)}
 #' @slot python.2to3 logical value whether \code{2to3} command is available on the workstation
-#' @slot path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @slot path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
+#'   'Rscript/' and 'Rscript_out/' directories
 #' @slot input.path.prefix path prefix of 'input_files/' directory
-#' @slot genome.name Variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
-#' @slot sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
-#' @slot independent.variable independent variable for the biological experiment design of two-group RNA-Seq workflow
+#' @slot genome.name Variable of genome name defined in this RNA-Seq workflow
+#'   (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
+#' @slot sample.pattern  Regular expression of paired-end fastq.gz files under
+#'   'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
+#' @slot independent.variable independent variable for the biological experiment design of
+#'   two-group RNA-Seq workflow
 #' @slot case.group group name of the case group
 #' @slot control.group group name of the control group
 #' @slot indices.optional logical value whether 'indices/' is exit in 'input_files/'
@@ -21,20 +27,31 @@
 #' @exportClass RNASeqWorkflowParam
 #' @author Kuan-Hao Chao
 #' @examples
-#'
+#' data(yeast)
+#' yeast@@os.type
+#' yeast@@python.variable
+#' yeast@@python.2to3
+#' yeast@@path.prefix
+#' yeast@@input.path.prefix
+#' yeast@@genome.name
+#' yeast@@sample.pattern
+#' yeast@@independent.variable
+#' yeast@@case.group
+#' yeast@@control.group
+#' yeast@@indices.optional
 setClass("RNASeqWorkflowParam",
          representation(
-           os.type = "character",
-           python.variable = "list",
-           python.2to3 = "logical",
-           path.prefix = "character",
-           input.path.prefix = "character",
-           genome.name = "character",
-           sample.pattern = "character",
+           os.type              = "character",
+           python.variable      = "list",
+           python.2to3          = "logical",
+           path.prefix          = "character",
+           input.path.prefix    = "character",
+           genome.name          = "character",
+           sample.pattern       = "character",
            independent.variable = "character",
-           case.group = "character",
-           control.group = "character",
-           indices.optional = "logical"
+           case.group           = "character",
+           control.group        = "character",
+           indices.optional     = "logical"
          )
 )
 
@@ -43,11 +60,15 @@ setClass("RNASeqWorkflowParam",
 #'
 #' @name RNASeqWorkflowParam-constructor
 #'
-#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
+#'   'Rscript/' and 'Rscript_out/' directories
 #' @param input.path.prefix path prefix of 'input_files/' directory
-#' @param genome.name variable of genome name defined in this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
-#' @param sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
-#' @param independent.variable independent variable for the biological experiment design of two-group RNA-Seq workflow
+#' @param genome.name variable of genome name defined in this RNA-Seq workflow
+#'   (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
+#' @param sample.pattern  Regular expression of paired-end fastq.gz files under
+#'   'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
+#' @param independent.variable independent variable for the biological experiment design of
+#'   two-group RNA-Seq workflow
 #' @param case.group group name of the case group
 #' @param control.group group name of the control group
 #'
@@ -63,15 +84,28 @@ setClass("RNASeqWorkflowParam",
 #' input_files.path <- system.file("extdata/", package = "RNASeqWorkflowData")
 #' rnaseq_result.path <- "/tmp/yeast_example/"
 #' dir.create(rnaseq_result.path)
-#' exp <- RNASeqWorkflowParam(path.prefix = rnaseq_result.path, input.path.prefix = input_files.path, genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", sample.pattern = "SRR[0-9]*_XV",
-#'                            independent.variable = "state", case.group = "60mins_ID20_amphotericin_B", control.group = "60mins_ID20_control")
-RNASeqWorkflowParam <- function(path.prefix = NA, input.path.prefix = NA,
-                                genome.name = NA, sample.pattern = NA,
-                                independent.variable = NA, case.group = NA,
-                                control.group = NA) {
+#' exp <- RNASeqWorkflowParam(path.prefix          = rnaseq_result.path,
+#'                            input.path.prefix    = input_files.path,
+#'                            genome.name          = "Saccharomyces_cerevisiae_XV_Ensembl",
+#'                            sample.pattern       = "SRR[0-9]*_XV",
+#'                            independent.variable = "state",
+#'                            case.group           = "60mins_ID20_amphotericin_B",
+#'                            control.group        = "60mins_ID20_control")
+RNASeqWorkflowParam <- function(path.prefix          = NA,
+                                input.path.prefix    = NA,
+                                genome.name          = NA,
+                                sample.pattern       = NA,
+                                independent.variable = NA,
+                                case.group           = NA,
+                                control.group        = NA) {
   # check input parameters
-  CheckInputParamNa(path.prefix, input.path.prefix, genome.name, sample.pattern,
-                    independent.variable, case.group, control.group)
+  CheckInputParamNa(path.prefix,
+                    input.path.prefix,
+                    genome.name,
+                    sample.pattern,
+                    independent.variable,
+                    case.group,
+                    control.group)
   # 1. check operating system
   characters.os.type <- CheckOperatingSystem()
   # 2. check python version
@@ -90,9 +124,7 @@ RNASeqWorkflowParam <- function(path.prefix = NA, input.path.prefix = NA,
   bool.input.path.prefix <- CheckInputPrefixPath(input.path.prefix)
   if (bool.input.path.prefix){
     # add '/' to the path.prefix
-    if (substr(input.path.prefix,
-               nchar(input.path.prefix),
-               nchar(input.path.prefix)) != "/") {
+    if (substr(input.path.prefix, nchar(input.path.prefix), nchar(input.path.prefix)) != "/") {
       input.path.prefix <- paste0(input.path.prefix, "/")
     }
   }
@@ -128,24 +160,24 @@ RNASeqWorkflowParam <- function(path.prefix = NA, input.path.prefix = NA,
     message(paste0("************** Success! **************\n"))
     message(paste0("**************************************\n"))
     new("RNASeqWorkflowParam",
-        os.type = characters.os.type,
-        python.variable = python.version.list,
-        python.2to3 = two.to.three.result,
-        path.prefix = path.prefix,
-        input.path.prefix = input.path.prefix,
-        genome.name = genome.name,
-        sample.pattern = sample.pattern,
+        os.type              = characters.os.type,
+        python.variable      = python.version.list,
+        python.2to3          = two.to.three.result,
+        path.prefix          = path.prefix,
+        input.path.prefix    = input.path.prefix,
+        genome.name          = genome.name,
+        sample.pattern       = sample.pattern,
         independent.variable = independent.variable,
-        case.group = case.group,
-        control.group = control.group,
-        indices.optional = bool.input.dir.indices)
+        case.group           = case.group,
+        control.group        = control.group,
+        indices.optional     = bool.input.dir.indices)
   }
 }
 
 # inner function : check whether input values are NA
-CheckInputParamNa <- function(path.prefix, input.path.prefix,
-                              genome.name, sample.pattern,
-                              independent.variable, case.group, control.group) {
+CheckInputParamNa <- function(path.prefix, input.path.prefix, genome.name,
+                              sample.pattern, independent.variable,
+                              case.group, control.group) {
   message(c("************** Checking input parameters ************\n"))
   if (is.na(path.prefix) || is.na(input.path.prefix) ||
       is.na(genome.name) || is.na(sample.pattern) ||
