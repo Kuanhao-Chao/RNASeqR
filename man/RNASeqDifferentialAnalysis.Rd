@@ -79,11 +79,14 @@ This function will run differential analysis on ballgown, DESeq2 and edgeR.
   RNA-Seq workflow in background, please see \code{RNASeqDifferentialAnalysis()} function.
 }
 \examples{
+data(yeast)
 \dontrun{
-input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-                           experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
+RNASeqDifferentialAnalysis(path.prefix          = yeast@path.prefix,
+                           genome.name          = yeast@genome.name,
+                           sample.pattern       = yeast@sample.pattern,
+                           independent.variable = yeast@independent.variable,
+                           case.group           = yeast@case.group,
+                           control.group        = yeast@control.group)}
 }
 \author{
 Kuan-Hao Chao

@@ -72,7 +72,8 @@ This function will run differential analysis on ballgown, DESeq2 and edgeR.
 }
 \examples{
 data(yeast)
-RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = yeast)
+\dontrun{
+RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = yeast)}
 }
 \author{
 Kuan-Hao Chao

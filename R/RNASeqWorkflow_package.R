@@ -1,40 +1,34 @@
 #' RNASeqWorkflow-package
 #'
 #' @name RNASeqWorkflow
-#' @importFrom stats quantile
+#' @importFrom clusterProfiler bitr enrichGO groupGO dotplot emapplot cnetplot goplot enrichKEGG gseGO gseaplot gseKEGG
+#' @importFrom pathview pathview
+#' @import DOSE
+#' @import ggplot2
+#' @import graphics
+#' @import utils
+#' @import grDevices
+#' @import org.Hs.eg.db
+#' @import org.Mm.eg.db
+#' @import org.Rn.eg.db
 #' @importFrom tools file_ext
 #' @importFrom reticulate py_available py_config
-#' @importFrom ballgown ballgown texpr subset stattest geneNames geneIDs transcriptNames indexes structure
-#' @importFrom dplyr arrange count
+#' @importFrom systemPipeRdata genWorkenvir
+#' @importFrom systemPipeR systemArgs seeFastq infile1 seeFastqPlot
+#' @importFrom ShortRead readFastq narrow width writeFastq
+#' @importFrom Biostrings quality
+#' @importFrom ballgown ballgown texpr indexes stattest gexpr
+#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results counts plotMA
+#' @importFrom edgeR DGEList calcNormFactors estimateCommonDisp estimateTagwiseDisp exactTest cpm plotMDS.DGEList plotMeanVar plotBCV
+#' @importFrom stats t.test quantile cor
+#' @importFrom stringr str_extract
 #' @importFrom gridExtra grid.table
+#' @importFrom rafalib mypar
 #' @importFrom reshape2 melt
 #' @importFrom FactoMineR PCA
 #' @importFrom factoextra get_eigenvalue fviz_eig fviz_pca_ind
 #' @importFrom corrplot corrplot
 #' @importFrom PerformanceAnalytics chart.Correlation
-#' @importFrom clusterProfiler bitr enrichGO groupGO dotplot emapplot cnetplot goplot enrichKEGG gseGO gseaplot gseKEGG
-#' @importFrom pathview pathview
-#' @importFrom refGenome tableSeqids extractSeqids tableFeatures ensemblGenome read.gtf
-#' @importFrom Rqc rqcQA rqcReport
-#' @importFrom systemPipeRdata genWorkenvir
-#' @importFrom systemPipeR systemArgs seeFastq infile1 seeFastqPlot
-#' @importFrom QuasR preprocessReads
-#' @importFrom stringr str_extract
-#' @import DOSE
-#' @import ggplot2
-#' @import pheatmap pheatmap
-#' @import org.Hs.eg.db
-#' @import org.Mm.eg.db
-#' @import org.Rn.eg.db
-#' @importFrom graphics abline barplot hist legend mtext par plot title points
-#' @importFrom grDevices colorRampPalette dev.off pdf png rgb
-#' @importFrom methods new
-#' @importFrom stats cor heatmap model.matrix t.test aggregate
-#' @importFrom utils data download.file head read.csv read.delim write.csv write.table
-#' @importFrom clusterProfiler gseGO gseaplot
-#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results plotMA plotDispEsts counts
-#' @importFrom edgeR DGEList calcNormFactors estimateCommonDisp estimateTagwiseDisp exactTest cpm plotMeanVar plotBCV plotMDS.DGEList
-#' @importFrom ShortRead readFastq narrow width writeFastq files
-#' @importFrom Biostrings quality
+#' @importFrom pheatmap pheatmap
 NULL
 

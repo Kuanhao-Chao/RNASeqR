@@ -51,7 +51,8 @@
 #' @author Kuan-Hao Chao
 #' @examples
 #' data(yeast)
-#' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = yeast)
+#' \dontrun{
+#' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = yeast)}
 RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
                                            ballgown.pval   = 0.05,
                                            ballgown.log2FC = 1,
@@ -66,28 +67,37 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
-  path.prefix <- RNASeqWorkFlowParam@path.prefix
-  genome.name <- RNASeqWorkFlowParam@genome.name
-  sample.pattern <- RNASeqWorkFlowParam@sample.pattern
-  independent.variable <- RNASeqWorkFlowParam@independent.variable
-  case.group <- RNASeqWorkFlowParam@case.group
-  control.group <- RNASeqWorkFlowParam@control.group
-  fileConn<-file(paste0(path.prefix, "Rscript/Differential_Analysis.R"))
+  path.prefix <- "@"(RNASeqWorkFlowParam, path.prefix)
+  genome.name <- "@"(RNASeqWorkFlowParam, genome.name)
+  sample.pattern <- "@"(RNASeqWorkFlowParam, sample.pattern)
+  independent.variable <- "@"(RNASeqWorkFlowParam, independent.variable)
+  case.group <- "@"(RNASeqWorkFlowParam, case.group)
+  control.group <- "@"(RNASeqWorkFlowParam, control.group)
+  fileConn <- file(paste0(path.prefix, "Rscript/Differential_Analysis.R"))
   first <- "library(RNASeqWorkflow)"
   second <- paste0("RNASeqDifferentialAnalysis(path.prefix = '", path.prefix,
                    "', genome.name = '", genome.name,
                    "', sample.pattern = '", sample.pattern,
-                   "', independent.variable = '",independent.variable,
-                   "', case.group = '",case.group,
-                   "', control.group = '",control.group,
+                   "', independent.variable = '", independent.variable,
+                   "', case.group = '", case.group,
+                   "', control.group = '", control.group,
                    "', ballgown.log2FC = ", ballgown.log2FC,
                    ", ballgown.pval = ", ballgown.pval, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
-  message(paste0("\u2605 '", path.prefix, "Rscript/Differential_Analysis.R' has been created.\n"))
+  message(paste0("\u2605 '", path.prefix,
+                 "Rscript/Differential_Analysis.R' has been created.\n"))
   if (run) {
-    system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Differential_Analysis.R ", path.prefix, "Rscript_out/Differential_Analysis.Rout"), stdout = "", wait = FALSE)
-    message(paste0("\u2605 Tools are installing in the background. Check current progress in '", path.prefix, "Rscript_out/Differential_Analysis.Rout'\n\n"))
+    system2(command = "nohup",
+            args = paste0("R CMD BATCH ",
+                          path.prefix,
+                          "Rscript/Differential_Analysis.R ",
+                          path.prefix,
+                          "Rscript_out/Differential_Analysis.Rout"),
+            stdout = "", wait = FALSE)
+    message(paste0("\u2605 Tools are installing in the background. ",
+                   "Check current progress in '",
+                   path.prefix, "Rscript_out/Differential_Analysis.Rout'\n\n"))
   }
 }
 
@@ -147,31 +157,75 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
 #' @export
 #' @author Kuan-Hao Chao
 #' @examples
+#' data(yeast)
 #' \dontrun{
-#' input_file_dir <- system.file(package = "RNASeqWorkflow", "exdata")
-#' exp <- RNASeqWorkFlowParam(path.prefix = "/tmp/", input.path.prefix = input_file_dir, genome.name = "hg19", sample.pattern = "SRR[0-9]",
-#'                            experiment.type = "two.group", main.variable = "treatment", additional.variable = "cell")
-#' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = exp)}
-RNASeqDifferentialAnalysis <- function(path.prefix, genome.name, sample.pattern, independent.variable, case.group, control.group, ballgown.pval = 0.05, ballgown.log2FC = 1, TPM.pval = 0.05, TPM.log2FC = 1, DESeq2.pval = 0.1, DESeq2.log2FC = 1, edgeR.pval = 0.05, edgeR.log2FC = 1) {
+#' RNASeqDifferentialAnalysis(path.prefix          = yeast@@path.prefix,
+#'                            genome.name          = yeast@@genome.name,
+#'                            sample.pattern       = yeast@@sample.pattern,
+#'                            independent.variable = yeast@@independent.variable,
+#'                            case.group           = yeast@@case.group,
+#'                            control.group        = yeast@@control.group)}
+RNASeqDifferentialAnalysis <- function(path.prefix,
+                                       genome.name,
+                                       sample.pattern,
+                                       independent.variable,
+                                       case.group, control.group,
+                                       ballgown.pval = 0.05,
+                                       ballgown.log2FC = 1,
+                                       TPM.pval = 0.05,
+                                       TPM.log2FC = 1,
+                                       DESeq2.pval = 0.1,
+                                       DESeq2.log2FC = 1,
+                                       edgeR.pval = 0.05,
+                                       edgeR.log2FC = 1) {
   CheckOperatingSystem(FALSE)
-  PreRNASeqDifferentialAnalysis(path.prefix = path.prefix, sample.pattern = sample.pattern)
+  PreRNASeqDifferentialAnalysis(path.prefix = path.prefix,
+                                sample.pattern = sample.pattern)
   if (file.exists(paste0(path.prefix, "Rscript_out/Read_Process.Rout"))) {
     Hisat2ReportAssemble(path.prefix, genome.name, sample.pattern)
   }
-  message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  Start 'ballgown', 'DESeq2' 'edgeR' analyses  \u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
-  BallgownAnalysis(path.prefix, genome.name, sample.pattern, independent.variable, case.group, control.group, ballgown.pval, ballgown.log2FC)
-  TPMNormalizationAnalysis(path.prefix, genome.name, sample.pattern, independent.variable, case.group, control.group, TPM.pval, TPM.log2FC)
+  message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  ",
+          "Start 'ballgown', 'DESeq2' 'edgeR' analyses  ",
+          "\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
+  BallgownAnalysis(path.prefix,
+                   genome.name,
+                   sample.pattern,
+                   independent.variable,
+                   case.group,
+                   control.group,
+                   ballgown.pval,
+                   ballgown.log2FC)
+  TPMNormalizationAnalysis(path.prefix,
+                           genome.name,
+                           sample.pattern,
+                           independent.variable,
+                           case.group,
+                           control.group,
+                           TPM.pval,
+                           TPM.log2FC)
   raw.read.avail <- RawReadCountAvailability(path.prefix)
   if (raw.read.avail) {
-    DESeq2RawCountAnalysis(path.prefix, independent.variable,  case.group, control.group, DESeq2.pval, DESeq2.log2FC)
-    edgeRRawCountAnalysis(path.prefix, independent.variable, case.group, control.group, edgeR.pval, edgeR.log2FC)
+    DESeq2RawCountAnalysis(path.prefix,
+                           independent.variable,
+                           case.group,
+                           control.group,
+                           DESeq2.pval,
+                           DESeq2.log2FC)
+    edgeRRawCountAnalysis(path.prefix,
+                          independent.variable,
+                          case.group,
+                          control.group,
+                          edgeR.pval,
+                          edgeR.log2FC)
   }
-  PostRNASeqDifferentialAnalysis(path.prefix = path.prefix, sample.pattern = sample.pattern)
+  PostRNASeqDifferentialAnalysis(path.prefix = path.prefix,
+                                 sample.pattern = sample.pattern)
 }
 
 
 PreRNASeqDifferentialAnalysis <- function(path.prefix, sample.pattern) {
-  message("\u269C\u265C\u265C\u265C RNASeqDifferentialAnalysis()' environment pre-check ...\n")
+  message("\u269C\u265C\u265C\u265C RNASeqDifferentialAnalysis()' ",
+          "environment pre-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
     stop("RNASeqDifferentialAnalysis() environment ERROR")
@@ -180,13 +234,22 @@ PreRNASeqDifferentialAnalysis <- function(path.prefix, sample.pattern) {
 }
 
 PostRNASeqDifferentialAnalysis <- function(path.prefix, sample.pattern) {
-  message("\u269C\u265C\u265C\u265C RNASeqDifferentialAnalysis()' environment post-check ...\n")
+  message("\u269C\u265C\u265C\u265C RNASeqDifferentialAnalysis()' ",
+          "environment post-check ...\n")
   validity <- TRUE
   if (!isTRUE(validity)) {
     stop("RNASeqDifferentialAnalysis() post-check ERROR")
   }
   message("(\u2714) : RNASeqDifferentialAnalysis() post-check is valid\n\n")
-  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+                 "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+                 "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+                 "\u2605\n"))
+  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+                 "\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605",
+                 "\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+                 "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+                 "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+                 "\u2605\n"))
 }

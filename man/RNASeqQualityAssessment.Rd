@@ -30,9 +30,10 @@ Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell.
 }
 \examples{
 data(yeast)
-RNASeqEnvironmentSet(path.prefix       = yeast@path.prefix,
-                     input.path.prefix = yeast@input.path.prefix,
-                     sample.pattern    = yeast@sample.pattern)
+\dontrun{
+RNASeqQualityAssessment(path.prefix       = yeast@path.prefix,
+                        input.path.prefix = yeast@input.path.prefix,
+                        sample.pattern    = yeast@sample.pattern)}
 }
 \author{
 Kuan-Hao Chao

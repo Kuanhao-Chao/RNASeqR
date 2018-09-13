@@ -43,8 +43,8 @@
 #' @export
 #' @author Kuan-Hao Chao
 #' @examples
-#' \dontrun{
 #' data(yeast)
+#' \dontrun{
 #' ## Before run this function, make sure \code{RNASeqEnvironmentSet_CMD()} (or\code{RNASeqEnvironmentSet()}) is executed successfully.
 #' RNASeqReadProcess_CMD(RNASeqWorkFlowParam = exp,
 #'                       num.parallel.threads = 10)}
@@ -62,15 +62,15 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
                                   PreDECountTable.run       = TRUE) {
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
-  path.prefix <- RNASeqWorkFlowParam@path.prefix
-  input.path.prefix <- RNASeqWorkFlowParam@input.path.prefix
-  genome.name <- RNASeqWorkFlowParam@genome.name
-  sample.pattern <- RNASeqWorkFlowParam@sample.pattern
-  python.variable <- RNASeqWorkFlowParam@python.variable
+  path.prefix <- '@'(RNASeqWorkFlowParam, path.prefix)
+  input.path.prefix <- '@'(RNASeqWorkFlowParam, input.path.prefix)
+  genome.name <- '@'(RNASeqWorkFlowParam, genome.name)
+  sample.pattern <- '@'(RNASeqWorkFlowParam, sample.pattern)
+  python.variable <- '@'(RNASeqWorkFlowParam, python.variable)
   python.variable.answer <- python.variable$check.answer
   python.variable.version <- python.variable$python.version
-  python.2to3 <- RNASeqWorkFlowParam@python.2to3
-  indices.optional <- RNASeqWorkFlowParam@indices.optional
+  python.2to3 <- '@'(RNASeqWorkFlowParam, python.2to3)
+  indices.optional <- '@'(RNASeqWorkFlowParam, indices.optional)
   # not print but if the prefix is invalid, then 'Prefix path '", path.prefix, "' is invalid. Please try another one.' will be printed.
   # If precheck doesn't have .ht2 files is fine
   # ExportPath(path.prefix = path.prefix)
@@ -155,8 +155,8 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
 #' @export
 #' @author Kuan-Hao Chao
 #' @examples
-#' \dontrun{
 #' data(yeast)
+#' \dontrun{
 #' ## Before run this function, make sure \code{RNASeqEnvironmentSet_CMD()} (or\code{RNASeqEnvironmentSet()}) is executed successfully.
 #' RNASeqReadProcess(path.prefix             = yeast@@path.prefix,
 #'                   input.path.prefix       = yeast@@input.path.prefix,

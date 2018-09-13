@@ -1,4 +1,4 @@
-# Run ballgown analysi
+# Run ballgown analysis
 BallgownAnalysis <- function(path.prefix, genome.name, sample.pattern, independent.variable, case.group, control.group, ballgown.pval, ballgown.log2FC) {
   message("\n\u2618\u2618 ballgown analysis ...\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/"))){

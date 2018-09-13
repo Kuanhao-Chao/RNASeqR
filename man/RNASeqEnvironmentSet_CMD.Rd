@@ -14,6 +14,9 @@ RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam, install.hisat2 = TRUE,
 \item{install.hisat2}{Whether to install 'HISAT2' in this function step. Default value is \code{TRUE}.
 Set\code{FALSE} to skip 'HISAT2' installation.}
 
+\item{install.stringtie}{Whether to install 'StringTie' in this function step. Default value is \code{TRUE}.
+Set\code{FALSE} to skip 'StringTie' installation.}
+
 \item{install.gffcompare}{Whether to install 'Gffcompare' in this function step. Default value is \code{TRUE}.
 Set\code{FALSE} to skip 'Gffcompare' installation.}
 
@@ -27,9 +30,6 @@ If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
 \item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam}
 will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
 \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
-
-\item{install.hisat2}{Whether to install 'StringTie' in this function step. Default value is \code{TRUE}.
-Set\code{FALSE} to skip 'StringTie' installation.}
 }
 \value{
 None
@@ -50,8 +50,8 @@ Set up the environment for the following RNA-Seq workflow in background.
   please see \code{RNASeqEnvironmentSet()} function.
 }
 \examples{
-\dontrun{
 data(yeast)
+\dontrun{
 RNASeqEnvironmentSet_CMD(yeast)}
 }
 \author{

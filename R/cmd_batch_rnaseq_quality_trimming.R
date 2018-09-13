@@ -19,8 +19,8 @@
 #' @export
 #' @author Kuan-Hao Chao
 #' @examples
-#' \dontrun{
 #' data(yeast)
+#' \dontrun{
 #' RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam = yeast)}
 RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam,
                                       cum.error          = 1,
@@ -30,8 +30,8 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam,
   # check input param
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
-  path.prefix <- RNASeqWorkFlowParam@path.prefix
-  sample.pattern <- RNASeqWorkFlowParam@sample.pattern
+  path.prefix <- '@'(RNASeqWorkFlowParam, path.prefix)
+  sample.pattern <- '@'(RNASeqWorkFlowParam, sample.pattern)
   fileConn<-file(paste0(path.prefix, "Rscript/Quality_Trimming.R"))
   first <- "library(RNASeqWorkflow)"
   second <- paste0("RNASeqQualityTrimming(path.prefix = '", path.prefix,
@@ -69,8 +69,8 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam,
 #' @export
 #' @author Kuan-Hao Chao
 #' @examples
-#' \dontrun{
 #' data(yeast)
+#' \dontrun{
 #' RNASeqEnvironmentSet(path.prefix    = yeast@@path.prefix,
 #'                      sample.pattern = yeast@@sample.pattern)}
 RNASeqQualityTrimming <- function(path.prefix,

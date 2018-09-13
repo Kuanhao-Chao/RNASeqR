@@ -70,6 +70,15 @@ Recommended:
 2. `2to3`: If the Python version in the system is 3, then this command will be used in the following analysis step. Generally, `2to3` is available if Python3 is available. 
     (Python and `2to3` is used for creating raw reads count for [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) and [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html). If these commands are not available, DESeq2 and edgeR analysis will be skipped.) 
 
+# Installation
+
+```{r install, eval=FALSE, warning=FALSE}
+source("http://bioconductor.org/biocLite.R") # Sources the biocLite.R installation script 
+biocLite("RNASeqWorkflow") # Installs RNASeqWorkflow 
+biocLite("RNASeqWorkflowData") # Installs RNASeqWorkflowData
+```
+
+
 # "RNASeqWorkFlowParam" S4 Object Creation
 
 This is the **pre-step** of RNA-Seq workflow in this package. Before starting RNA-Seq analysis, you have to run the constructor function `RNASeqWorkFlowParam()` and create `RNASeqWorkFlowParam` S4 object first. This object, which stores checked parameters, will be used as input parameter in the following analysis function.
@@ -118,7 +127,7 @@ There are 11 slots in `RNASeqWorkFlowParam`:
     * Validity of input parameters
 
 ## Example
-```{r}
+```{r, warning=FALSE}
 library(RNASeqWorkflow)
 library(RNASeqWorkflowData)
 ```
@@ -130,14 +139,14 @@ list.files(input_files.path, recursive = TRUE)
 ```
 Check the files in *'inputfiles/'* directory.
 
-```{r}
+```{r, warning=FALSE}
 exp <- RNASeqWorkflowParam(path.prefix = rnaseq_result.path, 
-input.path.prefix = input_files.path, 
-genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", 
-sample.pattern = "SRR[0-9]*_XV",
-independent.variable = "state", 
-case.group = "60mins_ID20_amphotericin_B", 
-control.group = "60mins_ID20_control")
+                           input.path.prefix = input_files.path, 
+                           genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", 
+                           sample.pattern = "SRR[0-9]*_XV",
+                           independent.variable = "state", 
+                           case.group = "60mins_ID20_amphotericin_B", 
+                           control.group = "60mins_ID20_control")
 ```
 In this example, `RNASeqWorkFlowParam` S4 object is store in `exp` for subsequent RNA-Seq analysis steps. Any ERROR occured in checking steps will terminate the program.
 
@@ -186,7 +195,7 @@ RNASeqEnvironmentSet_CMD(exp)
 
 2. Run in R shell 
 Result will be reported in R shell. Make sure the environment is successfully set up before running the subsequent steps.
-```{r}
+```{r, warning=FALSE}
 RNASeqEnvironmentSet(exp@path.prefix, 
                      exp@input.path.prefix, 
                      exp@genome.name, 
@@ -221,7 +230,7 @@ RNASeqQualityAssessment_CMD(exp)
 
 2. Run in R shell 
 Result will be reported in R shell. Make sure quality assessment is successfully done before running the subsequent steps.
-```{r}
+```{r, warning=FALSE}
 RNASeqQualityAssessment(exp@path.prefix,
                         exp@input.path.prefix,
                         exp@sample.pattern)
@@ -376,7 +385,7 @@ RNASeqReadProcess_CMD(exp)
 
 2. Run in R shell 
 Result will be reported in R shell. Make sure raw read process is successfully done before running the subsequent steps.
-```{r}
+```{r, warning=FALSE}
 python.variable <- exp@python.variable
 python.variable.answer <- python.variable$check.answer
 python.variable.version <- python.variable$python.version
@@ -682,8 +691,8 @@ McCarthy, J. D, Chen, Yunshun, Smyth, K. G (2012). “Differential expression an
 
 Yu G, Wang L, Han Y, He Q (2012). “clusterProfiler: an R package for comparing biological themes among gene clusters.” OMICS: A Journal of Integrative Biology, 16(5), 284-287. doi: 10.1089/omi.2011.0118.
 
-Pertea, M., Kim, D., Pertea, G. M., Leek, J. T., & Salzberg, S. L. (2016). Transcript-level expression analysis of RNA-seq experiments with HISAT, StringTie and Ballgown. Nature protocols, 11(9), 1650.
-ISO 690	
+Pertea, M., Kim, D., Pertea, G. M., Leek, J. T., & Salzberg, S. L. (2016). Transcript-level expression analysis of RNA-seq experiments with HISAT, StringTie and Ballgown. Nature protocols, 11(9), 1650.ISO 690	
 
 H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
+
 

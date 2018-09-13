@@ -32,8 +32,8 @@ Trim '.fastq.gz' files for RNA-Seq workflow in background.
   If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNASeqQualityTrimming()} function.
 }
 \examples{
-\dontrun{
 data(yeast)
+\dontrun{
 RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam = yeast)}
 }
 \author{

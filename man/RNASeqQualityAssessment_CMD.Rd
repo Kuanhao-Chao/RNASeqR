@@ -31,8 +31,8 @@ Assess the quality of '.fastq.gz' files for RNA-Seq workflow in background.
   R shell, please see \code{RNASeqQualityAssessment()} function.
 }
 \examples{
-\dontrun{
 data(yeast)
+\dontrun{
 RNASeqQualityAssessment_CMD(RNASeqWorkFlowParam = exp)}
 }
 \author{

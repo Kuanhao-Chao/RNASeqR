@@ -67,8 +67,8 @@ Process raw reads for RNA-Seq workflow in background.
   please see \code{RNASeqReadProcess()} function.
 }
 \examples{
-\dontrun{
 data(yeast)
+\dontrun{
 ## Before run this function, make sure \\code{RNASeqEnvironmentSet_CMD()} (or\\code{RNASeqEnvironmentSet()}) is executed successfully.
 RNASeqReadProcess_CMD(RNASeqWorkFlowParam = exp,
                       num.parallel.threads = 10)}

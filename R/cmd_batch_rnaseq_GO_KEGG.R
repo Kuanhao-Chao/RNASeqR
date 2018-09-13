@@ -38,8 +38,8 @@
 #'   # check input param
 #'   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
 #'   CheckOperatingSystem(FALSE)
-#'   path.prefix <- RNASeqWorkFlowParam@path.prefix
-#'   independent.variable <- RNASeqWorkFlowParam@independent.variable
+#'   path.prefix <- '@'(RNASeqWorkFlowParam, path.prefix)
+#'   independent.variable <- '@'(RNASeqWorkFlowParam, independent.variable)
 #'   fileConn<-file(paste0(path.prefix, "Rscript/GO_KEGG_Analysis.R"))
 #'   first <- "library(RNASeqWorkflow)"
 #'   second <- paste0("RNASeqGoKegg(path.prefix = '", path.prefix, "', independent.variable = '", independent.variable, "', OrgDb.species = '", OrgDb.species, "', go.level = ", go.level, ", input.TYPE.ID = '", input.TYPE.ID, "', KEGG.organism = '",KEGG.organism, "')")

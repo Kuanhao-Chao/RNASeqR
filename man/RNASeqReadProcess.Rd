@@ -80,8 +80,8 @@ Process raw reads for RNA-Seq workflow in R shell.
   please see \code{RNASeqReadProcess_CMD()} function.
 }
 \examples{
-\dontrun{
 data(yeast)
+\dontrun{
 ## Before run this function, make sure \\code{RNASeqEnvironmentSet_CMD()} (or\\code{RNASeqEnvironmentSet()}) is executed successfully.
 RNASeqReadProcess(path.prefix             = yeast@path.prefix,
                   input.path.prefix       = yeast@input.path.prefix,

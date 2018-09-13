@@ -28,6 +28,9 @@ RNASeqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
 \item{install.hisat2}{Whether to install 'HISAT2' in this function step. Default value is \code{TRUE}.
 Set\code{FALSE} to skip 'HISAT2' installation.}
 
+\item{install.stringtie}{Whether to install 'StringTie' in this function step. Default value is \code{TRUE}.
+Set\code{FALSE} to skip 'StringTie' installation.}
+
 \item{install.gffcompare}{Whether to install 'Gffcompare' in this function step. Default value is \code{TRUE}.
 Set\code{FALSE} to skip 'Gffcompare' installation.}
 
@@ -37,9 +40,6 @@ Set\code{FALSE} to skip 'SAMtools' installation.}
 \item{mkdir.bool}{Default \code{TRUE}. If \code{TRUE}, environment directories will be created.
 If \code{FALSE}, no directories will be created. When executing RNASeqEnvironmentSet(),
 'mkdir.bool' should always be \code{TRUE}}
-
-\item{install.hisat2}{Whether to install 'StringTie' in this function step. Default value is \code{TRUE}.
-Set\code{FALSE} to skip 'StringTie' installation.}
 }
 \value{
 None
@@ -63,12 +63,13 @@ Set up the environment for the following RNA-Seq workflow in R shell.
 }
 \examples{
 data(yeast)
+\dontrun{
 RNASeqEnvironmentSet(path.prefix       = yeast@path.prefix,
                      input.path.prefix = yeast@input.path.prefix,
                      genome.name       = yeast@genome.name,
                      sample.pattern    = yeast@sample.pattern,
                      indices.optional  = yeast@indices.optional,
-                     os.type           = yeast@os.type)
+                     os.type           = yeast@os.type)}
 }
 \author{
 Kuan-Hao Chao
