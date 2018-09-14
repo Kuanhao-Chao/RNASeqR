@@ -62,15 +62,15 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
                                   PreDECountTable.run       = TRUE) {
   CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
   CheckOperatingSystem(FALSE)
-  path.prefix <- '@'(RNASeqWorkFlowParam, path.prefix)
-  input.path.prefix <- '@'(RNASeqWorkFlowParam, input.path.prefix)
-  genome.name <- '@'(RNASeqWorkFlowParam, genome.name)
-  sample.pattern <- '@'(RNASeqWorkFlowParam, sample.pattern)
-  python.variable <- '@'(RNASeqWorkFlowParam, python.variable)
+  path.prefix <- "@"(RNASeqWorkFlowParam, path.prefix)
+  input.path.prefix <- "@"(RNASeqWorkFlowParam, input.path.prefix)
+  genome.name <- "@"(RNASeqWorkFlowParam, genome.name)
+  sample.pattern <- "@"(RNASeqWorkFlowParam, sample.pattern)
+  python.variable <- "@"(RNASeqWorkFlowParam, python.variable)
   python.variable.answer <- python.variable$check.answer
   python.variable.version <- python.variable$python.version
-  python.2to3 <- '@'(RNASeqWorkFlowParam, python.2to3)
-  indices.optional <- '@'(RNASeqWorkFlowParam, indices.optional)
+  python.2to3 <- "@"(RNASeqWorkFlowParam, python.2to3)
+  indices.optional <- "@"(RNASeqWorkFlowParam, indices.optional)
   fileConn<-file(paste0(path.prefix, "Rscript/Read_Process.R"))
   first <- "library(RNASeqWorkflow)"
   second <- paste0('RNASeqReadProcess(path.prefix = "', path.prefix,

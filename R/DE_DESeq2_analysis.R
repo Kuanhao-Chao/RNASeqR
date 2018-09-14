@@ -192,7 +192,7 @@ DESeq2RawCountAnalysis <- function(path.prefix,
       message(paste0("\u25CF Plotting  Dispersion plot\n"))
       png(paste0(path.prefix,
                  paste0("RNASeq_results/DESeq2_analysis/",
-                        "images/preDE/Dispersion_Plot.png")),
+                        "images/preDE/Dispersion_Plot_DESeq2.png")),
           width=5,
           height=5,
           units="in",
@@ -206,7 +206,8 @@ DESeq2RawCountAnalysis <- function(path.prefix,
       dev.off()
       message(paste0("(\u2714) : '",
                      paste0("RNASeq_results/DESeq2_analysis/images/DE/",
-                            "Dispersion_Plot.png"), "' has been created. \n\n"))
+                            "Dispersion_Plot_DESeq2.png"),
+                     "' has been created. \n\n"))
 
       ############
       #### DE ####
@@ -230,7 +231,7 @@ DESeq2RawCountAnalysis <- function(path.prefix,
       message(paste0("\u25CF Plotting  MA plot\n"))
       png(paste0(path.prefix,
                  paste0("RNASeq_results/DESeq2_analysis/",
-                        "images/DE/MA_Plot.png")),
+                        "images/DE/MA_Plot_DESeq2.png")),
           width=5,
           height=5,
           units="in",
@@ -245,7 +246,7 @@ DESeq2RawCountAnalysis <- function(path.prefix,
       message(paste0("(\u2714) : '",
                      paste0(path.prefix,
                             "RNASeq_results/",
-                            "DESeq2_analysis/images/DE/MA_Plot.png"),
+                            "DESeq2_analysis/images/DE/MA_Plot_DESeq2.png"),
                      "' has been created. \n\n"))
 
       # Check DESeq2.result.DE before visulization!!
@@ -278,34 +279,4 @@ DESeq2RawCountAnalysis <- function(path.prefix,
     message("(\u2718) necessary file is missing!! Something ERROR ",
             "happend during DESeq2 analysis!! Skip visualization!!\n\n")
   }
-  # # result function
-  # #Set to Inf or FALSE to disable the resetting of p-values to NA.
-  # # cooksCutoff : this test excludes the Cook's distance of samples belonging to experimental groups with only 2 samples.
-  # # independentFiltering : whether independent filtering should be applied automatically
-  # res <- DESeq2::results(dds, cooksCutoff=FALSE, independentFiltering=FALSE, contrast = c("independent.variable", case.group, control.group))
-  # message(paste0("\n\u25CF Writing '", path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2_", case.group, "_vs_", control.group, "'\n"))
-  # write.csv(res, file = paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2/DESeq2_", case.group, "_vs_", control.group, ".csv"), row.names=FALSE)
-  # message(paste0("\u25CF Plotting DESeq2 MA plot\n"))
-  # png(paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2/images/DESeq2_MA_plot.png"))
-  # DESeq2::plotMA(dds,main="MAplot")
-  # dev.off()
-  #
-  # resOrdered <- res[order(res$pvalue),]
-  # summary(res)
-  #
-  # # reorder the result by padj !!
-  # res.sort.padj <- res[order(res$padj),]
-  #
-  # DESeq2::plotcount(dds, gene=which.min(res$padj), intgroup="independent.variable")
-  #
-  #
-  # # filter out res.sort.padj (padj not null, padj < value, log2FoldChange >= 1)
-  # sig <-res.sort.padj[(!is.na(res.sort.padj$padj)) && (res.sort.padj$padj < DESeq2.pval) && (abs(res.sort.padj$log2FoldChange) >= DESeq2.log2FC)]
-  #
-  # # plot plotDispEsts
-  # # plotDispEsts
-  # message(paste0("\u25CF Plotting DESeq2 Dispersion plot\n"))
-  # png(paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/DESeq2/images/DESeq2_Dispersion_plot.png"))
-  # DESeq2::plotDispEsts(dds, main="Dispersion plot")
-  # dev.off()
 }

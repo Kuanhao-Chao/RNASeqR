@@ -815,7 +815,7 @@ CheckSamtools <- function(print=TRUE){
 #' @return None
 #' @export
 #' @example
-#' CheckToolAll()
+#' CheckToolAll(print=TRUE)
 CheckToolAll <- function(print=TRUE) {
   message("************** Checking Availability of Commands ************\n")
   hisat2.check <- CheckHisat2(print)

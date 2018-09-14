@@ -186,7 +186,8 @@ edgeRRawCountAnalysis <- function(path.prefix,
       # MDS plot
       message("\u25CF Plotting MDS plot ... \n")
       png(paste0(path.prefix,
-                 "RNASeq_results/edgeR_analysis/images/preDE/MDS_Plot.png"),
+                 "RNASeq_results/edgeR_analysis/",
+                 "images/preDE/MDS_Plot_edgeR.png"),
           width=5,
           height=5,
           units="in",
@@ -210,13 +211,13 @@ edgeRRawCountAnalysis <- function(path.prefix,
       dev.off()
       message(paste0("(\u2714) : '",
                      paste0(path.prefix, "RNASeq_results/edgeR_analysis/",
-                            "images/preDE/MDS_Plot.png"),
+                            "images/preDE/MDS_Plot_edgeR.png"),
                      "' has been created. \n\n"))
 
       # MeanVar plot
       message("\u25CF Plotting MeanVar plot ... \n")
       png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/",
-                 "images/preDE/MeanVar_Plot.png"),
+                 "images/preDE/MeanVar_Plot_edgeR.png"),
           width=5,
           height=5,
           units="in",
@@ -230,12 +231,12 @@ edgeRRawCountAnalysis <- function(path.prefix,
       dev.off()
       message(paste0("(\u2714) : '",
                      paste0(path.prefix, "RNASeq_results/edgeR_analysis/",
-                            "images/preDE/MeanVar_Plot.png"),
+                            "images/preDE/MeanVar_Plot_edgeR.png"),
                      "' has been created. \n\n"))
       # BCV plot
       message("\u25CF Plotting BCV plot ...\n")
       png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/",
-                 "BCV_Plot.png"),
+                 "BCV_Plot_edgeR.png"),
           width=5,
           height=5,
           units="in",
@@ -249,7 +250,7 @@ edgeRRawCountAnalysis <- function(path.prefix,
       dev.off()
       message(paste0("(\u2714) : '",
                      paste0(path.prefix, "RNASeq_results/",
-                            "edgeR_analysis/images/preDE/BCV_Plot.png"),
+                            "edgeR_analysis/images/preDE/BCV_Plot_edgeR.png"),
                      "' has been created. \n\n"))
       ############
       #### DE ####
@@ -268,6 +269,31 @@ edgeRRawCountAnalysis <- function(path.prefix,
                   control.group,
                   edgeR.pval,
                   edgeR.log2FC)
+
+      # Plot Smear plot !!
+      fit <- edgeR::glmFit(dgList)
+      lrt <- edgeR::glmLRT(fit, coef=2)
+      png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/DE/",
+                 "Smear_Plot_edgeR.png"),
+          width=5,
+          height=5,
+          units="in",
+          res=300)
+      cex.before <- par("cex")
+      par(xpd=TRUE, cex = 0.7)
+      # rownames for genes identified as being differentially expressed;
+      # use exactTest or glmLRT to identify DE genes. Note that `tag' and `gene'
+      # are synonymous here.
+      edgeR::plotSmear(lrt, de.tags = dgList$genes)
+      par(cex = 0.8)
+      graphics::title(paste0(case.group, " vs ", control.group))
+      par(cex = cex.before)
+      dev.off()
+      message(paste0("(\u2714) : '",
+                     paste0(path.prefix, "RNASeq_results/",
+                            "edgeR_analysis/images/preDE/Smear_Plot_edgeR.png"),
+                     "' has been created. \n\n"))
+
       if (nrow(edgeR.result.DE) > 1) {
         # PCA plot
         DEPCAPlot("edgeR_analysis",
@@ -297,18 +323,4 @@ edgeRRawCountAnalysis <- function(path.prefix,
     message("(\u2718) necessary file is missing!! Something ERROR happend ",
             "during edgeR analysis!! Skip visualization!!\n\n")
   }
-    #   edgeR::plotSmear(de, de.tags = de$genes)
-    #
-    #   # Fit a negative binomial generalized log-linear model
-    #   fit <- edgeR::glmFit(dgList)
-    #   # conducts likelihood ratio tests for one or more coefficients in the linear model
-    #   lrt <- edgeR::glmLRT(fit, coef=2)
-    #   topTags(lrt)
-    #   # MA-plot is a plot of log-intensity ratios (M-values) versus log-intensity averages (A-values)
-    #   # mean-difference plot (aka MA plot)
-    #   message("\u25CF Plotting MD plot ...\n")
-    #   png(paste0(path.prefix, "RNASeq_results/Reads_Count_Matrix_analysis/edgeR/images/MD_plot.png"))
-    #   plotMD(lrt, main = "MD (MA) Plot")
-    #   abline(h=c(-1, 1), col="blue")
-    #   dev.off()
 }
