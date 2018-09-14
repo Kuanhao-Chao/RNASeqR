@@ -18,7 +18,7 @@
 #' @importFrom ShortRead readFastq narrow width writeFastq
 #' @importFrom Biostrings quality
 #' @importFrom ballgown ballgown texpr indexes stattest gexpr
-#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results counts plotMA
+#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results counts plotMA plotDispEsts
 #' @importFrom edgeR DGEList calcNormFactors estimateCommonDisp estimateTagwiseDisp exactTest cpm plotMDS.DGEList plotMeanVar plotBCV
 #' @importFrom stats t.test quantile cor
 #' @importFrom stringr str_extract

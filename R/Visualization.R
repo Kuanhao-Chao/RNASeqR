@@ -22,22 +22,22 @@ FrequencyPlot <- function(which.analysis, which.count.normalization, path.prefix
   melted.data.normal <- reshape2::melt(independent.variable.data.frame)
   x.range.normal <- stats::quantile(melted.data.normal$value,probs=c(0,0.9))
   ggplot(aes(x=melted.data.normal$value, colour=melted.data.normal$variable), data = melted.data.normal) +
-    xlim(x.range.normal[1]-20, x.range.normal[2]+20) + geom_density() + theme_bw() + xlab("FPKM") + ylab("Frequency") +
+    xlim(x.range.normal[1]-20, x.range.normal[2]+20) + geom_density() + theme_bw() + xlab(which.count.normalization) + ylab("Frequency") +
     ggtitle("Frequency Plot (ggplot2)") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
     theme(legend.position = "none")
-  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Frequency/Frequency_Plot_normalized_count_ggplot2.png")), dpi = 300)
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Frequency/Frequency_Plot_normalized_count_ggplot2.png")), dpi = 300, width = 7, height = 7)
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Frequency_Plot_normalized_count_ggplot2.png"), "' has been created. \n\n"))
 
   melted.data <- reshape2::melt(log2(independent.variable.data.frame+1))
   x.range <- stats::quantile(melted.data$value,probs=c(0,.99))
   ggplot(aes(x=melted.data$value, colour=melted.data$variable), data = melted.data) +
-    xlim(x.range[1]-5, x.range[2]+5) + geom_density() + theme_bw() + xlab(bquote(~Log[2](FPKM+1))) + ylab("Frequency") + ggtitle("Frequency Plot (ggplot2)") +
+    xlim(x.range[1]-5, x.range[2]+5) + geom_density() + theme_bw() + xlab(bquote(~Log[2](.(which.count.normalization)+1))) + ylab("Frequency") + ggtitle("Frequency Plot (ggplot2)") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
     theme(legend.position = "none")
-  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Frequency/Frequency_Plot_log_normalized_count_ggplot2.png")), dpi = 300)
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Frequency/Frequency_Plot_log_normalized_count_ggplot2.png")), dpi = 300, width = 7, height = 7)
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/Frequency_Plot_log_normalized_count_ggplot2.png"), "' has been created. \n\n"))
 }
 
@@ -64,7 +64,7 @@ BoxViolinPlot <- function(which.analysis, which.count.normalization, path.prefix
     theme_bw() + xlab("Samples") + ylab(bquote(~Log[2](.(which.count.normalization)+1))) + ggtitle("Box Plot (ggplot2)") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Distribution/Box_Plot_ggplot2.png")), dpi = 300)
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Distribution/Box_Plot_ggplot2.png")), dpi = 300, width = 7, height = 7)
   # dev.off()
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Distribution/Box_Plot_ggplot2.png"), "' has been created. \n\n"))
   # Violin plot
@@ -75,7 +75,7 @@ BoxViolinPlot <- function(which.analysis, which.count.normalization, path.prefix
     theme(axis.text.x = element_text(angle = 90, hjust = 1), plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) +
     theme(axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10)) +
     theme(legend.position = "none")
-  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Distribution/Violin_Plot_ggplot2.png")), dpi = 300)
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/Distribution/Violin_Plot_ggplot2.png")), dpi = 300, width = 7, height = 7)
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Distribution/Violin_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
@@ -103,7 +103,7 @@ PCAPlot <- function(which.analysis, which.count.normalization, path.prefix, inde
   factoextra::fviz_eig(pca, addlabels = TRUE, ylim = c(0, 50), main = "PCA Dimensions") +
     labs(title ="PCA Dimensions Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/PCA/Dimension_PCA_Plot_factoextra.png")), dpi = 300)
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/preDE/PCA/Dimension_PCA_Plot_factoextra.png")), dpi = 300, width = 7, height = 7)
 
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/Dimension_PCA_Plot_factoextra.png"), "' has been created. \n"))
   #var$coord: coordinates of variables to create a scatter plot
@@ -121,7 +121,7 @@ PCAPlot <- function(which.analysis, which.count.normalization, path.prefix, inde
                                  ) +
     labs(title ="PCA Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_factoextra.png"), dpi = 300)
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_factoextra.png"), dpi = 300, width = 7, height = 7)
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_factoextra.png"), "' has been created. \n"))
 
   normalized.res.PCA = FactoMineR::PCA(normalized.trans, scale.unit=TRUE, ncp=2, quali.sup=length(normalized.trans), graph = FALSE)
@@ -137,7 +137,7 @@ PCAPlot <- function(which.analysis, which.count.normalization, path.prefix, inde
     labs(color = independent.variable) +
     geom_hline(yintercept=0, linetype="dashed", color = "black") +
     geom_vline(xintercept=0, linetype="dashed", color = "black")
-  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_ggplot2.png"), dpi = 300)
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_ggplot2.png"), dpi = 300, width = 7, height = 7)
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/PCA/PCA_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
@@ -191,7 +191,7 @@ CorrelationPlot <- function(which.analysis, which.count.normalization, path.pref
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10 ), axis.title.y = element_text(size = 10)) +
     coord_fixed()
   # Print the heatmap
-  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Heat_Plot_ggplot2.png"), dpi = 300)
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Heat_Plot_ggplot2.png"), dpi = 300, width = 7, height = 7)
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/Correlation/Correlation_Heat_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
@@ -229,7 +229,7 @@ VolcanoPlot <- function(which.analysis, which.count.normalization, path.prefix, 
     geom_hline(yintercept=-log10(condition.pval), linetype="dashed", color = "black") +
     geom_vline(xintercept=1, linetype="dashed", color = "black") +
     geom_vline(xintercept=-1, linetype="dashed", color = "black")
-  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot_graphics.png"), dpi = 300)
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot_graphics.png"), dpi = 300, width = 7, height = 7)
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Volcano_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
@@ -256,7 +256,7 @@ MAPlot <- function(which.analysis, which.count.normalization, path.prefix, indep
     ylim(-6, 6) +
     theme(legend.position="top") +
     labs(color=paste0("p-value < ", condition.pval))
-  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/MA_Plot_ggplot2.png"), dpi = 300)
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/MA_Plot_ggplot2.png"), dpi = 300, width = 7, height = 7)
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/preDE/MA_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
@@ -284,7 +284,7 @@ DEPCAPlot <- function(which.analysis, which.count.normalization, path.prefix, in
   factoextra::fviz_eig(pca, addlabels = TRUE, ylim = c(0, 50)) +
     labs(title ="PCA Dimensions Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/DE/PCA/Dimension_PCA_Plot_factoextra.png")), dpi = 300)
+  ggsave(paste0(path.prefix, paste0("RNASeq_results/", which.analysis, "/images/DE/PCA/Dimension_PCA_Plot_factoextra.png")), dpi = 300, width = 7, height = 7)
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/Dimension_PCA_Plot_factoextra.png"), "' has been created. \n"))
   #var$coord: coordinates of variables to create a scatter plot
   #var$cos2: represents the quality of representation for variables on the factor map. It’s calculated as the squared coordinates: var.cos2 = var.coord * var.coord.
@@ -301,7 +301,7 @@ DEPCAPlot <- function(which.analysis, which.count.normalization, path.prefix, in
   ) +
     labs(title ="PCA Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_factoextra.png"), dpi = 300)
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_factoextra.png"), dpi = 300, width = 7, height = 7)
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_factoextra.png"), "' has been created. \n"))
 
   normalized.res.PCA = FactoMineR::PCA(normalized.trans, scale.unit=TRUE, ncp=2, quali.sup=length(normalized.trans), graph = FALSE)
@@ -317,7 +317,7 @@ DEPCAPlot <- function(which.analysis, which.count.normalization, path.prefix, in
     labs(color = independent.variable) +
     geom_hline(yintercept=0, linetype="dashed", color = "black") +
     geom_vline(xintercept=0, linetype="dashed", color = "black")
-  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_ggplot2.png"), dpi = 300)
+  ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_ggplot2.png"), dpi = 300, width = 7, height = 7)
   message(paste0("(\u2714) : '", paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/PCA/PCA_Plot_ggplot2.png"), "' has been created. \n\n"))
 }
 
@@ -382,7 +382,7 @@ DEHeatmap <- function(which.analysis, which.count.normalization, path.prefix, in
                          units="in", fontsize = 7)
       # grid::grid.abline(intercept = 300, slope = 0)
       # theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10))
-      # ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), dpi = 300)
+      # ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), dpi = 300, width = 7, height = 7)
       message(paste0("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"), "' has been created. \n\n")
     }
   }

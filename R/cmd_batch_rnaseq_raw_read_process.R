@@ -71,9 +71,6 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
   python.variable.version <- python.variable$python.version
   python.2to3 <- '@'(RNASeqWorkFlowParam, python.2to3)
   indices.optional <- '@'(RNASeqWorkFlowParam, indices.optional)
-  # not print but if the prefix is invalid, then 'Prefix path '", path.prefix, "' is invalid. Please try another one.' will be printed.
-  # If precheck doesn't have .ht2 files is fine
-  # ExportPath(path.prefix = path.prefix)
   fileConn<-file(paste0(path.prefix, "Rscript/Read_Process.R"))
   first <- "library(RNASeqWorkflow)"
   second <- paste0('RNASeqReadProcess(path.prefix = "', path.prefix,
@@ -95,10 +92,19 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
                    ', PreDECountTable.run = ', PreDECountTable.run, ')')
   writeLines(c(first, second), fileConn)
   close(fileConn)
-  message(paste0("\u2605 '", path.prefix, "Rscript/Read_Process.R' has been created.\n"))
+  message(paste0("\u2605 '", path.prefix,
+                 "Rscript/Read_Process.R' has been created.\n"))
   if (run) {
-    system2(command = 'nohup', args = paste0("R CMD BATCH ", path.prefix, "Rscript/Read_Process.R ", path.prefix, "Rscript_out/Read_Process.Rout"), stdout = "", wait = FALSE)
-    message(paste0("\u2605 RNASeq alignment, assembly, quantification, mergence, comparison, reads process are doing in the background. Check current progress in '", path.prefix, "Rscript_out/Read_Process.Rout'\n\n"))
+    system2(command = 'nohup',
+            args = paste0("R CMD BATCH ", path.prefix,
+                          "Rscript/Read_Process.R ", path.prefix,
+                          "Rscript_out/Read_Process.Rout"),
+            stdout = "",
+            wait = FALSE)
+    message(paste0("\u2605 RNASeq alignment, assembly, quantification, ",
+                   "mergence, comparison, reads process are doing in the ",
+                   "background. Check current progress in '", path.prefix,
+                   "Rscript_out/Read_Process.Rout'\n\n"))
   }
 }
 
@@ -186,46 +192,90 @@ RNASeqReadProcess <- function(path.prefix,
   CheckOperatingSystem(FALSE)
   ExportPath(path.prefix)
   PreRNASeqReadProcess(path.prefix, genome.name, sample.pattern)
-  check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=FALSE)
-  if (check.results$ht2.files.number.df == 0 && !indices.optional & Hisat2.Index.run) {
+  check.results <- ProgressGenesFiles(path.prefix,
+                                      genome.name,
+                                      sample.pattern,
+                                      print=FALSE)
+  if (check.results$ht2.files.number.df == 0 &&
+      !indices.optional & Hisat2.Index.run) {
     CreateHisat2Index(path.prefix, genome.name, sample.pattern)
   }
   if (Hisat2.Alignment.run) {
-    Hisat2AlignmentDefault(path.prefix, genome.name, sample.pattern, num.parallel.threads)
+    Hisat2AlignmentDefault(path.prefix,
+                           genome.name,
+                           sample.pattern,
+                           num.parallel.threads)
   }
   if (Samtools.Bam.run) {
-    SamtoolsToBam(path.prefix, genome.name, sample.pattern, num.parallel.threads)
+    SamtoolsToBam(path.prefix,
+                  genome.name,
+                  sample.pattern,
+                  num.parallel.threads)
   }
   if (StringTie.Assemble.run) {
-    StringTieAssemble(path.prefix, genome.name, sample.pattern, num.parallel.threads)
+    StringTieAssemble(path.prefix,
+                      genome.name,
+                      sample.pattern,
+                      num.parallel.threads)
   }
   if (StringTie.Merge.Trans.run) {
-    StringTieMergeTrans(path.prefix, genome.name, sample.pattern, num.parallel.threads)
+    StringTieMergeTrans(path.prefix,
+                        genome.name,
+                        sample.pattern,
+                        num.parallel.threads)
   }
   if (Gffcompare.Ref.Sample.run) {
-    GffcompareRefSample(path.prefix, genome.name, sample.pattern)
+    GffcompareRefSample(path.prefix,
+                        genome.name,
+                        sample.pattern)
   }
   if (StringTie.Ballgown.run) {
-    StringTieToBallgown(path.prefix, genome.name, sample.pattern, num.parallel.threads)
+    StringTieToBallgown(path.prefix,
+                        genome.name,
+                        sample.pattern,
+                        num.parallel.threads)
   }
-  # StringTieReEstimate(path.prefix, genome.name, sample.pattern, num.parallel.threads = num.parallel.threads)
-  finals <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=TRUE)
+  finals <- ProgressGenesFiles(path.prefix,
+                               genome.name,
+                               sample.pattern,
+                               print=TRUE)
   if (PreDECountTable.run) {
-    PreDECountTable(path.prefix= path.prefix, sample.pattern, python.variable.answer, python.variable.version, python.2to3, print=TRUE)
+    PreDECountTable(path.prefix,
+                    sample.pattern,
+                    python.variable.answer,
+                    python.variable.version,
+                    python.2to3,
+                    print=TRUE)
   }
-  PostRNASeqReadProcess(path.prefix = path.prefix, genome.name = genome.name, sample.pattern = sample.pattern)
+  PostRNASeqReadProcess(path.prefix,
+                        genome.name,
+                        sample.pattern)
 }
 
 PreRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
-  message("\u269C\u265C\u265C\u265C RNASeqReadProcess()' environment pre-check ...\n")
+  message("\u269C\u265C\u265C\u265C RNASeqReadProcess()' ",
+          "environment pre-check ...\n")
   phenodata.csv <- file.exists(paste0(path.prefix, "gene_data/phenodata.csv"))
-  ref.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/", genome.name, ".gtf"))
-  ref.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/", genome.name, ".fa"))
-  raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'), pattern = sample.pattern, all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE)
+  ref.gtf <- file.exists(paste0(path.prefix,
+                                "gene_data/ref_genes/", genome.name, ".gtf"))
+  ref.fa <- file.exists(paste0(path.prefix,
+                               "gene_data/ref_genome/", genome.name, ".fa"))
+  raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'),
+                          pattern = sample.pattern,
+                          all.files = FALSE,
+                          full.names = FALSE,
+                          recursive = FALSE,
+                          ignore.case = FALSE)
   check.tool.result <- CheckToolAll()
-  check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=FALSE)
-  check.progress.results.bool <- check.results$gtf.file.logic.df && check.results$fa.file.logic.df && (check.results$fastq.gz.files.number.df != 0)
-  validity <- phenodata.csv && ref.gtf && ref.fa && check.tool.result && (length(raw.fastq) != 0) && check.progress.results.bool
+  check.results <- ProgressGenesFiles(path.prefix,
+                                      genome.name,
+                                      sample.pattern,
+                                      print=FALSE)
+  check.progress.results.bool <- check.results$gtf.file.logic.df &&
+    check.results$fa.file.logic.df &&
+    (check.results$fastq.gz.files.number.df != 0)
+  validity <- phenodata.csv && ref.gtf && ref.fa && check.tool.result &&
+    (length(raw.fastq) != 0) && check.progress.results.bool
   if (!isTRUE(validity)) {
     stop("RNASeqReadProcess() environment ERROR")
   }
@@ -233,10 +283,14 @@ PreRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
 }
 
 PostRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
-  message("\u269C\u265C\u265C\u265C RNASeqReadProcess()' environment post-check ...\n")
+  message("\u269C\u265C\u265C\u265C RNASeqReadProcess()' ",
+          "environment post-check ...\n")
   # Still need to add condition
   gene_abundance <- dir.exists(paste0(path.prefix, "gene_data/gene_abundance/"))
-  check.results <- ProgressGenesFiles(path.prefix, genome.name, sample.pattern, print=FALSE)
+  check.results <- ProgressGenesFiles(path.prefix,
+                                      genome.name,
+                                      sample.pattern,
+                                      print=FALSE)
   ht2.bool <- (check.results$ht2.files.number.df) != 0
   sam.bool <- (check.results$sam.files.number.df) != 0
   bam.bool <- (check.results$bam.files.number.df) != 0
@@ -244,13 +298,20 @@ PostRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
   merged.bool <- check.results$stringtie_merged.gtf.file.df
   gffcompare.bool <- (check.results$gffcompare.related.dirs.number.df) != 0
   ballgown.bool <- (check.results$ballgown.dirs.number.df) != 0
-  validity <- gene_abundance && ht2.bool && sam.bool && bam.bool && gtf.bool && merged.bool && gffcompare.bool && ballgown.bool
+  validity <- gene_abundance && ht2.bool && sam.bool && bam.bool && gtf.bool &&
+    merged.bool && gffcompare.bool && ballgown.bool
   if (!isTRUE(validity)) {
     stop("RNASeqReadProcess() post-check ERROR")
   }
   message("(\u2714) : RNASeqReadProcess() post-check is valid\n\n")
-  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n")
 }
 

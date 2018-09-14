@@ -116,8 +116,8 @@ RNASeqQualityAssessment <- function(path.prefix,
                                   recursive = FALSE,
                                   ignore.case = FALSE)
   message(paste0("************** Quality Assessment **************\n"))
-  # folder <- paste0(path.prefix, "gene_data/raw_fastq.gz")
-  # files <- list.files(folder, sample.pattern, full.names = TRUE)
+  folder <- paste0(path.prefix, "gene_data/raw_fastq.gz")
+  files <- list.files(folder, sample.pattern, full.names = TRUE)
   # message(paste0("\u25CF 1. R package \"Rqc\" quality assessment\n"))
   # message(paste0("     \u25CF  Running 'rqcQA()' ...  ",
   #                "Please wait \u231B\u231B\u231B\n"))
@@ -131,7 +131,6 @@ RNASeqQualityAssessment <- function(path.prefix,
   #                         QA.count,
   #                         "/Rqc/Rqc_report.html"))
   # message(paste0("     (\u2714) : Rqc assessment success ~~\n\n"))
-
   if(!dir.exists(paste0(path.prefix,
                         "RNASeq_results/QA_results/QA_",
                         QA.count,
@@ -213,8 +212,8 @@ PreCheckRNASeqQualityAssessment <- function(path.prefix, sample.pattern) {
           "'RNASeqQualityAssessment()' ",
           "environment pre-check ...\n")
   phenodata.csv <- file.exists(paste0(path.prefix, "gene_data/phenodata.csv"))
-  chrX.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/chrX.gtf"))
-  chrX.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/chrX.fa"))
+  ref.gtf <- file.exists(paste0(path.prefix, "gene_data/ref_genes/ref.gtf"))
+  ref.fa <- file.exists(paste0(path.prefix, "gene_data/ref_genome/ref.fa"))
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'),
                           pattern = sample.pattern,
                           all.files = FALSE,
@@ -223,7 +222,7 @@ PreCheckRNASeqQualityAssessment <- function(path.prefix, sample.pattern) {
                           ignore.case = FALSE)
   ExportPath(path.prefix)
   check.tool.result <- CheckToolAll()
-  validity <- phenodata.csv && chrX.gtf && chrX.fa &&
+  validity <- phenodata.csv && ref.gtf && ref.fa &&
     check.tool.result && (length(raw.fastq) != 0)
   raw.fastq <- list.files(path = paste0(path.prefix, 'gene_data/raw_fastq.gz/'),
                           pattern = sample.pattern,

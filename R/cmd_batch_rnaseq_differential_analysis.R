@@ -85,8 +85,8 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
                    ", ballgown.pval = ", ballgown.pval, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
-  message(paste0("\u2605 '", path.prefix,
-                 "Rscript/Differential_Analysis.R' has been created.\n"))
+  message("\u2605 '", path.prefix,
+          "Rscript/Differential_Analysis.R' has been created.\n")
   if (run) {
     system2(command = "nohup",
             args = paste0("R CMD BATCH ",
@@ -95,9 +95,9 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
                           path.prefix,
                           "Rscript_out/Differential_Analysis.Rout"),
             stdout = "", wait = FALSE)
-    message(paste0("\u2605 Tools are installing in the background. ",
-                   "Check current progress in '",
-                   path.prefix, "Rscript_out/Differential_Analysis.Rout'\n\n"))
+    message("\u2605 Tools are installing in the background. ",
+            "Check current progress in '",
+            path.prefix, "Rscript_out/Differential_Analysis.Rout'\n\n")
   }
 }
 
@@ -241,15 +241,15 @@ PostRNASeqDifferentialAnalysis <- function(path.prefix, sample.pattern) {
     stop("RNASeqDifferentialAnalysis() post-check ERROR")
   }
   message("(\u2714) : RNASeqDifferentialAnalysis() post-check is valid\n\n")
-  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                 "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                 "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                 "\u2605\n"))
-  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                 "\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605",
-                 "\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-  message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                 "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                 "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                 "\u2605\n"))
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\n")
 }
