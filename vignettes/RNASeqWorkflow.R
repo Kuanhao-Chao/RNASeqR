@@ -35,7 +35,8 @@ RNASeqEnvironmentSet(exp@path.prefix,
                      exp@input.path.prefix, 
                      exp@genome.name, 
                      exp@sample.pattern, 
-                     exp@indices.optional, exp@os.type)
+                     exp@indices.optional, 
+                     exp@os.type)
 
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqQualityAssessment_CMD(exp)

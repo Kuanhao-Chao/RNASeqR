@@ -2,30 +2,32 @@
 % Please edit documentation in R/cmd_batch_rnaseq_quality_assessment.R
 \name{RNASeqQualityAssessment}
 \alias{RNASeqQualityAssessment}
-\title{Quality assessment of '.fastq.gz' files for RNA-Seq workflow in R shell}
+\title{RNASeqQualityAssessment}
 \usage{
 RNASeqQualityAssessment(path.prefix, input.path.prefix, sample.pattern)
 }
 \arguments{
-\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
-'Rscript/' and 'Rscript_out/' directories}
+\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/',
+'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
 
 \item{input.path.prefix}{path prefix of 'input_files/' directory}
 
-\item{sample.pattern}{sample.pattern  Regular expression of paired-end fastq.gz files under
-'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
+\item{sample.pattern}{sample.pattern  Regular expression of paired-end
+fastq.gz files under 'input_files/raw_fastq.gz'.
+Expression not includes \code{_[1,2].fastq.gz}.}
 }
 \value{
 None
 }
 \description{
 Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell.
-  This step is optional in the whole RNA-Seq workflow.
-  It is strongly advised to run \code{RNASeqQualityAssessment_CMD()} directly.
-  Running \code{RNASeqQualityAssessment_CMD()} will create 'Quality_Assessment.Rout' file in 'Rscript_out/' directory.
-  This function reports the quality assessment result in one packages \code{systemPipeR}
-  For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
-  If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in background,
+  This step is optional in the whole RNA-Seq workflow. \cr
+  This function reports the quality assessment result in packages
+  \code{systemPipeR}
+  For \code{systemPipeR},
+  'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf'
+  will be created. \cr If you want to assess the quality of '.fastq.gz'
+  files for the following RNA-Seq workflow in background,
   please see \code{RNASeqQualityAssessment_CMD()} function.
 }
 \examples{

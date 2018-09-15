@@ -1,7 +1,8 @@
 #' RNASeqWorkflow-package
 #'
 #' @name RNASeqWorkflow
-#' @importFrom clusterProfiler bitr enrichGO groupGO dotplot emapplot cnetplot goplot enrichKEGG gseGO gseaplot gseKEGG
+#' @importFrom clusterProfiler bitr enrichGO groupGO dotplot emapplot
+#'   cnetplot goplot enrichKEGG gseGO gseaplot gseKEGG
 #' @importFrom pathview pathview
 #' @import DOSE
 #' @import ggplot2
@@ -18,8 +19,10 @@
 #' @importFrom ShortRead readFastq narrow width writeFastq
 #' @importFrom Biostrings quality
 #' @importFrom ballgown ballgown texpr indexes stattest gexpr
-#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results counts plotMA plotDispEsts
-#' @importFrom edgeR DGEList calcNormFactors estimateCommonDisp estimateTagwiseDisp exactTest cpm plotMDS.DGEList plotMeanVar plotBCV
+#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results counts
+#'   plotMA plotDispEsts
+#' @importFrom edgeR DGEList calcNormFactors estimateCommonDisp
+#'   estimateTagwiseDisp exactTest cpm plotMDS.DGEList plotMeanVar plotBCV
 #' @importFrom stats t.test quantile cor
 #' @importFrom stringr str_extract
 #' @importFrom gridExtra grid.table

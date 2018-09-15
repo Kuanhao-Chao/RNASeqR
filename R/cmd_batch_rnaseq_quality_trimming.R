@@ -1,19 +1,29 @@
-#' @title Quality trimming of '.fastq.gz' files for RNA-Seq workflow in background.
+#' @title RNASeqQualityTrimming_CMD
 #'
-#' @description Trim '.fastq.gz' files for RNA-Seq workflow in background.
+#' @description
+#'   Trim '.fastq.gz' files for RNA-Seq workflow in background.
 #'   This step is optional in the whole RNA-Seq workflow.
-#'   The trimming method is implemented by R package \code{ShortRead}
-#'   If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNASeqQualityTrimming()} function.
+#'   The trimming method is implemented by R package \code{ShortRead} \cr
+#'   If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell,
+#'   please see \code{RNASeqQualityTrimming()} function.
 #'
-#' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
-#' @param cum.error Default \code{1}. Cut of threshold of cumulative probability of error per base.
-#' @param reads.length.limit Default \code{36}. The shortest base pair length of short reads
-#' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed.
+#' @param RNASeqWorkFlowParam S4 object instance of
+#'   experiment-related parameters
+#' @param cum.error Default \code{1}.
+#'   Cut of threshold of cumulative probability of error per base.
+#' @param reads.length.limit Default \code{36}.
+#'   The shortest base pair length of short reads
+#' @param run Default value is \code{TRUE}.
+#'   If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed.
 #'   The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
-#'   If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
-#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam}
-#'   will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
-#'   \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
+#'   If \code{False}, 'Rscript/Environment_Set.R'
+#'   will be created without executed.
+#' @param check.s4.print Default \code{TRUE}.
+#'   If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam}
+#'   will be reported in 'Rscript_out/Environment_Set.Rout'.
+#'   If \code{FALSE}, the result of checking
+#'   \code{RNASeqWorkFlowParam} will not be in
+#'   'Rscript_out/Environment_Set.Rout'
 #'
 #' @return None
 #' @export
@@ -56,22 +66,27 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam,
 }
 
 
-#' @title Quality trimming of '.fastq.gz' files for RNA-Seq workflow in R shell
+#' @title RNASeqQualityTrimming
 #'
-#' @description Trim '.fastq.gz' files for RNA-Seq workflow in R shell.
+#' @description
+#'   Trim '.fastq.gz' files for RNA-Seq workflow in R shell.
 #'   This step is optional in the whole RNA-Seq workflow.
 #'   It is strongly advised to run \code{RNASeqQualityTrimming_CMD()} directly.
-#'   Running \code{RNASeqQualityTrimming_CMD()} will create 'Quality_Trimming.Rout' file in 'Rscript_out/' directory.
-#'   The trimming method is implemented by R package \code{ShortReads}
-#'   If you want to trim '.fastq.gz' files for the RNA-Seq workflow in background,
-#'   please see \code{RNASeqQualityTrimming_CMD()} function.
+#'   Running \code{RNASeqQualityTrimming_CMD()} will create
+#'   'Quality_Trimming.Rout' file in 'Rscript_out/' directory.
+#'   The trimming method is implemented by R package \code{ShortReads} \cr
+#'   If you want to trim '.fastq.gz' files for the RNA-Seq workflow
+#'   in background, please see \code{RNASeqQualityTrimming_CMD()} function.
 #'
-#' @param path.prefix Path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
-#'   'Rscript/' and 'Rscript_out/' directories
-#' @param sample.pattern  sample.pattern  Regular expression of paired-end fastq.gz files under
-#'    'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
-#' @param cum.error Default \code{1}. Cut of threshold of cumulative probability of error per base.
-#' @param reads.length.limit Default \code{36}. The shortest base pair length of short reads
+#' @param path.prefix Path prefix of 'gene_data/', 'RNASeq_bin/',
+#'   'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
+#' @param sample.pattern  sample.pattern  Regular expression of
+#'   paired-end fastq.gz files under 'input_files/raw_fastq.gz'.
+#'   Expression not includes \code{_[1,2].fastq.gz}.
+#' @param cum.error Default \code{1}.
+#'   Cut of threshold of cumulative probability of error per base.
+#' @param reads.length.limit Default \code{36}.
+#'   The shortest base pair length of short reads
 #'
 #' @return None
 #' @export

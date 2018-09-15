@@ -2,42 +2,52 @@
 % Please edit documentation in R/cmd_batch_rnaseq_GO_KEGG.R
 \name{RNASeqGoKegg}
 \alias{RNASeqGoKegg}
-\title{GO functional analysis and KEGG pathway analysis for RNA-Seq workflow in R shell}
+\title{RNASeqGoKegg}
 \usage{
 RNASeqGoKegg(path.prefix, independent.variable, OrgDb.species,
   go.level = 3, input.TYPE.ID, KEGG.organism)
 }
 \arguments{
-\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
+\item{path.prefix}{Path prefix of 'gene_data/', 'RNASeq_bin/',
+'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories.}
 
-\item{independent.variable}{independent variable for the biological experiment design of two-group RNA-Seq workflow}
+\item{independent.variable}{independent variable for the biological
+experiment design of two-group RNA-Seq workflow}
 
-\item{OrgDb.species}{the genome wide annotation packages of species on Bioconductor. Currently, there are 19 supported genome wide annotation packages of species.}
+\item{OrgDb.species}{the genome wide annotation packages of species
+on Bioconductor. Currently, there are 19 supported genome wide
+annotation packages of species.}
 
-\item{KEGG.organism}{the species that are supported for KEGG analysis. Currently, there are more than 5000 supported species genome. Check the valid species terms on https://www.genome.jp/kegg/catalog/org_list.html}
+\item{KEGG.organism}{the species that are supported for KEGG analysis.
+Currently, there are more than 5000 supported species genome.
+Check the valid species terms on
+https://www.genome.jp/kegg/catalog/org_list.html}
 }
 \value{
 None
 }
 \description{
-Run Gene Ontology(GO) and Kyoto Encyclopedia of Genes and Genomes(KEGG) analysis in background.
-It is strongly advised to run \code{RNASeqGoKegg_CMD()} directly. Running \code{RNASeqGoKegg_CMD()} will create 'GO_KEGG_Analysis.Rout' file in 'Rscript_out/' directory.
-This function do Gene Ontology(GO) and Kyoto Encyclopedia of Genes and Genomes(KEGG) analysis :
-1. Gene Ontology(GO) :
-   All gene set :
-       1. Do GO gene set enrichment analysis.
-   Differential expressed gene set :
-       1. Do GO function classification analysis.
-       2. Do GO function enrichment analysis.
-       3. Visualization : bar plot, dot plot etc.
-2. Kyoto Encyclopedia of Genes and Genomes(KEGG) :
-   All gene set :
-       1. Do KEGG gene set enrichment analysis.
-   Differential expressed gene set :
-       1. Do KEGG pathway gene set enrichment analysis
-       2. Do KEGG pathway enrichment analysis
-       3. Pathway visulization with \code{pathview} package. KEGG webpage pathway url will also be created
-If you want to do GO functional analysis and KEGG pathway analysis for the following RNA-Seq workflow in background, please see \code{RNASeqGoKegg_CMD()} function.
+Run Gene Ontology(GO) and Kyoto Encyclopedia of Genes and Genomes(KEGG)
+  analysis in R shell. \cr
+  This function do Gene Ontology(GO) and Kyoto Encyclopedia of Genes and
+  Genomes(KEGG) analysis : \cr
+  \enumerate{
+    \item Gene Ontology(GO) :\cr
+     \enumerate{
+       \item Do GO function classification analysis. \cr
+       \item Do GO function enrichment analysis. \cr
+       \item Visualization : bar plot, dot plot etc. \cr
+     }
+    \item Kyoto Encyclopedia of Genes and Genomes(KEGG) :\cr
+     \enumerate{
+       \item Do KEGG pathway enrichment analysis \cr
+       \item Pathway visulization with \code{pathview} package. KEGG webpage
+        pathway url will also be created \cr
+     }
+  }
+  If you want to do GO functional analysis and KEGG pathway analysis
+  for the following RNA-Seq workflow in background,
+   please see \code{RNASeqGoKegg_CMD()} function.
 }
 \examples{
 data(yeast)

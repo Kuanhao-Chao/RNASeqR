@@ -3,30 +3,30 @@
 \name{RNASeqWorkflowParam-constructor}
 \alias{RNASeqWorkflowParam-constructor}
 \alias{RNASeqWorkflowParam}
-\title{Constructor function for RNASeqWorkflowParam objects}
+\title{RNASeqWorkflowParam}
 \usage{
 RNASeqWorkflowParam(path.prefix = NA, input.path.prefix = NA,
   genome.name = NA, sample.pattern = NA, independent.variable = NA,
   case.group = NA, control.group = NA)
 }
 \arguments{
-\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
-'Rscript/' and 'Rscript_out/' directories}
+\item{path.prefix}{Path prefix of 'gene_data/', 'RNASeq_bin/',
+'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories.}
 
-\item{input.path.prefix}{path prefix of 'input_files/' directory}
+\item{input.path.prefix}{Path prefix of 'input_files/' directory.}
 
 \item{genome.name}{variable of genome name defined in this RNA-Seq workflow
-(ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
+(ex. \code{genome.name}.fa, \code{genome.name}.gtf).}
 
 \item{sample.pattern}{Regular expression of paired-end fastq.gz files under
 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 
-\item{independent.variable}{independent variable for the biological experiment design of
-two-group RNA-Seq workflow}
+\item{independent.variable}{Independent variable for the biological
+experiment design of two-group RNA-Seq workflow.}
 
-\item{case.group}{group name of the case group}
+\item{case.group}{Group name of the case group.}
 
-\item{control.group}{group name of the control group}
+\item{control.group}{Group name of the control group.}
 }
 \value{
 an object of class \code{RNASeqWorkflowParam}

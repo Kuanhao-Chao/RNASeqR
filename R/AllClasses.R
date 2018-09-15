@@ -1,24 +1,28 @@
-#' RNASeqWorkflow
+#' @title RNASeqWorkflow
 #'
-#' An S4 class for checking and storing RNA-Seq workflow parameters of this package
+#' @description  An S4 class for checking and storing RNA-Seq workflow
+#'  parameters of this package.
 #'
 #' @aliases RNASeq
 #'
-#' @slot os.type 'linux' or 'osx'. The operating system type
-#' @slot python.variable A list storing python environment. \code{(check.answer, python.version)}
-#' @slot python.2to3 logical value whether \code{2to3} command is available on the workstation
-#' @slot path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
-#'   'Rscript/' and 'Rscript_out/' directories
-#' @slot input.path.prefix path prefix of 'input_files/' directory
+#' @slot os.type 'linux' or 'osx'. The operating system type.
+#' @slot python.variable A list storing python environment.
+#'    \code{(check.answer, python.version)}
+#' @slot python.2to3 Logical value whether \code{2to3} command is available
+#'    on the workstation.
+#' @slot path.prefix Path prefix of 'gene_data/', 'RNASeq_bin/',
+#'    'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories.
+#' @slot input.path.prefix Path prefix of 'input_files/' directory,
 #' @slot genome.name Variable of genome name defined in this RNA-Seq workflow
-#'   (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
+#'   (ex. \code{genome.name}.fa, \code{genome.name}.gtf).
 #' @slot sample.pattern  Regular expression of paired-end fastq.gz files under
 #'   'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
-#' @slot independent.variable independent variable for the biological experiment design of
-#'   two-group RNA-Seq workflow
-#' @slot case.group group name of the case group
-#' @slot control.group group name of the control group
-#' @slot indices.optional logical value whether 'indices/' is exit in 'input_files/'
+#' @slot independent.variable Independent variable for the biological.
+#' experiment design of two-group RNA-Seq workflow.
+#' @slot case.group Group name of the case group.
+#' @slot control.group Group name of the control group.
+#' @slot indices.optional Logical value whether 'indices/' is exit in
+#'   'input_files/'.
 #'
 #' @name RNASeqWorkflowParam-class
 #'
@@ -56,21 +60,23 @@ setClass("RNASeqWorkflowParam",
 )
 
 
-#' Constructor function for RNASeqWorkflowParam objects
+
+#' @title RNASeqWorkflowParam
+#' @description  Constructor function for RNASeqWorkflowParam objects
 #'
 #' @name RNASeqWorkflowParam-constructor
 #'
-#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
-#'   'Rscript/' and 'Rscript_out/' directories
-#' @param input.path.prefix path prefix of 'input_files/' directory
+#' @param path.prefix Path prefix of 'gene_data/', 'RNASeq_bin/',
+#'   'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories.
+#' @param input.path.prefix Path prefix of 'input_files/' directory.
 #' @param genome.name variable of genome name defined in this RNA-Seq workflow
-#'   (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
+#'   (ex. \code{genome.name}.fa, \code{genome.name}.gtf).
 #' @param sample.pattern  Regular expression of paired-end fastq.gz files under
 #'   'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
-#' @param independent.variable independent variable for the biological experiment design of
-#'   two-group RNA-Seq workflow
-#' @param case.group group name of the case group
-#' @param control.group group name of the control group
+#' @param independent.variable Independent variable for the biological
+#'   experiment design of two-group RNA-Seq workflow.
+#' @param case.group Group name of the case group.
+#' @param control.group Group name of the control group.
 #'
 #' @return an object of class \code{RNASeqWorkflowParam}
 #'

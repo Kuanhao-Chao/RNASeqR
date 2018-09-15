@@ -2,7 +2,7 @@
 % Please edit documentation in R/cmd_batch_rnaseq_environment_set.R
 \name{RNASeqEnvironmentSet}
 \alias{RNASeqEnvironmentSet}
-\title{Environment setting for RNA-Seq workflow in R shell}
+\title{RNASeqEnvironmentSet}
 \usage{
 RNASeqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
   sample.pattern, indices.optional, os.type, install.hisat2 = TRUE,
@@ -10,56 +10,66 @@ RNASeqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
   install.samtools = TRUE, mkdir.bool = TRUE)
 }
 \arguments{
-\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
-'Rscript/' and 'Rscript_out/' directories}
+\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/',
+'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories.}
 
 \item{input.path.prefix}{path prefix of 'input_files/' directory}
 
-\item{genome.name}{genome.name variable of genome name defined in this RNA-Seq workflow
-(ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
+\item{genome.name}{genome.name variable of genome name defined in this
+RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
 
 \item{sample.pattern}{Regular expression of paired-end fastq.gz files under
 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 
-\item{indices.optional}{logical value whether 'indices/' is exit in 'input_files/'}
+\item{indices.optional}{logical value whether 'indices/' is exit in
+'input_files/'}
 
 \item{os.type}{'linux' or 'osx'. The operating system type}
 
-\item{install.hisat2}{Whether to install 'HISAT2' in this function step. Default value is \code{TRUE}.
-Set\code{FALSE} to skip 'HISAT2' installation.}
+\item{install.hisat2}{Whether to install 'HISAT2' in this function step.
+Default value is \code{TRUE}.
+Set \code{FALSE} to skip 'HISAT2' installation.}
 
-\item{install.stringtie}{Whether to install 'StringTie' in this function step. Default value is \code{TRUE}.
+\item{install.stringtie}{Whether to install 'StringTie' in
+this function step.
+Default value is \code{TRUE}.
 Set\code{FALSE} to skip 'StringTie' installation.}
 
-\item{install.gffcompare}{Whether to install 'Gffcompare' in this function step. Default value is \code{TRUE}.
+\item{install.gffcompare}{Whether to install 'Gffcompare'
+in this function step. Default value is \code{TRUE}.
 Set\code{FALSE} to skip 'Gffcompare' installation.}
 
-\item{install.samtools}{Whether to install 'SAMtools' in this function step. Default value is \code{TRUE}.
+\item{install.samtools}{Whether to install 'SAMtools' in this function step.
+Default value is \code{TRUE}.
 Set\code{FALSE} to skip 'SAMtools' installation.}
 
-\item{mkdir.bool}{Default \code{TRUE}. If \code{TRUE}, environment directories will be created.
-If \code{FALSE}, no directories will be created. When executing RNASeqEnvironmentSet(),
+\item{mkdir.bool}{Default \code{TRUE}. If \code{TRUE},
+environment directories will be created.
+If \code{FALSE}, no directories will be created.
+When executing RNASeqEnvironmentSet(),
 'mkdir.bool' should always be \code{TRUE}}
 }
 \value{
 None
 }
 \description{
-Set up the environment for the following RNA-Seq workflow in R shell.
-  It is strongly advised to run \code{RNASeqEnvironmentSet_CMD()} directly.
-  Running \code{RNASeqEnvironmentSet_CMD()} will create 'Environment_Set.Rout' file in 'Rscript_out/' directory.
-  This function do 4 things :
-    1. Create file directories.
-    2. Install necessary tools.
-    3. Export 'RNASeq_bin/' to the R environment.
-    4. Check command of tools.
-  First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/', 'Rscript/', 'Rscript_out/'
-  directories. Afterwards, 'Hisat2', 'Stringtie', 'Samtools', 'Gffcompare' will be installed
-  under 'RNASeq_bin/Download/' and be unpacked under 'RNASeq_bin/Unpacked/'. 'RNASeq_bin/'
-  will be added to the R environment and validity of tools will be checked. Any ERROR occurs will be
-  reported and the program will be terminated.
-  If you want to set up the environment for the following RNA-Seq workflow in background,
-  please see \code{RNASeqEnvironmentSet_CMD()} function.
+Set up the environment for the following RNA-Seq workflow in R shell\cr
+  This function do 4 things :\cr
+  \enumerate{
+    \item Create file directories.\cr
+    \item Install necessary tools. \cr
+    \item Export 'RNASeq_bin/' to the R environment. \cr
+    \item Check command of tools. \cr
+  }\cr
+  First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
+  'Rscript/', 'Rscript_out/' directories. \cr Afterwards, 'Hisat2',
+  'Stringtie', 'Samtools', 'Gffcompare' will be installed under
+  'RNASeq_bin/Download/' and be unpacked under 'RNASeq_bin/Unpacked/'. \cr
+  'RNASeq_bin/' will be added to the R environment and
+  validity of tools will be checked.\cr
+  Any ERROR occurs will be reported and the program will be terminated.\cr
+  If you want to set up the environment for the following RNA-Seq workflow
+  in background, please see \code{RNASeqEnvironmentSet_CMD()} function.
 }
 \examples{
 data(yeast)

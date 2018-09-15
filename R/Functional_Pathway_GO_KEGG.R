@@ -66,10 +66,9 @@ GOAnalysis <- function(which.analysis,
                                     ont      = i,           # variable
                                     level    = go.level)
     ggo.data.frame <- data.frame(ggo)
-    ggo.data.frame <- ggo.data.frame[order(as.numeric(ggo.data.frame$GeneRatio),
+    ggo.data.frame <- ggo.data.frame[order(as.numeric(ggo.data.frame$Count),
                                            decreasing = TRUE),]
-
-    ggo@result <- ggo.data.frame
+    "@"(ggo, result) <- ggo.data.frame
     # Condition 1 for GO classification ! Row number have to bigger than 1 !
     if (length(row.names(ggo.data.frame)) > 0) {
       if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis,
@@ -85,19 +84,22 @@ GOAnalysis <- function(which.analysis,
                 file = paste0(path.prefix, "RNASeq_results/", which.analysis,
                               "/GO_analysis/", dir_name, "/", i ,
                               "/GO_", i, "_Classification.csv"))
+
+      # Visualization
       message(paste0("               \u25CF Plotting 'GO_", i,
                      "_Classification_Bar_Plot_clusterProfiler.png' \n"))
-      png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis,
-                            "/GO_analysis/", dir_name, "/", i, "/images/",
-                            "GO_", i, "_Classification_Bar_",
-                            "Plot_clusterProfiler.png"),
-          width=5,
-          height=5,
-          units="in",
-          res=300)
-      p1 <- barplot(ggo, drop=TRUE, showCategory=12)
-      print(p1)
-      dev.off()
+      barplot(ggo, drop=TRUE, showCategory=15, font.size = 7,
+                    title = "GO Classification Bar Plot") +
+        theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
+              axis.title.x = element_text(size = 10),
+              axis.title.y = element_text(size = 10))
+      ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis,
+                    "/GO_analysis/", dir_name, "/", i, "/images/",
+                    "GO_", i, "_Classification_Bar_",
+                    "Plot_clusterProfiler.png"),
+             dpi = 300,
+             width = 7,
+             height = 7)
     }  else {
       message("          \u25CF (\u26A0) No term is found.\n")
       file.create(paste0(path.prefix, "RNASeq_results/",
@@ -148,32 +150,34 @@ GOAnalysis <- function(which.analysis,
                               "/GO_", i, "_Overrepresentation.csv"))
       # visualization
       # bar plot
-      png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis,
-                            "/GO_analysis/", dir_name, "/", i, "/images/GO_", i,
-                            "_Overrepresentation_Bar_Plot_clusterProfiler.png"),
-          width=5,
-          height=5,
-          units="in",
-          res=300)
       message(paste0("               \u25CF Plotting 'GO_", i,
                      "_Overrepresentation_Bar_Plot_clusterProfiler.png' \n"))
-      p2 <- barplot(ego, showCategory=12)
-      print(p2)
-      dev.off()
+      barplot(ego, showCategory=12, font.size= 7,
+              title = "Over-representation Bar Plot") +
+        theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
+              axis.title.x = element_text(size = 10),
+              axis.title.y = element_text(size = 10))
+      ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis,
+                    "/GO_analysis/", dir_name, "/", i, "/images/GO_", i,
+                    "_Overrepresentation_Bar_Plot_clusterProfiler.png"),
+             dpi = 300,
+             width = 7,
+             height = 7)
 
       # dot plot
-      png(filename = paste0(path.prefix, "RNASeq_results/", which.analysis,
-                            "/GO_analysis/", dir_name, "/", i, "/images/GO_", i,
-                            "_Overrepresentation_Dot_Plot_clusterProfiler.png"),
-          width=5,
-          height=5,
-          units="in",
-          res=300)
       message(paste0("               \u25CF Plotting 'GO_", i,
                      "_Overrepresentation_Dot_Plot_clusterProfiler.png' \n"))
-      p3 <- clusterProfiler::dotplot(ego)
-      print(p3)
-      dev.off()
+      clusterProfiler::dotplot(ego, font.size = 7,
+                               title = "Over-representation Dot Plot")+
+        theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
+              axis.title.x = element_text(size = 10),
+              axis.title.y = element_text(size = 10))
+      ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis,
+                    "/GO_analysis/", dir_name, "/", i, "/images/GO_", i,
+                    "_Overrepresentation_Dot_Plot_clusterProfiler.png"),
+             dpi = 300,
+             width = 7,
+             height = 7)
     } else {
       message(paste0("          \u25CF (\u26A0) No enriched term is found.\n"))
       file.create(paste0(path.prefix, "RNASeq_results/", which.analysis,
@@ -227,7 +231,7 @@ KEGGAnalysis <- function(which.analysis,
     message("\u25CF KEGG Over-representation Test ... \n")
     # KEGG Over-representation test
     kk <- clusterProfiler::enrichKEGG(gene         = names(gene_list_ENTREZID),
-                                      organism     = 'sce',
+                                      organism     = KEGG.organism,
                                       pvalueCutoff = 0.05)
 
     kk.data.frame <- data.frame(kk)
@@ -237,10 +241,10 @@ KEGGAnalysis <- function(which.analysis,
                      "over-representation test enriched term found! \n"))
       message(paste0("          \u25CF Writing ",
                      "'KEGG_Overrepresentation.csv' \n"))
-      write.csv(kk.data.frame,
-                file = paste0(path.prefix, "RNASeq_results/",
-                              which.analysis, "/KEGG_analysis/",
-                              dir_name, "/KEGG_Overrepresentation.csv"))
+      # All ID pathway will be plotted!
+      read.csv(paste0(path.prefix, "RNASeq_results/",
+                      which.analysis, "/KEGG_analysis/",
+                      dir_name, "/KEGG_Overrepresentation.csv"))
       for ( i in kk.data.frame$ID) {
         if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis,
                               "/KEGG_analysis/", dir_name, "/", i))){

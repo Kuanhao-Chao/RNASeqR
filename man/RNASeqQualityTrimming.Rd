@@ -2,21 +2,24 @@
 % Please edit documentation in R/cmd_batch_rnaseq_quality_trimming.R
 \name{RNASeqQualityTrimming}
 \alias{RNASeqQualityTrimming}
-\title{Quality trimming of '.fastq.gz' files for RNA-Seq workflow in R shell}
+\title{RNASeqQualityTrimming}
 \usage{
 RNASeqQualityTrimming(path.prefix, sample.pattern, cum.error = 1,
   reads.length.limit = 36)
 }
 \arguments{
-\item{path.prefix}{Path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
-'Rscript/' and 'Rscript_out/' directories}
+\item{path.prefix}{Path prefix of 'gene_data/', 'RNASeq_bin/',
+'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
 
-\item{sample.pattern}{sample.pattern  Regular expression of paired-end fastq.gz files under
-'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
+\item{sample.pattern}{sample.pattern  Regular expression of
+paired-end fastq.gz files under 'input_files/raw_fastq.gz'.
+Expression not includes \code{_[1,2].fastq.gz}.}
 
-\item{cum.error}{Default \code{1}. Cut of threshold of cumulative probability of error per base.}
+\item{cum.error}{Default \code{1}.
+Cut of threshold of cumulative probability of error per base.}
 
-\item{reads.length.limit}{Default \code{36}. The shortest base pair length of short reads}
+\item{reads.length.limit}{Default \code{36}.
+The shortest base pair length of short reads}
 }
 \value{
 None
@@ -25,10 +28,11 @@ None
 Trim '.fastq.gz' files for RNA-Seq workflow in R shell.
   This step is optional in the whole RNA-Seq workflow.
   It is strongly advised to run \code{RNASeqQualityTrimming_CMD()} directly.
-  Running \code{RNASeqQualityTrimming_CMD()} will create 'Quality_Trimming.Rout' file in 'Rscript_out/' directory.
-  The trimming method is implemented by R package \code{ShortReads}
-  If you want to trim '.fastq.gz' files for the RNA-Seq workflow in background,
-  please see \code{RNASeqQualityTrimming_CMD()} function.
+  Running \code{RNASeqQualityTrimming_CMD()} will create
+  'Quality_Trimming.Rout' file in 'Rscript_out/' directory.
+  The trimming method is implemented by R package \code{ShortReads} \cr
+  If you want to trim '.fastq.gz' files for the RNA-Seq workflow
+  in background, please see \code{RNASeqQualityTrimming_CMD()} function.
 }
 \examples{
 data(yeast)

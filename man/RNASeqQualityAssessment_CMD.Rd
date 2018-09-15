@@ -2,33 +2,40 @@
 % Please edit documentation in R/cmd_batch_rnaseq_quality_assessment.R
 \name{RNASeqQualityAssessment_CMD}
 \alias{RNASeqQualityAssessment_CMD}
-\title{Quality assessment of '.fastq.gz' files for RNA-Seq workflow in background.}
+\title{RNASeqQualityAssessment_CMD}
 \usage{
 RNASeqQualityAssessment_CMD(RNASeqWorkFlowParam, run = TRUE,
   check.s4.print = TRUE)
 }
 \arguments{
-\item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}
+\item{RNASeqWorkFlowParam}{S4 object instance of
+experiment-related parameters}
 
-\item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R'
-will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
-If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
+\item{run}{Default value is \code{TRUE}. If \code{TRUE},
+'Rscript/Environment_Set.R' will be created and executed.
+The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+If \code{False}, 'Rscript/Environment_Set.R' will be
+created without executed.}
 
-\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking
-\code{RNASeqWorkFlowParam} will be reported in 'Rscript_out/Environment_Set.Rout'.
- If \code{FALSE}, the result of checking \code{RNASeqWorkFlowParam} will not
- be in 'Rscript_out/Environment_Set.Rout'}
+\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of
+checking \code{RNASeqWorkFlowParam} will be reported in
+'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
+\code{RNASeqWorkFlowParam} will not be in
+'Rscript_out/Environment_Set.Rout'}
 }
 \value{
 None
 }
 \description{
 Assess the quality of '.fastq.gz' files for RNA-Seq workflow in background.
-  This step is optional in the whole RNA-Seq workflow.
-  This function reports the quality assessment result in packages \code{systemPipeR}
-  For \code{systemPipeR}, 'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf' will be created
-  If you want to assess the quality of '.fastq.gz' files for the following RNA-Seq workflow in
-  R shell, please see \code{RNASeqQualityAssessment()} function.
+  This step is optional in the whole RNA-Seq workflow. \cr
+  This function reports the quality assessment result in packages
+  \code{systemPipeR}
+  For \code{systemPipeR},
+  'RNASeq_results/QA_results/Rqc/systemPipeR/fastqReport.pdf'
+  will be created. \cr If you want to assess the quality of '.fastq.gz'
+  files for the following RNA-Seq workflow in R shell,
+  please see \code{RNASeqQualityAssessment()} function.
 }
 \examples{
 data(yeast)

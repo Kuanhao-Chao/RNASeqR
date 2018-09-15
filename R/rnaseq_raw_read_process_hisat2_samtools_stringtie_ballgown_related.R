@@ -241,12 +241,12 @@ Hisat2ReportAssemble <- function(path.prefix,
                                          overall.alignment.result)
     # different mapping rate
     first.split <- strsplit(load.data,
-                            "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\* ",
-                            "Hisat2 Alignment ",
-                            "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\n")
+                            paste0("\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
+                                   "\\* Hisat2 Alignment \\*",
+                                   "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\n"))
     second.split <- strsplit(first.split[[1]][2],
-                             "\n\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\* ",
-                             "Current progress of RNA-seq files in")
+                             paste0("\n\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
+                                    "\\* Current progress of RNA-seq files in"))
     split.lines <- strsplit(second.split[[1]][1], "\n")
     alignment.rate.with.NA <-
       stringr::str_extract(split.lines[[1]],

@@ -6,36 +6,40 @@
 \alias{RNASeq}
 \title{RNASeqWorkflow}
 \description{
-An S4 class for checking and storing RNA-Seq workflow parameters of this package
+An S4 class for checking and storing RNA-Seq workflow
+ parameters of this package.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{os.type}}{'linux' or 'osx'. The operating system type}
+\item{\code{os.type}}{'linux' or 'osx'. The operating system type.}
 
-\item{\code{python.variable}}{A list storing python environment. \code{(check.answer, python.version)}}
+\item{\code{python.variable}}{A list storing python environment.
+\code{(check.answer, python.version)}}
 
-\item{\code{python.2to3}}{logical value whether \code{2to3} command is available on the workstation}
+\item{\code{python.2to3}}{Logical value whether \code{2to3} command is available
+on the workstation.}
 
-\item{\code{path.prefix}}{path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
-'Rscript/' and 'Rscript_out/' directories}
+\item{\code{path.prefix}}{Path prefix of 'gene_data/', 'RNASeq_bin/',
+'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories.}
 
-\item{\code{input.path.prefix}}{path prefix of 'input_files/' directory}
+\item{\code{input.path.prefix}}{Path prefix of 'input_files/' directory,}
 
 \item{\code{genome.name}}{Variable of genome name defined in this RNA-Seq workflow
-(ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
+(ex. \code{genome.name}.fa, \code{genome.name}.gtf).}
 
 \item{\code{sample.pattern}}{Regular expression of paired-end fastq.gz files under
 'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
 
-\item{\code{independent.variable}}{independent variable for the biological experiment design of
-two-group RNA-Seq workflow}
+\item{\code{independent.variable}}{Independent variable for the biological.
+experiment design of two-group RNA-Seq workflow.}
 
-\item{\code{case.group}}{group name of the case group}
+\item{\code{case.group}}{Group name of the case group.}
 
-\item{\code{control.group}}{group name of the control group}
+\item{\code{control.group}}{Group name of the control group.}
 
-\item{\code{indices.optional}}{logical value whether 'indices/' is exit in 'input_files/'}
+\item{\code{indices.optional}}{Logical value whether 'indices/' is exit in
+'input_files/'.}
 }}
 
 \examples{

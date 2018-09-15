@@ -2,25 +2,33 @@
 % Please edit documentation in R/cmd_batch_rnaseq_quality_trimming.R
 \name{RNASeqQualityTrimming_CMD}
 \alias{RNASeqQualityTrimming_CMD}
-\title{Quality trimming of '.fastq.gz' files for RNA-Seq workflow in background.}
+\title{RNASeqQualityTrimming_CMD}
 \usage{
 RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam, cum.error = 1,
   reads.length.limit = 36, run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
-\item{RNASeqWorkFlowParam}{S4 object instance of experiment-related parameters}
+\item{RNASeqWorkFlowParam}{S4 object instance of
+experiment-related parameters}
 
-\item{cum.error}{Default \code{1}. Cut of threshold of cumulative probability of error per base.}
+\item{cum.error}{Default \code{1}.
+Cut of threshold of cumulative probability of error per base.}
 
-\item{reads.length.limit}{Default \code{36}. The shortest base pair length of short reads}
+\item{reads.length.limit}{Default \code{36}.
+The shortest base pair length of short reads}
 
-\item{run}{Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed.
+\item{run}{Default value is \code{TRUE}.
+If \code{TRUE}, 'Rscript/Environment_Set.R' will be created and executed.
 The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
-If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.}
+If \code{False}, 'Rscript/Environment_Set.R'
+will be created without executed.}
 
-\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam}
-will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
-\code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'}
+\item{check.s4.print}{Default \code{TRUE}.
+If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam}
+will be reported in 'Rscript_out/Environment_Set.Rout'.
+If \code{FALSE}, the result of checking
+\code{RNASeqWorkFlowParam} will not be in
+'Rscript_out/Environment_Set.Rout'}
 }
 \value{
 None
@@ -28,8 +36,9 @@ None
 \description{
 Trim '.fastq.gz' files for RNA-Seq workflow in background.
   This step is optional in the whole RNA-Seq workflow.
-  The trimming method is implemented by R package \code{ShortRead}
-  If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell, please see \code{RNASeqQualityTrimming()} function.
+  The trimming method is implemented by R package \code{ShortRead} \cr
+  If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell,
+  please see \code{RNASeqQualityTrimming()} function.
 }
 \examples{
 data(yeast)

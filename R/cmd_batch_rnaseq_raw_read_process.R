@@ -1,42 +1,61 @@
-#' @title Raw reads process (alignment, assembly, expressive quantification) of RNA-Seq in background.
+#' @title RNASeqReadProcess_CMD
 #'
-#' @description Process raw reads for RNA-Seq workflow in background.
-#'   This function do 5 things :
-#'     1. 'Hisat2' : aligns raw reads to reference genome. If \code{indices.optional} in
-#'       \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indices will be created.
-#'     2. 'Samtools' : converts '.sam' files to '.bam' files.
-#'     3. 'Stringtie' : assembles alignments into transcript.
-#'     4. 'Gffcompare' : examines how transcripts compare with the reference annotation.
-#'     5. 'Stringtie' : creates input files for ballgown, edgeR and DESeq2.
+#' @description
+#'   Process raw reads for RNA-Seq workflow in background. \cr
+#'   This function do 5 things : \cr
+#'   \enumerate{
+#'     \item 'Hisat2' : aligns raw reads to reference genome.
+#'       If \code{indices.optional} in \code{RNASeqWorkFlowParam} is
+#'       \code{FALSE}, Hisat2 indices will be created.\cr
+#'     \item 'Samtools': converts '.sam' files to '.bam' files.\cr
+#'     \item 'Stringtie': assembles alignments into transcript.\cr
+#'     \item 'Gffcompare': examines how transcripts compare with the
+#'       reference annotation. \cr
+#'     \item 'Stringtie': creates input files for ballgown, edgeR and DESeq2.\cr
+#'     \item raw reads count: create raw reads count for DESeq2 and edgeR \cr
+#'   }\cr
 #'   Before running this function, \code{RNASeqEnvironmentSet_CMD()} or
-#'   \code{RNASeqEnvironmentSet()} must be executed successfully.
-#'   If you want to process raw reads for the following RNA-Seq workflow in R shell,
-#'   please see \code{RNASeqReadProcess()} function.
+#'   \code{RNASeqEnvironmentSet()} must be executed successfully. \cr
+#'   If you want to process raw reads for the following RNA-Seq workflow
+#'   in R shell, please see \code{RNASeqReadProcess()} function.\cr
 #'
-#' @param RNASeqWorkFlowParam S4 object instance of experiment-related parameters
+#' @param RNASeqWorkFlowParam S4 object instance of experiment-related
+#'   parameters
 #' @param num.parallel.threads Specify the number of processing threads (CPUs)
 #'   to use for transcript assembly. The default is 1.
-#' @param run Default value is \code{TRUE}. If \code{TRUE}, 'Rscript/Environment_Set.R'
-#'   will be created and executed. The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
-#'   If \code{False}, 'Rscript/Environment_Set.R' will be created without executed.
-#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam}
+#' @param run Default value is \code{TRUE}. If \code{TRUE},
+#'   'Rscript/Environment_Set.R' will be created and executed.
+#'   The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+#'   If \code{False}, 'Rscript/Environment_Set.R' will be
+#'   created without executed.
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE},
+#'   the result of checking \code{RNASeqWorkFlowParam}
 #'   will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE},
-#'   the result of checking \code{RNASeqWorkFlowParam} will not be in 'Rscript_out/Environment_Set.Rout'
-#' @param Hisat2.Index.run Whether to run 'HISAT2 index' step in this function step. Default value is \code{TRUE}.
-#'   Set \code{FALSE} to skip 'HISAT2 index' step.
-#' @param Hisat2.Alignment.run Whether to run 'HISAT2 alignment' step in this function step. Default value is \code{TRUE}.
+#'   the result of checking \code{RNASeqWorkFlowParam} will not be in
+#'   'Rscript_out/Environment_Set.Rout'.
+#' @param Hisat2.Index.run Whether to run 'HISAT2 index' step in this function
+#'   step. Default value is \code{TRUE}. Set \code{FALSE} to skip
+#'   'HISAT2 index' step.
+#' @param Hisat2.Alignment.run Whether to run 'HISAT2 alignment' step in this
+#'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2 alignment' step.
-#' @param Samtools.Bam.run Whether to run 'SAMTools SAM to BAM' step in this function step. Default value is \code{TRUE}.
+#' @param Samtools.Bam.run Whether to run 'SAMTools SAM to BAM' step in this
+#'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'SAMTools SAM to BAM' step.
-#' @param StringTie.Assemble.run Whether to run 'StringTie assembly' step in this function step. Default value is \code{TRUE}.
+#' @param StringTie.Assemble.run Whether to run 'StringTie assembly' step in
+#'   this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie assembly' step.
-#' @param StringTie.Merge.Trans.run Whether to run 'StringTie GTF merging' step in this function step. Default value is \code{TRUE}.
+#' @param StringTie.Merge.Trans.run Whether to run 'StringTie GTF merging' step
+#'   in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie GTF merging' step.
-#' @param Gffcompare.Ref.Sample.run Whether to run 'Gffcompare comparison' step in this function step. Default value is \code{TRUE}.
+#' @param Gffcompare.Ref.Sample.run Whether to run 'Gffcompare comparison' step
+#'   in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'Gffcompare comparison' step.
-#' @param StringTie.Ballgown.run Whether to run 'StringTie ballgown creation' step in this function step. Default value is \code{TRUE}.
+#' @param StringTie.Ballgown.run Whether to run 'StringTie ballgown creation'
+#'   step in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie ballgown creation' step.
-#' @param PreDECountTable.run Whether to run 'gene raw reads count creation' step in this function step. Default value is \code{TRUE}.
+#' @param PreDECountTable.run Whether to run 'gene raw reads count creation'
+#'   step in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'gene raw reads count creation' step.
 #'
 #' @return None
@@ -45,7 +64,8 @@
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' ## Before run this function, make sure \code{RNASeqEnvironmentSet_CMD()} (or\code{RNASeqEnvironmentSet()}) is executed successfully.
+#' ## Before run this function, make sure \code{RNASeqEnvironmentSet_CMD()}
+#' ## (or\code{RNASeqEnvironmentSet()}) is executed successfully.
 #' RNASeqReadProcess_CMD(RNASeqWorkFlowParam = exp,
 #'                       num.parallel.threads = 10)}
 RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
@@ -109,52 +129,66 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
 }
 
 
-#' @title Raw reads process (alignment, assembly, expressive quantification) of RNA-Seq in background.
+#' @title RNASeqReadProcess
 #'
-#' @description Process raw reads for RNA-Seq workflow in R shell.
-#'   It is strongly advised to run \code{RNASeqReadProcess_CMD()} directly.
-#'   Running this function directly is not recommended because the processes of alignment,
-#'   assembly and quantification take a longer time than other functions.
-#'   Running \code{RNASeqReadProcess_CMD()} will create 'Read_Process.Rout' file in 'Rscript_out/' directory.
-#'   This function do following 5 things :
-#'     1. 'Hisat2' : aligns raw reads to reference genome. If \code{indices.optional} in
-#'       \code{RNASeqWorkFlowParam} is \code{FALSE}, Hisat2 indices will be created.
-#'     2. 'Samtools' : converts '.sam' files to '.bam' files.
-#'     3. 'Stringtie' : assembles alignments into transcript.
-#'     4. 'Gffcompare' : examines how transcripts compare with the reference annotation.
-#'     5. 'Stringtie' : creates input files for ballgown, edgeR and DESeq2.
+#' @description
+#'   Process raw reads for RNA-Seq workflow in R shell \cr
+#'   This function do 5 things : \cr
+#'   \enumerate{
+#'     \item 'Hisat2' : aligns raw reads to reference genome.
+#'       If \code{indices.optional} in \code{RNASeqWorkFlowParam} is
+#'       \code{FALSE}, Hisat2 indices will be created.\cr
+#'     \item 'Samtools': converts '.sam' files to '.bam' files.\cr
+#'     \item 'Stringtie': assembles alignments into transcript.\cr
+#'     \item 'Gffcompare': examines how transcripts compare with the
+#'       reference annotation. \cr
+#'     \item 'Stringtie': creates input files for ballgown, edgeR and DESeq2.\cr
+#'     \item raw reads count: create raw reads count for DESeq2 and edgeR \cr
+#'   }\cr
 #'   Before running this function, \code{RNASeqEnvironmentSet_CMD()} or
 #'   \code{RNASeqEnvironmentSet()} must be executed successfully.
-#'   If you want to process raw reads for the following RNA-Seq workflow in background,
-#'   please see \code{RNASeqReadProcess_CMD()} function.
+#'   If you want to process raw reads for the following RNA-Seq workflow in
+#'   background, please see \code{RNASeqReadProcess_CMD()} function.
 #'
-#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
-#'   'Rscript/' and 'Rscript_out/' directories
+#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/',
+#'   'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
 #' @param input.path.prefix path prefix of 'input_files/' directory
 #' @param genome.name Variable of genome name defined in this RNA-Seq workflow
 #'   (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
-#' @param sample.pattern  Regular expression of paired-end fastq.gz files under 'input_files/raw_fastq.gz'.
-#'   Expression not includes \code{_[1,2].fastq.gz}.
-#' @param python.variable.answer logical value whether python is available on the device
+#' @param sample.pattern  Regular expression of paired-end fastq.gz files under
+#'   'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
+#' @param python.variable.answer logical value whether python is available
+#'   on the device
 #' @param python.variable.version python version of the device
-#' @param python.2to3 logical value whether \code{2to3} is available on the device
-#' @param num.parallel.threads Specify the number of processing threads (CPUs) to use for transcript assembly. The default is 1.
-#' @param indices.optional logical value whether 'indices/' is exit in 'input_files/'
-#' @param Hisat2.Index.run Whether to run 'HISAT2 index' step in this function step. Default value is \code{TRUE}.
+#' @param python.2to3 logical value whether \code{2to3} is available
+#'   on the device
+#' @param num.parallel.threads Specify the number of processing threads (CPUs)
+#'   to use for transcript assembly. The default is 1.
+#' @param indices.optional logical value whether 'indices/' is
+#'   exit in 'input_files/'
+#' @param Hisat2.Index.run Whether to run 'HISAT2 index' step in this function
+#'   step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2 index' step.
-#' @param Hisat2.Alignment.run Whether to run 'HISAT2 alignment' step in this function step. Default value is \code{TRUE}.
+#' @param Hisat2.Alignment.run Whether to run 'HISAT2 alignment' step in this
+#'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2 alignment' step.
-#' @param Samtools.Bam.run Whether to run 'SAMTools SAM to BAM' step in this function step. Default value is \code{TRUE}.
+#' @param Samtools.Bam.run Whether to run 'SAMTools SAM to BAM' step in this
+#'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'SAMTools SAM to BAM' step.
-#' @param StringTie.Assemble.run Whether to run 'StringTie assembly' step in this function step. Default value is \code{TRUE}.
+#' @param StringTie.Assemble.run Whether to run 'StringTie assembly' step in
+#'   this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie assembly' step.
-#' @param StringTie.Merge.Trans.run Whether to run 'StringTie GTF merging' step in this function step. Default value is \code{TRUE}.
+#' @param StringTie.Merge.Trans.run Whether to run 'StringTie GTF merging' step
+#'   in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie GTF merging' step.
-#' @param Gffcompare.Ref.Sample.run Whether to run 'Gffcompare comparison' step in this function step. Default value is \code{TRUE}.
+#' @param Gffcompare.Ref.Sample.run Whether to run 'Gffcompare comparison' step
+#'   in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'Gffcompare comparison' step.
-#' @param StringTie.Ballgown.run Whether to run 'StringTie ballgown creation' step in this function step. Default value is \code{TRUE}.
+#' @param StringTie.Ballgown.run Whether to run 'StringTie ballgown creation'
+#'   step in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie ballgown creation' step.
-#' @param PreDECountTable.run Whether to run 'gene raw reads count creation' step in this function step. Default value is \code{TRUE}.
+#' @param PreDECountTable.run Whether to run 'gene raw reads count creation'
+#'   step in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'gene raw reads count creation' step.
 #'
 #' @return None
@@ -163,7 +197,8 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' ## Before run this function, make sure \code{RNASeqEnvironmentSet_CMD()} (or\code{RNASeqEnvironmentSet()}) is executed successfully.
+#' ## Before run this function, make sure \code{RNASeqEnvironmentSet_CMD()}
+#' ##(or\code{RNASeqEnvironmentSet()}) is executed successfully.
 #' RNASeqReadProcess(path.prefix             = yeast@@path.prefix,
 #'                   input.path.prefix       = yeast@@input.path.prefix,
 #'                   genome.name             = yeast@@genome.name,
@@ -266,7 +301,7 @@ PreRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
                           full.names = FALSE,
                           recursive = FALSE,
                           ignore.case = FALSE)
-  check.tool.result <- CheckToolAll()
+  check.tool.result <- CheckToolAll(path.prefix)
   check.results <- ProgressGenesFiles(path.prefix,
                                       genome.name,
                                       sample.pattern,

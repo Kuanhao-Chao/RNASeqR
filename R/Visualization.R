@@ -710,15 +710,17 @@ DEHeatmap <- function(which.analysis,
       DE.csv.results[,2:(pre.pheno_data$case.group.size +
                            pre.pheno_data$case.group.size + 1)]
     row.names(DE.csv.normalized.count.only) <- DE.csv.results$gene.name
-    if (nrow(DE.csv.normalized.count.only) > 50) {
+    if (nrow(DE.csv.normalized.count.only) > 60) {
       message(paste0("          \u25CF Found ",
                      nrow(DE.csv.normalized.count.only),
-                     " terms. More than 50 terms ",
-                     "(Only plot top 50 smallest p value).\n"))
-      DE.csv.normalized.count.only <- DE.csv.normalized.count.only[seq_len(50),]
+                     " terms. More than 60 terms ",
+                     "(gene names will not be shown).\n"))
+      show.gene.name <- FALSE
     } else {
       message(paste0("          \u25CF Found ",
-                     nrow(DE.csv.normalized.count.only), " terms.\n"))
+                     nrow(DE.csv.normalized.count.only),
+                     " terms (gene names will be shown).\n"))
+      show.gene.name <- TRUE
     }
     message(paste0("     \u25CF Calculating log2(",
                    which.count.normalization, "+1).\n"))
@@ -765,6 +767,7 @@ DEHeatmap <- function(which.analysis,
                          margins = c(10,8), col = pal,
                          main = "Heatmap Plot (pheatmap)",
                          cluster_rows = TRUE, cluster_cols = FALSE,
+                         show_rownames = show.gene.name,
                          annotation_col = annotation,
                          annotation_colors = anno_colors,
                          filename = paste0(path.prefix, "RNASeq_results/",
@@ -772,6 +775,9 @@ DEHeatmap <- function(which.analysis,
                                            "/images/DE/",
                                            "Heatmap_Plot_pheatmap.png"),
                          units="in", fontsize = 7)
+
+
+
       message(paste0("(\u2714) : '", path.prefix, "RNASeq_results/",
                      which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"),
               "' has been created. \n\n")
