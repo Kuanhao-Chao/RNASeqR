@@ -9,6 +9,7 @@
 #' @import graphics
 #' @import utils
 #' @import grDevices
+#' @import methods
 #' @import org.Hs.eg.db
 #' @import org.Mm.eg.db
 #' @import org.Rn.eg.db

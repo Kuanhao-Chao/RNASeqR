@@ -7,6 +7,9 @@
 CheckToolAll(path.prefix, print = TRUE)
 }
 \arguments{
+\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/',
+'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories.}
+
 \item{print}{If \code{TRUE}, detailed information will be printed.
 If \code{FALSE}, detailed information will not be printed.}
 }
@@ -18,6 +21,7 @@ Check whether 'Hisat2', 'Stringtie', 'Samtools' and 'Gffcompare'
   are installed on the workstation
 }
 \examples{
-CheckToolAll(path.prefix,
+data(yeast)
+CheckToolAll(yeast@path.prefix,
              print=TRUE)
 }

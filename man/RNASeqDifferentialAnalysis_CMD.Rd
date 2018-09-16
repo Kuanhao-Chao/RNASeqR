@@ -78,7 +78,7 @@ This function will run differential analysis on ballgown,
       (run \code{calcNormFactors()} to get a DGEList,
      and then run \code{cpm()} on that DGEList)  \cr
      The main statistic test in edgeR is trimmed mean of M-values(TMM).\cr
-  }\cr
+  }
   If you want to run differential analysis on ballgown, TPM normalization,
   DESeq2, edgeR for the following RNA-Seq workflow in R shell,
   please see \code{RNASeqDifferentialAnalysis()} function.

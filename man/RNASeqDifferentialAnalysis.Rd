@@ -57,7 +57,7 @@ None
 }
 \description{
 This function will run differential analysis on ballgown,
-  DESeq2 and edgeR in background. \cr \cr
+  DESeq2 and edgeR in background. \cr
   This function do following things : \cr
   \enumerate{
     \item ballgown analysis \cr

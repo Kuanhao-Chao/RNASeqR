@@ -8,7 +8,7 @@
 #'     \item Install necessary tools. \cr
 #'     \item Export 'RNASeq_bin/' to the R environment. \cr
 #'     \item Check command of tools. \cr
-#'   }\cr
+#'   }
 #'   First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
 #'   'Rscript/', 'Rscript_out/' directories. \cr Afterwards, 'Hisat2',
 #'   'Stringtie', 'Samtools', 'Gffcompare' will be installed under
@@ -109,7 +109,7 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam,
 #'     \item Install necessary tools. \cr
 #'     \item Export 'RNASeq_bin/' to the R environment. \cr
 #'     \item Check command of tools. \cr
-#'   }\cr
+#'   }
 #'   First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
 #'   'Rscript/', 'Rscript_out/' directories. \cr Afterwards, 'Hisat2',
 #'   'Stringtie', 'Samtools', 'Gffcompare' will be installed under
@@ -846,8 +846,7 @@ CheckSamtools <- function(print=TRUE){
 #' @export
 #' @examples
 #' data(yeast)
-#' path.prefix <- yeast@@path.prefix
-#' CheckToolAll(path.prefix,
+#' CheckToolAll(yeast@@path.prefix,
 #'              print=TRUE)
 CheckToolAll <- function(path.prefix, print=TRUE) {
   message("************** Checking Availability of Commands ************\n")

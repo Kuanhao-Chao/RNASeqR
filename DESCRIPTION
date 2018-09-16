@@ -18,7 +18,8 @@ Depends:
   R(>= 3.5.0),
   ggplot2,
   pathview,
-  edgeR
+  edgeR,
+  methods
 Imports:
   tools,
   reticulate,

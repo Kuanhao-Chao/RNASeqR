@@ -15,6 +15,10 @@ parameters}
 Bioconductor. Currently, there are 19 supported genome wide annotation
 packages of species.}
 
+\item{go.level}{the depth of acyclic graph in GO analysis}
+
+\item{input.TYPE.ID}{The gene name type in OrgDb.species annotation packahge.}
+
 \item{KEGG.organism}{the species that are supported for KEGG analysis.
 Currently, there are more than 5000 supported species genome.
 Check the valid species terms on
@@ -53,7 +57,7 @@ Run Gene Ontology(GO) and Kyoto Encyclopedia of Genes and Genomes(KEGG)
        \item Pathway visulization with \code{pathview} package. KEGG webpage
         pathway url will also be created \cr
      }
-  }\cr
+  }
   If you want to do GO functional analysis and KEGG pathway analysis for the
   following RNA-Seq workflow in R shell,
   please see \code{RNASeqGoKegg()} function.

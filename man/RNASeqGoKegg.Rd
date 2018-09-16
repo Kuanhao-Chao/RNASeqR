@@ -18,6 +18,10 @@ experiment design of two-group RNA-Seq workflow}
 on Bioconductor. Currently, there are 19 supported genome wide
 annotation packages of species.}
 
+\item{go.level}{the depth of acyclic graph in GO analysis}
+
+\item{input.TYPE.ID}{The gene name type in OrgDb.species annotation packahge.}
+
 \item{KEGG.organism}{the species that are supported for KEGG analysis.
 Currently, there are more than 5000 supported species genome.
 Check the valid species terms on

@@ -51,7 +51,7 @@ Set up the environment for the following RNA-Seq workflow in background.\cr
     \item Install necessary tools. \cr
     \item Export 'RNASeq_bin/' to the R environment. \cr
     \item Check command of tools. \cr
-  }\cr
+  }
   First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
   'Rscript/', 'Rscript_out/' directories. \cr Afterwards, 'Hisat2',
   'Stringtie', 'Samtools', 'Gffcompare' will be installed under

@@ -18,7 +18,7 @@
 #'        \item Pathway visulization with \code{pathview} package. KEGG webpage
 #'         pathway url will also be created \cr
 #'      }
-#'   }\cr
+#'   }
 #'   If you want to do GO functional analysis and KEGG pathway analysis for the
 #'   following RNA-Seq workflow in R shell,
 #'   please see \code{RNASeqGoKegg()} function.
@@ -28,6 +28,8 @@
 #' @param OrgDb.species the genome wide annotation packages of species on
 #'   Bioconductor. Currently, there are 19 supported genome wide annotation
 #'   packages of species.
+#' @param go.level the depth of acyclic graph in GO analysis
+#' @param input.TYPE.ID The gene name type in OrgDb.species annotation packahge.
 #' @param KEGG.organism the species that are supported for KEGG analysis.
 #'   Currently, there are more than 5000 supported species genome.
 #'   Check the valid species terms on
@@ -122,6 +124,8 @@ RNASeqGoKegg_CMD <- function(RNASeqWorkFlowParam,
 #' @param OrgDb.species the genome wide annotation packages of species
 #'   on Bioconductor. Currently, there are 19 supported genome wide
 #'   annotation packages of species.
+#' @param go.level the depth of acyclic graph in GO analysis
+#' @param input.TYPE.ID The gene name type in OrgDb.species annotation packahge.
 #' @param KEGG.organism the species that are supported for KEGG analysis.
 #'   Currently, there are more than 5000 supported species genome.
 #'   Check the valid species terms on

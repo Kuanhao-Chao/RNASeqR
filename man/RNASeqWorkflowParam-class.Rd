@@ -44,17 +44,17 @@ experiment design of two-group RNA-Seq workflow.}
 
 \examples{
 data(yeast)
-yeast@os.type
-yeast@python.variable
-yeast@python.2to3
-yeast@path.prefix
-yeast@input.path.prefix
-yeast@genome.name
-yeast@sample.pattern
-yeast@independent.variable
-yeast@case.group
-yeast@control.group
-yeast@indices.optional
+"@"(yeast, os.type)
+"@"(yeast, python.variable)
+"@"(yeast, python.2to3)
+"@"(yeast, path.prefix)
+"@"(yeast, input.path.prefix)
+"@"(yeast, genome.name)
+"@"(yeast, sample.pattern)
+"@"(yeast, independent.variable)
+"@"(yeast, case.group)
+"@"(yeast, control.group)
+"@"(yeast, indices.optional)
 }
 \author{
 Kuan-Hao Chao

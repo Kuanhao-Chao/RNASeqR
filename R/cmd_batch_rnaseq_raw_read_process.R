@@ -13,7 +13,7 @@
 #'       reference annotation. \cr
 #'     \item 'Stringtie': creates input files for ballgown, edgeR and DESeq2.\cr
 #'     \item raw reads count: create raw reads count for DESeq2 and edgeR \cr
-#'   }\cr
+#'   }
 #'   Before running this function, \code{RNASeqEnvironmentSet_CMD()} or
 #'   \code{RNASeqEnvironmentSet()} must be executed successfully. \cr
 #'   If you want to process raw reads for the following RNA-Seq workflow
@@ -144,7 +144,7 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
 #'       reference annotation. \cr
 #'     \item 'Stringtie': creates input files for ballgown, edgeR and DESeq2.\cr
 #'     \item raw reads count: create raw reads count for DESeq2 and edgeR \cr
-#'   }\cr
+#'   }
 #'   Before running this function, \code{RNASeqEnvironmentSet_CMD()} or
 #'   \code{RNASeqEnvironmentSet()} must be executed successfully.
 #'   If you want to process raw reads for the following RNA-Seq workflow in
