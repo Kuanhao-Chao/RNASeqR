@@ -260,7 +260,7 @@ RNASeqEnvironmentSet_CMD(exp)
 2. Run in R shell 
 Result will be reported in R shell. Make sure the environment is successfully set up before running the subsequent steps.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 RNASeqEnvironmentSet(exp@path.prefix,
                      exp@input.path.prefix,
                      exp@genome.name,
@@ -306,7 +306,7 @@ RNASeqQualityAssessment_CMD(exp)
 2. Run in R shell 
 Result will be reported in R shell. Make sure quality assessment is successfully done before running the subsequent steps.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 RNASeqQualityAssessment(exp@path.prefix,
                         exp@input.path.prefix,
                         exp@sample.pattern)
@@ -480,7 +480,7 @@ RNASeqReadProcess_CMD(exp)
 
 2. Run in R shell 
 Result will be reported in R shell. Make sure raw read process is successfully done before running the subsequent steps.
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 python.variable <- "@"(exp, python.variable)
 python.variable.answer <- python.variable$check.answer
 python.variable.version <- python.variable$python.version
@@ -729,7 +729,7 @@ RNASeqDifferentialAnalysis_CMD(exp)
 
 2. Run in R shell 
 Result will be reported in R shell. Make sure differential expression analysis is successfully finished before running subsequent steps.
-```{r}
+```{r, eval=FALSE}
 RNASeqDifferentialAnalysis(exp@path.prefix,
                            exp@genome.name,
                            exp@sample.pattern,

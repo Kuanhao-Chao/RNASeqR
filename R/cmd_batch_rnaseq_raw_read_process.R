@@ -274,7 +274,9 @@ RNASeqReadProcess <- function(path.prefix,
                                genome.name,
                                sample.pattern,
                                print=TRUE)
-  if (PreDECountTable.run) {
+  if (PreDECountTable.run &
+      ((python.variable.answer & python.variable.version == 2) |
+       python.variable.answer & python.variable.version == 3 & python.2to3)) {
     PreDECountTable(path.prefix,
                     sample.pattern,
                     python.variable.answer,

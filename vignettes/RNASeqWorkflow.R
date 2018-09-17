@@ -36,13 +36,13 @@ exp <- RNASeqWorkflowParam(path.prefix = rnaseq_result.path,
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqEnvironmentSet_CMD(exp)
 
-## ---- warning=FALSE--------------------------------------------------------
-RNASeqEnvironmentSet(exp@path.prefix,
-                     exp@input.path.prefix,
-                     exp@genome.name,
-                     exp@sample.pattern,
-                     exp@indices.optional,
-                     exp@os.type)
+## ---- warning=FALSE, eval=FALSE--------------------------------------------
+#  RNASeqEnvironmentSet(exp@path.prefix,
+#                       exp@input.path.prefix,
+#                       exp@genome.name,
+#                       exp@sample.pattern,
+#                       exp@indices.optional,
+#                       exp@os.type)
 
 ## ---- out.width = "1000px" ,out.height = "2000px"--------------------------
 knitr::include_graphics("figure/fastqReport.png")
@@ -50,10 +50,10 @@ knitr::include_graphics("figure/fastqReport.png")
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqQualityAssessment_CMD(exp)
 
-## ---- warning=FALSE--------------------------------------------------------
-RNASeqQualityAssessment(exp@path.prefix,
-                        exp@input.path.prefix,
-                        exp@sample.pattern)
+## ---- warning=FALSE, eval=FALSE--------------------------------------------
+#  RNASeqQualityAssessment(exp@path.prefix,
+#                          exp@input.path.prefix,
+#                          exp@sample.pattern)
 
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqQualityTrimming_CMD(exp)
@@ -65,19 +65,19 @@ RNASeqQualityAssessment(exp@path.prefix,
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqReadProcess_CMD(exp)
 
-## ---- warning=FALSE--------------------------------------------------------
-python.variable <- "@"(exp, python.variable)
-python.variable.answer <- python.variable$check.answer
-python.variable.version <- python.variable$python.version
-RNASeqReadProcess(exp@path.prefix,
-                  exp@input.path.prefix,
-                  exp@genome.name,
-                  exp@sample.pattern,
-                  python.variable.answer,
-                  python.variable.version,
-                  exp@python.2to3,
-                  num.parallel.threads = 10,
-                  exp@indices.optional)
+## ---- warning=FALSE, eval=FALSE--------------------------------------------
+#  python.variable <- "@"(exp, python.variable)
+#  python.variable.answer <- python.variable$check.answer
+#  python.variable.version <- python.variable$python.version
+#  RNASeqReadProcess(exp@path.prefix,
+#                    exp@input.path.prefix,
+#                    exp@genome.name,
+#                    exp@sample.pattern,
+#                    python.variable.answer,
+#                    python.variable.version,
+#                    exp@python.2to3,
+#                    num.parallel.threads = 10,
+#                    exp@indices.optional)
 
 ## ---- out.width = "1000px" ,out.height = "1000px"--------------------------
 knitr::include_graphics("figure/Alignment_report.png")
@@ -154,21 +154,21 @@ knitr::include_graphics("figure/edgeR_Smear_Plot_edgeR.png")
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqDifferentialAnalysis_CMD(exp)
 
-## --------------------------------------------------------------------------
-RNASeqDifferentialAnalysis(exp@path.prefix,
-                           exp@genome.name,
-                           exp@sample.pattern,
-                           exp@independent.variable,
-                           exp@case.group,
-                           exp@control.group,
-                           ballgown.pval = 0.05,
-                           ballgown.log2FC = 1,
-                           TPM.pval = 0.05,
-                           TPM.log2FC = 1,
-                           DESeq2.pval = 0.1,
-                           DESeq2.log2FC = 1,
-                           edgeR.pval = 0.05,
-                           edgeR.log2FC = 1)
+## ---- eval=FALSE-----------------------------------------------------------
+#  RNASeqDifferentialAnalysis(exp@path.prefix,
+#                             exp@genome.name,
+#                             exp@sample.pattern,
+#                             exp@independent.variable,
+#                             exp@case.group,
+#                             exp@control.group,
+#                             ballgown.pval = 0.05,
+#                             ballgown.log2FC = 1,
+#                             TPM.pval = 0.05,
+#                             TPM.log2FC = 1,
+#                             DESeq2.pval = 0.1,
+#                             DESeq2.log2FC = 1,
+#                             edgeR.pval = 0.05,
+#                             edgeR.log2FC = 1)
 
 ## ---- eval = FALSE---------------------------------------------------------
 #  RNASeqGoKegg_CMD(exp,
