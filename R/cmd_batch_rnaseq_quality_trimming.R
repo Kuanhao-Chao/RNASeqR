@@ -94,8 +94,8 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam,
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' RNASeqEnvironmentSet(path.prefix    = yeast@@path.prefix,
-#'                      sample.pattern = yeast@@sample.pattern)}
+#' RNASeqQualityTrimming(path.prefix    = yeast@@path.prefix,
+#'                       sample.pattern = yeast@@sample.pattern)}
 RNASeqQualityTrimming <- function(path.prefix,
                                   sample.pattern,
                                   cum.error = 1,

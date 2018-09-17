@@ -30,7 +30,7 @@
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' RNASeqQualityAssessment_CMD(RNASeqWorkFlowParam = exp)}
+#' RNASeqQualityAssessment_CMD(RNASeqWorkFlowParam = yeast)}
 RNASeqQualityAssessment_CMD <- function(RNASeqWorkFlowParam,
                                         run                 = TRUE,
                                         check.s4.print      = TRUE) {

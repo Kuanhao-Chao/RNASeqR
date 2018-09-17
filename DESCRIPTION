@@ -21,6 +21,7 @@ Depends:
   edgeR,
   methods
 Imports:
+  Rsamtools,
   tools,
   reticulate,
   ballgown,

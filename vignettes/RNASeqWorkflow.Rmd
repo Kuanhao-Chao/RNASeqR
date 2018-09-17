@@ -2,8 +2,6 @@
 title: "RNASeqWorkflow : RNA-Seq workflow for one independent variable analysis"
 author: "Author: Kuan-Hao Chao (ntueeb05howard@gmail.com)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`"
-abstract: >
-  An RNA-Seq workflow for one independent variable analysis
 output: 
   BiocStyle::html_document:
     highlight: pygments
@@ -35,33 +33,35 @@ Normal software name
 
 # Introduction
 
-RNA-Seq(RNA sequencing) uses next-generation sequencing(NGS) to provide transcriptome profiling. It has changed our thought about how complex eukaryotic transcriptomes are(Mortazavi et al. 2008).([RNA-Seq Blog](https://www.rna-seqblog.com/introduction-to-rna-sequencing-and-analysis/)). This technique is widely used to look at alternative gene spliced transcripts, post-transcriptional modification, SNPs over time, differences in gene expression in different groups or treatment etc.([wiki](https://en.wikipedia.org/wiki/RNA-Seq)). Among them, differential expressed gene(DEG) analysis is the most common downstream analysis.
+RNA-Seq is a revolutionary approach to investigate and discover the transcriptome using next-generation sequencing technologies [ref]. Typically, this transcriptome analysis aims to identify genes differentially expressed among different conditions or tissues, resulting in the understanding of the important pathways that are associated with conditions.[ref]
 
-`RNASeqWorkflow` provides an easier and R-based approach for running end-to-end two-group RNA-Seq analysis from quality assessment, trimming to downstream differential expression analysis, functional, pathway analysis. Some important features include automated workflow, comprehensive visulization reports, organized, extendable file structure and supporting background process in each step etc. 
+RNASeqWorkflow is an user-friendly R-based tool for running RNA-Seq analysis pipeline including quality assessment, reads alignment and quantification, differential expression analysis, and functional analysis. The main features of this package are automated workflow, comprehensive report with data visualization and extendable file structure. In this package, new tuxedo pipeline published in Nature Protocols in 2016 can be fully implemented under R environment with extra functions such as reads quality assessment, trimming and functional analysis.
 
-The following are main tools that are used in this package: '[HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml)' for reads alignment(Kim et al. 2015); '[StringTie](https://ccb.jhu.edu/software/stringtie/)' for alignments assembly and transcripts quantification(Pertea et al. 2015); '[Gffcompare](https://ccb.jhu.edu/software/stringtie/gffcompare.shtml)' for comparing merged `GTF` file with reference `GTF` file; '[systemPipeR](https://bioconductor.org/packages/release/bioc/html/systemPipeR.html)' package for quality assessment(Backman et al. 2016); '[ShortRead](https://bioconductor.org/packages/release/bioc/html/ShortRead.html)' package for quality trimming(Morgan et al. 2009); '[ballgown](https://bioconductor.org/packages/release/bioc/html/ballgown.html)' package(Fu et al. 2018), 'TPM & Student's t-test', '[DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)' package(Love et al. 2014) and '[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)' package(Robinson et al. 2010;McCarthy et al. 2012) for finding potential DEGs; '[clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)' package(Yu et al. 2012) for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis.
+The following are main tools that are used in this package: '[HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml)' for reads alignment(Kim et al. 2015); '[StringTie](https://ccb.jhu.edu/software/stringtie/)' for alignments assembly and transcripts quantification(Pertea et al. 2015); '[Rsamtools](https://bioconductor.org/packages/release/bioc/html/Rsamtools.html)' for converting `SAM` files to `BAM` files(Morgan et al. 2018); '[Gffcompare](https://ccb.jhu.edu/software/stringtie/gffcompare.shtml)' for comparing merged `GTF` file with reference `GTF` file; '[systemPipeR](https://bioconductor.org/packages/release/bioc/html/systemPipeR.html)' package for quality assessment(Backman et al. 2016); '[ShortRead](https://bioconductor.org/packages/release/bioc/html/ShortRead.html)' package for quality trimming(Morgan et al. 2009); '[ballgown](https://bioconductor.org/packages/release/bioc/html/ballgown.html)' package(Fu et al. 2018), 'TPM & Student's t-test', '[DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)' package(Love et al. 2014) and '[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)' package(Robinson et al. 2010;McCarthy et al. 2012) for finding potential differential expressed genes; '[clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)' package(Yu et al. 2012) for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis.
 
-The central concept for designing `RNASeqWorkflow` is that **each step in RNA-Seq analysis is an R function**. First users create a `RNASeqWorkFlowParam` S4 object for all variable checking. Then run the following functions:
+The central concept behind this package is that **each step involved in RNA-Seq data analysis is a function call in R**. At the beginning, users will create a `RNASeqWorkFlowParam` S4 object by running `RNASeqWorkflowParam()` constructor function for all variable checking. After the creation of `RNASeqWorkFlowParam`, it will be used as input of the following analysis function.
 
-1. `RNASeqEnvironmentSet_CMD()` or `RNASeqEnvironmentSet()`: Setup RNA-Seq environment.
+1. `RNASeqEnvironmentSet_CMD()` or `RNASeqEnvironmentSet()`: to setup RNA-Seq environment.
 
-2. `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()`: Optional. Run quality assessment step.
+2. `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()`: (Optional) to run quality assessment step.
 
-3. `RNASeqQualityTrimming_CMD()` or `RNASeqQualityTrimming()`: Optional. Run quality trimming step.
+3. `RNASeqQualityTrimming_CMD()` or `RNASeqQualityTrimming()`: (Optional) to run quality trimming step.
 
-4. `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`: Run alignment, assembly, quantification, gffcompare and raw reads count generation etc.
+4. `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`: to run reads alignment and quatification.
 
-5. `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`: Run differential analysis step.
+5. `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`: to run differential analysis via different R packages.
 
-6. `RNASeqGoKegg_CMD()` or `RNASeqGoKegg()`: Do GO and KEGG analysis.
+6. `RNASeqGoKegg_CMD()` or `RNASeqGoKegg()`: to conduct GO and KEGG analysis.
 
 Functions with `CMD` suffix create an R script and run `nohup R CMD BATCH script.R` in background. Functions with no `CMD` suffix process in R shell. After running the above functions, the whole RNA-Seq analysis is done and generated files in each step will be stored in organized file directory. `RNASeqWorkflow` package makes two-group RNA-Seq analysis **more efficient** and **easier** for users.
 
+Functions with `CMD` suffix will create an R script and  run `nohup R CMD BATCH script.R` in background while functions with no `CMD` suffix will be processed in R  shell. Files generated in each step will be kept in proper directory. Once the workflow is completed, a comprehensive RNA-Seq analysis is done. Additionally, this package is mainly designed for a two-group comparison setting, i.e.(??????) differential expression profile between two conditions.
+
 # Sample Definition
 
-The sample data that used in this vignette can be downloaded from `RNASeqWorkflowData` experiment package. The species is *Saccharomyces cerevisiae*, and reference `FASTA` and `GTF` files are downloaded from [iGenomes](https://support.illumina.com/sequencing/sequencing_software/igenome.html) Ensembl [R64-1-1](ftp://ussd-ftp.illumina.com/Saccharomyces_cerevisiae/Ensembl/R64-1-1/Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz). Six `FASTQ` files are selected from **[SRP073391](https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP073391)** SRA study(SRR3396381, SRR3396382, SRR3396384, SRR3396385, SRR3396386, SRR3396387)(Pang CN et al. 2017). To minimize the workflow process time, each raw `FASTQ` files are already aligned to `BAM` files first and reads that are in `XV:0-180000` chromsome region are selected and created into new mini `FASTQ` files. This extracted mini data is just for demonstration purpose.
+Sample data used in this vignette can be downloaded from `RNASeqWorkflowData` experiment package. It was originated from [NCBI's Sequence Read Archive](http://www.ncbi.nlm.nih.gov/sra) for the entries SRR3396381, SRR3396382, SRR3396384, SRR3396385, SRR3396386, and SRR3396387. These samples were from Saccharomyces cerevisiae. Suitable reference genome and gene annotation files for this species can be further downloaded from either iGenomes or Ensembl R64-1-1. To create mini data for demonstration purpose, reads aligned to the region from 0 to 100000 at chromosome XV were extracted.
 
-# System Requirement
+# System Requirements
 
 Necessary:
 
@@ -69,7 +69,23 @@ Necessary:
 
 2. Operating System: 'Linux' and 'macOS' are supported in `RNASeqWorkflow` package. 'Windows' is not supported. (Because 'StringTie' and 'HISAT2' are not available for 'Windows')
 
-3. During 'Environment Setup' step, you can choose whether you want to skip the installation of 'HISAT2', 'StringTie', 'Gffcompare' and 'SAMtools'. If you want to skip certain program installation, please make sure the command of program that you skip is available by running `system2()` through R shell. 
+3. Third-party softwares used in this package includes 'HISAT2', 'StringTie' and 'Gffcomapre'. 
+
+The availability of these commands will be checked by R `system2()` through R shell at the end of 'Environmnet Setup' step. 'Environmnet Setup' must finished successfully before running the following RNA-Seq analysis.
+
+
+
+
+
+
+
+Users have two options to deal with
+
+Because 'HISAT2', 'StringTie' and 'Gffcomapre' binaries are available for `Linux` and `macOS` operating system. By default these software binaries will be installed based on the operating system of your workstation(either `Linux` or `macOS`). No compilation is needed.  
+
+
+
+3. During 'Environment Setup' step, you can choose whether you want to skip the installation of 'HISAT2', 'StringTie' and 'Gffcompare'. If you want to skip certain program installation, please make sure the command of program that you skip is available by running `system2()` through R shell. At the end of 
 
 4. By default, 'HISAT2', 'StringTie' and 'Gffcomapre' binaries will be installed based on your operating system. 
 
@@ -264,7 +280,7 @@ RNASeqEnvironmentSet(exp@path.prefix,
                      exp@os.type)
 ```
 
-# `FASTQ` Files Quality Assessment
+# Quality Assessment of `FASTQ` sequence data
 
 This is an **optional step** of RNA-Seq workflow in this package. However, it is strongly recommended to do it before processing reads. To assess the quality of raw reads in `FASTQ` files, run `RNASeqQualityAssessment_CMD()` to execute process in background or run `RNASeqQualityAssessment()` to execute process in R shell.
 
@@ -306,7 +322,7 @@ RNASeqQualityAssessment(exp@path.prefix,
                         exp@sample.pattern)
 ```
 
-# `FASTQ` Files Quality Trimming
+# Quality Trimming of `FASTQ` sequence data
 
 This is an **optional step** of RNA-Seq workflow in this package. However, it is recommended to do it if the result of quality assessment is unsatisfied. To trim the raw reads in `FASTQ` files, run `RNASeqQualityTrimming_CMD()` to execute process in background or run `RNASeqQualityTrimming()` to execute process in R shell. After trimming process, it is strongly recommended to redo quality assessment step. Different quality assessment result will be stored in different directories with index of processing order.
 
@@ -343,7 +359,7 @@ RNASeqQualityTrimming(exp@path.prefix,
                       exp@sample.pattern)
 ```
 
-# Reads Process (Alignment, Assembly, Gffcompare, Quantification)
+# Reads Alignment and Quantification
 
 This is a **second necessary step** of RNA-Seq workflow in this package. Programs installed in environment setting step, HISAT2, SAMtools, StringTie and Gffcompare, will be executed. To process raw reads `FASTQ` files, run `RNASeqRawReadProcess_CMD()` to execute process in background or run `RNASeqRawReadProcess()` to execute process in R shell. For more details about commands that executed during each reads processing step, please check the reported *'RNASeq_results/COMMAND.txt'*. The process steps are mainly refering to [this paper](https://www.nature.com/articles/nprot.2016.095)(Pertea et al. 2016).
 
@@ -489,7 +505,7 @@ RNASeqReadProcess(exp@path.prefix,
                   exp@indices.optional)
 ```
 
-# Differential Expression Analysis
+# Gene-level Differential Analyses
 
 This is the **third necessary step** of RNA-Seq workflow in this package. To do differential expression analysis, run `RNASeqDifferentialAnalysis_CMD()` to execute process in background or run `RNASeqDifferentialAnalysis()` to execute process in R shell. In `RNASeqWorkflow` package, we provide four ways to do differential expression analysis: ballgown, TPM & Student t-test, DESeq2 and edgeR. Gene ids reported by StringTie(raw reads count) and ballgown(result) will be mapped to 'gene_name' provided in `GTF` file. 'gene_name' will be used to do gene functional analysis and pathway analysis in the next step.(!!!Functional 還有一些問題～ 這週要和學姊討論一下!!!)
 
@@ -717,7 +733,7 @@ RNASeqDifferentialAnalysis(exp@path.prefix,
 
 
 
-# Functional Analysis (Gene Ontology) and Pathway Analysis (Kyoto Encyclopedia of Genes and Genomes)
+# Functional Analysis
 
 This is the **third optional step** of RNA-Seq workflow in this package. [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) is used in this step. Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis are made based on the differential expressed genes(DEG) that are found in four different differential analyses, ballgown, TPM&t-test, DESeq2 and edgeR. Run `RNASeqGoKegg_CMD()` to execute process in background or run `RNASeqGoKegg()` to execute process in R shell.
 
@@ -781,7 +797,7 @@ RNASeqGoKegg(exp@path.prefix,
 sessionInfo()
 ```
 
-# Reference
+# References
 
 https://www.rna-seqblog.com/introduction-to-rna-sequencing-and-analysis/
 
@@ -792,6 +808,8 @@ Pang CN et al., "Transcriptome and network analyses in Saccharomyces cerevisiae 
 Kim D, Langmead B and Salzberg SL. HISAT: a fast spliced aligner with low memory requirements. Nature Methods 2015
 
 Pertea M, Pertea GM, Antonescu CM, Chang TC, Mendell JT & Salzberg SL. StringTie enables improved reconstruction of a transcriptome from RNA-seq reads Nature Biotechnology 2015, doi:10.1038/nbt.3122
+
+Morgan M, Pagès H, Obenchain V, Hayden N (2018). Rsamtools: Binary alignment (BAM), FASTA, variant call (BCF), and tabix file import. R package version 1.32.0, http://bioconductor.org/packages/release/bioc/html/Rsamtools.html.
 
 Mortazavi, A., Williams, B. A., McCue, K., Schaeffer, L., & Wold, B. (2008). Mapping and quantifying mammalian transcriptomes by RNA-Seq. Nature methods, 5(7), 621.
 

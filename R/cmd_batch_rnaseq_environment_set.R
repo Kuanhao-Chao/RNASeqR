@@ -11,7 +11,7 @@
 #'   }
 #'   First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
 #'   'Rscript/', 'Rscript_out/' directories. \cr Afterwards, 'Hisat2',
-#'   'Stringtie', 'Samtools', 'Gffcompare' will be installed under
+#'   'Stringtie', 'Gffcompare' will be installed under
 #'   'RNASeq_bin/Download/' and be unpacked under 'RNASeq_bin/Unpacked/'. \cr
 #'   'RNASeq_bin/' will be added to the R environment and
 #'   validity of tools will be checked.\cr
@@ -40,9 +40,6 @@
 #' @param install.gffcompare Whether to install 'Gffcompare'
 #'   in this function step. Default value is \code{TRUE}.
 #'   Set\code{FALSE} to skip 'Gffcompare' installation.
-#' @param install.samtools Whether to install 'SAMtools' in this function step.
-#'   Default value is \code{TRUE}.
-#'   Set\code{FALSE} to skip 'SAMtools' installation.
 #'
 #' @return None
 #' @export
@@ -55,7 +52,6 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam,
                                      install.hisat2     = TRUE,
                                      install.stringtie  = TRUE,
                                      install.gffcompare = TRUE,
-                                     install.samtools   = TRUE,
                                      run                = TRUE,
                                      check.s4.print     = TRUE) {
   # check input param
@@ -79,7 +75,6 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam,
                    "', install.hisat2 = ", install.hisat2,
                    ", install.stringtie = ", install.stringtie,
                    ", install.gffcompare = ", install.gffcompare,
-                   ", install.samtools = ", install.samtools,
                    ", mkdir.bool = ", FALSE, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
@@ -112,7 +107,7 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam,
 #'   }
 #'   First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
 #'   'Rscript/', 'Rscript_out/' directories. \cr Afterwards, 'Hisat2',
-#'   'Stringtie', 'Samtools', 'Gffcompare' will be installed under
+#'   'Stringtie', 'Gffcompare' will be installed under
 #'   'RNASeq_bin/Download/' and be unpacked under 'RNASeq_bin/Unpacked/'. \cr
 #'   'RNASeq_bin/' will be added to the R environment and
 #'   validity of tools will be checked.\cr
@@ -140,9 +135,6 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam,
 #' @param install.gffcompare Whether to install 'Gffcompare'
 #'   in this function step. Default value is \code{TRUE}.
 #'   Set\code{FALSE} to skip 'Gffcompare' installation.
-#' @param install.samtools Whether to install 'SAMtools' in this function step.
-#'   Default value is \code{TRUE}.
-#'   Set\code{FALSE} to skip 'SAMtools' installation.
 #' @param mkdir.bool Default \code{TRUE}. If \code{TRUE},
 #'   environment directories will be created.
 #'   If \code{FALSE}, no directories will be created.
@@ -170,7 +162,6 @@ RNASeqEnvironmentSet <- function(path.prefix,
                                  install.hisat2     = TRUE,
                                  install.stringtie  = TRUE,
                                  install.gffcompare = TRUE,
-                                 install.samtools   = TRUE,
                                  mkdir.bool         = TRUE) {
   CheckOperatingSystem(FALSE)
   if (mkdir.bool) {
@@ -186,8 +177,7 @@ RNASeqEnvironmentSet <- function(path.prefix,
              os.type,
              install.hisat2,
              install.stringtie,
-             install.gffcompare,
-             install.samtools)
+             install.gffcompare)
   ExportPath(path.prefix)
   PostRNASeqEnvironmentSet(path.prefix,
                            genome.name,
@@ -352,10 +342,15 @@ MkdirRscript_Rscript_out <- function(path.prefix) {
 # Create sample gene and binary directory
 MkdirAll <- function(path.prefix) {
   message("************** Creating Directories ************\n")
-  MkdirGeneDir(path.prefix)
-  MkdirRNASeq_bin(path.prefix)
-  MkdirRNASeq_results(path.prefix)
-  MkdirRscript_Rscript_out(path.prefix)
+  bool.path.prefix <- dir.exists(path.prefix)
+  if (bool.path.prefix) {
+    MkdirGeneDir(path.prefix)
+    MkdirRNASeq_bin(path.prefix)
+    MkdirRNASeq_results(path.prefix)
+    MkdirRscript_Rscript_out(path.prefix)
+  } else {
+    message("'", path.prefix, "' has not been created yet!!\n\n")
+  }
 }
 
 # inner function : Copy input files directory
@@ -608,93 +603,12 @@ InstallGffcompareBinary <- function(path.prefix, os.type){
   return(TRUE)
 }
 
-# Install Samtools binary
-InstallSamtoolsBinary <- function(path.prefix, os.type){
-  os <- os.type
-  current.path <- getwd()
-  url <- paste0("https://github.com/samtools/samtools/releases/",
-                "download/1.8/samtools-1.8.tar.bz2")
-  if (os == "linux"){
-    os.file.name.zip <- "samtools-1.8.tar.bz2"
-    os.file.name <- "samtools-1.8"
-  } else if (os == "osx"){
-    os.file.name <- "samtools-1.8.tar.bz2"
-    os.file.name <- "samtools-1.8"
-  } else if (os == "windows"){
-    stop("Samtools is not supporting windows.\n\n")
-    return(FALSE)
-  } else {
-    stop("Unknow operating system.\n\n")
-    return(FALSE)
-  }
-  message("************** Installing samtools (",
-          os.file.name.zip, ") ************\n")
-  main.command <- "curl"
-  command.result <- system2(command = main.command,
-                            args = c("-L",
-                                     paste0("https://github.com/samtools/",
-                                            "samtools/releases/download/1.8/",
-                                            "samtools-1.8.tar.bz2"), ">",
-                                     paste0(path.prefix, "RNASeq_bin/Download/",
-                                            os.file.name.zip)),
-                            stdout = "",
-                            wait = TRUE)
-  if (command.result != 0 ) {
-    message("(\u2718) '", main.command, "' is failed !!")
-    stop(paste0("'", main.command, "' ERROR"))
-  }
-  message("\n************** Unpacking samtools (",
-          os.file.name.zip, ") ************\n")
-  if (dir.exists(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))) {
-    unlink(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name),
-           recursive = TRUE)
-  }
-  main.command <- "tar"
-  command.result <- system2(command = main.command,
-                            args = c("jxvf", paste0(path.prefix,
-                                                    "RNASeq_bin/Download/",
-                                                    os.file.name.zip),
-                                     "-C",
-                                     paste0(path.prefix,
-                                            "RNASeq_bin/Unpacked/")))
-  if (command.result != 0 ) {
-    message("(\u2718) '", main.command, "' is failed !!")
-    stop(paste0("'", main.command, "' ERROR"))
-  }
-  current.path <- getwd()
-  message("\n************** Making samtools (",
-          os.file.name, ") ************")
-  setwd(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))
-  main.command <- "make"
-  command.result <- system2(command = main.command,
-                            args = "clean",
-                            stderr = FALSE)
-  if (command.result != 0 ) {
-    message("(\u2718) '", main.command, "' is failed !!")
-    stop(paste0("'", main.command, "' ERROR"))
-  }
-  command.result <- system2(command = main.command)
-  if (command.result != 0 ) {
-    message("(\u2718) '", main.command, "' is failed !!")
-    stop(paste0("'", main.command, "' ERROR"))
-  }
-  message("\n************** Moving samtools Binary ************")
-  file.copy("samtools", paste0(path.prefix, "RNASeq_bin/"))
-  on.exit(setwd(current.path))
-  message("\n'", path.prefix, "RNASeq_bin/Download/",
-          os.file.name.zip, "' has been installed.\n")
-  message("Samtools has been unpacked. ('", path.prefix,
-          "RNASeq_bin/Unpacked/", os.file.name, "')", "\n\n")
-  return(TRUE)
-}
-
-# Install 'Hisat2', 'StringTie', 'Gffcompare', 'Samtools'
+# Install 'Hisat2', 'StringTie', 'Gffcompare'
 InstallAll <- function(path.prefix,
                        os.type,
                        install.hisat2,
                        install.stringtie,
-                       install.gffcompare,
-                       install.samtools) {
+                       install.gffcompare) {
   message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  ",
           "Start installing ... ",
           "\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
@@ -708,11 +622,8 @@ InstallAll <- function(path.prefix,
   if (install.gffcompare) {
     install.software <- paste0(install.software, "\u25CF'gffcompare' ")
   }
-  if (install.samtools) {
-    install.software <- paste0(install.software, "\u25CF'samtools' ")
-  }
   if (!install.hisat2 & !install.stringtie &
-      !install.gffcompare & !install.samtools) {
+      !install.gffcompare) {
     message("   \u261E\u261E skipping installation process ... \n")
   } else {
     message("   \u261E\u261E ",
@@ -736,10 +647,6 @@ InstallAll <- function(path.prefix,
   if (install.gffcompare) {
     message("\u2618\u2618 Gffcompare processing ...\n")
     InstallGffcompareBinary(path.prefix, os.type)
-  }
-  if (install.samtools) {
-    message("\u2618\u2618 Samtools processing ...\n")
-    InstallSamtoolsBinary(path.prefix, os.type)
   }
 }
 
@@ -809,31 +716,9 @@ CheckGffcompare <- function(print=TRUE) {
   }
 }
 
-# Check 'Samtools'
-CheckSamtools <- function(print=TRUE){
-  if (print) {
-    message("\u25CF  Checking samtools command\n")
-  }
-  samtools.old <- system( "samtools --version",
-                          ignore.stdout = !print,
-                          ignore.stderr = !print) == 0
-  if (isTRUE(samtools.old)){
-    if (isTRUE(print)){
-      message("(\u2714) : 'samtools' is installed\n\n")
-    }
-    return(TRUE)
-  }
-  else{
-    message("(\u2718) : \'samtools\' command is not found on this device. ",
-            "Please run 'InstallAll()' to install the necessary programs ",
-            "or 'ExportPath' to update the path.\n\n")
-    return(FALSE)
-  }
-}
-
 #' @title CheckToolAll
 #'
-#' @description Check whether 'Hisat2', 'Stringtie', 'Samtools' and 'Gffcompare'
+#' @description Check whether 'Hisat2', 'Stringtie' and 'Gffcompare'
 #'   are installed on the workstation
 #'
 #' @param print If \code{TRUE}, detailed information will be printed.
@@ -854,11 +739,9 @@ CheckToolAll <- function(path.prefix, print=TRUE) {
   hisat2.check <- CheckHisat2(print)
   stringtie.check <- CheckStringTie(print)
   gff.check <- CheckGffcompare(print)
-  samtool.check <- CheckSamtools(print)
   if (isTRUE(hisat2.check) &&
       isTRUE(stringtie.check) &&
-      isTRUE(gff.check) &&
-      isTRUE(samtool.check)){
+      isTRUE(gff.check)){
     return(TRUE)
   } else {
     stop(paste0("(\u2718) Necessary program is missing.\n     ",

@@ -40,7 +40,7 @@ Assess the quality of '.fastq.gz' files for RNA-Seq workflow in background.
 \examples{
 data(yeast)
 \dontrun{
-RNASeqQualityAssessment_CMD(RNASeqWorkFlowParam = exp)}
+RNASeqQualityAssessment_CMD(RNASeqWorkFlowParam = yeast)}
 }
 \author{
 Kuan-Hao Chao

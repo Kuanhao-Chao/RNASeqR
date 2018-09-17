@@ -66,7 +66,7 @@
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = yeast)}
+#' RNASeqDifferentialAnalysis_CMD(RNASeqWorkFlowParam = yeast)}
 RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
                                            ballgown.pval   = 0.05,
                                            ballgown.log2FC = 1,

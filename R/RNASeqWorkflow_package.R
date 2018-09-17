@@ -1,6 +1,7 @@
 #' RNASeqWorkflow-package
 #'
 #' @name RNASeqWorkflow
+#' @importFrom Rsamtools asBam
 #' @importFrom clusterProfiler bitr enrichGO groupGO dotplot emapplot
 #'   cnetplot goplot enrichKEGG gseGO gseaplot gseKEGG
 #' @importFrom pathview pathview

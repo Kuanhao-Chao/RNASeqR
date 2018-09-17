@@ -66,7 +66,7 @@
 #' \dontrun{
 #' ## Before run this function, make sure \code{RNASeqEnvironmentSet_CMD()}
 #' ## (or\code{RNASeqEnvironmentSet()}) is executed successfully.
-#' RNASeqReadProcess_CMD(RNASeqWorkFlowParam = exp,
+#' RNASeqReadProcess_CMD(RNASeqWorkFlowParam = yeast,
 #'                       num.parallel.threads = 10)}
 RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
                                   num.parallel.threads      = 1,
@@ -242,10 +242,10 @@ RNASeqReadProcess <- function(path.prefix,
                            num.parallel.threads)
   }
   if (Samtools.Bam.run) {
-    SamtoolsToBam(path.prefix,
-                  genome.name,
-                  sample.pattern,
-                  num.parallel.threads)
+    RSamtoolsToBam(path.prefix,
+                   genome.name,
+                   sample.pattern,
+                   num.parallel.threads)
   }
   if (StringTie.Assemble.run) {
     StringTieAssemble(path.prefix,

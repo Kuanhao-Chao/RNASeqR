@@ -290,56 +290,45 @@ Hisat2ReportAssemble <- function(path.prefix,
   }
 }
 
-# use 'samtools' to sort and convert the SAM files to BAM
-SamtoolsToBam <- function(path.prefix,
-                          genome.name,
-                          sample.pattern,
-                          num.parallel.threads = 8) {
-  if (isTRUE(CheckSamtools(print=FALSE))) {
-    check.results <- ProgressGenesFiles(path.prefix,
-                                        genome.name,
-                                        sample.pattern,
-                                        print=TRUE)
-    message("\n\u2618\u2618\u2618 'SAM' to 'BAM' :\n")
-    message(paste0("************** ",
-                   "Samtools converting '.sam' to '.bam' ",
-                   "**************\n"))
-    if (check.results$sam.files.number.df != 0){
-      command.list <- c()
-      command.list <- c(command.list,
-                        "* Samtools Converting '.sam' to '.bam' : ")
-      # Map reads to each alignment
-      current.path <- getwd()
-      setwd(paste0(path.prefix, "gene_data/"))
-      sample.table <- table(gsub(paste0(".sam$"),
-                                 replacement = "",
-                                 check.results$sam.files.df))
-      iteration.num <- length(sample.table)
-      sample.name <- names(sample.table)
-      sample.value <- as.vector(sample.table)
-      for( i in seq_len(iteration.num)){
-        whole.command <- paste("sort -@", num.parallel.threads,
-                               "-o", paste0("raw_bam/", sample.name[i], ".bam"),
-                               paste0("raw_sam/", sample.name[i], ".sam"))
-        if (i != 1) message("\n")
-        main.command <- "samtools"
-        message(c("Input command :", paste(main.command, whole.command), "\n"))
-        command.list <- c(command.list,
-                          paste("    command :", main.command, whole.command))
-        command.result <- system2(command = main.command, args = whole.command)
-        if (command.result != 0 ) {
-          message(paste0("(\u2718) '", main.command, "' is failed !!"))
-          stop(paste0("'", main.command, "' ERROR"))
-        }
-      }
-      message("\n")
-      command.list <- c(command.list, "\n")
-      fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
-      write(command.list, fileConn, append = TRUE)
-      on.exit(setwd(current.path))
-    } else {
-      stop(c("(\u2718) 'XXX.sam' is missing.\n\n"))
+# use 'Rsamtools' to sort and convert the SAM files to BAM
+RSamtoolsToBam <- function(path.prefix,
+                           genome.name,
+                           sample.pattern,
+                           num.parallel.threads = 8) {
+  check.results <- ProgressGenesFiles(path.prefix,
+                                      genome.name,
+                                      sample.pattern,
+                                      print=TRUE)
+  message("\n\u2618\u2618\u2618 'SAM' to 'BAM' :\n")
+  message(paste0("************** ",
+                 "Rsamtools converting '.sam' to '.bam' ",
+                 "**************\n"))
+  if (check.results$sam.files.number.df != 0){
+    command.list <- c()
+    command.list <- c(command.list,
+                      "* Rsamtools Converting '.sam' to '.bam' : ")
+    sample.table <- table(gsub(paste0(".sam$"),
+                               replacement = "",
+                               check.results$sam.files.df))
+    iteration.num <- length(sample.table)
+    sample.name <- names(sample.table)
+    sample.value <- as.vector(sample.table)
+    for( i in seq_len(iteration.num)){
+      ba.file <- Rsamtools::asBam(file = paste0(path.prefix,
+                                                "gene_data/raw_sam/",
+                                                sample.name[i], ".sam"),
+                                  destination = paste0(path.prefix,
+                                                       "gene_data/raw_bam/",
+                                                       sample.name[i]),
+                                  overwrite = TRUE)
+      command.list <- c(command.list, ba.file)
     }
+    message("\n")
+    command.list <- c(command.list, "\n")
+    fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
+    write(command.list, fileConn, append = TRUE)
+  } else {
+    stop(c("(\u2718) 'XXX.sam' is missing.\n\n"))
   }
 }
 

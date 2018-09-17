@@ -7,7 +7,7 @@
 RNASeqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
   sample.pattern, indices.optional, os.type, install.hisat2 = TRUE,
   install.stringtie = TRUE, install.gffcompare = TRUE,
-  install.samtools = TRUE, mkdir.bool = TRUE)
+  mkdir.bool = TRUE)
 }
 \arguments{
 \item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/',
@@ -39,10 +39,6 @@ Set\code{FALSE} to skip 'StringTie' installation.}
 in this function step. Default value is \code{TRUE}.
 Set\code{FALSE} to skip 'Gffcompare' installation.}
 
-\item{install.samtools}{Whether to install 'SAMtools' in this function step.
-Default value is \code{TRUE}.
-Set\code{FALSE} to skip 'SAMtools' installation.}
-
 \item{mkdir.bool}{Default \code{TRUE}. If \code{TRUE},
 environment directories will be created.
 If \code{FALSE}, no directories will be created.
@@ -63,7 +59,7 @@ Set up the environment for the following RNA-Seq workflow in R shell\cr
   }
   First it will create 'gene_data/', 'RNASeq_bin/', 'RNASeq_results/',
   'Rscript/', 'Rscript_out/' directories. \cr Afterwards, 'Hisat2',
-  'Stringtie', 'Samtools', 'Gffcompare' will be installed under
+  'Stringtie', 'Gffcompare' will be installed under
   'RNASeq_bin/Download/' and be unpacked under 'RNASeq_bin/Unpacked/'. \cr
   'RNASeq_bin/' will be added to the R environment and
   validity of tools will be checked.\cr

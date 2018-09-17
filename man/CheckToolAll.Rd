@@ -17,7 +17,7 @@ If \code{FALSE}, detailed information will not be printed.}
 None
 }
 \description{
-Check whether 'Hisat2', 'Stringtie', 'Samtools' and 'Gffcompare'
+Check whether 'Hisat2', 'Stringtie' and 'Gffcompare'
   are installed on the workstation
 }
 \examples{
