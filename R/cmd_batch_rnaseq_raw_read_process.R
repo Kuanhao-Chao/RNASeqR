@@ -7,7 +7,7 @@
 #'     \item 'Hisat2' : aligns raw reads to reference genome.
 #'       If \code{indices.optional} in \code{RNASeqWorkFlowParam} is
 #'       \code{FALSE}, Hisat2 indices will be created.\cr
-#'     \item 'Samtools': converts '.sam' files to '.bam' files.\cr
+#'     \item 'Rsamtools': converts '.sam' files to '.bam' files.\cr
 #'     \item 'Stringtie': assembles alignments into transcript.\cr
 #'     \item 'Gffcompare': examines how transcripts compare with the
 #'       reference annotation. \cr
@@ -39,9 +39,9 @@
 #' @param Hisat2.Alignment.run Whether to run 'HISAT2 alignment' step in this
 #'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2 alignment' step.
-#' @param Samtools.Bam.run Whether to run 'SAMTools SAM to BAM' step in this
+#' @param Rsamtools.Bam.run Whether to run 'Rsamtools SAM to BAM' step in this
 #'   function step. Default value is \code{TRUE}.
-#'   Set \code{FALSE} to skip 'SAMTools SAM to BAM' step.
+#'   Set \code{FALSE} to skip 'Rsamtools SAM to BAM' step.
 #' @param StringTie.Assemble.run Whether to run 'StringTie assembly' step in
 #'   this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie assembly' step.
@@ -74,7 +74,7 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
                                   check.s4.print            = TRUE,
                                   Hisat2.Index.run          = TRUE,
                                   Hisat2.Alignment.run      = TRUE,
-                                  Samtools.Bam.run          = TRUE,
+                                  Rsamtools.Bam.run         = TRUE,
                                   StringTie.Assemble.run    = TRUE,
                                   StringTie.Merge.Trans.run = TRUE,
                                   Gffcompare.Ref.Sample.run = TRUE,
@@ -104,7 +104,7 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
                    ', indices.optional = ', indices.optional,
                    ', Hisat2.Index.run = ', Hisat2.Index.run,
                    ', Hisat2.Alignment.run = ', Hisat2.Alignment.run,
-                   ', Samtools.Bam.run = ', Samtools.Bam.run,
+                   ', Rsamtools.Bam.run = ', Rsamtools.Bam.run,
                    ', StringTie.Assemble.run = ', StringTie.Assemble.run,
                    ', StringTie.Merge.Trans.run = ', StringTie.Merge.Trans.run,
                    ', Gffcompare.Ref.Sample.run = ', Gffcompare.Ref.Sample.run,
@@ -138,7 +138,7 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
 #'     \item 'Hisat2' : aligns raw reads to reference genome.
 #'       If \code{indices.optional} in \code{RNASeqWorkFlowParam} is
 #'       \code{FALSE}, Hisat2 indices will be created.\cr
-#'     \item 'Samtools': converts '.sam' files to '.bam' files.\cr
+#'     \item 'Rsamtools': converts '.sam' files to '.bam' files.\cr
 #'     \item 'Stringtie': assembles alignments into transcript.\cr
 #'     \item 'Gffcompare': examines how transcripts compare with the
 #'       reference annotation. \cr
@@ -172,9 +172,9 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
 #' @param Hisat2.Alignment.run Whether to run 'HISAT2 alignment' step in this
 #'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2 alignment' step.
-#' @param Samtools.Bam.run Whether to run 'SAMTools SAM to BAM' step in this
+#' @param Rsamtools.Bam.run Whether to run 'Rsamtools SAM to BAM' step in this
 #'   function step. Default value is \code{TRUE}.
-#'   Set \code{FALSE} to skip 'SAMTools SAM to BAM' step.
+#'   Set \code{FALSE} to skip 'Rsamtools SAM to BAM' step.
 #' @param StringTie.Assemble.run Whether to run 'StringTie assembly' step in
 #'   this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie assembly' step.
@@ -218,7 +218,7 @@ RNASeqReadProcess <- function(path.prefix,
                               indices.optional,
                               Hisat2.Index.run          = TRUE,
                               Hisat2.Alignment.run      = TRUE,
-                              Samtools.Bam.run          = TRUE,
+                              Rsamtools.Bam.run         = TRUE,
                               StringTie.Assemble.run    = TRUE,
                               StringTie.Merge.Trans.run = TRUE,
                               Gffcompare.Ref.Sample.run = TRUE,
@@ -241,7 +241,7 @@ RNASeqReadProcess <- function(path.prefix,
                            sample.pattern,
                            num.parallel.threads)
   }
-  if (Samtools.Bam.run) {
+  if (Rsamtools.Bam.run) {
     RSamtoolsToBam(path.prefix,
                    genome.name,
                    sample.pattern,

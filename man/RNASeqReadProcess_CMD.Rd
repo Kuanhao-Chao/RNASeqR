@@ -6,7 +6,7 @@
 \usage{
 RNASeqReadProcess_CMD(RNASeqWorkFlowParam, num.parallel.threads = 1,
   run = TRUE, check.s4.print = TRUE, Hisat2.Index.run = TRUE,
-  Hisat2.Alignment.run = TRUE, Samtools.Bam.run = TRUE,
+  Hisat2.Alignment.run = TRUE, Rsamtools.Bam.run = TRUE,
   StringTie.Assemble.run = TRUE, StringTie.Merge.Trans.run = TRUE,
   Gffcompare.Ref.Sample.run = TRUE, StringTie.Ballgown.run = TRUE,
   PreDECountTable.run = TRUE)
@@ -38,9 +38,9 @@ step. Default value is \code{TRUE}. Set \code{FALSE} to skip
 function step. Default value is \code{TRUE}.
 Set \code{FALSE} to skip 'HISAT2 alignment' step.}
 
-\item{Samtools.Bam.run}{Whether to run 'SAMTools SAM to BAM' step in this
+\item{Rsamtools.Bam.run}{Whether to run 'Rsamtools SAM to BAM' step in this
 function step. Default value is \code{TRUE}.
-Set \code{FALSE} to skip 'SAMTools SAM to BAM' step.}
+Set \code{FALSE} to skip 'Rsamtools SAM to BAM' step.}
 
 \item{StringTie.Assemble.run}{Whether to run 'StringTie assembly' step in
 this function step. Default value is \code{TRUE}.
@@ -72,7 +72,7 @@ Process raw reads for RNA-Seq workflow in background. \cr
     \item 'Hisat2' : aligns raw reads to reference genome.
       If \code{indices.optional} in \code{RNASeqWorkFlowParam} is
       \code{FALSE}, Hisat2 indices will be created.\cr
-    \item 'Samtools': converts '.sam' files to '.bam' files.\cr
+    \item 'Rsamtools': converts '.sam' files to '.bam' files.\cr
     \item 'Stringtie': assembles alignments into transcript.\cr
     \item 'Gffcompare': examines how transcripts compare with the
       reference annotation. \cr

@@ -69,36 +69,24 @@ Necessary:
 
 2. Operating System: 'Linux' and 'macOS' are supported in `RNASeqWorkflow` package. 'Windows' is not supported. (Because 'StringTie' and 'HISAT2' are not available for 'Windows')
 
-3. Third-party softwares used in this package includes 'HISAT2', 'StringTie' and 'Gffcomapre'. 
-
-The availability of these commands will be checked by R `system2()` through R shell at the end of 'Environmnet Setup' step. 'Environmnet Setup' must finished successfully before running the following RNA-Seq analysis.
-
-
-
-
-
-
-
-Users have two options to deal with
-
-Because 'HISAT2', 'StringTie' and 'Gffcomapre' binaries are available for `Linux` and `macOS` operating system. By default these software binaries will be installed based on the operating system of your workstation(either `Linux` or `macOS`). No compilation is needed.  
-
-
-
-3. During 'Environment Setup' step, you can choose whether you want to skip the installation of 'HISAT2', 'StringTie' and 'Gffcompare'. If you want to skip certain program installation, please make sure the command of program that you skip is available by running `system2()` through R shell. At the end of 
+3. Third-party softwares used in this package include 'HISAT2', 'StringTie' and 'Gffcomapre'. The availability of these commands will be checked by R `system2()` through R shell at the end of 'Environmnet Setup' step. Users must successfully setup environment before running the following RNA-Seq analysis. By default, binaries will be installed base on the operating system of the workstation. No compilation is needed. However, users can still choose to skip certain software binaries. More details please refer to 'Environment Setup' chapter.
 
 4. By default, 'HISAT2', 'StringTie' and 'Gffcomapre' binaries will be installed based on your operating system. 
 
-5. C Environment for 'SAMtools'. Different from 'HISAT2', 'StringTie' and 'Gffcomapre', 'SAMtools' source code will be installed and compiled rather than binaries. More details about [SAMtools requirement](https://github.com/samtools/samtools/blob/develop/INSTALL).
-
-6. 'HISAT2' indexex: Users are advised to provide *'indices/'* directory in *'inputfiles/'*. 'HISAT2' requires at least 160 GB of RAM and several hours to index the entire human genome.
 
 Recommended: 
 
 1. Python: Python2 or Python3.
 
-2. `2to3`: If the Python version in the system is 3, then this command will be used in the following analysis step. Generally, `2to3` is available if Python3 is available. 
-    (Python and `2to3` is used for creating raw reads count for [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) and [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html). If these commands are not available, DESeq2 and edgeR analysis will be skipped.) 
+2. `2to3`: If the Python version in the system is 3, then this command will be used. Generally, `2to3` is available if Python3 is available. 
+    * Python and `2to3` are used for creating raw reads count for [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) and [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html). 
+    * The following are two conditions that will create raw reads count from 'StringTie' output.
+        1. Python2
+        2. Python3 with `2to3` command available.
+    * If one of these conditions meets, raw reads count will be created and DESeq2, edgeR will be run automatically by default in 'Reads Alignment and Quantification' step. If not, DESeq2 and edgeR will be skipped during 'Gene-level Differential Analyses' step. Checking Python version and `2to3` command are highly recommended but not necessary.
+    
+3. 'HISAT2' indexex: Users are advised to provide *'indices/'* directory in *'inputfiles/'*. 'HISAT2' requires at least 160 GB of RAM and several hours to index the entire human genome.
+
 
 # Installation
 

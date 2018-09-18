@@ -37,8 +37,8 @@ Trim '.fastq.gz' files for RNA-Seq workflow in R shell.
 \examples{
 data(yeast)
 \dontrun{
-RNASeqEnvironmentSet(path.prefix    = yeast@path.prefix,
-                     sample.pattern = yeast@sample.pattern)}
+RNASeqQualityTrimming(path.prefix    = yeast@path.prefix,
+                      sample.pattern = yeast@sample.pattern)}
 }
 \author{
 Kuan-Hao Chao

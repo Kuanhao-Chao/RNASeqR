@@ -86,7 +86,7 @@ This function will run differential analysis on ballgown,
 \examples{
 data(yeast)
 \dontrun{
-RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam = yeast)}
+RNASeqDifferentialAnalysis_CMD(RNASeqWorkFlowParam = yeast)}
 }
 \author{
 Kuan-Hao Chao

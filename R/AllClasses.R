@@ -140,8 +140,8 @@ RNASeqWorkflowParam <- function(path.prefix          = NA,
   # 5. check sample.pattern that can't have '.fastq.gz'
   fast.gz.extend <- tools::file_ext(sample.pattern)
   if (fast.gz.extend == "gz" || fast.gz.extend == "fastq") {
-    message("(\u2718) : 'sample.pattern' can't include file",
-            "extension(.gz or .fastq)\n\n")
+    message("(\u2718) : 'sample.pattern' can't include file ",
+            "extension(.gz or .fastq or any) or any '.'\n\n")
     stop("'sample.pattern' with extension error.")
   }
   # 6. check 'input_files/' necessary files with 'genome.name', 'sample.pattern'
