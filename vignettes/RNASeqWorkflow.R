@@ -70,19 +70,19 @@ img <- readPNG("figure/fastqReport.png")
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqReadProcess_CMD(exp)
 
-## ---- warning=FALSE, eval=FALSE--------------------------------------------
-#  python.variable <- "@"(exp, python.variable)
-#  python.variable.answer <- python.variable$check.answer
-#  python.variable.version <- python.variable$python.version
-#  RNASeqReadProcess(exp@path.prefix,
-#                    exp@input.path.prefix,
-#                    exp@genome.name,
-#                    exp@sample.pattern,
-#                    python.variable.answer,
-#                    python.variable.version,
-#                    exp@python.2to3,
-#                    num.parallel.threads = 10,
-#                    exp@indices.optional)
+## ---- warning=FALSE--------------------------------------------------------
+python.variable <- "@"(exp, python.variable)
+python.variable.answer <- python.variable$check.answer
+python.variable.version <- python.variable$python.version
+RNASeqReadProcess(exp@path.prefix,
+                  exp@input.path.prefix,
+                  exp@genome.name,
+                  exp@sample.pattern,
+                  python.variable.answer,
+                  python.variable.version,
+                  exp@python.2to3,
+                  num.parallel.threads = 10,
+                  exp@indices.optional)
 
 ## ----fig.width=10, echo=FALSE----------------------------------------------
 img <- readPNG("figure/Alignment_report.png")
@@ -191,21 +191,21 @@ grid.raster(img, just = "center")
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqDifferentialAnalysis_CMD(exp)
 
-## ---- eval=FALSE-----------------------------------------------------------
-#  RNASeqDifferentialAnalysis(exp@path.prefix,
-#                             exp@genome.name,
-#                             exp@sample.pattern,
-#                             exp@independent.variable,
-#                             exp@case.group,
-#                             exp@control.group,
-#                             ballgown.pval = 0.05,
-#                             ballgown.log2FC = 1,
-#                             TPM.pval = 0.05,
-#                             TPM.log2FC = 1,
-#                             DESeq2.pval = 0.1,
-#                             DESeq2.log2FC = 1,
-#                             edgeR.pval = 0.05,
-#                             edgeR.log2FC = 1)
+## --------------------------------------------------------------------------
+RNASeqDifferentialAnalysis(exp@path.prefix,
+                           exp@genome.name,
+                           exp@sample.pattern,
+                           exp@independent.variable,
+                           exp@case.group,
+                           exp@control.group,
+                           ballgown.pval = 0.05,
+                           ballgown.log2FC = 1,
+                           TPM.pval = 0.05,
+                           TPM.log2FC = 1,
+                           DESeq2.pval = 0.1,
+                           DESeq2.log2FC = 1,
+                           edgeR.pval = 0.05,
+                           edgeR.log2FC = 1)
 
 ## ----fig.width=8, height=8, echo=FALSE-------------------------------------
 img <- readPNG("figure/GO_analysis/GO_CC_Classification_Bar_Plot_clusterProfiler.png")

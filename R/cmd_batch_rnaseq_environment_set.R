@@ -450,14 +450,11 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
            recursive = TRUE)
   }
 
-  utils::unzip(zipfile = paste0(path.prefix, "RNASeq_bin/Download/",
-                                os.file.name.zip),
-               exdir = paste0(path.prefix,
-                              "RNASeq_bin/Unpacked/"),
-               overwrite = TRUE)
-
-
-
+  # utils::unzip(zipfile = paste0(path.prefix, "RNASeq_bin/Download/",
+  #                               os.file.name.zip),
+  #              exdir = paste0(path.prefix,
+  #                             "RNASeq_bin/Unpacked/"),
+  #              overwrite = TRUE)
   main.command <- "unzip"
   command.result <- system2(command = main.command,
                             args = paste0(path.prefix, "RNASeq_bin/Download/",
@@ -468,19 +465,26 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
     stop(paste0("'", main.command, "' ERROR"))
   }
   message("hisat2 binaries\n\n")
-  current.path <- getwd()
-  setwd(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name, "/"))
   message("\n************** Moving Hisat2 Binary ************")
-  main.command <- "cp"
-  command.result <- system2(command = main.command,
-                            args = c("hisat2*", "*.py",
-                                     paste0(path.prefix, "RNASeq_bin/")),
-                            stderr = FALSE)
+
+  file.target.hisat <- list.files(path = paste0(path.prefix,
+                                                "RNASeq_bin/Unpacked/",
+                                                os.file.name),
+                                  pattern = "hisat2*",
+                                  full.names = TRUE)
+  file.target.py <- list.files(path = paste0(path.prefix,
+                                             "RNASeq_bin/Unpacked/",
+                                             os.file.name),
+                               pattern = "*.py",
+                               full.names = TRUE)
+  file.target <- unique(c(file.target.hisat, file.target.py))
+  file.move <- file.copy(from = file.target,
+                         to = paste0(path.prefix, "RNASeq_bin/"),
+                         overwrite = TRUE)
   if (command.result != 0 ) {
-    message("(\u2718) '", main.command, "' is failed !!")
-    stop(paste0("'", main.command, "' ERROR"))
+    message("(\u2718) 'file.copy()' is failed !!")
+    stop(paste0("'file.copy()' ERROR"))
   }
-  on.exit(setwd(current.path))
   message("\n'", path.prefix, "RNASeq_bin/Download/",
           os.file.name.zip, "' has been installed.\n")
   message("Hisat2 has been unpacked. ('", path.prefix,
