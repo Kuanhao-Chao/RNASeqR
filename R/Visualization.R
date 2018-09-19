@@ -774,10 +774,7 @@ DEHeatmap <- function(which.analysis,
                                            which.analysis,
                                            "/images/DE/",
                                            "Heatmap_Plot_pheatmap.png"),
-                         units="in", fontsize = 7)
-
-
-
+                         fontsize = 7)
       message(paste0("(\u2714) : '", path.prefix, "RNASeq_results/",
                      which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"),
               "' has been created. \n\n")

@@ -5,10 +5,11 @@
 \title{RNASeqDifferentialAnalysis}
 \usage{
 RNASeqDifferentialAnalysis(path.prefix, genome.name, sample.pattern,
-  independent.variable, case.group, control.group, ballgown.pval = 0.05,
-  ballgown.log2FC = 1, TPM.pval = 0.05, TPM.log2FC = 1,
-  DESeq2.pval = 0.1, DESeq2.log2FC = 1, edgeR.pval = 0.05,
-  edgeR.log2FC = 1)
+  independent.variable, case.group, control.group, ballgown.run = TRUE,
+  ballgown.pval = 0.05, ballgown.log2FC = 1, TPM.run = TRUE,
+  TPM.pval = 0.05, TPM.log2FC = 1, DESeq2.run = TRUE,
+  DESeq2.pval = 0.1, DESeq2.log2FC = 1, edgeR.run = TRUE,
+  edgeR.pval = 0.05, edgeR.log2FC = 1)
 }
 \arguments{
 \item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/',
@@ -28,11 +29,17 @@ experiment design of two-group RNA-Seq workflow}
 
 \item{control.group}{group name of the control group}
 
+\item{ballgown.run}{Default \code{TRUE}. Logical value whether to run
+ballgown differential analysis.}
+
 \item{ballgown.pval}{Default \code{0.05}. Set the threshold of ballgown
 p-value to filter out differential expressed gene.}
 
 \item{ballgown.log2FC}{Default \code{1}. Set the threshold of ballgown
 log2 fold change to filter out differential expressed gene.}
+
+\item{TPM.run}{Default \code{TRUE}. Logical value whether to run
+TPM &  student t-test differential analysis.}
 
 \item{TPM.pval}{Default \code{0.05}. Set the threshold of TPM & student
 t-test p-value to filter out differential expressed gene.}
@@ -40,14 +47,20 @@ t-test p-value to filter out differential expressed gene.}
 \item{TPM.log2FC}{Default \code{1}. Set the threshold of TPM & student
 t-test log2 fold change to filter out differential expressed gene.}
 
-\item{DESeq2.pval}{Default \code{0.05}. Set the threshold of DESeq2
-p-value to filter out differential expressed gene.}
+\item{DESeq2.run}{Default \code{TRUE}. Logical value whether to run
+DESeq2 differential analysis.}
 
-\item{DESeq2.log2FC}{Default \code{1}. Set the threshold of DESeq2
-log2 fold change to filter out differential expressed gene.}
+\item{DESeq2.pval}{Default \code{0.05}. Set the threshold of DESeq2 p-value
+to filter out differential expressed gene.}
 
-\item{edgeR.pval}{Default \code{0.05}. Set the threshold of edgeR
-p-value to filter out differential expressed gene.}
+\item{DESeq2.log2FC}{Default \code{1}. Set the threshold of DESeq2 log2
+fold change to filter out differential expressed gene.}
+
+\item{edgeR.run}{Default \code{TRUE}. Logical value whether to run
+edgeR differential analysis.}
+
+\item{edgeR.pval}{Default \code{0.05}. Set the threshold of edgeR p-value
+to filter out differential expressed gene.}
 
 \item{edgeR.log2FC}{Default \code{1}. Set the threshold of edgeR log2
 fold change to filter out differential expressed gene.}

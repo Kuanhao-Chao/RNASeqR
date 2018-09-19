@@ -5,11 +5,11 @@
 \title{RNASeqReadProcess_CMD}
 \usage{
 RNASeqReadProcess_CMD(RNASeqWorkFlowParam, num.parallel.threads = 1,
-  run = TRUE, check.s4.print = TRUE, Hisat2.Index.run = TRUE,
-  Hisat2.Alignment.run = TRUE, Rsamtools.Bam.run = TRUE,
-  StringTie.Assemble.run = TRUE, StringTie.Merge.Trans.run = TRUE,
-  Gffcompare.Ref.Sample.run = TRUE, StringTie.Ballgown.run = TRUE,
-  PreDECountTable.run = TRUE)
+  Rsamtools.maxMemory = 512, run = TRUE, check.s4.print = TRUE,
+  Hisat2.Index.run = TRUE, Hisat2.Alignment.run = TRUE,
+  Rsamtools.Bam.run = TRUE, StringTie.Assemble.run = TRUE,
+  StringTie.Merge.Trans.run = TRUE, Gffcompare.Ref.Sample.run = TRUE,
+  StringTie.Ballgown.run = TRUE, PreDECountTable.run = TRUE)
 }
 \arguments{
 \item{RNASeqWorkFlowParam}{S4 object instance of experiment-related
@@ -17,6 +17,10 @@ parameters}
 
 \item{num.parallel.threads}{Specify the number of processing threads (CPUs)
 to use for transcript assembly. The default is 1.}
+
+\item{Rsamtools.maxMemory}{A numerical(1) indicating the maximal amount of
+memory (in MB) that the function is allowed to use. More details please
+refer to 'Rsamtools' package}
 
 \item{run}{Default value is \code{TRUE}. If \code{TRUE},
 'Rscript/Environment_Set.R' will be created and executed.

@@ -34,18 +34,26 @@
 #'
 #' @param RNASeqWorkFlowParam S4 object instance of
 #'   experiment-related parameters
+#' @param ballgown.run Default \code{TRUE}. Logical value whether to run
+#'   ballgown differential analysis.
 #' @param ballgown.pval Default \code{0.05}. Set the threshold of ballgown
 #'   p-value to filter out differential expressed gene.
 #' @param ballgown.log2FC Default \code{1}. Set the threshold of ballgown
 #'   log2 fold change to filter out differential expressed gene.
+#' @param TPM.run Default \code{TRUE}. Logical value whether to run
+#'   TPM &  student t-test differential analysis.
 #' @param TPM.pval Default \code{0.05}. Set the threshold of TPM & student
 #'   t-test p-value to filter out differential expressed gene.
 #' @param TPM.log2FC Default \code{1}. Set the threshold of TPM & student
 #'   t-test log2 fold change to filter out differential expressed gene.
+#' @param DESeq2.run Default \code{TRUE}. Logical value whether to run
+#'   DESeq2 differential analysis.
 #' @param DESeq2.pval Default \code{0.05}. Set the threshold of DESeq2 p-value
 #'   to filter out differential expressed gene.
 #' @param DESeq2.log2FC Default \code{1}. Set the threshold of DESeq2 log2
 #'   fold change to filter out differential expressed gene.
+#' @param edgeR.run Default \code{TRUE}. Logical value whether to run
+#'   edgeR differential analysis.
 #' @param edgeR.pval Default \code{0.05}. Set the threshold of edgeR p-value
 #'   to filter out differential expressed gene.
 #' @param edgeR.log2FC Default \code{1}. Set the threshold of edgeR log2
@@ -68,12 +76,16 @@
 #' \dontrun{
 #' RNASeqDifferentialAnalysis_CMD(RNASeqWorkFlowParam = yeast)}
 RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
+                                           ballgown.run    = TRUE,
                                            ballgown.pval   = 0.05,
                                            ballgown.log2FC = 1,
+                                           TPM.run         = TRUE,
                                            TPM.pval        = 0.05,
                                            TPM.log2FC      = 1,
+                                           DESeq2.run      = TRUE,
                                            DESeq2.pval     = 0.1,
                                            DESeq2.log2FC   = 1,
+                                           edgeR.run       = TRUE,
                                            edgeR.pval      = 0.05,
                                            edgeR.log2FC    = 1,
                                            run             = TRUE,
@@ -95,8 +107,19 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
                    "', independent.variable = '", independent.variable,
                    "', case.group = '", case.group,
                    "', control.group = '", control.group,
-                   "', ballgown.log2FC = ", ballgown.log2FC,
-                   ", ballgown.pval = ", ballgown.pval, ")")
+                   "', ballgown.run = ", ballgown.run,
+                   ", ballgown.pval = ", ballgown.pval,
+                   ", ballgown.log2FC = ", ballgown.log2FC,
+                   ", TPM.run = ", TPM.run,
+                   ", TPM.pval = ", TPM.pval,
+                   ", TPM.log2FC = ", TPM.log2FC,
+                   ", DESeq2.run = ", DESeq2.run,
+                   ", DESeq2.pval = ", DESeq2.pval,
+                   ", DESeq2.log2FC = ", DESeq2.log2FC,
+                   ", edgeR.run = ", edgeR.run,
+                   ", edgeR.pval = ", edgeR.pval,
+                   ", edgeR.log2FC = ", edgeR.log2FC,
+                   ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   message("\u2605 '", path.prefix,
@@ -160,20 +183,28 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
 #'   experiment design of two-group RNA-Seq workflow
 #' @param case.group group name of the case group
 #' @param control.group group name of the control group
+#' @param ballgown.run Default \code{TRUE}. Logical value whether to run
+#'   ballgown differential analysis.
 #' @param ballgown.pval Default \code{0.05}. Set the threshold of ballgown
 #'   p-value to filter out differential expressed gene.
 #' @param ballgown.log2FC Default \code{1}. Set the threshold of ballgown
 #'   log2 fold change to filter out differential expressed gene.
+#' @param TPM.run Default \code{TRUE}. Logical value whether to run
+#'   TPM &  student t-test differential analysis.
 #' @param TPM.pval Default \code{0.05}. Set the threshold of TPM & student
 #'   t-test p-value to filter out differential expressed gene.
 #' @param TPM.log2FC Default \code{1}. Set the threshold of TPM & student
 #'   t-test log2 fold change to filter out differential expressed gene.
-#' @param DESeq2.pval Default \code{0.05}. Set the threshold of DESeq2
-#'   p-value to filter out differential expressed gene.
-#' @param DESeq2.log2FC Default \code{1}. Set the threshold of DESeq2
-#'   log2 fold change to filter out differential expressed gene.
-#' @param edgeR.pval Default \code{0.05}. Set the threshold of edgeR
-#'   p-value to filter out differential expressed gene.
+#' @param DESeq2.run Default \code{TRUE}. Logical value whether to run
+#'   DESeq2 differential analysis.
+#' @param DESeq2.pval Default \code{0.05}. Set the threshold of DESeq2 p-value
+#'   to filter out differential expressed gene.
+#' @param DESeq2.log2FC Default \code{1}. Set the threshold of DESeq2 log2
+#'   fold change to filter out differential expressed gene.
+#' @param edgeR.run Default \code{TRUE}. Logical value whether to run
+#'   edgeR differential analysis.
+#' @param edgeR.pval Default \code{0.05}. Set the threshold of edgeR p-value
+#'   to filter out differential expressed gene.
 #' @param edgeR.log2FC Default \code{1}. Set the threshold of edgeR log2
 #'   fold change to filter out differential expressed gene.
 #'
@@ -194,14 +225,18 @@ RNASeqDifferentialAnalysis <- function(path.prefix,
                                        sample.pattern,
                                        independent.variable,
                                        case.group, control.group,
-                                       ballgown.pval = 0.05,
+                                       ballgown.run    = TRUE,
+                                       ballgown.pval   = 0.05,
                                        ballgown.log2FC = 1,
-                                       TPM.pval = 0.05,
-                                       TPM.log2FC = 1,
-                                       DESeq2.pval = 0.1,
-                                       DESeq2.log2FC = 1,
-                                       edgeR.pval = 0.05,
-                                       edgeR.log2FC = 1) {
+                                       TPM.run         = TRUE,
+                                       TPM.pval        = 0.05,
+                                       TPM.log2FC      = 1,
+                                       DESeq2.run      = TRUE,
+                                       DESeq2.pval     = 0.1,
+                                       DESeq2.log2FC   = 1,
+                                       edgeR.run       = TRUE,
+                                       edgeR.pval      = 0.05,
+                                       edgeR.log2FC    = 1) {
   CheckOperatingSystem(FALSE)
   PreRNASeqDifferentialAnalysis(path.prefix = path.prefix,
                                 sample.pattern = sample.pattern)
@@ -211,36 +246,44 @@ RNASeqDifferentialAnalysis <- function(path.prefix,
   message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  ",
           "Start 'ballgown', 'DESeq2' 'edgeR' analyses  ",
           "\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
-  BallgownAnalysis(path.prefix,
-                   genome.name,
-                   sample.pattern,
-                   independent.variable,
-                   case.group,
-                   control.group,
-                   ballgown.pval,
-                   ballgown.log2FC)
-  TPMNormalizationAnalysis(path.prefix,
-                           genome.name,
-                           sample.pattern,
-                           independent.variable,
-                           case.group,
-                           control.group,
-                           TPM.pval,
-                           TPM.log2FC)
+  if (ballgown.run) {
+    BallgownAnalysis(path.prefix,
+                     genome.name,
+                     sample.pattern,
+                     independent.variable,
+                     case.group,
+                     control.group,
+                     ballgown.pval,
+                     ballgown.log2FC)
+  }
+  if (TPM.run) {
+    TPMNormalizationAnalysis(path.prefix,
+                             genome.name,
+                             sample.pattern,
+                             independent.variable,
+                             case.group,
+                             control.group,
+                             TPM.pval,
+                             TPM.log2FC)
+  }
   raw.read.avail <- RawReadCountAvailability(path.prefix)
   if (raw.read.avail) {
-    DESeq2RawCountAnalysis(path.prefix,
-                           independent.variable,
-                           case.group,
-                           control.group,
-                           DESeq2.pval,
-                           DESeq2.log2FC)
-    edgeRRawCountAnalysis(path.prefix,
-                          independent.variable,
-                          case.group,
-                          control.group,
-                          edgeR.pval,
-                          edgeR.log2FC)
+    if (DESeq2.run) {
+      DESeq2RawCountAnalysis(path.prefix,
+                             independent.variable,
+                             case.group,
+                             control.group,
+                             DESeq2.pval,
+                             DESeq2.log2FC)
+    }
+    if (edgeR.run) {
+      edgeRRawCountAnalysis(path.prefix,
+                            independent.variable,
+                            case.group,
+                            control.group,
+                            edgeR.pval,
+                            edgeR.log2FC)
+    }
   }
   PostRNASeqDifferentialAnalysis(path.prefix = path.prefix,
                                  sample.pattern = sample.pattern)

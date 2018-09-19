@@ -23,6 +23,9 @@
 #'   parameters
 #' @param num.parallel.threads Specify the number of processing threads (CPUs)
 #'   to use for transcript assembly. The default is 1.
+#' @param Rsamtools.maxMemory A numerical(1) indicating the maximal amount of
+#'   memory (in MB) that the function is allowed to use. More details please
+#'   refer to 'Rsamtools' package
 #' @param run Default value is \code{TRUE}. If \code{TRUE},
 #'   'Rscript/Environment_Set.R' will be created and executed.
 #'   The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
@@ -70,6 +73,7 @@
 #'                       num.parallel.threads = 10)}
 RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
                                   num.parallel.threads      = 1,
+                                  Rsamtools.maxMemory       = 512,
                                   run                       = TRUE,
                                   check.s4.print            = TRUE,
                                   Hisat2.Index.run          = TRUE,
@@ -102,6 +106,7 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
                    ', python.2to3 = ', python.2to3,
                    ', num.parallel.threads = ', num.parallel.threads,
                    ', indices.optional = ', indices.optional,
+                   ', Rsamtools.maxMemory = ', Rsamtools.maxMemory,
                    ', Hisat2.Index.run = ', Hisat2.Index.run,
                    ', Hisat2.Alignment.run = ', Hisat2.Alignment.run,
                    ', Rsamtools.Bam.run = ', Rsamtools.Bam.run,
@@ -166,6 +171,9 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
 #'   to use for transcript assembly. The default is 1.
 #' @param indices.optional logical value whether 'indices/' is
 #'   exit in 'input_files/'
+#' @param Rsamtools.maxMemory A numerical(1) indicating the maximal amount of
+#'   memory (in MB) that the function is allowed to use. More details please
+#'   refer to 'Rsamtools' package
 #' @param Hisat2.Index.run Whether to run 'HISAT2 index' step in this function
 #'   step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2 index' step.
@@ -216,6 +224,7 @@ RNASeqReadProcess <- function(path.prefix,
                               python.2to3,
                               num.parallel.threads      = 1,
                               indices.optional,
+                              Rsamtools.maxMemory       = 512,
                               Hisat2.Index.run          = TRUE,
                               Hisat2.Alignment.run      = TRUE,
                               Rsamtools.Bam.run         = TRUE,
@@ -245,7 +254,8 @@ RNASeqReadProcess <- function(path.prefix,
     RSamtoolsToBam(path.prefix,
                    genome.name,
                    sample.pattern,
-                   num.parallel.threads)
+                   num.parallel.threads,
+                   Rsamtools.maxMemory)
   }
   if (StringTie.Assemble.run) {
     StringTieAssemble(path.prefix,

@@ -294,7 +294,8 @@ Hisat2ReportAssemble <- function(path.prefix,
 RSamtoolsToBam <- function(path.prefix,
                            genome.name,
                            sample.pattern,
-                           num.parallel.threads = 8) {
+                           num.parallel.threads = 8,
+                           Rsamtools.maxMemory){
   check.results <- ProgressGenesFiles(path.prefix,
                                       genome.name,
                                       sample.pattern,
@@ -320,7 +321,8 @@ RSamtoolsToBam <- function(path.prefix,
                                   destination = paste0(path.prefix,
                                                        "gene_data/raw_bam/",
                                                        sample.name[i]),
-                                  overwrite = TRUE)
+                                  overwrite = TRUE,
+                                  maxMemory = Rsamtools.maxMemory)
       command.list <- c(command.list, ba.file)
     }
     message("\n")
@@ -559,25 +561,21 @@ PreDECountTable <- function(path.prefix,
     dir.create(file.path(paste0(path.prefix, 'gene_data/reads_count_matrix/')),
                showWarnings = FALSE)
   }
+  url <- "https://ccb.jhu.edu/software/stringtie/dl/prepDE.py"
   command.list <- c()
-  command.list <- c(command.list, "* Installing prepDE.py : ")
+  command.list <- c(command.list, "* Installing 'prepDE.py' : ")
   message(paste0(path.prefix, "gene_data/reads_count_matrix\n"))
   current.path <- getwd()
   setwd(paste0(path.prefix, "gene_data/reads_count_matrix/"))
-  whole.command <- paste('https://ccb.jhu.edu/software/stringtie/dl/prepDE.py',
-                         '--output',
-                         paste0(path.prefix,
-                                "gene_data/reads_count_matrix/prepDE.py"))
-  main.command <- "curl"
-  message(c("Input command :", paste(main.command, whole.command), "\n"))
+  file.download <- getURL(url, download.file,
+                          paste0(path.prefix,
+                                 "gene_data/reads_count_matrix/prepDE.py"))
+
+  message("Using R function : 'download.file()' is called. \n")
   command.list <- c(command.list,
-                    paste("    command :", main.command, whole.command))
+                    "    Using R function : 'download.file()' is called.")
   command.list <- c(command.list, "\n")
-  command.result <- system2(command = main.command,
-                            args = whole.command,
-                            stdout = "",
-                            wait = TRUE)
-  if (command.result != 0 ) {
+  if (file.download != 0 ) {
     message(paste0("(\u2718) '", main.command, "' is failed !!"))
     stop(paste0("'", main.command, "' ERROR"))
   }
@@ -664,11 +662,11 @@ PreDECountTable <- function(path.prefix,
     on.exit(setwd(current.path))
     return(TRUE)
   } else {
-    ## Fix !!
     on.exit(setwd(current.path))
     message(paste0("(\u26A0) Python is not available on your device!! ",
                    "Please install python to run ",
-                   "python script 'prepDE.py'\n\n'"))
+                   "python script 'prepDE.py'. Raw reads count table creation
+                   is skipped!!\n\n'"))
     return(TRUE)
   }
 }

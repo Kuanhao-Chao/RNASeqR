@@ -153,13 +153,24 @@ RNASeqGoKegg <- function(path.prefix,
   CheckOperatingSystem(FALSE)
   PreRNASeqGoKegg()
   raw.read.avail <- RawReadCountAvailability(path.prefix)
+  ballgown.bool <- dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/"))
+  TPM.bool <- dir.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/"))
+  DESeq2.bool <- dir.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/"))
+  edgeR.bool <- dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/"))
+  which.analyses <- c()
+  if (ballgown.bool) {
+    which.analyses <- c(which.analyses, "ballgown_analysis")
+  }
+  if (TPM.bool) {
+    which.analyses <- c(which.analyses, "TPM_analysis")
+  }
   if (raw.read.avail) {
-    which.analyses <- c("ballgown_analysis",
-                        "TPM_analysis",
-                        "DESeq2_analysis",
-                        "edgeR_analysis")
-  } else {
-    which.analyses <- c("ballgown_analysis", "TPM_analysis")
+    if (DESeq2.bool) {
+      which.analyses <- c(which.analyses, "DESeq2_analysis")
+    }
+    if (edgeR.bool) {
+      which.analyses <- c(which.analyses, "edgeR_analysis")
+    }
   }
   message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  ",
           "Start 'Gene Ontology', 'Kyoto Encyclopedia of Genes and Genomes' ",

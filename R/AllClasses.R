@@ -253,7 +253,7 @@ CheckOperatingSystem <- function(print = TRUE){
 CheckPython <- function() {
   message(c("************** Checking python version ************\n"))
   # have to check python !!!
-  if (reticulate::py_available(initialize = "TRUE") ){
+  if (reticulate::py_available(initialize = "TRUE")){
     message("(\u2714) : Python is available on your device!\n")
     python.version <- as.numeric(reticulate::py_config()$version)
     message("       \u25CF Python version : ",

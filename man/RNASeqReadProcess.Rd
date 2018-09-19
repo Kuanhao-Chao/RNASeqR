@@ -7,10 +7,11 @@
 RNASeqReadProcess(path.prefix, input.path.prefix, genome.name,
   sample.pattern, python.variable.answer, python.variable.version,
   python.2to3, num.parallel.threads = 1, indices.optional,
-  Hisat2.Index.run = TRUE, Hisat2.Alignment.run = TRUE,
-  Rsamtools.Bam.run = TRUE, StringTie.Assemble.run = TRUE,
-  StringTie.Merge.Trans.run = TRUE, Gffcompare.Ref.Sample.run = TRUE,
-  StringTie.Ballgown.run = TRUE, PreDECountTable.run = TRUE)
+  Rsamtools.maxMemory = 512, Hisat2.Index.run = TRUE,
+  Hisat2.Alignment.run = TRUE, Rsamtools.Bam.run = TRUE,
+  StringTie.Assemble.run = TRUE, StringTie.Merge.Trans.run = TRUE,
+  Gffcompare.Ref.Sample.run = TRUE, StringTie.Ballgown.run = TRUE,
+  PreDECountTable.run = TRUE)
 }
 \arguments{
 \item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/',
@@ -37,6 +38,10 @@ to use for transcript assembly. The default is 1.}
 
 \item{indices.optional}{logical value whether 'indices/' is
 exit in 'input_files/'}
+
+\item{Rsamtools.maxMemory}{A numerical(1) indicating the maximal amount of
+memory (in MB) that the function is allowed to use. More details please
+refer to 'Rsamtools' package}
 
 \item{Hisat2.Index.run}{Whether to run 'HISAT2 index' step in this function
 step. Default value is \code{TRUE}.

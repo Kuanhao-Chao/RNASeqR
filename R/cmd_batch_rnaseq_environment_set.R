@@ -437,9 +437,12 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
   }
   message("************** Installing Hisat2 (",
           os.file.name.zip, ") ************\n")
-  download.file(url, paste0(path.prefix,
-                            "RNASeq_bin/Download/",
-                            os.file.name.zip))
+  file.download <- getURL(url, download.file, paste0(path.prefix,
+                                                     "RNASeq_bin/Download/",
+                                                     os.file.name.zip))
+  if (file.download == 0) {
+    message("HISAT2 binaries were downloaded successfully!!\n")
+  }
   message("\n************** Unpacking Hisat2 (",
           os.file.name.zip, ") ************\n")
   if (dir.exists(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))) {
@@ -497,8 +500,12 @@ InstallStringTieBinary <- function(path.prefix, os.type){
   }
   message("************** Installing stringtie (",
           os.file.name.zip, ") ************\n")
-  download.file(url,
-                paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip))
+  file.download <- getURL(url, download.file, paste0(path.prefix,
+                                                     "RNASeq_bin/Download/",
+                                                     os.file.name.zip))
+  if (file.download == 0) {
+    message("StringTie binaries were downloaded successfully!!\n")
+  }
   message("\n************** Unpacking stringtie (",
           os.file.name.zip, ") ************\n")
   if (dir.exists(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))) {
@@ -562,14 +569,24 @@ InstallGffcompareBinary <- function(path.prefix, os.type){
   }
   message("************** Installing gffcompare (",
           os.file.name.zip, ") ************\n")
-  download.file(url,
-                paste0(path.prefix, "RNASeq_bin/Download/", os.file.name.zip))
+  file.download <- getURL(url, download.file, paste0(path.prefix,
+                                                     "RNASeq_bin/Download/",
+                                                     os.file.name.zip))
+  if (file.download == 0) {
+    message("Gffcompare binaries were downloaded successfully!!\n")
+  }
   message("\n************** Unpacking gffcompare (",
           os.file.name.zip, ") ************\n")
   if (dir.exists(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))) {
     unlink(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name),
            recursive = TRUE)
   }
+
+  utils::untar(tarfile = "/tmp/yeast_example/RNASeq_bin/Download/gffcompare-0.10.4.Linux_x86_64.tar.gz",
+               exdir = paste0(path.prefix,
+                              "RNASeq_bin/Unpacked/"),
+               compressed = "gzip")
+
   main.command <- "tar"
   command.result <- system2(command = main.command,
                             args = c("xvzf",
