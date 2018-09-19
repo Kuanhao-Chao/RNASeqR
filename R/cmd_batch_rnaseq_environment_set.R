@@ -449,6 +449,15 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
     unlink(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name),
            recursive = TRUE)
   }
+
+  utils::unzip(zipfile = paste0(path.prefix, "RNASeq_bin/Download/",
+                                os.file.name.zip),
+               exdir = paste0(path.prefix,
+                              "RNASeq_bin/Unpacked/"),
+               overwrite = TRUE)
+
+
+
   main.command <- "unzip"
   command.result <- system2(command = main.command,
                             args = paste0(path.prefix, "RNASeq_bin/Download/",
@@ -508,36 +517,30 @@ InstallStringTieBinary <- function(path.prefix, os.type){
   }
   message("\n************** Unpacking stringtie (",
           os.file.name.zip, ") ************\n")
+  # If file directory exists!! Remove it first!!
   if (dir.exists(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))) {
     unlink(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name),
            recursive = TRUE)
   }
-  main.command <- "tar"
-  command.result <- system2(command = main.command,
-                            args = c("xvzf",
-                                     paste0(path.prefix,
-                                            "RNASeq_bin/Download/",
-                                            os.file.name.zip),
-                                     "-C",
-                                     paste0(path.prefix,
-                                            "RNASeq_bin/Unpacked/")))
-  if (command.result != 0 ) {
-    message("(\u2718) '", main.command, "' is failed !!")
-    stop(paste0("'", main.command, "' ERROR"))
+  file.unpacked <- utils::untar(tarfile = paste0(path.prefix,
+                                                 "RNASeq_bin/Download/",
+                                                 os.file.name.zip),
+                                exdir = paste0(path.prefix,
+                                               "RNASeq_bin/Unpacked/"),
+                                compressed = "gzip")
+  if (file.unpacked != 0 ) {
+    message("(\u2718) 'utils::untar()' is failed !!")
+    stop(paste0("'utils::untar()' ERROR"))
   }
-  current.path <- getwd()
-  setwd(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))
   message("\n************** Moving stringtie Binary ************")
-  main.command <- "cp"
-  command.result <- system2(command = main.command,
-                            args = c("stringtie",
-                                     paste0(path.prefix, "RNASeq_bin/")),
-                            stderr = FALSE)
-  if (command.result != 0 ) {
-    message("(\u2718) '", main.command, "' is failed !!")
-    stop(paste0("'", main.command, "' ERROR"))
+  file.move <- file.copy(from = paste0(path.prefix, "RNASeq_bin/Unpacked/",
+                                       os.file.name, "/stringtie"),
+                         to = paste0(path.prefix, "RNASeq_bin/"),
+                         overwrite = TRUE)
+  if (!file.move) {
+    message("(\u2718) 'file.copy()' is failed !!")
+    stop(paste0("'file.copy()' ERROR"))
   }
-  on.exit(setwd(current.path))
   message("\n'", path.prefix,
           "RNASeq_bin/Download/",
           os.file.name.zip, "' has been installed.\n")
@@ -550,7 +553,6 @@ InstallStringTieBinary <- function(path.prefix, os.type){
 # Install Gffcompare binary
 InstallGffcompareBinary <- function(path.prefix, os.type){
   os <- os.type
-  current.path <- getwd()
   url <- "http://ccb.jhu.edu/software/stringtie/dl/"
   if (os == "linux"){
     os.file.name.zip <- "gffcompare-0.10.4.Linux_x86_64.tar.gz"
@@ -577,42 +579,30 @@ InstallGffcompareBinary <- function(path.prefix, os.type){
   }
   message("\n************** Unpacking gffcompare (",
           os.file.name.zip, ") ************\n")
+  # If file directory exists!! Remove it first!!
   if (dir.exists(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))) {
     unlink(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name),
            recursive = TRUE)
   }
-
-  utils::untar(tarfile = "/tmp/yeast_example/RNASeq_bin/Download/gffcompare-0.10.4.Linux_x86_64.tar.gz",
-               exdir = paste0(path.prefix,
-                              "RNASeq_bin/Unpacked/"),
-               compressed = "gzip")
-
-  main.command <- "tar"
-  command.result <- system2(command = main.command,
-                            args = c("xvzf",
-                                     paste0(path.prefix,
-                                            "RNASeq_bin/Download/",
-                                            os.file.name.zip),
-                                     "-C",
-                                     paste0(path.prefix,
-                                            "RNASeq_bin/Unpacked/")))
-  if (command.result != 0 ) {
-    message("(\u2718) '", main.command, "' is failed !!")
-    stop(paste0("'", main.command, "' ERROR"))
+  file.unpacked <- utils::untar(tarfile = paste0(path.prefix,
+                                                 "RNASeq_bin/Download/",
+                                                 os.file.name.zip),
+                                exdir = paste0(path.prefix,
+                                               "RNASeq_bin/Unpacked/"),
+                                compressed = "gzip")
+  if (file.unpacked != 0 ) {
+    message("(\u2718) 'utils::untar()' is failed !!")
+    stop(paste0("'utils::untar()' ERROR"))
   }
-  current.path <- getwd()
-  setwd(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))
   message("\n************** Moving gffcompare Binary ************")
-  main.command <- "cp"
-  command.result <- system2(command = main.command,
-                            args = c("gffcompare",
-                                     paste0(path.prefix, "RNASeq_bin/")),
-                            stderr = FALSE)
-  if (command.result != 0 ) {
-    message("(\u2718) '", main.command, "' is failed !!")
-    stop(paste0("'", main.command, "' ERROR"))
+  file.move <- file.copy(from = paste0(path.prefix, "RNASeq_bin/Unpacked/",
+                                       os.file.name, "/gffcompare"),
+                         to = paste0(path.prefix, "RNASeq_bin/"),
+                         overwrite = TRUE)
+  if (!file.move) {
+    message("(\u2718) 'file.copy()' is failed !!")
+    stop(paste0("'file.copy()' ERROR"))
   }
-  on.exit(setwd(current.path))
   message("\n'", path.prefix, "RNASeq_bin/Download/",
           os.file.name.zip, "' has been installed.\n")
   message("Gffcompare has been unpacked. ('", path.prefix,
