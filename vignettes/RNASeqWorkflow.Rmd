@@ -1,5 +1,5 @@
 ---
-title: "RNASeqWorkflow : RNA-Seq differential expression analysis based on one independent variable analysis(??????)"
+title: "RNASeqWorkflow : RNA-Seq differential expression analysis based on one independent variable analysis"
 author: "Author: Kuan-Hao Chao (ntueeb05howard@gmail.com)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`"
 output: 
@@ -37,7 +37,7 @@ RNA-Seq is a revolutionary approach to investigate and discover the transcriptom
 
 RNASeqWorkflow is an user-friendly R-based tool for running RNA-Seq analysis pipeline including quality assessment, reads alignment and quantification, differential expression analysis, and functional analysis. The main features of this package are automated workflow, comprehensive report with data visualization and extendable file structure. In this package, new tuxedo pipeline published in Nature Protocols in 2016 can be fully implemented under R environment with extra functions such as reads quality assessment, trimming and functional analysis.
 
-The following are main tools that are used in this package: '[HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml)' for reads alignment(Kim et al. 2015); '[StringTie](https://ccb.jhu.edu/software/stringtie/)' for alignments assembly and transcripts quantification(Pertea et al. 2015); '[Rsamtools](https://bioconductor.org/packages/release/bioc/html/Rsamtools.html)' for converting `SAM` files to `BAM` files(Morgan et al. 2018); '[Gffcompare](https://ccb.jhu.edu/software/stringtie/gffcompare.shtml)' for comparing merged `GTF` file with reference `GTF` file; '[systemPipeR](https://bioconductor.org/packages/release/bioc/html/systemPipeR.html)' package for quality assessment(Backman et al. 2016); '[ShortRead](https://bioconductor.org/packages/release/bioc/html/ShortRead.html)' package for quality trimming(Morgan et al. 2009); '[ballgown](https://bioconductor.org/packages/release/bioc/html/ballgown.html)' package(Fu et al. 2018), 'TPM & Student's t-test', '[DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)' package(Love et al. 2014) and '[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)' package(Robinson et al. 2010;McCarthy et al. 2012) for finding potential differential expressed genes; '[clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)' package(Yu et al. 2012) for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis.
+The following are main tools that are used in this package: '[HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml)' for reads alignment(Kim et al. 2015); '[StringTie](https://ccb.jhu.edu/software/stringtie/)' for alignments assembly and transcripts quantification(Pertea et al. 2015); '[Rsamtools](https://bioconductor.org/packages/release/bioc/html/Rsamtools.html)' for converting `SAM` files to `BAM` files(Morgan et al. 2018); '[Gffcompare](https://ccb.jhu.edu/software/stringtie/gffcompare.shtml)' for comparing merged `GTF` file with reference `GTF` file; '[systemPipeR](https://bioconductor.org/packages/release/bioc/html/systemPipeR.html)' package for quality assessment(Backman et al. 2016); '[ShortRead](https://bioconductor.org/packages/release/bioc/html/ShortRead.html)' package for quality trimming(Morgan et al. 2009); '[ballgown](https://bioconductor.org/packages/release/bioc/html/ballgown.html)' package(Fu et al. 2018), '[DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)' package(Love et al. 2014) and '[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)' package(Robinson et al. 2010;McCarthy et al. 2012) for finding potential differential expressed genes; '[clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)' package(Yu et al. 2012) for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis.
 
 The central concept behind this package is that **each step involved in RNA-Seq data analysis is a function call in R**. At the beginning, users will create a `RNASeqWorkFlowParam` S4 object by running `RNASeqWorkflowParam()` constructor function for all variable checking. After the creation of `RNASeqWorkFlowParam`, it will be used as input of the following analysis function.
 
@@ -55,11 +55,11 @@ The central concept behind this package is that **each step involved in RNA-Seq 
 
 Functions with `CMD` suffix create an R script and run `nohup R CMD BATCH script.R` in background. Functions with no `CMD` suffix process in R shell. After running the above functions, the whole RNA-Seq analysis is done and generated files in each step will be stored in organized file directory. `RNASeqWorkflow` package makes two-group RNA-Seq analysis **more efficient** and **easier** for users.
 
-Functions with `CMD` suffix will create an R script and  run `nohup R CMD BATCH script.R` in background while functions with no `CMD` suffix will be processed in R  shell. Files generated in each step will be kept in proper directory. Once the workflow is completed, a comprehensive RNA-Seq analysis is done. Additionally, this package is mainly designed for a two-group comparison setting, i.e.(??????) differential expression profile between two conditions.
+Functions with `CMD` suffix will create an R script and  run `nohup R CMD BATCH script.R` in background while functions with no `CMD` suffix will be processed in R  shell. Files generated in each step will be kept in proper directory. Once the workflow is completed, a comprehensive RNA-Seq analysis is done. Additionally, this package is mainly designed for a two-group comparison setting, i.e. differential expression profile between two conditions.
 
 # Sample Definition
 
-Sample data used in this vignette can be downloaded from `RNASeqWorkflowData` experiment package. It was originated from [NCBI's Sequence Read Archive](http://www.ncbi.nlm.nih.gov/sra) for the entries SRR3396381, SRR3396382, SRR3396384, SRR3396385, SRR3396386, and SRR3396387. These samples were from Saccharomyces cerevisiae. Suitable reference genome and gene annotation files for this species can be further downloaded from either iGenomes or Ensembl R64-1-1.(??????????????????) To create mini data for demonstration purpose, reads aligned to the region from 0 to 100000 at chromosome XV were extracted.
+Sample data used in this vignette can be downloaded from `RNASeqWorkflowData` experiment package. It was originated from [NCBI's Sequence Read Archive](http://www.ncbi.nlm.nih.gov/sra) for the entries SRR3396381, SRR3396382, SRR3396384, SRR3396385, SRR3396386, and SRR3396387. These samples were from Saccharomyces cerevisiae. Suitable reference genome and gene annotation files for this species can be further downloaded from either iGenomes or Ensembl R64-1-1. To create mini data for demonstration purpose, reads aligned to the region from 0 to 100000 at chromosome XV were extracted.
 
 # System Requirements
 
@@ -508,7 +508,7 @@ RNASeqReadProcess(exp@path.prefix,
 
 # Gene-level Differential Analyses
 
-This is the **third necessary step** of RNA-Seq workflow in this package. To identify differential expressed genes, users can either run `RNASeqDifferentialAnalysis_CMD()` to execute process in background or run `RNASeqDifferentialAnalysis()` to execute process in R shell. In this package, we provide four normalized expression values, Fragments Per Kilobase per Million(FPKM)(Mortazavi et al. 2008), Transcripts Per Kilobase Million(TPM)(Li et al. 2009), normalized counts by means of Median of Ratios Normalization(MRN) or Trimmed Mean of M-values(TMM), with proper statistical analyses using R packages, 'ballgown', 'stats', 'DESeq2' and 'edgeR'. Gene IDs from StringTie and Ballgown R package will be mapped to 'gene_name' in GTF file for further functional analysis.
+This is the **third necessary step** of RNA-Seq workflow in this package. To identify differential expressed genes, users can either run `RNASeqDifferentialAnalysis_CMD()` to execute process in background or run `RNASeqDifferentialAnalysis()` to execute process in R shell. In this package, we provide three normalized expression values, Fragments Per Kilobase per Million(FPKM)(Mortazavi et al. 2008), normalized counts by means of Median of Ratios Normalization(MRN) or Trimmed Mean of M-values(TMM), with proper statistical analyses using R packages, 'ballgown', 'stats', 'DESeq2' and 'edgeR'. Gene IDs from StringTie and Ballgown R package will be mapped to 'gene_name' in GTF file for further functional analysis.
 
 ## Tabular Format for Reads Alignment
 
@@ -522,7 +522,7 @@ img <- readPNG("figure/Alignment_report.png")
 
 ## General Data Visualization
 
-Here we illustrate general data visualization before and after differential expression analysis. The results based on each differential analysis tool(*ballgown*, *t-test on TPM*, *DESeq2*, *edgeR*) are kept in the directory 'RNASeq_results/' separately. The statistical results based on MRN-normalized value through DESeq2 R package are presented as follows: 
+Here we illustrate general data visualization before and after differential expression analysis. The results based on each differential analysis tool(*ballgown*, *DESeq2*, *edgeR*) are kept in the directory 'RNASeq_results/' separately. The statistical results based on MRN-normalized value through DESeq2 R package are presented as follows: 
 
 ### Before Differential Expression Analysis
 
@@ -638,7 +638,8 @@ grid.raster(img, just = "center")
 
 #### Heatmap Plots
 
-* **'Heatmap_Plot_pheatmap.png'**: To visualize the expression value of DEGs in terms of log2-based normalized value from all samples of two groups using [pheatmap](https://cran.r-project.org/web/packages/pheatmap/index.html) package. Samples are colored by defined groups: blue for case group and yellow for control 2.
+* **'Heatmap_Plot_pheatmap.png'**: To visualize the expression value of DEGs in terms of log2-based normalized value from all samples of two groups using [pheatmap](https://cran.r-project.org/web/packages/pheatmap/index.html) package. Samples are colored by defined groups: blue for case group and yellow for control 2. Gene names and sample names will be shown on heatmap except for two conditions: If there are more than 60 differential expressed genes, gene names will not be shown on each row beside heatmap. If there are more than 16 samples, sample names will not be shown on each column below heatmap.
+
 
 ```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/DE/Heatmap_Plot_pheatmap.png")
@@ -680,32 +681,6 @@ grid.raster(img, just = "center")
 * **'MA_Plot_ggplot2.png'**: To display the difference of expression value between two groups by transforming the data onto log2-based ratio (x-axis) and log2-based mean (y-axis) scales by [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html).
 ```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/ballgown_MA_Plot_ggplot2.png")
-grid.raster(img, just = "center")
-```
-
-## Student t-test Analysis Based on TPM Value
-Similar to FPKM value, TPM(Transcripts Per Kilobase Million) value is derived from reads count normalized by library size and transcript length using a slightly different approach, resulting in providing better cross-sample comarability. The statistic model used here is Student’s t-test. The basic steps are as follows:
-
-* Input: *'gene_data/ballgown/'*
-* Output: *'RNASeq_results/TPM_analysis/'*
-
-1. Convert TPM values from FPKM values extracted from StringTie in column `sample.pattern.FPKM`.
-
-2. Apply Student’s t-test to estimate  p-value in column `pval`.
-
-3. Calculate fold change values as dividing average TPM values of control group plus one by average TPM values of case group plus one((Average_case_TPM+1) / (Average_control_TPM+1) ) with column name `fc`. Log base two fold change(log<sub>2</sub>(fold change)) is also calculated and stored as `log2FC`.
-
-4. Generate a `CSV` file, *'RNASeq_results/TPM_analysis/TPM_normalized_result.csv'*, to store normalized TPM values, mean expression values per group and statistic results
-
-5. Select DEGs based on default criteria: **`pval < 0.05` and `log2FC > 1 | log2FC < 1`**, and store the result in *'RNASeq_results/TPM_analysis/TPM_normalized_DE_result.csv'*.
-
-6. Additional Data Visualization. Aside from general data visualization mentioned above, MA plot is also provided.
-
-* **'MA_Plot_ggplot2.png'**: To display the difference of expression value between two groups by transforming the data onto log2-based ratio (x-axis) and log2-based mean (y-axis) scales by [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html).
-
-
-```{r fig.width=6, height=6, echo=FALSE}
-img <- readPNG("figure/TPM_MA_Plot_ggplot2.png")
 grid.raster(img, just = "center")
 ```
 
@@ -807,8 +782,6 @@ RNASeqDifferentialAnalysis(exp@path.prefix,
                            exp@control.group,
                            ballgown.pval = 0.05,
                            ballgown.log2FC = 1,
-                           TPM.pval = 0.05,
-                           TPM.log2FC = 1,
                            DESeq2.pval = 0.1,
                            DESeq2.log2FC = 1,
                            edgeR.pval = 0.05,
@@ -817,8 +790,8 @@ RNASeqDifferentialAnalysis(exp@path.prefix,
 
 # Functional Analysis
 
-This is the **third optional step** of RNA-Seq workflow in this package. [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) is used for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis based on the differential expressed genes(DEG) found in four different differential analyses. User can either run `RNASeqGoKegg_CMD()` to execute process in background or run `RNASeqGoKegg()` to execute process in R shell. 
-In this step, users have to provide gene name type, `input.TYPE.ID`, that used in StringTie, ballgown and supported in `OrgDb.species` annotation package for target species. In GO functional analysis and KEGG pathway analysis, `input.TYPE.ID` ID type will be converted into `ENTREZID` ID type by `bitr()` function in clusterProfiler first. Those `input.TYPE.ID` with no corresponding `ENTREZID` will return `NA` and be filtered out. The genes with `Inf` or `-Inf` log2 fold change will be filtered out too. ID conversion will be done in each differential analysis tools, ballgown, Student's t-test on TPM, DESeq2 and edgeR.  (?????????????)
+This is the **third optional step** of RNA-Seq workflow in this package. [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) is used for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis based on the differential expressed genes(DEG) found in three different differential analyses. User can either run `RNASeqGoKegg_CMD()` to execute process in background or run `RNASeqGoKegg()` to execute process in R shell. 
+In this step, users have to provide gene name type, `input.TYPE.ID`, that used in StringTie, ballgown and supported in `OrgDb.species` annotation package for target species. In GO functional analysis and KEGG pathway analysis, `input.TYPE.ID` ID type will be converted into `ENTREZID` ID type by `bitr()` function in clusterProfiler first. Those `input.TYPE.ID` with no corresponding `ENTREZID` will return `NA` and be filtered out. The genes with `Inf` or `-Inf` log2 fold change will be filtered out too. ID conversion will be done in each differential analysis tools, ballgown, DESeq2 and edgeR.
 
 In this example, the RNA-Seq analysis target species is *Saccharomyces cerevisiae*(yeast). The `OrgDb.species` is `org.Sc.sgd.db`; the `input.TYPE.ID` is `GENENAME`. IDs are converted from `GENENAME` to `ENTREZID`.
 

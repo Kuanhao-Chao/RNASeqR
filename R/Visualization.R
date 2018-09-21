@@ -216,6 +216,11 @@ PCAPlot <- function(which.analysis,
                          quali.sup=length(normalized.trans),
                          graph = FALSE)
   eig.val <- factoextra::get_eigenvalue(pca)
+  # Write out general PCA
+  write.csv(data.frame(eig.val),
+            file = paste0(path.prefix, "RNASeq_results/", which.analysis,
+                          "/images/preDE/PCA/PCA_dimension_factoextra.csv"),
+            row.names=TRUE)
   factoextra::fviz_eig(pca, addlabels = TRUE,
                        ylim = c(0, 50),
                        main = "PCA Dimensions") +
@@ -588,6 +593,11 @@ DEPCAPlot <- function(which.analysis,
                         quali.sup=length(normalized.trans),
                         graph = FALSE)
   eig.val <- factoextra::get_eigenvalue(pca)
+  # Write out DE PCA
+  write.csv(data.frame(eig.val),
+            file = paste0(path.prefix, "RNASeq_results/", which.analysis,
+                          "/images/DE/PCA/PCA_dimension_factoextra.csv"),
+            row.names=TRUE)
   factoextra::fviz_eig(pca, addlabels = TRUE, ylim = c(0, 50)) +
     labs(title ="PCA Dimensions Plot (factoextra)") +
     theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
@@ -706,6 +716,21 @@ DEHeatmap <- function(which.analysis,
                                            decreasing = TRUE),]
     DE.csv.results <- DE.csv.results[!duplicated(DE.csv.results$gene.name),]
 
+    # Decide sample name whether to show
+    if (pre.pheno_data$case.group.size + pre.pheno_data$case.group.size > 16) {
+      message(paste0("          \u25CF Total sample number: ",
+                     pre.pheno_data$case.group.size +
+                       pre.pheno_data$case.group.size,
+                     " (sample name will not be shown).\n"))
+      show.sample.name <- FALSE
+    } else {
+      message(paste0("          \u25CF Total sample number: ",
+                     pre.pheno_data$case.group.size +
+                       pre.pheno_data$case.group.size,
+                     " (sample name will be shown).\n"))
+      show.sample.name <- TRUE
+    }
+    # Decide gene name whether to show
     DE.csv.normalized.count.only <-
       DE.csv.results[,2:(pre.pheno_data$case.group.size +
                            pre.pheno_data$case.group.size + 1)]
@@ -768,12 +793,13 @@ DEHeatmap <- function(which.analysis,
                          main = "Heatmap Plot (pheatmap)",
                          cluster_rows = TRUE, cluster_cols = FALSE,
                          show_rownames = show.gene.name,
+                         show_colnames = show.sample.name,
                          annotation_col = annotation,
                          annotation_colors = anno_colors,
-                         filename = paste0(path.prefix, "RNASeq_results/",
-                                           which.analysis,
-                                           "/images/DE/",
-                                           "Heatmap_Plot_pheatmap.png"),
+                         # filename = paste0(path.prefix, "RNASeq_results/",
+                         #                   which.analysis,
+                         #                   "/images/DE/",
+                         #                   "Heatmap_Plot_pheatmap.png"),
                          fontsize = 7)
       message(paste0("(\u2714) : '", path.prefix, "RNASeq_results/",
                      which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"),

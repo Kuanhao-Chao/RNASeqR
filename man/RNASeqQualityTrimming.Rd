@@ -5,7 +5,7 @@
 \title{RNASeqQualityTrimming}
 \usage{
 RNASeqQualityTrimming(path.prefix, sample.pattern, cum.error = 1,
-  reads.length.limit = 36)
+  trimming.position = NA, reads.length.limit = 36)
 }
 \arguments{
 \item{path.prefix}{Path prefix of 'gene_data/', 'RNASeq_bin/',

@@ -154,15 +154,11 @@ RNASeqGoKegg <- function(path.prefix,
   PreRNASeqGoKegg()
   raw.read.avail <- RawReadCountAvailability(path.prefix)
   ballgown.bool <- dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/"))
-  TPM.bool <- dir.exists(paste0(path.prefix, "RNASeq_results/TPM_analysis/"))
   DESeq2.bool <- dir.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis/"))
   edgeR.bool <- dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis/"))
   which.analyses <- c()
   if (ballgown.bool) {
     which.analyses <- c(which.analyses, "ballgown_analysis")
-  }
-  if (TPM.bool) {
-    which.analyses <- c(which.analyses, "TPM_analysis")
   }
   if (raw.read.avail) {
     if (DESeq2.bool) {

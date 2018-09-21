@@ -11,6 +11,9 @@
 #'   experiment-related parameters
 #' @param cum.error Default \code{1}.
 #'   Cut of threshold of cumulative probability of error per base.
+#' @param trimming.position Default \code{NA}. If value is \code{NA}, trimming
+#'   points of all paired-end files will be calculated by CDF of error rate, while
+#'   they will all be the value of \code{trimming.position}.
 #' @param reads.length.limit Default \code{36}.
 #'   The shortest base pair length of short reads
 #' @param run Default value is \code{TRUE}.
@@ -34,6 +37,7 @@
 #' RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam = yeast)}
 RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam,
                                       cum.error          = 1,
+                                      trimming.position  = NA,
                                       reads.length.limit = 36,
                                       run                = TRUE,
                                       check.s4.print     = TRUE) {
@@ -47,6 +51,7 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam,
   second <- paste0("RNASeqQualityTrimming(path.prefix = '", path.prefix,
                    "', sample.pattern = '", sample.pattern,
                    "', cum.error = ", cum.error,
+                   ", trimming.position = ", trimming.position,
                    ", reads.length.limit = ", reads.length.limit, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
@@ -85,6 +90,9 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam,
 #'   Expression not includes \code{_[1,2].fastq.gz}.
 #' @param cum.error Default \code{1}.
 #'   Cut of threshold of cumulative probability of error per base.
+#' @param trimming.position Default \code{NA}. If value is \code{NA}, trimming
+#'   points of all paired-end files will be calculated by CDF of error rate, while
+#'   they will all be the value of \code{trimming.position}.
 #' @param reads.length.limit Default \code{36}.
 #'   The shortest base pair length of short reads
 #'
@@ -99,6 +107,7 @@ RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam,
 RNASeqQualityTrimming <- function(path.prefix,
                                   sample.pattern,
                                   cum.error = 1,
+                                  trimming.position  = NA,
                                   reads.length.limit = 36) {
   CheckOperatingSystem(FALSE)
   PreCheckRNASeqQualityTrimming(path.prefix = path.prefix,
@@ -123,6 +132,7 @@ RNASeqQualityTrimming <- function(path.prefix,
   lapply(raw.fastq.unique, myFilterAndTrim,
          path.prefix = path.prefix,
          cum.error = cum.error,
+         trimming.position  = trimming.position,
          reads.length.limit = reads.length.limit)
   message("\n")
   PostCheckRNASeqQualityTrimming(path.prefix, sample.pattern)
@@ -132,6 +142,7 @@ RNASeqQualityTrimming <- function(path.prefix,
 myFilterAndTrim <- function(fl.name,
                             path.prefix,
                             cum.error,
+                            trimming.position,
                             reads.length.limit) {
   # adding print log
   # file1 and file2 is original fastq.gz without trimmed
@@ -161,39 +172,49 @@ myFilterAndTrim <- function(fl.name,
     file1.read <- ShortRead::readFastq(file1.untrimmed)
     file2.read <- ShortRead::readFastq(file2.untrimmed)
 
-    message(paste0("          \u25CF Getting quality score ",
-                   "list as PhredQuality ...\n"))
-    # get quality score list as PhredQuality
-    qual1 <- as(Biostrings::quality(file1.read), "matrix")
-    qual2 <- as(Biostrings::quality(file2.read), "matrix")
+    if (is.na(trimming.position)) {
+      # It means that users didn't provide trimming position !!
+      message(paste0("          \u25CF Getting quality score ",
+                     "list as PhredQuality ...\n"))
+      # get quality score list as PhredQuality
+      qual1 <- as(Biostrings::quality(file1.read), "matrix")
+      qual2 <- as(Biostrings::quality(file2.read), "matrix")
 
-    # Calculate probability error per base (through column) ==> Q = -10log10(P)
-    # or  P = 10^(-Q/10)
-    message(paste0("          \u25CF Calculating probability ",
-                   "error per base ...\n"))
-    pe1 <- apply(qual1, MARGIN = 2, function(x){10^(-(x/10))})
-    pe2 <- apply(qual2, MARGIN = 2, function(x){10^(-(x/10))})
-    # Calculate cpm of error
-    message(paste0("          \u25CF Calculating cumulative distribution ",
-                   "probability of error per base ...\n"))
-    cum.pe1 <- apply(pe1, MARGIN = 1, cumsum)
-    cum.pe2 <- apply(pe2, MARGIN = 1, cumsum)
+      # Calculate probability error per base (through column) ==> Q = -10log10(P)
+      # or  P = 10^(-Q/10)
+      message(paste0("          \u25CF Calculating probability ",
+                     "error per base ...\n"))
+      pe1 <- apply(qual1, MARGIN = 2, function(x){10^(-(x/10))})
+      pe2 <- apply(qual2, MARGIN = 2, function(x){10^(-(x/10))})
+      # Calculate cpm of error
+      message(paste0("          \u25CF Calculating cumulative distribution ",
+                     "probability of error per base ...\n"))
+      cum.pe1 <- apply(pe1, MARGIN = 1, cumsum)
+      cum.pe2 <- apply(pe2, MARGIN = 1, cumsum)
 
-    # Get the trimming position of each file
-    message(paste0("          \u25CF Filtering out cumulative distribution ",
-                   "probability of error per base < 1 ...\n"))
-    trimPos1 <- apply(cum.pe1, 2, function(x) { min(min(which(x > cum.error)),
-                                                    length(x)) } )
-    trimPos2 <- apply(cum.pe2, 2, function(x) { min(min(which(x > cum.error)),
-                                                    length(x)) } )
-
-    # Get the trimPos for pair-end files
-    message(paste0("          \u25CF Finding trimming ",
-                   "position for paired-end ...\n"))
-    trimPos.together <- mapply(function(list1, list2) {min(list1, list2)},
-                               list1 = trimPos1,
-                               list2 = trimPos2)
-
+      # Get the trimming position of each file
+      message(paste0("          \u25CF Filtering out cumulative distribution ",
+                     "probability of error per base < 1 ...\n"))
+      trimPos1 <- apply(cum.pe1, 2, function(x) { min(min(which(x > cum.error)),
+                                                      length(x)) } )
+      trimPos2 <- apply(cum.pe2, 2, function(x) { min(min(which(x > cum.error)),
+                                                      length(x)) } )
+      # Get the trimPos for pair-end files
+      message(paste0("          \u25CF Finding trimming ",
+                     "position for paired-end ...\n"))
+      trimPos.together <- mapply(function(list1, list2) {min(list1, list2)},
+                                 list1 = trimPos1,
+                                 list2 = trimPos2)
+    } else {
+      # trimming.position is not na!!!!
+      if (trimming.position%%1 == 0 & trimming.position > reads.length.limit ) {
+        # Valid trimming.position
+        trimPos.together <- trimming.position
+      } else {
+        message("Invalid trimming.position: ", trimming.position, " !!")
+        stop("'trimming.position' ERROR")
+      }
+    }
     trimmed.file1 <- ShortRead::narrow(x = file1.read,
                                        start = 1,
                                        end = trimPos.together)

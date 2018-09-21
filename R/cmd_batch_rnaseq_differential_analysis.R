@@ -9,13 +9,6 @@
 #'     Raw reads are normalized into FPKM values \cr
 #'     The main statistic test in ballgown is paramatic F-test comparing nested
 #'     linear models \cr
-#'     \item TPM & Student's t-test analysis \cr
-#'     TPM normalization is calculated from the FPKM values in ballgown. \cr
-#'     Independent sample t-test is used with TPM values as input. P-values will
-#'      be produced after t-test. \cr
-#'     Fold change values are calculated by the formula :  \cr
-#'     "`average TPM experiment group values divide` /
-#'      `average TPM control group values`". \cr
 #'     \item DESeq2 analysis  \cr
 #'      Median of rations normalization(MRN) is used in DESeq2 for raw reads
 #'       count normalization.  \cr
@@ -28,7 +21,7 @@
 #'      and then run \code{cpm()} on that DGEList)  \cr
 #'      The main statistic test in edgeR is trimmed mean of M-values(TMM).\cr
 #'   }
-#'   If you want to run differential analysis on ballgown, TPM normalization,
+#'   If you want to run differential analysis on ballgown,
 #'   DESeq2, edgeR for the following RNA-Seq workflow in R shell,
 #'   please see \code{RNASeqDifferentialAnalysis()} function.
 #'
@@ -40,12 +33,6 @@
 #'   p-value to filter out differential expressed gene.
 #' @param ballgown.log2FC Default \code{1}. Set the threshold of ballgown
 #'   log2 fold change to filter out differential expressed gene.
-#' @param TPM.run Default \code{TRUE}. Logical value whether to run
-#'   TPM &  student t-test differential analysis.
-#' @param TPM.pval Default \code{0.05}. Set the threshold of TPM & student
-#'   t-test p-value to filter out differential expressed gene.
-#' @param TPM.log2FC Default \code{1}. Set the threshold of TPM & student
-#'   t-test log2 fold change to filter out differential expressed gene.
 #' @param DESeq2.run Default \code{TRUE}. Logical value whether to run
 #'   DESeq2 differential analysis.
 #' @param DESeq2.pval Default \code{0.05}. Set the threshold of DESeq2 p-value
@@ -79,9 +66,6 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
                                            ballgown.run    = TRUE,
                                            ballgown.pval   = 0.05,
                                            ballgown.log2FC = 1,
-                                           TPM.run         = TRUE,
-                                           TPM.pval        = 0.05,
-                                           TPM.log2FC      = 1,
                                            DESeq2.run      = TRUE,
                                            DESeq2.pval     = 0.1,
                                            DESeq2.log2FC   = 1,
@@ -110,9 +94,6 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
                    "', ballgown.run = ", ballgown.run,
                    ", ballgown.pval = ", ballgown.pval,
                    ", ballgown.log2FC = ", ballgown.log2FC,
-                   ", TPM.run = ", TPM.run,
-                   ", TPM.pval = ", TPM.pval,
-                   ", TPM.log2FC = ", TPM.log2FC,
                    ", DESeq2.run = ", DESeq2.run,
                    ", DESeq2.pval = ", DESeq2.pval,
                    ", DESeq2.log2FC = ", DESeq2.log2FC,
@@ -149,13 +130,6 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
 #'     Raw reads are normalized into FPKM values \cr
 #'     The main statistic test in ballgown is paramatic F-test comparing nested
 #'     linear models \cr
-#'     \item TPM & Student's t-test analysis \cr
-#'     TPM normalization is calculated from the FPKM values in ballgown. \cr
-#'     Independent sample t-test is used with TPM values as input. P-values will
-#'      be produced after t-test. \cr
-#'     Fold change values are calculated by the formula :  \cr
-#'     "`average TPM experiment group values divide` /
-#'      `average TPM control group values`". \cr
 #'     \item DESeq2 analysis  \cr
 #'      Median of rations normalization(MRN) is used in DESeq2 for raw reads
 #'       count normalization.  \cr
@@ -168,7 +142,7 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
 #'      and then run \code{cpm()} on that DGEList)  \cr
 #'      The main statistic test in edgeR is trimmed mean of M-values(TMM).\cr
 #'   }
-#'   If you want to run differential analysis on ballgown, TPM normalization,
+#'   If you want to run differential analysis on ballgown,
 #'   DESeq2, edgeR for the following RNA-Seq workflow in background,
 #'   please see \code{RNASeqDifferentialAnalysis()} function.
 #'
@@ -189,12 +163,6 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqWorkFlowParam,
 #'   p-value to filter out differential expressed gene.
 #' @param ballgown.log2FC Default \code{1}. Set the threshold of ballgown
 #'   log2 fold change to filter out differential expressed gene.
-#' @param TPM.run Default \code{TRUE}. Logical value whether to run
-#'   TPM &  student t-test differential analysis.
-#' @param TPM.pval Default \code{0.05}. Set the threshold of TPM & student
-#'   t-test p-value to filter out differential expressed gene.
-#' @param TPM.log2FC Default \code{1}. Set the threshold of TPM & student
-#'   t-test log2 fold change to filter out differential expressed gene.
 #' @param DESeq2.run Default \code{TRUE}. Logical value whether to run
 #'   DESeq2 differential analysis.
 #' @param DESeq2.pval Default \code{0.05}. Set the threshold of DESeq2 p-value
@@ -228,9 +196,6 @@ RNASeqDifferentialAnalysis <- function(path.prefix,
                                        ballgown.run    = TRUE,
                                        ballgown.pval   = 0.05,
                                        ballgown.log2FC = 1,
-                                       TPM.run         = TRUE,
-                                       TPM.pval        = 0.05,
-                                       TPM.log2FC      = 1,
                                        DESeq2.run      = TRUE,
                                        DESeq2.pval     = 0.1,
                                        DESeq2.log2FC   = 1,
@@ -255,16 +220,6 @@ RNASeqDifferentialAnalysis <- function(path.prefix,
                      control.group,
                      ballgown.pval,
                      ballgown.log2FC)
-  }
-  if (TPM.run) {
-    TPMNormalizationAnalysis(path.prefix,
-                             genome.name,
-                             sample.pattern,
-                             independent.variable,
-                             case.group,
-                             control.group,
-                             TPM.pval,
-                             TPM.log2FC)
   }
   raw.read.avail <- RawReadCountAvailability(path.prefix)
   if (raw.read.avail) {

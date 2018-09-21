@@ -161,10 +161,6 @@ img <- readPNG("figure/ballgown_MA_Plot_ggplot2.png")
 grid.raster(img, just = "center")
 
 ## ----fig.width=6, height=6, echo=FALSE-------------------------------------
-img <- readPNG("figure/TPM_MA_Plot_ggplot2.png")
-grid.raster(img, just = "center")
-
-## ----fig.width=6, height=6, echo=FALSE-------------------------------------
 img <- readPNG("figure/DESeq2_Dispersion_Plot_DESeq2.png")
 grid.raster(img, just = "center")
 
@@ -200,8 +196,6 @@ grid.raster(img, just = "center")
 #                             exp@control.group,
 #                             ballgown.pval = 0.05,
 #                             ballgown.log2FC = 1,
-#                             TPM.pval = 0.05,
-#                             TPM.log2FC = 1,
 #                             DESeq2.pval = 0.1,
 #                             DESeq2.log2FC = 1,
 #                             edgeR.pval = 0.05,
