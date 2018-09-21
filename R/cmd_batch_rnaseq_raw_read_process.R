@@ -5,7 +5,7 @@
 #'   This function do 5 things : \cr
 #'   \enumerate{
 #'     \item 'Hisat2' : aligns raw reads to reference genome.
-#'       If \code{indices.optional} in \code{RNASeqWorkFlowParam} is
+#'       If \code{indices.optional} in \code{RNASeqRParam} is
 #'       \code{FALSE}, Hisat2 indices will be created.\cr
 #'     \item 'Rsamtools': converts '.sam' files to '.bam' files.\cr
 #'     \item 'Stringtie': assembles alignments into transcript.\cr
@@ -19,7 +19,7 @@
 #'   If you want to process raw reads for the following RNA-Seq workflow
 #'   in R shell, please see \code{RNASeqReadProcess()} function.\cr
 #'
-#' @param RNASeqWorkFlowParam S4 object instance of experiment-related
+#' @param RNASeqRParam S4 object instance of experiment-related
 #'   parameters
 #' @param num.parallel.threads Specify the number of processing threads (CPUs)
 #'   to use for transcript assembly. The default is 1.
@@ -32,9 +32,9 @@
 #'   If \code{False}, 'Rscript/Environment_Set.R' will be
 #'   created without executed.
 #' @param check.s4.print Default \code{TRUE}. If \code{TRUE},
-#'   the result of checking \code{RNASeqWorkFlowParam}
+#'   the result of checking \code{RNASeqRParam}
 #'   will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE},
-#'   the result of checking \code{RNASeqWorkFlowParam} will not be in
+#'   the result of checking \code{RNASeqRParam} will not be in
 #'   'Rscript_out/Environment_Set.Rout'.
 #' @param Hisat2.Index.run Whether to run 'HISAT2 index' step in this function
 #'   step. Default value is \code{TRUE}. Set \code{FALSE} to skip
@@ -69,9 +69,9 @@
 #' \dontrun{
 #' ## Before run this function, make sure \code{RNASeqEnvironmentSet_CMD()}
 #' ## (or\code{RNASeqEnvironmentSet()}) is executed successfully.
-#' RNASeqReadProcess_CMD(RNASeqWorkFlowParam = yeast,
+#' RNASeqReadProcess_CMD(RNASeqRParam = yeast,
 #'                       num.parallel.threads = 10)}
-RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
+RNASeqReadProcess_CMD <- function(RNASeqRParam,
                                   num.parallel.threads      = 1,
                                   Rsamtools.maxMemory       = 512,
                                   run                       = TRUE,
@@ -84,19 +84,19 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
                                   Gffcompare.Ref.Sample.run = TRUE,
                                   StringTie.Ballgown.run    = TRUE,
                                   PreDECountTable.run       = TRUE) {
-  CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
+  CheckS4Object(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
-  path.prefix <- "@"(RNASeqWorkFlowParam, path.prefix)
-  input.path.prefix <- "@"(RNASeqWorkFlowParam, input.path.prefix)
-  genome.name <- "@"(RNASeqWorkFlowParam, genome.name)
-  sample.pattern <- "@"(RNASeqWorkFlowParam, sample.pattern)
-  python.variable <- "@"(RNASeqWorkFlowParam, python.variable)
+  path.prefix <- "@"(RNASeqRParam, path.prefix)
+  input.path.prefix <- "@"(RNASeqRParam, input.path.prefix)
+  genome.name <- "@"(RNASeqRParam, genome.name)
+  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
+  python.variable <- "@"(RNASeqRParam, python.variable)
   python.variable.answer <- python.variable$check.answer
   python.variable.version <- python.variable$python.version
-  python.2to3 <- "@"(RNASeqWorkFlowParam, python.2to3)
-  indices.optional <- "@"(RNASeqWorkFlowParam, indices.optional)
+  python.2to3 <- "@"(RNASeqRParam, python.2to3)
+  indices.optional <- "@"(RNASeqRParam, indices.optional)
   fileConn<-file(paste0(path.prefix, "Rscript/Read_Process.R"))
-  first <- "library(RNASeqWorkflow)"
+  first <- "library(RNASeqR)"
   second <- paste0('RNASeqReadProcess(path.prefix = "', path.prefix,
                    '", input.path.prefix = "', input.path.prefix,
                    '", genome.name = "', genome.name,
@@ -141,7 +141,7 @@ RNASeqReadProcess_CMD <- function(RNASeqWorkFlowParam,
 #'   This function do 5 things : \cr
 #'   \enumerate{
 #'     \item 'Hisat2' : aligns raw reads to reference genome.
-#'       If \code{indices.optional} in \code{RNASeqWorkFlowParam} is
+#'       If \code{indices.optional} in \code{RNASeqRParam} is
 #'       \code{FALSE}, Hisat2 indices will be created.\cr
 #'     \item 'Rsamtools': converts '.sam' files to '.bam' files.\cr
 #'     \item 'Stringtie': assembles alignments into transcript.\cr

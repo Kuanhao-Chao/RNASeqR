@@ -4,14 +4,14 @@
 \alias{RNASeqDifferentialAnalysis_CMD}
 \title{RNASeqDifferentialAnalysis_CMD}
 \usage{
-RNASeqDifferentialAnalysis_CMD(RNASeqWorkFlowParam, ballgown.run = TRUE,
+RNASeqDifferentialAnalysis_CMD(RNASeqRParam, ballgown.run = TRUE,
   ballgown.pval = 0.05, ballgown.log2FC = 1, DESeq2.run = TRUE,
   DESeq2.pval = 0.1, DESeq2.log2FC = 1, edgeR.run = TRUE,
   edgeR.pval = 0.05, edgeR.log2FC = 1, run = TRUE,
   check.s4.print = TRUE)
 }
 \arguments{
-\item{RNASeqWorkFlowParam}{S4 object instance of
+\item{RNASeqRParam}{S4 object instance of
 experiment-related parameters}
 
 \item{ballgown.run}{Default \code{TRUE}. Logical value whether to run
@@ -47,9 +47,9 @@ will be stored in 'Rscript_out/Environment_Set.Rout'. If \code{False},
 'Rscript/Environment_Set.R' will be created without executed.}
 
 \item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of
-checking \code{RNASeqWorkFlowParam} will be reported in
+checking \code{RNASeqRParam} will be reported in
 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
-\code{RNASeqWorkFlowParam} will not be in
+\code{RNASeqRParam} will not be in
 'Rscript_out/Environment_Set.Rout'.}
 }
 \value{
@@ -83,7 +83,7 @@ This function will run differential analysis on ballgown,
 \examples{
 data(yeast)
 \dontrun{
-RNASeqDifferentialAnalysis_CMD(RNASeqWorkFlowParam = yeast)}
+RNASeqDifferentialAnalysis_CMD(RNASeqRParam = yeast)}
 }
 \author{
 Kuan-Hao Chao

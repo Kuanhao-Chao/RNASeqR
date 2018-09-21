@@ -83,7 +83,7 @@ Process raw reads for RNA-Seq workflow in R shell \cr
   This function do 5 things : \cr
   \enumerate{
     \item 'Hisat2' : aligns raw reads to reference genome.
-      If \code{indices.optional} in \code{RNASeqWorkFlowParam} is
+      If \code{indices.optional} in \code{RNASeqRParam} is
       \code{FALSE}, Hisat2 indices will be created.\cr
     \item 'Rsamtools': converts '.sam' files to '.bam' files.\cr
     \item 'Stringtie': assembles alignments into transcript.\cr

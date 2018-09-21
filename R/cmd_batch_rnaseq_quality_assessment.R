@@ -11,7 +11,7 @@
 #'   files for the following RNA-Seq workflow in R shell,
 #'   please see \code{RNASeqQualityAssessment()} function.
 #'
-#' @param RNASeqWorkFlowParam S4 object instance of
+#' @param RNASeqRParam S4 object instance of
 #'   experiment-related parameters
 #' @param run Default value is \code{TRUE}. If \code{TRUE},
 #'   'Rscript/Environment_Set.R' will be created and executed.
@@ -19,9 +19,9 @@
 #'   If \code{False}, 'Rscript/Environment_Set.R' will be
 #'   created without executed.
 #' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of
-#'   checking \code{RNASeqWorkFlowParam} will be reported in
+#'   checking \code{RNASeqRParam} will be reported in
 #'   'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
-#'   \code{RNASeqWorkFlowParam} will not be in
+#'   \code{RNASeqRParam} will not be in
 #'   'Rscript_out/Environment_Set.Rout'
 #'
 #' @return None
@@ -30,18 +30,18 @@
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' RNASeqQualityAssessment_CMD(RNASeqWorkFlowParam = yeast)}
-RNASeqQualityAssessment_CMD <- function(RNASeqWorkFlowParam,
+#' RNASeqQualityAssessment_CMD(RNASeqRParam = yeast)}
+RNASeqQualityAssessment_CMD <- function(RNASeqRParam,
                                         run                 = TRUE,
                                         check.s4.print      = TRUE) {
   # check input param
-  CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
+  CheckS4Object(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
-  path.prefix <- "@"(RNASeqWorkFlowParam, path.prefix)
-  input.path.prefix <- "@"(RNASeqWorkFlowParam, input.path.prefix)
-  sample.pattern <- "@"(RNASeqWorkFlowParam, sample.pattern)
+  path.prefix <- "@"(RNASeqRParam, path.prefix)
+  input.path.prefix <- "@"(RNASeqRParam, input.path.prefix)
+  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
   fileConn <- file(paste0(path.prefix, "Rscript/Quality_Assessment.R"))
-  first <- "library(RNASeqWorkflow)"
+  first <- "library(RNASeqR)"
   second <- paste0("RNASeqQualityAssessment(path.prefix = '", path.prefix,
                    "', input.path.prefix = '", input.path.prefix,
                    "', sample.pattern = '", sample.pattern, "')")

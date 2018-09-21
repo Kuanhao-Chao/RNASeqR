@@ -23,7 +23,7 @@
 #'   following RNA-Seq workflow in R shell,
 #'   please see \code{RNASeqGoKegg()} function.
 #'
-#' @param RNASeqWorkFlowParam S4 object instance of experiment-related
+#' @param RNASeqRParam S4 object instance of experiment-related
 #'   parameters
 #' @param OrgDb.species the genome wide annotation packages of species on
 #'   Bioconductor. Currently, there are 19 supported genome wide annotation
@@ -40,9 +40,9 @@
 #'   If \code{False}, 'Rscript/Environment_Set.R' will be created
 #'   without executed.
 #' @param check.s4.print Default \code{TRUE}. If \code{TRUE},
-#'   the result of checking \code{RNASeqWorkFlowParam} will be reported in
+#'   the result of checking \code{RNASeqRParam} will be reported in
 #'   'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
-#'   \code{RNASeqWorkFlowParam} will not be in
+#'   \code{RNASeqRParam} will not be in
 #'   'Rscript_out/Environment_Set.Rout'
 #'
 #' @return None
@@ -57,7 +57,7 @@
 #'                  input.TYPE.ID = "GENENAME",
 #'                  KEGG.organism = "sce")
 #' }
-RNASeqGoKegg_CMD <- function(RNASeqWorkFlowParam,
+RNASeqGoKegg_CMD <- function(RNASeqRParam,
                              OrgDb.species,
                              go.level = 3,
                              input.TYPE.ID,
@@ -65,12 +65,12 @@ RNASeqGoKegg_CMD <- function(RNASeqWorkFlowParam,
                              run = TRUE,
                              check.s4.print = TRUE) {
   # check input param
-  CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
+  CheckS4Object(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
-  path.prefix <- "@"(RNASeqWorkFlowParam, path.prefix)
-  independent.variable <- "@"(RNASeqWorkFlowParam, independent.variable)
+  path.prefix <- "@"(RNASeqRParam, path.prefix)
+  independent.variable <- "@"(RNASeqRParam, independent.variable)
   fileConn<-file(paste0(path.prefix, "Rscript/GO_KEGG_Analysis.R"))
-  first <- "library(RNASeqWorkflow)"
+  first <- "library(RNASeqR)"
   second <- paste0("RNASeqGoKegg(path.prefix = '", path.prefix,
                    "', independent.variable = '", independent.variable,
                    "', OrgDb.species = '", OrgDb.species,

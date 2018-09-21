@@ -19,7 +19,7 @@
 #'   If you want to set up the environment for the following RNA-Seq workflow
 #'   in R shell, please see \code{RNASeqEnvironmentSet()} function.
 #'
-#' @param RNASeqWorkFlowParam S4 object instance of experiment-related
+#' @param RNASeqRParam S4 object instance of experiment-related
 #'   parameters
 #' @param run Default value is \code{TRUE}. If \code{TRUE},
 #'   'Rscript/Environment_Set.R' will be created and executed.
@@ -27,9 +27,9 @@
 #'   If \code{False}, 'Rscript/Environment_Set.R' will be
 #'   created without executed.
 #' @param check.s4.print Default \code{TRUE}. If \code{TRUE},
-#'   the result of checking \code{RNASeqWorkFlowParam} will be reported in
+#'   the result of checking \code{RNASeqRParam} will be reported in
 #'   'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
-#'   \code{RNASeqWorkFlowParam} will not be in
+#'   \code{RNASeqRParam} will not be in
 #'   'Rscript_out/Environment_Set.Rout'.
 #' @param install.hisat2 Whether to install 'HISAT2' in this function step.
 #'   Default value is\code{TRUE}.
@@ -48,24 +48,24 @@
 #' data(yeast)
 #' \dontrun{
 #' RNASeqEnvironmentSet_CMD(yeast)}
-RNASeqEnvironmentSet_CMD <- function(RNASeqWorkFlowParam,
+RNASeqEnvironmentSet_CMD <- function(RNASeqRParam,
                                      install.hisat2     = TRUE,
                                      install.stringtie  = TRUE,
                                      install.gffcompare = TRUE,
                                      run                = TRUE,
                                      check.s4.print     = TRUE) {
   # check input param
-  CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
+  CheckS4Object(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
-  os.type <- "@"(RNASeqWorkFlowParam, os.type)
-  path.prefix <- "@"(RNASeqWorkFlowParam, path.prefix)
-  input.path.prefix <- "@"(RNASeqWorkFlowParam, input.path.prefix)
-  genome.name <- "@"(RNASeqWorkFlowParam, genome.name)
-  sample.pattern <- "@"(RNASeqWorkFlowParam, sample.pattern)
-  indices.optional <- "@"(RNASeqWorkFlowParam, indices.optional)
+  os.type <- "@"(RNASeqRParam, os.type)
+  path.prefix <- "@"(RNASeqRParam, path.prefix)
+  input.path.prefix <- "@"(RNASeqRParam, input.path.prefix)
+  genome.name <- "@"(RNASeqRParam, genome.name)
+  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
+  indices.optional <- "@"(RNASeqRParam, indices.optional)
   MkdirAll(path.prefix)
   fileConn <- file(paste0(path.prefix, "Rscript/Environment_Set.R"))
-  first <- "library(RNASeqWorkflow)"
+  first <- "library(RNASeqR)"
   second <- paste0("RNASeqEnvironmentSet(path.prefix = '", path.prefix,
                    "', input.path.prefix = '", input.path.prefix,
                    "', genome.name = '", genome.name,

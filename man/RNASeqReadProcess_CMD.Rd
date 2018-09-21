@@ -4,7 +4,7 @@
 \alias{RNASeqReadProcess_CMD}
 \title{RNASeqReadProcess_CMD}
 \usage{
-RNASeqReadProcess_CMD(RNASeqWorkFlowParam, num.parallel.threads = 1,
+RNASeqReadProcess_CMD(RNASeqRParam, num.parallel.threads = 1,
   Rsamtools.maxMemory = 512, run = TRUE, check.s4.print = TRUE,
   Hisat2.Index.run = TRUE, Hisat2.Alignment.run = TRUE,
   Rsamtools.Bam.run = TRUE, StringTie.Assemble.run = TRUE,
@@ -12,7 +12,7 @@ RNASeqReadProcess_CMD(RNASeqWorkFlowParam, num.parallel.threads = 1,
   StringTie.Ballgown.run = TRUE, PreDECountTable.run = TRUE)
 }
 \arguments{
-\item{RNASeqWorkFlowParam}{S4 object instance of experiment-related
+\item{RNASeqRParam}{S4 object instance of experiment-related
 parameters}
 
 \item{num.parallel.threads}{Specify the number of processing threads (CPUs)
@@ -29,9 +29,9 @@ If \code{False}, 'Rscript/Environment_Set.R' will be
 created without executed.}
 
 \item{check.s4.print}{Default \code{TRUE}. If \code{TRUE},
-the result of checking \code{RNASeqWorkFlowParam}
+the result of checking \code{RNASeqRParam}
 will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE},
-the result of checking \code{RNASeqWorkFlowParam} will not be in
+the result of checking \code{RNASeqRParam} will not be in
 'Rscript_out/Environment_Set.Rout'.}
 
 \item{Hisat2.Index.run}{Whether to run 'HISAT2 index' step in this function
@@ -74,7 +74,7 @@ Process raw reads for RNA-Seq workflow in background. \cr
   This function do 5 things : \cr
   \enumerate{
     \item 'Hisat2' : aligns raw reads to reference genome.
-      If \code{indices.optional} in \code{RNASeqWorkFlowParam} is
+      If \code{indices.optional} in \code{RNASeqRParam} is
       \code{FALSE}, Hisat2 indices will be created.\cr
     \item 'Rsamtools': converts '.sam' files to '.bam' files.\cr
     \item 'Stringtie': assembles alignments into transcript.\cr
@@ -93,7 +93,7 @@ data(yeast)
 \dontrun{
 ## Before run this function, make sure \\code{RNASeqEnvironmentSet_CMD()}
 ## (or\\code{RNASeqEnvironmentSet()}) is executed successfully.
-RNASeqReadProcess_CMD(RNASeqWorkFlowParam = yeast,
+RNASeqReadProcess_CMD(RNASeqRParam = yeast,
                       num.parallel.threads = 10)}
 }
 \author{

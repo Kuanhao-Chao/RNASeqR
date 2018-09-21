@@ -4,12 +4,12 @@
 \alias{RNASeqEnvironmentSet_CMD}
 \title{RNASeqEnvironmentSet_CMD}
 \usage{
-RNASeqEnvironmentSet_CMD(RNASeqWorkFlowParam, install.hisat2 = TRUE,
+RNASeqEnvironmentSet_CMD(RNASeqRParam, install.hisat2 = TRUE,
   install.stringtie = TRUE, install.gffcompare = TRUE, run = TRUE,
   check.s4.print = TRUE)
 }
 \arguments{
-\item{RNASeqWorkFlowParam}{S4 object instance of experiment-related
+\item{RNASeqRParam}{S4 object instance of experiment-related
 parameters}
 
 \item{install.hisat2}{Whether to install 'HISAT2' in this function step.
@@ -31,9 +31,9 @@ If \code{False}, 'Rscript/Environment_Set.R' will be
 created without executed.}
 
 \item{check.s4.print}{Default \code{TRUE}. If \code{TRUE},
-the result of checking \code{RNASeqWorkFlowParam} will be reported in
+the result of checking \code{RNASeqRParam} will be reported in
 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
-\code{RNASeqWorkFlowParam} will not be in
+\code{RNASeqRParam} will not be in
 'Rscript_out/Environment_Set.Rout'.}
 }
 \value{

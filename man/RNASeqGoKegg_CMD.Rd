@@ -4,11 +4,11 @@
 \alias{RNASeqGoKegg_CMD}
 \title{RNASeqGoKegg_CMD}
 \usage{
-RNASeqGoKegg_CMD(RNASeqWorkFlowParam, OrgDb.species, go.level = 3,
+RNASeqGoKegg_CMD(RNASeqRParam, OrgDb.species, go.level = 3,
   input.TYPE.ID, KEGG.organism, run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
-\item{RNASeqWorkFlowParam}{S4 object instance of experiment-related
+\item{RNASeqRParam}{S4 object instance of experiment-related
 parameters}
 
 \item{OrgDb.species}{the genome wide annotation packages of species on
@@ -31,9 +31,9 @@ If \code{False}, 'Rscript/Environment_Set.R' will be created
 without executed.}
 
 \item{check.s4.print}{Default \code{TRUE}. If \code{TRUE},
-the result of checking \code{RNASeqWorkFlowParam} will be reported in
+the result of checking \code{RNASeqRParam} will be reported in
 'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
-\code{RNASeqWorkFlowParam} will not be in
+\code{RNASeqRParam} will not be in
 'Rscript_out/Environment_Set.Rout'}
 }
 \value{

@@ -3,15 +3,15 @@
 \docType{data}
 \name{yeast}
 \alias{yeast}
-\title{Toy RNASeqWorkflowParam object}
+\title{Toy RNASeqRParam object}
 \description{
-Small RNASeqWorkflowParam S4 object created with checked valid parameters for
+Small RNASeqRParam S4 object created with checked valid parameters for
   demonstration purposes
 }
 \examples{
 data(yeast)
 yeast
-# RNASeqWorkflowParam S4 object for example demonstration.
+# RNASeqRParam S4 object for example demonstration.
 }
 \author{
 Kuan-Hao Chao

@@ -1,3 +1,3 @@
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("Welcome to RNASeqWorkflow")
+  packageStartupMessage("Welcome to RNASeqR")
 }

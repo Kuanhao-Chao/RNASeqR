@@ -7,7 +7,7 @@
 #'   If you want to trim '.fastq.gz' files for the RNA-Seq workflow in R shell,
 #'   please see \code{RNASeqQualityTrimming()} function.
 #'
-#' @param RNASeqWorkFlowParam S4 object instance of
+#' @param RNASeqRParam S4 object instance of
 #'   experiment-related parameters
 #' @param cum.error Default \code{1}.
 #'   Cut of threshold of cumulative probability of error per base.
@@ -22,10 +22,10 @@
 #'   If \code{False}, 'Rscript/Environment_Set.R'
 #'   will be created without executed.
 #' @param check.s4.print Default \code{TRUE}.
-#'   If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam}
+#'   If \code{TRUE}, the result of checking \code{RNASeqRParam}
 #'   will be reported in 'Rscript_out/Environment_Set.Rout'.
 #'   If \code{FALSE}, the result of checking
-#'   \code{RNASeqWorkFlowParam} will not be in
+#'   \code{RNASeqRParam} will not be in
 #'   'Rscript_out/Environment_Set.Rout'
 #'
 #' @return None
@@ -34,20 +34,20 @@
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam = yeast)}
-RNASeqQualityTrimming_CMD <- function(RNASeqWorkFlowParam,
+#' RNASeqQualityTrimming_CMD(RNASeqRParam = yeast)}
+RNASeqQualityTrimming_CMD <- function(RNASeqRParam,
                                       cum.error          = 1,
                                       trimming.position  = NA,
                                       reads.length.limit = 36,
                                       run                = TRUE,
                                       check.s4.print     = TRUE) {
   # check input param
-  CheckS4Object(RNASeqWorkFlowParam, check.s4.print)
+  CheckS4Object(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
-  path.prefix <- "@"(RNASeqWorkFlowParam, path.prefix)
-  sample.pattern <- "@"(RNASeqWorkFlowParam, sample.pattern)
+  path.prefix <- "@"(RNASeqRParam, path.prefix)
+  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
   fileConn <- file(paste0(path.prefix, "Rscript/Quality_Trimming.R"))
-  first <- "library(RNASeqWorkflow)"
+  first <- "library(RNASeqR)"
   second <- paste0("RNASeqQualityTrimming(path.prefix = '", path.prefix,
                    "', sample.pattern = '", sample.pattern,
                    "', cum.error = ", cum.error,

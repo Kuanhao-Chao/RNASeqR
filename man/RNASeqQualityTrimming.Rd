@@ -18,6 +18,10 @@ Expression not includes \code{_[1,2].fastq.gz}.}
 \item{cum.error}{Default \code{1}.
 Cut of threshold of cumulative probability of error per base.}
 
+\item{trimming.position}{Default \code{NA}. If value is \code{NA}, trimming
+points of all paired-end files will be calculated by CDF of error rate, while
+they will all be the value of \code{trimming.position}.}
+
 \item{reads.length.limit}{Default \code{36}.
 The shortest base pair length of short reads}
 }

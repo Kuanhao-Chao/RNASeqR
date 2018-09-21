@@ -4,12 +4,12 @@
 \alias{RNASeqQualityTrimming_CMD}
 \title{RNASeqQualityTrimming_CMD}
 \usage{
-RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam, cum.error = 1,
+RNASeqQualityTrimming_CMD(RNASeqRParam, cum.error = 1,
   trimming.position = NA, reads.length.limit = 36, run = TRUE,
   check.s4.print = TRUE)
 }
 \arguments{
-\item{RNASeqWorkFlowParam}{S4 object instance of
+\item{RNASeqRParam}{S4 object instance of
 experiment-related parameters}
 
 \item{cum.error}{Default \code{1}.
@@ -29,10 +29,10 @@ If \code{False}, 'Rscript/Environment_Set.R'
 will be created without executed.}
 
 \item{check.s4.print}{Default \code{TRUE}.
-If \code{TRUE}, the result of checking \code{RNASeqWorkFlowParam}
+If \code{TRUE}, the result of checking \code{RNASeqRParam}
 will be reported in 'Rscript_out/Environment_Set.Rout'.
 If \code{FALSE}, the result of checking
-\code{RNASeqWorkFlowParam} will not be in
+\code{RNASeqRParam} will not be in
 'Rscript_out/Environment_Set.Rout'}
 }
 \value{
@@ -48,7 +48,7 @@ Trim '.fastq.gz' files for RNA-Seq workflow in background.
 \examples{
 data(yeast)
 \dontrun{
-RNASeqQualityTrimming_CMD(RNASeqWorkFlowParam = yeast)}
+RNASeqQualityTrimming_CMD(RNASeqRParam = yeast)}
 }
 \author{
 Kuan-Hao Chao
