@@ -69,7 +69,7 @@ Necessary:
 
 2. Operating System: 'Linux' and 'macOS' are supported in `RNASeqWorkflow` package. 'Windows' is not supported. (Because 'StringTie' and 'HISAT2' are not available for 'Windows')
 
-3. Third-party softwares used in this package include 'HISAT2', 'StringTie' and 'Gffcomapre'. The availability of these commands will be checked by R `system2()` through R shell at the end of 'Environmnet Setup' step. Users must successfully setup environment before running the following RNA-Seq analysis. By default, binaries will be installed base on the operating system of the workstation. No compilation is needed. However, users can still choose to skip certain software binaries. More details please refer to 'Environment Setup' chapter.(?????????????????)
+3. Third-party softwares used in this package include 'HISAT2', 'StringTie' and 'Gffcomapre'. The availability of these commands will be checked by R `system2()` through R shell at the end of 'Environmnet Setup' step. Environemnt must successfully built before running the following RNA-Seq analysis. By default, binaries will be installed base on the operating system of the workstation, therefore there is no additonal compiling. Alternatively, users can still decide to skip certain software binaries installation. More details please refer to 'Environment Setup' chapter.
 
 Recommended: 
 
@@ -491,7 +491,7 @@ RNASeqReadProcess_CMD(exp)
 
 2. Run in R shell 
 Result will be reported in R shell. Make sure raw read process is successfully done before running the subsequent steps.
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 python.variable <- "@"(exp, python.variable)
 python.variable.answer <- python.variable$check.answer
 python.variable.version <- python.variable$python.version
@@ -522,7 +522,7 @@ img <- readPNG("figure/Alignment_report.png")
 
 ## General Data Visualization
 
-Here we illustrate general data visualization before and after differential expression analysis. The results based on each type of normalized value are kept in the directory, 'RNASeq_results/'. The statistical result based on normalized counts by means of median of ratios normalization(MRN) through function plots(DESeq2) are presented as follows: (??????????)
+Here we illustrate general data visualization before and after differential expression analysis. The results based on each differential analysis tool(*ballgown*, *t-test on TPM*, *DESeq2*, *edgeR*) are kept in the directory 'RNASeq_results/' separately. The statistical results based on MRN-normalized value through DESeq2 R package are presented as follows: 
 
 ### Before Differential Expression Analysis
 
@@ -531,13 +531,13 @@ Here we illustrate general data visualization before and after differential expr
 To visualize the frequency of expression value per sample using [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) R package; x-axis represents the range of normalized counts value by MRN or log<sub>2</sub>(MRN+1) value and y-axis represents the frequency corresponding to x-axis 
 
 * **'Frequency_Plot_normalized_count_ggplot2.png'**
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/preDE/Frequency/Frequency_Plot_normalized_count_ggplot2.png")
  grid.raster(img, just = "center")
 ```
 
 * **'Frequency_Plot_log_normalized_count_ggplot2.png'**
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/preDE/Frequency/Frequency_Plot_log_normalized_count_ggplot2.png")
  grid.raster(img, just = "center")
 ```
@@ -547,13 +547,13 @@ img <- readPNG("figure/preDE/Frequency/Frequency_Plot_log_normalized_count_ggplo
 To display the distribution of normalized expreesion value (e.g. log<sub>2</sub>(MRN+1) value) by boxplot and violin plot using [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) R package. Samples are colored by defined groups: blue for case group and yellow for control group.
 
 * **'Box_Plot_ggplot2.png'**
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/preDE/Distribution/Box_Plot_ggplot2.png")
  grid.raster(img, just = "center")
 ```
 
 * **'Violin_Plot_ggplot2.png'**
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/preDE/Distribution/Violin_Plot_ggplot2.png")
  grid.raster(img, just = "center")
 ```
@@ -563,41 +563,41 @@ img <- readPNG("figure/preDE/Distribution/Violin_Plot_ggplot2.png")
 To display how the biological samples compare in overall similarities and difference using principal component analysis(PCA); the principal component scores of top five dimensions are calculated using [FactoMineR](https://cran.r-project.org/web/packages/FactoMineR/index.html) package and the results are extracted and visulazied using [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) package or [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) package. 
 
 * **'Dimension_PCA_Plot_factoextra.png'**
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/preDE/PCA/Dimension_PCA_Plot_factoextra.png")
  grid.raster(img, just = "center")
 ```
 
 * **'PCA_Plot_factoextra.png'**: Samples are colored by defined groups: blue for case group and yellow for control group. The small point represents each sample while the big one represent each comparison group. Ellipases can be further added for grouping samples.
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/preDE/PCA/PCA_Plot_factoextra.png")
 grid.raster(img, just = "center")
 ```
 
 * **'PCA_Plot_ggplot2.png'**: Samples are colored by defined groups: blue for case group and yellow for control group.
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/preDE/PCA/PCA_Plot_ggplot2.png")
 grid.raster(img, just = "center")
 ```
 
 #### Correlation Plots
 
-To display the pearson correlation coefficient of a pairwise correlation analysis of changes in gene expression from all samples calculated by [stats](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/00Index.html) package using [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html), [corrplot](https://cran.r-project.org/web/packages/corrplot/index.html) and [PerformanceAnalytics](https://cran.r-project.org/web/packages/PerformanceAnalytics/index.html) packages. The colors from red to blue mark the value of the coefficient from maximum value to minimum value among all samples.
+To display the pearson correlation coefficient of a pairwise correlation analysis of changes in gene expression from all samples calculated by [stats](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/00Index.html) package using [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html)(correlation heat plot), [corrplot](https://cran.r-project.org/web/packages/corrplot/index.html)(correlation dot plot) and [PerformanceAnalytics](https://cran.r-project.org/web/packages/PerformanceAnalytics/index.html)(correlation bar plot) packages. The colors from red to blue mark the value of the coefficient from maximum value to minimum value among all samples.
 
 * **'Correlation_Heat_Plot_ggplot2.png'**
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/preDE/Correlation/Correlation_Heat_Plot_ggplot2.png")
 grid.raster(img, just = "center")
 ```
 
 * **'Correlation_Dot_Plot_corrplot.png'**
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/preDE/Correlation/Correlation_Dot_Plot_corrplot.png")
 grid.raster(img, just = "center")
 ```
 
 * **'Correlation_Bar_Plot_PerformanceAnalytics.png'**
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/preDE/Correlation/Correlation_Bar_Plot_PerformanceAnalytics.png")
 grid.raster(img, just = "center")
 ```
@@ -606,42 +606,41 @@ grid.raster(img, just = "center")
 
 #### Volcano Plots
 
-To display the criteria for selecting DEGs and identify these DEGs using [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) package. The x-axis represents log2-based fold change while y-axis denotes log10-based p-value. The upregulated and downregulated DEGs are hightlighted in red and green color, respectively. 
+* **'Volcano_Plot_graphics.png'**: To display the criteria for selecting DEGs and identify these DEGs using [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) package. The x-axis represents log2-based fold change while y-axis denotes log10-based p-value. The upregulated and downregulated DEGs are hightlighted in red and green color, respectively.
 
-* **'Volcano_Plot_graphics.png'**
+
 ```{r fig.width=8, fig.height=8, echo=FALSE}
 img <- readPNG("figure/DE/Volcano_Plot_graphics.png")
- grid.raster(img, just = "center")
+grid.raster(img, just = "center")
 ```
 
 #### PCA Plots
 
-To display how the biological samples compare in similarities and difference based on the expression value of DEGs using principal component analysis. [FactoMineR](https://cran.r-project.org/web/packages/FactoMineR/index.html) and  [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) are used in this step.
+To display how the biological samples compare in similarities and difference based on the expression value of DEGs using principal component analysis. [FactoMineR](https://cran.r-project.org/web/packages/FactoMineR/index.html), [factoextra](https://cran.r-project.org/web/packages/factoextra/index.html) and [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) packages are used in this step.
 
 * **'Dimension_PCA_Plot_factoextra.png'**
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/DE/PCA/Dimension_PCA_Plot_factoextra.png")
 grid.raster(img, just = "center")
 ```
 
-* **'PCA_Plot_factoextra.png'**
-```{r fig.width=8, height=8, echo=FALSE}
+* **'PCA_Plot_factoextra.png'**: Samples are colored by defined groups: blue for case group and yellow for control group. The small point represents each sample while the big one represent each comparison group. Ellipases can be further added for grouping samples.
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/DE/PCA/PCA_Plot_factoextra.png")
 grid.raster(img, just = "center")
 ```
 
-* **'PCA_Plot_ggplot2.png'**
-```{r fig.width=8, height=8, echo=FALSE}
+* **'PCA_Plot_ggplot2.png'**: Samples are colored by defined groups: blue for case group and yellow for control group.
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/DE/PCA/PCA_Plot_ggplot2.png")
 grid.raster(img, just = "center")
 ```
 
 #### Heatmap Plots
 
-To visualize the expression value of DEGs in terms of log2-based normalized value from all samples of two groups using [pheatmap](https://cran.r-project.org/web/packages/pheatmap/index.html) package. Samples are colored by defined groups: blue for group 1 and yellow for group 2.
+* **'Heatmap_Plot_pheatmap.png'**: To visualize the expression value of DEGs in terms of log2-based normalized value from all samples of two groups using [pheatmap](https://cran.r-project.org/web/packages/pheatmap/index.html) package. Samples are colored by defined groups: blue for case group and yellow for control 2.
 
-* **'Heatmap_Plot_pheatmap.png'**
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/DE/Heatmap_Plot_pheatmap.png")
 grid.raster(img, just = "center")
 ```
@@ -664,28 +663,27 @@ grid.raster(img, just = "center")
 
 6. Select DEGs based on default criteria: **`pval < 0.05` and `log2FC > 1 | log2FC < 1`**, and store the result in *'RNASeq_results/ballgown_analysis/ballgown_normalized_DE_result.csv'*
 
-7. Additional Data Visualization. Aside from general data visualization mentioned above, MA plot is also provided.(?????????????)
+7. Additional Data Visualization. Aside from general data visualization mentioned above, transcript-related plots and MA plot are also provided.
 
 * **'Distribution_Transcript_Count_per_Gene_Plot.png'**: To plot the distribution of transcript count per gene.
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/transcript_related/Distribution_Transcript_Count_per_Gene_Plot.png")
 grid.raster(img, just = "center")
 ```
 
 * **'Distribution_Transcript_Length_Plot.png'**: To plot the distribution of transcript length.
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/transcript_related/Distribution_Transcript_Length_Plot.png")
 grid.raster(img, just = "center")
 ```
 
-* **'MA_Plot_ggplot2.png'**: To display the difference of expression value between two groups by transforming the data onto log2-based ratio (x-axis) and log2-based mean (y-axis) scales.
-```{r fig.width=8, height=8, echo=FALSE}
+* **'MA_Plot_ggplot2.png'**: To display the difference of expression value between two groups by transforming the data onto log2-based ratio (x-axis) and log2-based mean (y-axis) scales by [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html).
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/ballgown_MA_Plot_ggplot2.png")
 grid.raster(img, just = "center")
 ```
 
 ## Student t-test Analysis Based on TPM Value
-
 Similar to FPKM value, TPM(Transcripts Per Kilobase Million) value is derived from reads count normalized by library size and transcript length using a slightly different approach, resulting in providing better cross-sample comarability. The statistic model used here is Student’s t-test. The basic steps are as follows:
 
 * Input: *'gene_data/ballgown/'*
@@ -703,8 +701,10 @@ Similar to FPKM value, TPM(Transcripts Per Kilobase Million) value is derived fr
 
 6. Additional Data Visualization. Aside from general data visualization mentioned above, MA plot is also provided.
 
-* **MA Plot**: To display the differences of expression value between two groups by transforming the data onto log2-based ratio (x-axis) and log2-based mean (y-axis) scales.
-```{r fig.width=8, height=8, echo=FALSE}
+* **'MA_Plot_ggplot2.png'**: To display the difference of expression value between two groups by transforming the data onto log2-based ratio (x-axis) and log2-based mean (y-axis) scales by [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html).
+
+
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/TPM_MA_Plot_ggplot2.png")
 grid.raster(img, just = "center")
 ```
@@ -729,14 +729,14 @@ grid.raster(img, just = "center")
 6. Additional Data Visualization. Aside from general data visualization mentioned above, dispersion plot and MA plot are also provided.
 
 
-* **Dispersion Plot**: To display the dispersion estimates before and after normalization using `plotDispEsts()`. The x-axis denotes the mean of normalized counts while y-axis represents the dispersion estimates value.
-```{r fig.width=8, height=8, echo=FALSE}
+* **Dispersion_Plot_DESeq2.png**: To display the dispersion estimates before and after normalization using `plotDispEsts()`. The x-axis denotes the mean of normalized counts while y-axis represents the dispersion estimates value by `plotDispEsts()` in [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html).
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/DESeq2_Dispersion_Plot_DESeq2.png")
 grid.raster(img, just = "center")
 ```
 
-* **MA Plot**: To display the diﬀerences of expression value between two groups by transforming the data onto log2-based ratio (x-axis) and log2-based mean (y-axis) scales.
-```{r fig.width=8, height=8, echo=FALSE}
+* **MA_Plot_DESeq2.png**: To display the diﬀerences of expression value between two groups by transforming the data onto log2-based ratio (x-axis) and log2-based mean (y-axis) scales by `plotMA()` in [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html).
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/DESeq2_MA_Plot_DESeq2.png")
 grid.raster(img, just = "center")
 ```
@@ -760,28 +760,28 @@ grid.raster(img, just = "center")
 
 6. Select DEGs based on default criteria: **`pval < 0.05` and `log2FC > 1 | log2FC < 1`**, and store the result in 'RNASeq_results/edgeR_analysis/edgeR_normalized_DE_result.csv'.
 
-7. Additional Data Visualization. Aside from general data visualization mentioned above, MeanVar plot, BCV and MDS plot are also provided.
+7. Additional Data Visualization. Aside from general data visualization mentioned above, MeanVar plot, BCV plot, MDS plot and Smear plot are also provided.
 
-* **MeanVar Plot**: To visualize the mean-variance relationship before and after TMM normalization using `plotMeanVar()` function.
-```{r fig.width=8, height=8, echo=FALSE}
+* **MeanVar_Plot_edgeR.png**: To visualize the mean-variance relationship before and after TMM normalization using `plotMeanVar()` function in [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html).
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/edgeR_MeanVar_Plot_edgeR.png")
 grid.raster(img, just = "center")
 ```
 
-* **BCV Plot**: To display the genewise biological coefficient of variance(BCV) against gene abundance using `plotBCV()` function.
-```{r fig.width=8, height=8, echo=FALSE}
+* **BCV_Plot_edgeR.png**: To display the genewise biological coefficient of variance(BCV) against gene abundance using `plotBCV()` function in [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html).
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/edgeR_BCV_Plot_edgeR.png")
 grid.raster(img, just = "center")
 ```
 
-* **MDS Plot**: To present expression differences between the samples using `plotMDS.DGEList()` function.
-```{r fig.width=8, height=8, echo=FALSE}
+* **MDS_Plot_edgeR.png**: To present expression differences between the samples using `plotMDS.DGEList()` function in [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html).
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/edgeR_MDS_Plot_edgeR.png")
 grid.raster(img, just = "center")
 ```
 
-* **Smear Plot**: To plot log2-based fold change against the log10-based concentration.
-```{r fig.width=8, height=8, echo=FALSE}
+* **Smear_Plot_edgeR.png**: To plot log2-based fold change against the log10-based concentration using `plotSmear()` in [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html).
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/edgeR_Smear_Plot_edgeR.png")
 grid.raster(img, just = "center")
 ```
@@ -798,7 +798,7 @@ RNASeqDifferentialAnalysis_CMD(exp)
 
 2. Run in R shell 
 Result will be reported in R shell. Make sure differential expression analysis is successfully finished before running subsequent steps.
-```{r}
+```{r, eval=FALSE}
 RNASeqDifferentialAnalysis(exp@path.prefix,
                            exp@genome.name,
                            exp@sample.pattern,
@@ -828,19 +828,19 @@ Gene Ontology deﬁnes the universe of concepts relating to gene functions(GO te
 
 In this example, DESeq2 CC GO Classification bar plot is showed.
 
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/GO_analysis/GO_CC_Classification_Bar_Plot_clusterProfiler.png")
 grid.raster(img, just = "center")
 ```
 
 In this example, DESeq2 MF GO Over-representation bar plot and DESeq2 MF GO Over-representation dot plot are showed.
 
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/GO_analysis/GO_MF_Overrepresentation_Bar_Plot_clusterProfiler.png")
 grid.raster(img, just = "center")
 ```
 
-```{r fig.width=8, height=8, echo=FALSE}
+```{r fig.width=6, height=6, echo=FALSE}
 img <- readPNG("figure/GO_analysis/GO_MF_Overrepresentation_Dot_Plot_clusterProfiler.png")
 grid.raster(img, just = "center")
 ```
