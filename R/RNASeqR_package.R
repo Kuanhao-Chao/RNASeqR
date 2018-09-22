@@ -19,7 +19,7 @@
 #' @importFrom systemPipeRdata genWorkenvir
 #' @importFrom systemPipeR systemArgs seeFastq infile1 seeFastqPlot
 #' @importFrom ShortRead readFastq narrow width writeFastq
-#' @importFrom Biostrings quality
+#' @importFrom Biostrings quality width
 #' @importFrom ballgown ballgown texpr indexes stattest gexpr
 #' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results counts
 #'   plotMA plotDispEsts

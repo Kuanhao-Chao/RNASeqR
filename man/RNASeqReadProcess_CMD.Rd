@@ -5,11 +5,11 @@
 \title{RNASeqReadProcess_CMD}
 \usage{
 RNASeqReadProcess_CMD(RNASeqRParam, num.parallel.threads = 1,
-  Rsamtools.maxMemory = 512, run = TRUE, check.s4.print = TRUE,
-  Hisat2.Index.run = TRUE, Hisat2.Alignment.run = TRUE,
-  Rsamtools.Bam.run = TRUE, StringTie.Assemble.run = TRUE,
-  StringTie.Merge.Trans.run = TRUE, Gffcompare.Ref.Sample.run = TRUE,
-  StringTie.Ballgown.run = TRUE, PreDECountTable.run = TRUE)
+  Rsamtools.maxMemory = 512, Hisat2.Index.run = TRUE,
+  Hisat2.Alignment.run = TRUE, Rsamtools.Bam.run = TRUE,
+  StringTie.Assemble.run = TRUE, StringTie.Merge.Trans.run = TRUE,
+  Gffcompare.Ref.Sample.run = TRUE, StringTie.Ballgown.run = TRUE,
+  PreDECountTable.run = TRUE, run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqRParam}{S4 object instance of experiment-related
@@ -21,18 +21,6 @@ to use for transcript assembly. The default is 1.}
 \item{Rsamtools.maxMemory}{A numerical(1) indicating the maximal amount of
 memory (in MB) that the function is allowed to use. More details please
 refer to 'Rsamtools' package}
-
-\item{run}{Default value is \code{TRUE}. If \code{TRUE},
-'Rscript/Environment_Set.R' will be created and executed.
-The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
-If \code{False}, 'Rscript/Environment_Set.R' will be
-created without executed.}
-
-\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE},
-the result of checking \code{RNASeqRParam}
-will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE},
-the result of checking \code{RNASeqRParam} will not be in
-'Rscript_out/Environment_Set.Rout'.}
 
 \item{Hisat2.Index.run}{Whether to run 'HISAT2 index' step in this function
 step. Default value is \code{TRUE}. Set \code{FALSE} to skip
@@ -65,6 +53,18 @@ Set \code{FALSE} to skip 'StringTie ballgown creation' step.}
 \item{PreDECountTable.run}{Whether to run 'gene raw reads count creation'
 step in this function step. Default value is \code{TRUE}.
 Set \code{FALSE} to skip 'gene raw reads count creation' step.}
+
+\item{run}{Default value is \code{TRUE}. If \code{TRUE},
+'Rscript/Environment_Set.R' will be created and executed.
+The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+If \code{False}, 'Rscript/Environment_Set.R' will be
+created without executed.}
+
+\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE},
+the result of checking \code{RNASeqRParam}
+will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE},
+the result of checking \code{RNASeqRParam} will not be in
+'Rscript_out/Environment_Set.Rout'.}
 }
 \value{
 None

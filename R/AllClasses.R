@@ -90,13 +90,13 @@ setClass("RNASeqRParam",
 #' input_files.path <- system.file("extdata/", package = "RNASeqRData")
 #' rnaseq_result.path <- "/tmp/yeast_example/"
 #' dir.create(rnaseq_result.path)
-#' yeast <- RNASeqRParam(path.prefix          = rnaseq_result.path,
-#'                            input.path.prefix    = input_files.path,
-#'                            genome.name          = "Saccharomyces_cerevisiae_XV_Ensembl",
-#'                            sample.pattern       = "SRR[0-9]*_XV",
-#'                            independent.variable = "state",
-#'                            case.group           = "60mins_ID20_amphotericin_B",
-#'                            control.group        = "60mins_ID20_control")
+#' exp <- RNASeqRParam(path.prefix          = rnaseq_result.path,
+#'                     input.path.prefix    = input_files.path,
+#'                     genome.name          = "Saccharomyces_cerevisiae_XV_Ensembl",
+#'                     sample.pattern       = "SRR[0-9]*_XV",
+#'                     independent.variable = "state",
+#'                     case.group           = "60mins_ID20_amphotericin_B",
+#'                     control.group        = "60mins_ID20_control")
 RNASeqRParam <- function(path.prefix          = NA,
                                 input.path.prefix    = NA,
                                 genome.name          = NA,

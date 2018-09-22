@@ -26,16 +26,6 @@
 #' @param Rsamtools.maxMemory A numerical(1) indicating the maximal amount of
 #'   memory (in MB) that the function is allowed to use. More details please
 #'   refer to 'Rsamtools' package
-#' @param run Default value is \code{TRUE}. If \code{TRUE},
-#'   'Rscript/Environment_Set.R' will be created and executed.
-#'   The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
-#'   If \code{False}, 'Rscript/Environment_Set.R' will be
-#'   created without executed.
-#' @param check.s4.print Default \code{TRUE}. If \code{TRUE},
-#'   the result of checking \code{RNASeqRParam}
-#'   will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE},
-#'   the result of checking \code{RNASeqRParam} will not be in
-#'   'Rscript_out/Environment_Set.Rout'.
 #' @param Hisat2.Index.run Whether to run 'HISAT2 index' step in this function
 #'   step. Default value is \code{TRUE}. Set \code{FALSE} to skip
 #'   'HISAT2 index' step.
@@ -60,6 +50,16 @@
 #' @param PreDECountTable.run Whether to run 'gene raw reads count creation'
 #'   step in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'gene raw reads count creation' step.
+#' @param run Default value is \code{TRUE}. If \code{TRUE},
+#'   'Rscript/Environment_Set.R' will be created and executed.
+#'   The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
+#'   If \code{False}, 'Rscript/Environment_Set.R' will be
+#'   created without executed.
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE},
+#'   the result of checking \code{RNASeqRParam}
+#'   will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE},
+#'   the result of checking \code{RNASeqRParam} will not be in
+#'   'Rscript_out/Environment_Set.Rout'.
 #'
 #' @return None
 #' @export
@@ -74,8 +74,6 @@
 RNASeqReadProcess_CMD <- function(RNASeqRParam,
                                   num.parallel.threads      = 1,
                                   Rsamtools.maxMemory       = 512,
-                                  run                       = TRUE,
-                                  check.s4.print            = TRUE,
                                   Hisat2.Index.run          = TRUE,
                                   Hisat2.Alignment.run      = TRUE,
                                   Rsamtools.Bam.run         = TRUE,
@@ -83,45 +81,41 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
                                   StringTie.Merge.Trans.run = TRUE,
                                   Gffcompare.Ref.Sample.run = TRUE,
                                   StringTie.Ballgown.run    = TRUE,
-                                  PreDECountTable.run       = TRUE) {
+                                  PreDECountTable.run       = TRUE,
+                                  run                       = TRUE,
+                                  check.s4.print            = TRUE) {
   CheckS4Object(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
   path.prefix <- "@"(RNASeqRParam, path.prefix)
-  input.path.prefix <- "@"(RNASeqRParam, input.path.prefix)
-  genome.name <- "@"(RNASeqRParam, genome.name)
-  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
-  python.variable <- "@"(RNASeqRParam, python.variable)
-  python.variable.answer <- python.variable$check.answer
-  python.variable.version <- python.variable$python.version
-  python.2to3 <- "@"(RNASeqRParam, python.2to3)
-  indices.optional <- "@"(RNASeqRParam, indices.optional)
+  INSIDE.path.prefix <- "@"(RNASeqRParam, path.prefix)
+  saveRDS(RNASeqRParam,
+          file = paste0(INSIDE.path.prefix,
+                        "gene_data/RNASeqRParam.rds"))
   fileConn<-file(paste0(path.prefix, "Rscript/Read_Process.R"))
   first <- "library(RNASeqR)"
-  second <- paste0('RNASeqReadProcess(path.prefix = "', path.prefix,
-                   '", input.path.prefix = "', input.path.prefix,
-                   '", genome.name = "', genome.name,
-                   '", sample.pattern = "', sample.pattern,
-                   '", python.variable.answer = ', python.variable.answer,
-                   ', python.variable.version = ', python.variable.version,
-                   ', python.2to3 = ', python.2to3,
-                   ', num.parallel.threads = ', num.parallel.threads,
-                   ', indices.optional = ', indices.optional,
-                   ', Rsamtools.maxMemory = ', Rsamtools.maxMemory,
-                   ', Hisat2.Index.run = ', Hisat2.Index.run,
-                   ', Hisat2.Alignment.run = ', Hisat2.Alignment.run,
-                   ', Rsamtools.Bam.run = ', Rsamtools.Bam.run,
-                   ', StringTie.Assemble.run = ', StringTie.Assemble.run,
-                   ', StringTie.Merge.Trans.run = ', StringTie.Merge.Trans.run,
-                   ', Gffcompare.Ref.Sample.run = ', Gffcompare.Ref.Sample.run,
-                   ', StringTie.Ballgown.run = ', StringTie.Ballgown.run,
-                   ', PreDECountTable.run = ', PreDECountTable.run, ')')
+  second <- paste0("RNASeqReadProcess(RNASeqRParam = 'INSIDE'",
+                   ", which.trigger = 'INSIDE'",
+                   ", INSIDE.path.prefix = '", INSIDE.path.prefix,
+                   "', num.parallel.threads = ", num.parallel.threads,
+                   ", Rsamtools.maxMemory = ", Rsamtools.maxMemory,
+                   ", Hisat2.Index.run = ", Hisat2.Index.run,
+                   ", Hisat2.Alignment.run = ", Hisat2.Alignment.run,
+                   ", Rsamtools.Bam.run = ", Rsamtools.Bam.run,
+                   ", StringTie.Assemble.run = ", StringTie.Assemble.run,
+                   ", StringTie.Merge.Trans.run = ", StringTie.Merge.Trans.run,
+                   ", Gffcompare.Ref.Sample.run = ", Gffcompare.Ref.Sample.run,
+                   ", StringTie.Ballgown.run = ", StringTie.Ballgown.run,
+                   ", PreDECountTable.run = ", PreDECountTable.run, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   message(paste0("\u2605 '", path.prefix,
                  "Rscript/Read_Process.R' has been created.\n"))
   if (run) {
-    system2(command = 'nohup',
-            args = paste0("R CMD BATCH ", path.prefix,
+    R.home.lib <- R.home()
+    R.home.bin <- gsub("/lib/R", "/bin/R", R.home.lib)
+    system2(command = "nohup",
+            args = paste0(R.home.bin, " CMD BATCH ",
+                          path.prefix,
                           "Rscript/Read_Process.R ", path.prefix,
                           "Rscript_out/Read_Process.Rout"),
             stdout = "",
@@ -155,22 +149,14 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
 #'   If you want to process raw reads for the following RNA-Seq workflow in
 #'   background, please see \code{RNASeqReadProcess_CMD()} function.
 #'
-#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/',
-#'   'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
-#' @param input.path.prefix path prefix of 'input_files/' directory
-#' @param genome.name Variable of genome name defined in this RNA-Seq workflow
-#'   (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
-#' @param sample.pattern  Regular expression of paired-end fastq.gz files under
-#'   'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
-#' @param python.variable.answer logical value whether python is available
-#'   on the device
-#' @param python.variable.version python version of the device
-#' @param python.2to3 logical value whether \code{2to3} is available
-#'   on the device
+#' @param RNASeqRParam S4 object instance of experiment-related
+#'   parameters
+#' @param which.trigger Default value is \code{OUTSIDE}. User should not change
+#'   this value.
+#' @param INSIDE.path.prefix Default value is \code{NA}. User should not change
+#'   this value.
 #' @param num.parallel.threads Specify the number of processing threads (CPUs)
 #'   to use for transcript assembly. The default is 1.
-#' @param indices.optional logical value whether 'indices/' is
-#'   exit in 'input_files/'
 #' @param Rsamtools.maxMemory A numerical(1) indicating the maximal amount of
 #'   memory (in MB) that the function is allowed to use. More details please
 #'   refer to 'Rsamtools' package
@@ -198,6 +184,11 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
 #' @param PreDECountTable.run Whether to run 'gene raw reads count creation'
 #'   step in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'gene raw reads count creation' step.
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE},
+#'   the result of checking \code{RNASeqRParam}
+#'   will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE},
+#'   the result of checking \code{RNASeqRParam} will not be in
+#'   'Rscript_out/Environment_Set.Rout'.
 #'
 #' @return None
 #' @export
@@ -207,23 +198,12 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
 #' \dontrun{
 #' ## Before run this function, make sure \code{RNASeqEnvironmentSet_CMD()}
 #' ##(or\code{RNASeqEnvironmentSet()}) is executed successfully.
-#' RNASeqReadProcess(path.prefix             = yeast@@path.prefix,
-#'                   input.path.prefix       = yeast@@input.path.prefix,
-#'                   genome.name             = yeast@@genome.name,
-#'                   sample.pattern          = yeast@@sample.pattern,
-#'                   python.variable.answer  = yeast@@python.variable[0],
-#'                   python.variable.version = yeast@@python.variable[1],
-#'                   indices.optional        = yeast@@indices.optional,
-#'                   num.parallel.threads    = 10)}
-RNASeqReadProcess <- function(path.prefix,
-                              input.path.prefix,
-                              genome.name,
-                              sample.pattern,
-                              python.variable.answer,
-                              python.variable.version,
-                              python.2to3,
+#' RNASeqReadProcess(RNASeqRParam         = yeast,
+#'                   num.parallel.threads = 10)}
+RNASeqReadProcess <- function(RNASeqRParam,
+                              which.trigger             = "OUTSIDE",
+                              INSIDE.path.prefix        = NA,
                               num.parallel.threads      = 1,
-                              indices.optional,
                               Rsamtools.maxMemory       = 512,
                               Hisat2.Index.run          = TRUE,
                               Hisat2.Alignment.run      = TRUE,
@@ -232,8 +212,36 @@ RNASeqReadProcess <- function(path.prefix,
                               StringTie.Merge.Trans.run = TRUE,
                               Gffcompare.Ref.Sample.run = TRUE,
                               StringTie.Ballgown.run    = TRUE,
-                              PreDECountTable.run       = TRUE) {
+                              PreDECountTable.run       = TRUE,
+                              check.s4.print            = TRUE) {
   CheckOperatingSystem(FALSE)
+  # If `which.trigger` is OUTSIDE, then directory must be built
+  # If `which.trigger` is INSIDE, then directory must not be
+  #  built here(will created in CMD)
+  if (isS4(RNASeqRParam) &
+      which.trigger == "OUTSIDE" &
+      is.na(INSIDE.path.prefix)) {
+    # This is an external call!!
+    # Check the S4 object(user input)
+    CheckS4Object(RNASeqRParam, check.s4.print)
+  } else if (RNASeqRParam == "INSIDE" &
+             which.trigger == "INSIDE" &
+             !is.na(INSIDE.path.prefix)) {
+    # This is an internal call!!
+    # Load the S4 object that saved in CMD process
+    RNASeqRParam <- readRDS(paste0(INSIDE.path.prefix,
+                                   "gene_data/RNASeqRParam.rds"))
+  }
+  # To find 'HISAT2', 'StringTie' and 'Gffcompare'
+  path.prefix <- "@"(RNASeqRParam, path.prefix)
+  input.path.prefix <- "@"(RNASeqRParam, input.path.prefix)
+  genome.name <- "@"(RNASeqRParam, genome.name)
+  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
+  python.variable <- "@"(RNASeqRParam, python.variable)
+  python.variable.answer <- python.variable$check.answer
+  python.variable.version <- python.variable$python.version
+  python.2to3 <- "@"(RNASeqRParam, python.2to3)
+  indices.optional <- "@"(RNASeqRParam, indices.optional)
   ExportPath(path.prefix)
   PreRNASeqReadProcess(path.prefix, genome.name, sample.pattern)
   check.results <- ProgressGenesFiles(path.prefix,

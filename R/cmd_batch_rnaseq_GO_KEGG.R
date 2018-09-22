@@ -51,7 +51,7 @@
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' RNASeqGoKegg_CMD(yeast,
+#' RNASeqGoKegg_CMD(RNASeqRParam  = yeast,
 #'                  OrgDb.species = "org.Sc.sgd.db",
 #'                  go.level = 3,
 #'                  input.TYPE.ID = "GENENAME",
@@ -68,11 +68,15 @@ RNASeqGoKegg_CMD <- function(RNASeqRParam,
   CheckS4Object(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
   path.prefix <- "@"(RNASeqRParam, path.prefix)
-  independent.variable <- "@"(RNASeqRParam, independent.variable)
+  INSIDE.path.prefix <- "@"(RNASeqRParam, path.prefix)
+  saveRDS(RNASeqRParam,
+          file = paste0(INSIDE.path.prefix,
+                        "gene_data/RNASeqRParam.rds"))
   fileConn<-file(paste0(path.prefix, "Rscript/GO_KEGG_Analysis.R"))
   first <- "library(RNASeqR)"
-  second <- paste0("RNASeqGoKegg(path.prefix = '", path.prefix,
-                   "', independent.variable = '", independent.variable,
+  second <- paste0("RNASeqGoKegg(RNASeqRParam = 'INSIDE'",
+                   ", which.trigger = 'INSIDE'",
+                   ", INSIDE.path.prefix = '", INSIDE.path.prefix,
                    "', OrgDb.species = '", OrgDb.species,
                    "', go.level = ", go.level,
                    ", input.TYPE.ID = '", input.TYPE.ID,
@@ -82,8 +86,11 @@ RNASeqGoKegg_CMD <- function(RNASeqRParam,
   message(paste0("\u2605 '", path.prefix,
                  "Rscript/GO_KEGG_Analysis.R' has been created.\n"))
   if (run) {
+    R.home.lib <- R.home()
+    R.home.bin <- gsub("/lib/R", "/bin/R", R.home.lib)
     system2(command = 'nohup',
-            args = paste0("R CMD BATCH ", path.prefix,
+            args = paste0(R.home.bin, " CMD BATCH ",
+                          path.prefix,
                           "Rscript/GO_KEGG_Analysis.R ",
                           path.prefix, "Rscript_out/GO_KEGG_Analysis.Rout"),
             stdout = "", wait = FALSE)
@@ -117,10 +124,12 @@ RNASeqGoKegg_CMD <- function(RNASeqRParam,
 #'   If you want to do GO functional analysis and KEGG pathway analysis
 #'   for the following RNA-Seq workflow in background,
 #'    please see \code{RNASeqGoKegg_CMD()} function.
-#' @param path.prefix Path prefix of 'gene_data/', 'RNASeq_bin/',
-#'   'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories.
-#' @param independent.variable independent variable for the biological
-#'   experiment design of two-group RNA-Seq workflow
+#' @param RNASeqRParam S4 object instance of experiment-related
+#'   parameters
+#' @param which.trigger Default value is \code{OUTSIDE}. User should not change
+#'   this value.
+#' @param INSIDE.path.prefix Default value is \code{NA}. User should not change
+#'   this value.
 #' @param OrgDb.species the genome wide annotation packages of species
 #'   on Bioconductor. Currently, there are 19 supported genome wide
 #'   annotation packages of species.
@@ -130,6 +139,11 @@ RNASeqGoKegg_CMD <- function(RNASeqRParam,
 #'   Currently, there are more than 5000 supported species genome.
 #'   Check the valid species terms on
 #'   https://www.genome.jp/kegg/catalog/org_list.html
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE},
+#'   the result of checking \code{RNASeqRParam} will be reported in
+#'   'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
+#'   \code{RNASeqRParam} will not be in
+#'   'Rscript_out/Environment_Set.Rout'
 #'
 #' @return None
 #' @export
@@ -137,20 +151,39 @@ RNASeqGoKegg_CMD <- function(RNASeqRParam,
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' RNASeqGoKegg(path.prefix          = path.prefix@@yeast,
-#'              independent.variable = independent.variable@@yeast,
-#'              OrgDb.species        = "org.Sc.sgd.db",
-#'              go.level             = 3,
-#'              input.TYPE.ID        = "GENENAME",
-#'              KEGG.organism        = "sce")
-#' }
-RNASeqGoKegg <- function(path.prefix,
-                         independent.variable,
+#' RNASeqGoKegg(RNASeqRParam  = yeast,
+#'              OrgDb.species = "org.Sc.sgd.db",
+#'              go.level = 3,
+#'              input.TYPE.ID = "GENENAME",
+#'              KEGG.organism = "sce")}
+RNASeqGoKegg <- function(RNASeqRParam,
+                         which.trigger      = "OUTSIDE",
+                         INSIDE.path.prefix = NA,
                          OrgDb.species,
                          go.level = 3,
                          input.TYPE.ID,
-                         KEGG.organism) {
+                         KEGG.organism,
+                         check.s4.print = TRUE) {
   CheckOperatingSystem(FALSE)
+  # If `which.trigger` is OUTSIDE, then directory must be built
+  # If `which.trigger` is INSIDE, then directory must not be
+  #  built here(will created in CMD)
+  if (isS4(RNASeqRParam) &
+      which.trigger == "OUTSIDE" &
+      is.na(INSIDE.path.prefix)) {
+    # This is an external call!!
+    # Check the S4 object(user input)
+    CheckS4Object(RNASeqRParam, check.s4.print)
+  } else if (RNASeqRParam == "INSIDE" &
+             which.trigger == "INSIDE" &
+             !is.na(INSIDE.path.prefix)) {
+    # This is an internal call!!
+    # Load the S4 object that saved in CMD process
+    RNASeqRParam <- readRDS(paste0(INSIDE.path.prefix,
+                                   "gene_data/RNASeqRParam.rds"))
+  }
+  path.prefix <- "@"(RNASeqRParam, path.prefix)
+  independent.variable <- "@"(RNASeqRParam, independent.variable)
   PreRNASeqGoKegg()
   raw.read.avail <- RawReadCountAvailability(path.prefix)
   ballgown.bool <- dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/"))

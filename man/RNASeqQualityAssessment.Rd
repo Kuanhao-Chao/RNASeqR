@@ -4,17 +4,24 @@
 \alias{RNASeqQualityAssessment}
 \title{RNASeqQualityAssessment}
 \usage{
-RNASeqQualityAssessment(path.prefix, input.path.prefix, sample.pattern)
+RNASeqQualityAssessment(RNASeqRParam, which.trigger = "OUTSIDE",
+  INSIDE.path.prefix = NA, check.s4.print = TRUE)
 }
 \arguments{
-\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/',
-'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
+\item{RNASeqRParam}{S4 object instance of experiment-related
+parameters}
 
-\item{input.path.prefix}{path prefix of 'input_files/' directory}
+\item{which.trigger}{Default value is \code{OUTSIDE}. User should not change
+this value.}
 
-\item{sample.pattern}{sample.pattern  Regular expression of paired-end
-fastq.gz files under 'input_files/raw_fastq.gz'.
-Expression not includes \code{_[1,2].fastq.gz}.}
+\item{INSIDE.path.prefix}{Default value is \code{NA}. User should not change
+this value.}
+
+\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of
+checking \code{RNASeqRParam} will be reported in
+'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
+\code{RNASeqRParam} will not be in
+'Rscript_out/Environment_Set.Rout'}
 }
 \value{
 None
@@ -33,9 +40,7 @@ Assess the quality of '.fastq.gz' files for RNA-Seq workflow in R shell.
 \examples{
 data(yeast)
 \dontrun{
-RNASeqQualityAssessment(path.prefix       = yeast@path.prefix,
-                        input.path.prefix = yeast@input.path.prefix,
-                        sample.pattern    = yeast@sample.pattern)}
+RNASeqQualityAssessment(RNASeqRParam = yeast)}
 }
 \author{
 Kuan-Hao Chao

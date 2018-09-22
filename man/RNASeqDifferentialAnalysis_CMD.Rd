@@ -4,15 +4,21 @@
 \alias{RNASeqDifferentialAnalysis_CMD}
 \title{RNASeqDifferentialAnalysis_CMD}
 \usage{
-RNASeqDifferentialAnalysis_CMD(RNASeqRParam, ballgown.run = TRUE,
-  ballgown.pval = 0.05, ballgown.log2FC = 1, DESeq2.run = TRUE,
-  DESeq2.pval = 0.1, DESeq2.log2FC = 1, edgeR.run = TRUE,
-  edgeR.pval = 0.05, edgeR.log2FC = 1, run = TRUE,
-  check.s4.print = TRUE)
+RNASeqDifferentialAnalysis_CMD(RNASeqRParam, which.trigger = "OUTSIDE",
+  INSIDE.path.prefix = NA, ballgown.run = TRUE, ballgown.pval = 0.05,
+  ballgown.log2FC = 1, DESeq2.run = TRUE, DESeq2.pval = 0.1,
+  DESeq2.log2FC = 1, edgeR.run = TRUE, edgeR.pval = 0.05,
+  edgeR.log2FC = 1, run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqRParam}{S4 object instance of
 experiment-related parameters}
+
+\item{which.trigger}{Default value is \code{OUTSIDE}. User should not change
+this value.}
+
+\item{INSIDE.path.prefix}{Default value is \code{NA}. User should not change
+this value.}
 
 \item{ballgown.run}{Default \code{TRUE}. Logical value whether to run
 ballgown differential analysis.}

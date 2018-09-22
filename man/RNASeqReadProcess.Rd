@@ -4,40 +4,26 @@
 \alias{RNASeqReadProcess}
 \title{RNASeqReadProcess}
 \usage{
-RNASeqReadProcess(path.prefix, input.path.prefix, genome.name,
-  sample.pattern, python.variable.answer, python.variable.version,
-  python.2to3, num.parallel.threads = 1, indices.optional,
+RNASeqReadProcess(RNASeqRParam, which.trigger = "OUTSIDE",
+  INSIDE.path.prefix = NA, num.parallel.threads = 1,
   Rsamtools.maxMemory = 512, Hisat2.Index.run = TRUE,
   Hisat2.Alignment.run = TRUE, Rsamtools.Bam.run = TRUE,
   StringTie.Assemble.run = TRUE, StringTie.Merge.Trans.run = TRUE,
   Gffcompare.Ref.Sample.run = TRUE, StringTie.Ballgown.run = TRUE,
-  PreDECountTable.run = TRUE)
+  PreDECountTable.run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
-\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/',
-'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
+\item{RNASeqRParam}{S4 object instance of experiment-related
+parameters}
 
-\item{input.path.prefix}{path prefix of 'input_files/' directory}
+\item{which.trigger}{Default value is \code{OUTSIDE}. User should not change
+this value.}
 
-\item{genome.name}{Variable of genome name defined in this RNA-Seq workflow
-(ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
-
-\item{sample.pattern}{Regular expression of paired-end fastq.gz files under
-'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
-
-\item{python.variable.answer}{logical value whether python is available
-on the device}
-
-\item{python.variable.version}{python version of the device}
-
-\item{python.2to3}{logical value whether \code{2to3} is available
-on the device}
+\item{INSIDE.path.prefix}{Default value is \code{NA}. User should not change
+this value.}
 
 \item{num.parallel.threads}{Specify the number of processing threads (CPUs)
 to use for transcript assembly. The default is 1.}
-
-\item{indices.optional}{logical value whether 'indices/' is
-exit in 'input_files/'}
 
 \item{Rsamtools.maxMemory}{A numerical(1) indicating the maximal amount of
 memory (in MB) that the function is allowed to use. More details please
@@ -74,6 +60,12 @@ Set \code{FALSE} to skip 'StringTie ballgown creation' step.}
 \item{PreDECountTable.run}{Whether to run 'gene raw reads count creation'
 step in this function step. Default value is \code{TRUE}.
 Set \code{FALSE} to skip 'gene raw reads count creation' step.}
+
+\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE},
+the result of checking \code{RNASeqRParam}
+will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE},
+the result of checking \code{RNASeqRParam} will not be in
+'Rscript_out/Environment_Set.Rout'.}
 }
 \value{
 None
@@ -102,14 +94,8 @@ data(yeast)
 \dontrun{
 ## Before run this function, make sure \\code{RNASeqEnvironmentSet_CMD()}
 ##(or\\code{RNASeqEnvironmentSet()}) is executed successfully.
-RNASeqReadProcess(path.prefix             = yeast@path.prefix,
-                  input.path.prefix       = yeast@input.path.prefix,
-                  genome.name             = yeast@genome.name,
-                  sample.pattern          = yeast@sample.pattern,
-                  python.variable.answer  = yeast@python.variable[0],
-                  python.variable.version = yeast@python.variable[1],
-                  indices.optional        = yeast@indices.optional,
-                  num.parallel.threads    = 10)}
+RNASeqReadProcess(RNASeqRParam         = yeast,
+                  num.parallel.threads = 10)}
 }
 \author{
 Kuan-Hao Chao

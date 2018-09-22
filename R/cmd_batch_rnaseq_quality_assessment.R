@@ -32,27 +32,32 @@
 #' \dontrun{
 #' RNASeqQualityAssessment_CMD(RNASeqRParam = yeast)}
 RNASeqQualityAssessment_CMD <- function(RNASeqRParam,
-                                        run                 = TRUE,
-                                        check.s4.print      = TRUE) {
+                                        run            = TRUE,
+                                        check.s4.print = TRUE) {
   # check input param
   CheckS4Object(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
   path.prefix <- "@"(RNASeqRParam, path.prefix)
-  input.path.prefix <- "@"(RNASeqRParam, input.path.prefix)
-  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
+  INSIDE.path.prefix <- "@"(RNASeqRParam, path.prefix)
+  saveRDS(RNASeqRParam,
+          file = paste0(INSIDE.path.prefix,
+                        "gene_data/RNASeqRParam.rds"))
   fileConn <- file(paste0(path.prefix, "Rscript/Quality_Assessment.R"))
   first <- "library(RNASeqR)"
-  second <- paste0("RNASeqQualityAssessment(path.prefix = '", path.prefix,
-                   "', input.path.prefix = '", input.path.prefix,
-                   "', sample.pattern = '", sample.pattern, "')")
+  second <- paste0("RNASeqQualityAssessment(RNASeqRParam = 'INSIDE'",
+                   ", which.trigger = 'INSIDE'",
+                   ", INSIDE.path.prefix = '", INSIDE.path.prefix,"')")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   message(paste0("\u2605 '", path.prefix,
                  "Rscript/Quality_Assessment.R' has been created.\n"))
   if (run) {
+    R.home.lib <- R.home()
+    R.home.bin <- gsub("/lib/R", "/bin/R", R.home.lib)
     system2(command = "nohup",
-            args = paste0("R CMD BATCH ", path.prefix,
-                                             "Rscript/Quality_Assessment.R ",
+            args = paste0(R.home.bin, " CMD BATCH ",
+                          path.prefix,
+                          "Rscript/Quality_Assessment.R ",
                           path.prefix, "Rscript_out/Quality_Assessment.Rout"),
             stdout = "",
             wait = FALSE)
@@ -74,13 +79,17 @@ RNASeqQualityAssessment_CMD <- function(RNASeqRParam,
 #'   will be created. \cr If you want to assess the quality of '.fastq.gz'
 #'   files for the following RNA-Seq workflow in background,
 #'   please see \code{RNASeqQualityAssessment_CMD()} function.
-#'
-#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/',
-#'   'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
-#' @param input.path.prefix path prefix of 'input_files/' directory
-#' @param sample.pattern  sample.pattern  Regular expression of paired-end
-#'   fastq.gz files under 'input_files/raw_fastq.gz'.
-#'   Expression not includes \code{_[1,2].fastq.gz}.
+#' @param RNASeqRParam S4 object instance of experiment-related
+#'   parameters
+#' @param which.trigger Default value is \code{OUTSIDE}. User should not change
+#'   this value.
+#' @param INSIDE.path.prefix Default value is \code{NA}. User should not change
+#'   this value.
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of
+#'   checking \code{RNASeqRParam} will be reported in
+#'   'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
+#'   \code{RNASeqRParam} will not be in
+#'   'Rscript_out/Environment_Set.Rout'
 #'
 #' @return None
 #' @export
@@ -88,13 +97,32 @@ RNASeqQualityAssessment_CMD <- function(RNASeqRParam,
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' RNASeqQualityAssessment(path.prefix       = yeast@@path.prefix,
-#'                         input.path.prefix = yeast@@input.path.prefix,
-#'                         sample.pattern    = yeast@@sample.pattern)}
-RNASeqQualityAssessment <- function(path.prefix,
-                                    input.path.prefix,
-                                    sample.pattern) {
+#' RNASeqQualityAssessment(RNASeqRParam = yeast)}
+RNASeqQualityAssessment <- function(RNASeqRParam,
+                                    which.trigger      = "OUTSIDE",
+                                    INSIDE.path.prefix = NA,
+                                    check.s4.print     = TRUE) {
   CheckOperatingSystem(FALSE)
+  # If `which.trigger` is OUTSIDE, then directory must be built
+  # If `which.trigger` is INSIDE, then directory must not be
+  #  built here(will created in CMD)
+  if (isS4(RNASeqRParam) &
+      which.trigger == "OUTSIDE" &
+      is.na(INSIDE.path.prefix)) {
+    # This is an external call!!
+    # Check the S4 object(user input)
+    CheckS4Object(RNASeqRParam, check.s4.print)
+  } else if (RNASeqRParam == "INSIDE" &
+             which.trigger == "INSIDE" &
+             !is.na(INSIDE.path.prefix)) {
+    # This is an internal call!!
+    # Load the S4 object that saved in CMD process
+    RNASeqRParam <- readRDS(paste0(INSIDE.path.prefix,
+                                   "gene_data/RNASeqRParam.rds"))
+  }
+  path.prefix <- "@"(RNASeqRParam, path.prefix)
+  input.path.prefix <- "@"(RNASeqRParam, input.path.prefix)
+  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
   PreCheckRNASeqQualityAssessment(path.prefix, sample.pattern)
   QA_results_subfiles <- list.files(paste0(path.prefix,
                                            "RNASeq_results/QA_results"),

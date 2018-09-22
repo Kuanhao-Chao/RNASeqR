@@ -4,46 +4,38 @@
 \alias{RNASeqEnvironmentSet}
 \title{RNASeqEnvironmentSet}
 \usage{
-RNASeqEnvironmentSet(path.prefix, input.path.prefix, genome.name,
-  sample.pattern, indices.optional, os.type, install.hisat2 = TRUE,
+RNASeqEnvironmentSet(RNASeqRParam, which.trigger = "OUTSIDE",
+  INSIDE.path.prefix = NA, install.hisat2 = TRUE,
   install.stringtie = TRUE, install.gffcompare = TRUE,
-  mkdir.bool = TRUE)
+  check.s4.print = TRUE)
 }
 \arguments{
-\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/',
-'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories.}
+\item{RNASeqRParam}{S4 object instance of experiment-related
+parameters}
 
-\item{input.path.prefix}{path prefix of 'input_files/' directory}
+\item{which.trigger}{Default value is \code{OUTSIDE}. User should not change
+this value.}
 
-\item{genome.name}{genome.name variable of genome name defined in this
-RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
-
-\item{sample.pattern}{Regular expression of paired-end fastq.gz files under
-'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.}
-
-\item{indices.optional}{logical value whether 'indices/' is exit in
-'input_files/'}
-
-\item{os.type}{'linux' or 'osx'. The operating system type}
+\item{INSIDE.path.prefix}{Default value is \code{NA}. User should not change
+this value.}
 
 \item{install.hisat2}{Whether to install 'HISAT2' in this function step.
-Default value is \code{TRUE}.
+Default value is\code{TRUE}.
 Set \code{FALSE} to skip 'HISAT2' installation.}
 
-\item{install.stringtie}{Whether to install 'StringTie' in
-this function step.
-Default value is \code{TRUE}.
+\item{install.stringtie}{Whether to install 'StringTie'
+in this function step. Default value is \code{TRUE}.
 Set\code{FALSE} to skip 'StringTie' installation.}
 
 \item{install.gffcompare}{Whether to install 'Gffcompare'
 in this function step. Default value is \code{TRUE}.
 Set\code{FALSE} to skip 'Gffcompare' installation.}
 
-\item{mkdir.bool}{Default \code{TRUE}. If \code{TRUE},
-environment directories will be created.
-If \code{FALSE}, no directories will be created.
-When executing RNASeqEnvironmentSet(),
-'mkdir.bool' should always be \code{TRUE}}
+\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE},
+the result of checking \code{RNASeqRParam} will be reported in
+'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
+\code{RNASeqRParam} will not be in
+'Rscript_out/Environment_Set.Rout'.}
 }
 \value{
 None
@@ -70,12 +62,7 @@ Set up the environment for the following RNA-Seq workflow in R shell\cr
 \examples{
 data(yeast)
 \dontrun{
-RNASeqEnvironmentSet(path.prefix       = yeast@path.prefix,
-                     input.path.prefix = yeast@input.path.prefix,
-                     genome.name       = yeast@genome.name,
-                     sample.pattern    = yeast@sample.pattern,
-                     indices.optional  = yeast@indices.optional,
-                     os.type           = yeast@os.type)}
+RNASeqEnvironmentSet(RNASeqRParam = yeast)}
 }
 \author{
 Kuan-Hao Chao

@@ -4,26 +4,36 @@
 \alias{RNASeqQualityTrimming}
 \title{RNASeqQualityTrimming}
 \usage{
-RNASeqQualityTrimming(path.prefix, sample.pattern, cum.error = 1,
-  trimming.position = NA, reads.length.limit = 36)
+RNASeqQualityTrimming(RNASeqRParam, which.trigger = "OUTSIDE",
+  INSIDE.path.prefix = NA, cum.error = 1, trimming.position = NA,
+  reads.length.limit = 36, check.s4.print = TRUE)
 }
 \arguments{
-\item{path.prefix}{Path prefix of 'gene_data/', 'RNASeq_bin/',
-'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
+\item{RNASeqRParam}{S4 object instance of experiment-related
+parameters}
 
-\item{sample.pattern}{sample.pattern  Regular expression of
-paired-end fastq.gz files under 'input_files/raw_fastq.gz'.
-Expression not includes \code{_[1,2].fastq.gz}.}
+\item{which.trigger}{Default value is \code{OUTSIDE}. User should not change
+this value.}
+
+\item{INSIDE.path.prefix}{Default value is \code{NA}. User should not change
+this value.}
 
 \item{cum.error}{Default \code{1}.
 Cut of threshold of cumulative probability of error per base.}
 
 \item{trimming.position}{Default \code{NA}. If value is \code{NA}, trimming
-points of all paired-end files will be calculated by CDF of error rate, while
-they will all be the value of \code{trimming.position}.}
+points of all paired-end files will be calculated by CDF of error rate,
+while they will all be the value of \code{trimming.position}.}
 
 \item{reads.length.limit}{Default \code{36}.
 The shortest base pair length of short reads}
+
+\item{check.s4.print}{Default \code{TRUE}.
+If \code{TRUE}, the result of checking \code{RNASeqRParam}
+will be reported in 'Rscript_out/Environment_Set.Rout'.
+If \code{FALSE}, the result of checking
+\code{RNASeqRParam} will not be in
+'Rscript_out/Environment_Set.Rout'}
 }
 \value{
 None
@@ -41,8 +51,7 @@ Trim '.fastq.gz' files for RNA-Seq workflow in R shell.
 \examples{
 data(yeast)
 \dontrun{
-RNASeqQualityTrimming(path.prefix    = yeast@path.prefix,
-                      sample.pattern = yeast@sample.pattern)}
+RNASeqQualityTrimming(RNASeqRParam = yeast)}
 }
 \author{
 Kuan-Hao Chao

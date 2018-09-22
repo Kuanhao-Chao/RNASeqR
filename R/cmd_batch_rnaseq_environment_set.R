@@ -21,6 +21,15 @@
 #'
 #' @param RNASeqRParam S4 object instance of experiment-related
 #'   parameters
+#' @param install.hisat2 Whether to install 'HISAT2' in this function step.
+#'   Default value is\code{TRUE}.
+#'   Set \code{FALSE} to skip 'HISAT2' installation.
+#' @param install.stringtie Whether to install 'StringTie'
+#'   in this function step. Default value is \code{TRUE}.
+#'   Set\code{FALSE} to skip 'StringTie' installation.
+#' @param install.gffcompare Whether to install 'Gffcompare'
+#'   in this function step. Default value is \code{TRUE}.
+#'   Set\code{FALSE} to skip 'Gffcompare' installation.
 #' @param run Default value is \code{TRUE}. If \code{TRUE},
 #'   'Rscript/Environment_Set.R' will be created and executed.
 #'   The output log will be stored in 'Rscript_out/Environment_Set.Rout'.
@@ -31,15 +40,6 @@
 #'   'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
 #'   \code{RNASeqRParam} will not be in
 #'   'Rscript_out/Environment_Set.Rout'.
-#' @param install.hisat2 Whether to install 'HISAT2' in this function step.
-#'   Default value is\code{TRUE}.
-#'   Set \code{FALSE} to skip 'HISAT2' installation.
-#' @param install.stringtie Whether to install 'StringTie'
-#'   in this function step. Default value is \code{TRUE}.
-#'   Set\code{FALSE} to skip 'StringTie' installation.
-#' @param install.gffcompare Whether to install 'Gffcompare'
-#'   in this function step. Default value is \code{TRUE}.
-#'   Set\code{FALSE} to skip 'Gffcompare' installation.
 #'
 #' @return None
 #' @export
@@ -57,32 +57,30 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqRParam,
   # check input param
   CheckS4Object(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
-  os.type <- "@"(RNASeqRParam, os.type)
+  # Create the main directory for RNA-Seq analysis
+  MkdirAll(RNASeqRParam@path.prefix)
   path.prefix <- "@"(RNASeqRParam, path.prefix)
-  input.path.prefix <- "@"(RNASeqRParam, input.path.prefix)
-  genome.name <- "@"(RNASeqRParam, genome.name)
-  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
-  indices.optional <- "@"(RNASeqRParam, indices.optional)
-  MkdirAll(path.prefix)
-  fileConn <- file(paste0(path.prefix, "Rscript/Environment_Set.R"))
+  INSIDE.path.prefix <- "@"(RNASeqRParam, path.prefix)
+  saveRDS(RNASeqRParam,
+          file = paste0(INSIDE.path.prefix,
+                        "gene_data/RNASeqRParam.rds"))
+  fileConn <- file(paste0(INSIDE.path.prefix, "Rscript/Environment_Set.R"))
   first <- "library(RNASeqR)"
-  second <- paste0("RNASeqEnvironmentSet(path.prefix = '", path.prefix,
-                   "', input.path.prefix = '", input.path.prefix,
-                   "', genome.name = '", genome.name,
-                   "', sample.pattern = '", sample.pattern,
-                   "', indices.optional = ", indices.optional,
-                   ", os.type = '", os.type,
+  second <- paste0("RNASeqEnvironmentSet(RNASeqRParam = 'INSIDE'",
+                   ", which.trigger = 'INSIDE'",
+                   ", INSIDE.path.prefix = '", INSIDE.path.prefix,
                    "', install.hisat2 = ", install.hisat2,
                    ", install.stringtie = ", install.stringtie,
-                   ", install.gffcompare = ", install.gffcompare,
-                   ", mkdir.bool = ", FALSE, ")")
+                   ", install.gffcompare = ", install.gffcompare,")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   message("\u2605 '", path.prefix,
           "Rscript/Environment_Set.R' has been created.\n")
   if (run) {
+    R.home.lib <- R.home()
+    R.home.bin <- gsub("/lib/R", "/bin/R", R.home.lib)
     system2(command = "nohup",
-            args = paste0("R CMD BATCH ",
+            args = paste0(R.home.bin, " CMD BATCH ",
                           path.prefix,
                           "Rscript/Environment_Set.R ",
                           path.prefix,
@@ -115,31 +113,26 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqRParam,
 #'   If you want to set up the environment for the following RNA-Seq workflow
 #'   in background, please see \code{RNASeqEnvironmentSet_CMD()} function.
 #'
-#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/',
-#'   'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories.
-#' @param input.path.prefix path prefix of 'input_files/' directory
-#' @param genome.name genome.name variable of genome name defined in this
-#'   RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
-#' @param sample.pattern  Regular expression of paired-end fastq.gz files under
-#'   'input_files/raw_fastq.gz'. Expression not includes \code{_[1,2].fastq.gz}.
-#' @param indices.optional logical value whether 'indices/' is exit in
-#'   'input_files/'
-#' @param os.type 'linux' or 'osx'. The operating system type
+#' @param RNASeqRParam S4 object instance of experiment-related
+#'   parameters
+#' @param which.trigger Default value is \code{OUTSIDE}. User should not change
+#'   this value.
+#' @param INSIDE.path.prefix Default value is \code{NA}. User should not change
+#'   this value.
 #' @param install.hisat2 Whether to install 'HISAT2' in this function step.
-#'   Default value is \code{TRUE}.
+#'   Default value is\code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2' installation.
-#' @param install.stringtie Whether to install 'StringTie' in
-#'   this function step.
-#'   Default value is \code{TRUE}.
+#' @param install.stringtie Whether to install 'StringTie'
+#'   in this function step. Default value is \code{TRUE}.
 #'   Set\code{FALSE} to skip 'StringTie' installation.
 #' @param install.gffcompare Whether to install 'Gffcompare'
 #'   in this function step. Default value is \code{TRUE}.
 #'   Set\code{FALSE} to skip 'Gffcompare' installation.
-#' @param mkdir.bool Default \code{TRUE}. If \code{TRUE},
-#'   environment directories will be created.
-#'   If \code{FALSE}, no directories will be created.
-#'   When executing RNASeqEnvironmentSet(),
-#'   'mkdir.bool' should always be \code{TRUE}
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE},
+#'   the result of checking \code{RNASeqRParam} will be reported in
+#'   'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
+#'   \code{RNASeqRParam} will not be in
+#'   'Rscript_out/Environment_Set.Rout'.
 #'
 #' @return None
 #' @export
@@ -147,26 +140,39 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqRParam,
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' RNASeqEnvironmentSet(path.prefix       = yeast@@path.prefix,
-#'                      input.path.prefix = yeast@@input.path.prefix,
-#'                      genome.name       = yeast@@genome.name,
-#'                      sample.pattern    = yeast@@sample.pattern,
-#'                      indices.optional  = yeast@@indices.optional,
-#'                      os.type           = yeast@@os.type)}
-RNASeqEnvironmentSet <- function(path.prefix,
-                                 input.path.prefix,
-                                 genome.name,
-                                 sample.pattern,
-                                 indices.optional,
-                                 os.type,
+#' RNASeqEnvironmentSet(RNASeqRParam = yeast)}
+RNASeqEnvironmentSet <- function(RNASeqRParam,
+                                 which.trigger      = "OUTSIDE",
+                                 INSIDE.path.prefix = NA,
                                  install.hisat2     = TRUE,
                                  install.stringtie  = TRUE,
                                  install.gffcompare = TRUE,
-                                 mkdir.bool         = TRUE) {
+                                 check.s4.print     = TRUE) {
   CheckOperatingSystem(FALSE)
-  if (mkdir.bool) {
-    MkdirAll(path.prefix)
+  # If `which.trigger` is OUTSIDE, then directory must be built
+  # If `which.trigger` is INSIDE, then directory must not be
+  #  built here(will created in CMD)
+  if (isS4(RNASeqRParam) &
+      which.trigger == "OUTSIDE" &
+      is.na(INSIDE.path.prefix)) {
+    # This is an external call!!
+    MkdirAll(RNASeqRParam@path.prefix)
+    # Check the S4 object(user input)
+    CheckS4Object(RNASeqRParam, check.s4.print)
+  } else if (RNASeqRParam == "INSIDE" &
+             which.trigger == "INSIDE" &
+             !is.na(INSIDE.path.prefix)) {
+    # This is an internal call!!
+    # Load the S4 object that saved in CMD process
+    RNASeqRParam <- readRDS(paste0(INSIDE.path.prefix,
+                                   "gene_data/RNASeqRParam.rds"))
   }
+  os.type <- "@"(RNASeqRParam, os.type)
+  path.prefix <- "@"(RNASeqRParam, path.prefix)
+  input.path.prefix <- "@"(RNASeqRParam, input.path.prefix)
+  genome.name <- "@"(RNASeqRParam, genome.name)
+  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
+  indices.optional <- "@"(RNASeqRParam, indices.optional)
   PreRNASeqEnvironmentSet(path.prefix, sample.pattern)
   CopyInputDir(path.prefix,
                input.path.prefix,

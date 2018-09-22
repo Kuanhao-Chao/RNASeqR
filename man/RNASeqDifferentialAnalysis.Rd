@@ -4,29 +4,21 @@
 \alias{RNASeqDifferentialAnalysis}
 \title{RNASeqDifferentialAnalysis}
 \usage{
-RNASeqDifferentialAnalysis(path.prefix, genome.name, sample.pattern,
-  independent.variable, case.group, control.group, ballgown.run = TRUE,
-  ballgown.pval = 0.05, ballgown.log2FC = 1, DESeq2.run = TRUE,
-  DESeq2.pval = 0.1, DESeq2.log2FC = 1, edgeR.run = TRUE,
-  edgeR.pval = 0.05, edgeR.log2FC = 1)
+RNASeqDifferentialAnalysis(RNASeqRParam, which.trigger = "OUTSIDE",
+  INSIDE.path.prefix = NA, ballgown.run = TRUE, ballgown.pval = 0.05,
+  ballgown.log2FC = 1, DESeq2.run = TRUE, DESeq2.pval = 0.1,
+  DESeq2.log2FC = 1, edgeR.run = TRUE, edgeR.pval = 0.05,
+  edgeR.log2FC = 1, check.s4.print = TRUE)
 }
 \arguments{
-\item{path.prefix}{path prefix of 'gene_data/', 'RNASeq_bin/',
-'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories}
+\item{RNASeqRParam}{S4 object instance of experiment-related
+parameters}
 
-\item{genome.name}{genome.name Variable of genome name defined in
-this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)}
+\item{which.trigger}{Default value is \code{OUTSIDE}. User should not change
+this value.}
 
-\item{sample.pattern}{sample.pattern  Regular expression of
-paired-end fastq.gz files under 'input_files/raw_fastq.gz'.
-Expression not includes \code{_[1,2].fastq.gz}.}
-
-\item{independent.variable}{independent variable for the biological
-experiment design of two-group RNA-Seq workflow}
-
-\item{case.group}{group name of the case group}
-
-\item{control.group}{group name of the control group}
+\item{INSIDE.path.prefix}{Default value is \code{NA}. User should not change
+this value.}
 
 \item{ballgown.run}{Default \code{TRUE}. Logical value whether to run
 ballgown differential analysis.}
@@ -54,6 +46,12 @@ to filter out differential expressed gene.}
 
 \item{edgeR.log2FC}{Default \code{1}. Set the threshold of edgeR log2
 fold change to filter out differential expressed gene.}
+
+\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE}, the result of
+checking \code{RNASeqRParam} will be reported in
+'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
+\code{RNASeqRParam} will not be in
+'Rscript_out/Environment_Set.Rout'.}
 }
 \value{
 None
@@ -86,12 +84,7 @@ This function will run differential analysis on ballgown,
 \examples{
 data(yeast)
 \dontrun{
-RNASeqDifferentialAnalysis(path.prefix          = yeast@path.prefix,
-                           genome.name          = yeast@genome.name,
-                           sample.pattern       = yeast@sample.pattern,
-                           independent.variable = yeast@independent.variable,
-                           case.group           = yeast@case.group,
-                           control.group        = yeast@control.group)}
+RNASeqDifferentialAnalysis(RNASeqRParam = yeast)}
 }
 \author{
 Kuan-Hao Chao

@@ -16,7 +16,7 @@ grid.raster(img, just = "center")
 
 ## ----fig.width=10, echo=FALSE----------------------------------------------
 img <- readPNG("figure/input_files_structure.png")
- grid.raster(img, just = "center")
+grid.raster(img, just = "center")
 
 ## ---- warning=FALSE--------------------------------------------------------
 library(RNASeqR)
@@ -41,48 +41,29 @@ exp <- RNASeqRParam(path.prefix = rnaseq_result.path,
 #  RNASeqEnvironmentSet_CMD(exp)
 
 ## ---- warning=FALSE--------------------------------------------------------
-RNASeqEnvironmentSet(exp@path.prefix,
-                     exp@input.path.prefix,
-                     exp@genome.name,
-                     exp@sample.pattern,
-                     exp@indices.optional,
-                     exp@os.type)
+RNASeqEnvironmentSet(exp)
 
 ## ----fig.width=20, echo=FALSE----------------------------------------------
 img <- readPNG("figure/fastqReport.png")
- grid.raster(img, just = "center")
+grid.raster(img, just = "center")
 
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqQualityAssessment_CMD(exp)
 
-## ---- warning=FALSE, eval=FALSE--------------------------------------------
-#  RNASeqQualityAssessment(exp@path.prefix,
-#                          exp@input.path.prefix,
-#                          exp@sample.pattern)
+## ---- warning=FALSE--------------------------------------------------------
+RNASeqQualityAssessment(exp)
 
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqQualityTrimming_CMD(exp)
 
-## ---- eval=FALSE-----------------------------------------------------------
-#  RNASeqQualityTrimming(exp@path.prefix,
-#                        exp@sample.pattern)
+## ---- warning=FALSE--------------------------------------------------------
+RNASeqQualityTrimming(exp)
 
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqReadProcess_CMD(exp)
 
-## ---- warning=FALSE, eval=FALSE--------------------------------------------
-#  python.variable <- "@"(exp, python.variable)
-#  python.variable.answer <- python.variable$check.answer
-#  python.variable.version <- python.variable$python.version
-#  RNASeqReadProcess(exp@path.prefix,
-#                    exp@input.path.prefix,
-#                    exp@genome.name,
-#                    exp@sample.pattern,
-#                    python.variable.answer,
-#                    python.variable.version,
-#                    exp@python.2to3,
-#                    num.parallel.threads = 10,
-#                    exp@indices.optional)
+## ---- warning=FALSE--------------------------------------------------------
+RNASeqReadProcess(exp)
 
 ## ----fig.width=10, echo=FALSE----------------------------------------------
 img <- readPNG("figure/Alignment_report.png")
@@ -187,19 +168,8 @@ grid.raster(img, just = "center")
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqDifferentialAnalysis_CMD(exp)
 
-## ---- eval=FALSE-----------------------------------------------------------
-#  RNASeqDifferentialAnalysis(exp@path.prefix,
-#                             exp@genome.name,
-#                             exp@sample.pattern,
-#                             exp@independent.variable,
-#                             exp@case.group,
-#                             exp@control.group,
-#                             ballgown.pval = 0.05,
-#                             ballgown.log2FC = 1,
-#                             DESeq2.pval = 0.1,
-#                             DESeq2.log2FC = 1,
-#                             edgeR.pval = 0.05,
-#                             edgeR.log2FC = 1)
+## ---- warning=FALSE--------------------------------------------------------
+RNASeqDifferentialAnalysis(exp)
 
 ## ----fig.width=6, height=6, echo=FALSE-------------------------------------
 img <- readPNG("figure/GO_analysis/GO_CC_Classification_Bar_Plot_clusterProfiler.png")
@@ -220,13 +190,12 @@ grid.raster(img, just = "center")
 #                   input.TYPE.ID = "GENENAME",
 #                   KEGG.organism = "sce")
 
-## ---- eval = FALSE---------------------------------------------------------
-#  RNASeqGoKegg(exp@path.prefix,
-#               exp@independent.variable,
-#               OrgDb.species = "org.Sc.sgd.db",
-#               go.level = 3,
-#               input.TYPE.ID = "GENENAME",
-#               KEGG.organism = "sce")
+## ---- warning=FALSE--------------------------------------------------------
+RNASeqGoKegg(exp, 
+             OrgDb.species = "org.Sc.sgd.db", 
+             go.level = 3, 
+             input.TYPE.ID = "GENENAME",
+             KEGG.organism = "sce")
 
 ## --------------------------------------------------------------------------
 sessionInfo()

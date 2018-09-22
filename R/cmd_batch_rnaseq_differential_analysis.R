@@ -27,6 +27,10 @@
 #'
 #' @param RNASeqRParam S4 object instance of
 #'   experiment-related parameters
+#' @param which.trigger Default value is \code{OUTSIDE}. User should not change
+#'   this value.
+#' @param INSIDE.path.prefix Default value is \code{NA}. User should not change
+#'   this value.
 #' @param ballgown.run Default \code{TRUE}. Logical value whether to run
 #'   ballgown differential analysis.
 #' @param ballgown.pval Default \code{0.05}. Set the threshold of ballgown
@@ -63,6 +67,8 @@
 #' \dontrun{
 #' RNASeqDifferentialAnalysis_CMD(RNASeqRParam = yeast)}
 RNASeqDifferentialAnalysis_CMD <- function(RNASeqRParam,
+                                           which.trigger      = "OUTSIDE",
+                                           INSIDE.path.prefix = NA,
                                            ballgown.run    = TRUE,
                                            ballgown.pval   = 0.05,
                                            ballgown.log2FC = 1,
@@ -78,19 +84,15 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqRParam,
   CheckS4Object(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
   path.prefix <- "@"(RNASeqRParam, path.prefix)
-  genome.name <- "@"(RNASeqRParam, genome.name)
-  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
-  independent.variable <- "@"(RNASeqRParam, independent.variable)
-  case.group <- "@"(RNASeqRParam, case.group)
-  control.group <- "@"(RNASeqRParam, control.group)
+  INSIDE.path.prefix <- "@"(RNASeqRParam, path.prefix)
+  saveRDS(RNASeqRParam,
+          file = paste0(INSIDE.path.prefix,
+                        "gene_data/RNASeqRParam.rds"))
   fileConn <- file(paste0(path.prefix, "Rscript/Differential_Analysis.R"))
   first <- "library(RNASeqR)"
-  second <- paste0("RNASeqDifferentialAnalysis(path.prefix = '", path.prefix,
-                   "', genome.name = '", genome.name,
-                   "', sample.pattern = '", sample.pattern,
-                   "', independent.variable = '", independent.variable,
-                   "', case.group = '", case.group,
-                   "', control.group = '", control.group,
+  second <- paste0("RNASeqDifferentialAnalysis(RNASeqRParam = 'INSIDE'",
+                   ", which.trigger = 'INSIDE'",
+                   ", INSIDE.path.prefix = '", INSIDE.path.prefix,
                    "', ballgown.run = ", ballgown.run,
                    ", ballgown.pval = ", ballgown.pval,
                    ", ballgown.log2FC = ", ballgown.log2FC,
@@ -99,15 +101,16 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqRParam,
                    ", DESeq2.log2FC = ", DESeq2.log2FC,
                    ", edgeR.run = ", edgeR.run,
                    ", edgeR.pval = ", edgeR.pval,
-                   ", edgeR.log2FC = ", edgeR.log2FC,
-                   ")")
+                   ", edgeR.log2FC = ", edgeR.log2FC,")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   message("\u2605 '", path.prefix,
           "Rscript/Differential_Analysis.R' has been created.\n")
   if (run) {
+    R.home.lib <- R.home()
+    R.home.bin <- gsub("/lib/R", "/bin/R", R.home.lib)
     system2(command = "nohup",
-            args = paste0("R CMD BATCH ",
+            args = paste0(R.home.bin, " CMD BATCH ",
                           path.prefix,
                           "Rscript/Differential_Analysis.R ",
                           path.prefix,
@@ -146,17 +149,12 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqRParam,
 #'   DESeq2, edgeR for the following RNA-Seq workflow in background,
 #'   please see \code{RNASeqDifferentialAnalysis()} function.
 #'
-#' @param path.prefix path prefix of 'gene_data/', 'RNASeq_bin/',
-#'   'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
-#' @param genome.name genome.name Variable of genome name defined in
-#'   this RNA-Seq workflow (ex. \code{genome.name}.fa, \code{genome.name}.gtf)
-#' @param sample.pattern sample.pattern  Regular expression of
-#'   paired-end fastq.gz files under 'input_files/raw_fastq.gz'.
-#'   Expression not includes \code{_[1,2].fastq.gz}.
-#' @param independent.variable independent variable for the biological
-#'   experiment design of two-group RNA-Seq workflow
-#' @param case.group group name of the case group
-#' @param control.group group name of the control group
+#' @param RNASeqRParam S4 object instance of experiment-related
+#'   parameters
+#' @param which.trigger Default value is \code{OUTSIDE}. User should not change
+#'   this value.
+#' @param INSIDE.path.prefix Default value is \code{NA}. User should not change
+#'   this value.
 #' @param ballgown.run Default \code{TRUE}. Logical value whether to run
 #'   ballgown differential analysis.
 #' @param ballgown.pval Default \code{0.05}. Set the threshold of ballgown
@@ -175,6 +173,11 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqRParam,
 #'   to filter out differential expressed gene.
 #' @param edgeR.log2FC Default \code{1}. Set the threshold of edgeR log2
 #'   fold change to filter out differential expressed gene.
+#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of
+#'   checking \code{RNASeqRParam} will be reported in
+#'   'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
+#'   \code{RNASeqRParam} will not be in
+#'   'Rscript_out/Environment_Set.Rout'.
 #'
 #' @return None
 #' @export
@@ -182,17 +185,10 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqRParam,
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' RNASeqDifferentialAnalysis(path.prefix          = yeast@@path.prefix,
-#'                            genome.name          = yeast@@genome.name,
-#'                            sample.pattern       = yeast@@sample.pattern,
-#'                            independent.variable = yeast@@independent.variable,
-#'                            case.group           = yeast@@case.group,
-#'                            control.group        = yeast@@control.group)}
-RNASeqDifferentialAnalysis <- function(path.prefix,
-                                       genome.name,
-                                       sample.pattern,
-                                       independent.variable,
-                                       case.group, control.group,
+#' RNASeqDifferentialAnalysis(RNASeqRParam = yeast)}
+RNASeqDifferentialAnalysis <- function(RNASeqRParam,
+                                       which.trigger      = "OUTSIDE",
+                                       INSIDE.path.prefix = NA,
                                        ballgown.run    = TRUE,
                                        ballgown.pval   = 0.05,
                                        ballgown.log2FC = 1,
@@ -201,8 +197,33 @@ RNASeqDifferentialAnalysis <- function(path.prefix,
                                        DESeq2.log2FC   = 1,
                                        edgeR.run       = TRUE,
                                        edgeR.pval      = 0.05,
-                                       edgeR.log2FC    = 1) {
+                                       edgeR.log2FC    = 1,
+                                       check.s4.print     = TRUE) {
   CheckOperatingSystem(FALSE)
+  # If `which.trigger` is OUTSIDE, then directory must be built
+  # If `which.trigger` is INSIDE, then directory must not be
+  #  built here(will created in CMD)
+  if (isS4(RNASeqRParam) &
+      which.trigger == "OUTSIDE" &
+      is.na(INSIDE.path.prefix)) {
+    # This is an external call!!
+    # Check the S4 object(user input)
+    CheckS4Object(RNASeqRParam, check.s4.print)
+  } else if (RNASeqRParam == "INSIDE" &
+             which.trigger == "INSIDE" &
+             !is.na(INSIDE.path.prefix)) {
+    # This is an internal call!!
+    # Load the S4 object that saved in CMD process
+    RNASeqRParam <- readRDS(paste0(INSIDE.path.prefix,
+                                   "gene_data/RNASeqRParam.rds"))
+  }
+  path.prefix <- "@"(RNASeqRParam, path.prefix)
+  genome.name <- "@"(RNASeqRParam, genome.name)
+  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
+  independent.variable <- "@"(RNASeqRParam, independent.variable)
+  case.group <- "@"(RNASeqRParam, case.group)
+  control.group <- "@"(RNASeqRParam, control.group)
+
   PreRNASeqDifferentialAnalysis(path.prefix = path.prefix,
                                 sample.pattern = sample.pattern)
   if (file.exists(paste0(path.prefix, "Rscript_out/Read_Process.Rout"))) {

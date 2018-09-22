@@ -4,15 +4,19 @@
 \alias{RNASeqGoKegg}
 \title{RNASeqGoKegg}
 \usage{
-RNASeqGoKegg(path.prefix, independent.variable, OrgDb.species,
-  go.level = 3, input.TYPE.ID, KEGG.organism)
+RNASeqGoKegg(RNASeqRParam, which.trigger = "OUTSIDE",
+  INSIDE.path.prefix = NA, OrgDb.species, go.level = 3, input.TYPE.ID,
+  KEGG.organism, check.s4.print = TRUE)
 }
 \arguments{
-\item{path.prefix}{Path prefix of 'gene_data/', 'RNASeq_bin/',
-'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories.}
+\item{RNASeqRParam}{S4 object instance of experiment-related
+parameters}
 
-\item{independent.variable}{independent variable for the biological
-experiment design of two-group RNA-Seq workflow}
+\item{which.trigger}{Default value is \code{OUTSIDE}. User should not change
+this value.}
+
+\item{INSIDE.path.prefix}{Default value is \code{NA}. User should not change
+this value.}
 
 \item{OrgDb.species}{the genome wide annotation packages of species
 on Bioconductor. Currently, there are 19 supported genome wide
@@ -26,6 +30,12 @@ annotation packages of species.}
 Currently, there are more than 5000 supported species genome.
 Check the valid species terms on
 https://www.genome.jp/kegg/catalog/org_list.html}
+
+\item{check.s4.print}{Default \code{TRUE}. If \code{TRUE},
+the result of checking \code{RNASeqRParam} will be reported in
+'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
+\code{RNASeqRParam} will not be in
+'Rscript_out/Environment_Set.Rout'}
 }
 \value{
 None
@@ -56,13 +66,11 @@ Run Gene Ontology(GO) and Kyoto Encyclopedia of Genes and Genomes(KEGG)
 \examples{
 data(yeast)
 \dontrun{
-RNASeqGoKegg(path.prefix          = path.prefix@yeast,
-             independent.variable = independent.variable@yeast,
-             OrgDb.species        = "org.Sc.sgd.db",
-             go.level             = 3,
-             input.TYPE.ID        = "GENENAME",
-             KEGG.organism        = "sce")
-}
+RNASeqGoKegg(RNASeqRParam  = yeast,
+             OrgDb.species = "org.Sc.sgd.db",
+             go.level = 3,
+             input.TYPE.ID = "GENENAME",
+             KEGG.organism = "sce")}
 }
 \author{
 Kuan-Hao Chao

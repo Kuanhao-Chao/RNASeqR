@@ -12,8 +12,8 @@
 #' @param cum.error Default \code{1}.
 #'   Cut of threshold of cumulative probability of error per base.
 #' @param trimming.position Default \code{NA}. If value is \code{NA}, trimming
-#'   points of all paired-end files will be calculated by CDF of error rate, while
-#'   they will all be the value of \code{trimming.position}.
+#'   points of all paired-end files will be calculated by CDF of error rate,
+#'   while they will all be the value of \code{trimming.position}.
 #' @param reads.length.limit Default \code{36}.
 #'   The shortest base pair length of short reads
 #' @param run Default value is \code{TRUE}.
@@ -45,11 +45,15 @@ RNASeqQualityTrimming_CMD <- function(RNASeqRParam,
   CheckS4Object(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
   path.prefix <- "@"(RNASeqRParam, path.prefix)
-  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
+  INSIDE.path.prefix <- "@"(RNASeqRParam, path.prefix)
+  saveRDS(RNASeqRParam,
+          file = paste0(INSIDE.path.prefix,
+                        "gene_data/RNASeqRParam.rds"))
   fileConn <- file(paste0(path.prefix, "Rscript/Quality_Trimming.R"))
   first <- "library(RNASeqR)"
-  second <- paste0("RNASeqQualityTrimming(path.prefix = '", path.prefix,
-                   "', sample.pattern = '", sample.pattern,
+  second <- paste0("RNASeqQualityTrimming(RNASeqRParam = 'INSIDE'",
+                   ", which.trigger = 'INSIDE'",
+                   ", INSIDE.path.prefix = '", INSIDE.path.prefix,
                    "', cum.error = ", cum.error,
                    ", trimming.position = ", trimming.position,
                    ", reads.length.limit = ", reads.length.limit, ")")
@@ -58,8 +62,11 @@ RNASeqQualityTrimming_CMD <- function(RNASeqRParam,
   message(paste0("\u2605 '", path.prefix,
                  "Rscript/Quality_Trimming.R' has been created.\n"))
   if (run) {
+    R.home.lib <- R.home()
+    R.home.bin <- gsub("/lib/R", "/bin/R", R.home.lib)
     system2(command = "nohup",
-            args = paste0("R CMD BATCH ", path.prefix,
+            args = paste0(R.home.bin, " CMD BATCH ",
+                          path.prefix,
                           "Rscript/Quality_Trimming.R ", path.prefix,
                           "Rscript_out/Quality_Trimming.Rout"),
             stdout = "",
@@ -83,18 +90,25 @@ RNASeqQualityTrimming_CMD <- function(RNASeqRParam,
 #'   If you want to trim '.fastq.gz' files for the RNA-Seq workflow
 #'   in background, please see \code{RNASeqQualityTrimming_CMD()} function.
 #'
-#' @param path.prefix Path prefix of 'gene_data/', 'RNASeq_bin/',
-#'   'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories
-#' @param sample.pattern  sample.pattern  Regular expression of
-#'   paired-end fastq.gz files under 'input_files/raw_fastq.gz'.
-#'   Expression not includes \code{_[1,2].fastq.gz}.
+#' @param RNASeqRParam S4 object instance of experiment-related
+#'   parameters
+#' @param which.trigger Default value is \code{OUTSIDE}. User should not change
+#'   this value.
+#' @param INSIDE.path.prefix Default value is \code{NA}. User should not change
+#'   this value.
 #' @param cum.error Default \code{1}.
 #'   Cut of threshold of cumulative probability of error per base.
 #' @param trimming.position Default \code{NA}. If value is \code{NA}, trimming
-#'   points of all paired-end files will be calculated by CDF of error rate, while
-#'   they will all be the value of \code{trimming.position}.
+#'   points of all paired-end files will be calculated by CDF of error rate,
+#'   while they will all be the value of \code{trimming.position}.
 #' @param reads.length.limit Default \code{36}.
 #'   The shortest base pair length of short reads
+#' @param check.s4.print Default \code{TRUE}.
+#'   If \code{TRUE}, the result of checking \code{RNASeqRParam}
+#'   will be reported in 'Rscript_out/Environment_Set.Rout'.
+#'   If \code{FALSE}, the result of checking
+#'   \code{RNASeqRParam} will not be in
+#'   'Rscript_out/Environment_Set.Rout'
 #'
 #' @return None
 #' @export
@@ -102,14 +116,34 @@ RNASeqQualityTrimming_CMD <- function(RNASeqRParam,
 #' @examples
 #' data(yeast)
 #' \dontrun{
-#' RNASeqQualityTrimming(path.prefix    = yeast@@path.prefix,
-#'                       sample.pattern = yeast@@sample.pattern)}
-RNASeqQualityTrimming <- function(path.prefix,
-                                  sample.pattern,
+#' RNASeqQualityTrimming(RNASeqRParam = yeast)}
+RNASeqQualityTrimming <- function(RNASeqRParam,
+                                  which.trigger      = "OUTSIDE",
+                                  INSIDE.path.prefix = NA,
                                   cum.error = 1,
                                   trimming.position  = NA,
-                                  reads.length.limit = 36) {
+                                  reads.length.limit = 36,
+                                  check.s4.print     = TRUE) {
   CheckOperatingSystem(FALSE)
+  # If `which.trigger` is OUTSIDE, then directory must be built
+  # If `which.trigger` is INSIDE, then directory must not be
+  #  built here(will created in CMD)
+  if (isS4(RNASeqRParam) &
+      which.trigger == "OUTSIDE" &
+      is.na(INSIDE.path.prefix)) {
+    # This is an external call!!
+    # Check the S4 object(user input)
+    CheckS4Object(RNASeqRParam, check.s4.print)
+  } else if (RNASeqRParam == "INSIDE" &
+             which.trigger == "INSIDE" &
+             !is.na(INSIDE.path.prefix)) {
+    # This is an internal call!!
+    # Load the S4 object that saved in CMD process
+    RNASeqRParam <- readRDS(paste0(INSIDE.path.prefix,
+                                   "gene_data/RNASeqRParam.rds"))
+  }
+  path.prefix <- "@"(RNASeqRParam, path.prefix)
+  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
   PreCheckRNASeqQualityTrimming(path.prefix = path.prefix,
                                 sample.pattern = sample.pattern)
   message(paste0("************** Quality Trimming **************\n"))
@@ -117,8 +151,8 @@ RNASeqQualityTrimming <- function(path.prefix,
                         "gene_data/raw_fastq.gz/",
                         "original_untrimmed_fastq.gz/"))){
     dir.create(file.path(paste0(path.prefix,
-                                'gene_data/raw_fastq.gz/",
-                                "original_untrimmed_fastq.gz/')),
+                                "gene_data/raw_fastq.gz/",
+                                "original_untrimmed_fastq.gz/")),
                showWarnings = FALSE)
   }
   raw.fastq <- list.files(path = paste0(path.prefix, "gene_data/raw_fastq.gz"),
@@ -127,7 +161,7 @@ RNASeqQualityTrimming <- function(path.prefix,
                           full.names = FALSE,
                           recursive = FALSE,
                           ignore.case = FALSE)
-  raw.fastq.unique <- unique(gsub("[1-2]*.fastq.gz$",
+  raw.fastq.unique <- unique(gsub("_[1-2]*.fastq.gz$",
                                   replacement = "", raw.fastq))
   lapply(raw.fastq.unique, myFilterAndTrim,
          path.prefix = path.prefix,
@@ -146,18 +180,20 @@ myFilterAndTrim <- function(fl.name,
                             reads.length.limit) {
   # adding print log
   # file1 and file2 is original fastq.gz without trimmed
-  message(paste0("\u25CF \"", gsub("_", "", fl.name), "\" quality trimming\n"))
-  file1 <- paste0(path.prefix, "gene_data/raw_fastq.gz/", fl.name, "1.fastq.gz")
-  file2 <- paste0(path.prefix, "gene_data/raw_fastq.gz/", fl.name, "2.fastq.gz")
+  message(paste0("\u25CF \"", fl.name, "\" quality trimming\n"))
+  file1 <- paste0(path.prefix,
+                  "gene_data/raw_fastq.gz/", fl.name, "_1.fastq.gz")
+  file2 <- paste0(path.prefix,
+                  "gene_data/raw_fastq.gz/", fl.name, "_2.fastq.gz")
   if (file.exists(file1) && file.exists(file2)) {
     # file1.output and file2.output are the new original fastq.gz file name
     file1.untrimmed <- paste0(path.prefix,
                               "gene_data/raw_fastq.gz/",
                               "original_untrimmed_fastq.gz/",
-                              fl.name, "1.fastq.gz")
+                              fl.name, "_1.fastq.gz")
     file2.untrimmed <- paste0(path.prefix, "gene_data/raw_fastq.gz/",
                               "original_untrimmed_fastq.gz/",
-                              fl.name, "2.fastq.gz")
+                              fl.name, "_2.fastq.gz")
     message(paste0("     \u25CF Moving \"", basename(file1), "\" to \"",
                    path.prefix,
                    "gene_data/raw_fastq.gz/original_untrimmed_fastq.gz/\"\n"))
@@ -168,10 +204,24 @@ myFilterAndTrim <- function(fl.name,
     file.rename(from = file2, to = file2.untrimmed)
     # Sequence complexity (H) is calculated based on the dinucleotide
     # composition using the formula (Shannon entropy):
-    message(paste0("     \u25CF Start trimming ...\n"))
     file1.read <- ShortRead::readFastq(file1.untrimmed)
     file2.read <- ShortRead::readFastq(file2.untrimmed)
-
+    if (length(file1.read) == length(file2.read)) {
+      total.reads.number <- length(file1.read)
+    } else {
+      message(paste0("'", fl.name, "_1.fastq.gz'"),
+              " reads number: ", length(file1.read), " bps")
+      message(paste0("'", fl.name, "_2.fastq.gz'"),
+              " reads number: ", length(file2.read), " bps")
+      message(paste0("'", fl.name, "_1.fastq.gz'"), " and ",
+              paste0("'", fl.name, "_2.fastq.gz'"),
+              " have different number of reads number!!\n")
+      stop("paired-end files have different length!!")
+    }
+    max.width <- max(Biostrings::width(file1.read),
+                     Biostrings::width(file2.read))
+    message(paste0("     \u25CF Start trimming (max width: ",
+                   max.width, " bps) ...\n"))
     if (is.na(trimming.position)) {
       # It means that users didn't provide trimming position !!
       message(paste0("          \u25CF Getting quality score ",
@@ -180,8 +230,8 @@ myFilterAndTrim <- function(fl.name,
       qual1 <- as(Biostrings::quality(file1.read), "matrix")
       qual2 <- as(Biostrings::quality(file2.read), "matrix")
 
-      # Calculate probability error per base (through column) ==> Q = -10log10(P)
-      # or  P = 10^(-Q/10)
+      # Calculate probability error per base (through column) ==>
+      #   Q = -10log10(P)  or  P = 10^(-Q/10)
       message(paste0("          \u25CF Calculating probability ",
                      "error per base ...\n"))
       pe1 <- apply(qual1, MARGIN = 2, function(x){10^(-(x/10))})
@@ -207,9 +257,12 @@ myFilterAndTrim <- function(fl.name,
                                  list2 = trimPos2)
     } else {
       # trimming.position is not na!!!!
-      if (trimming.position%%1 == 0 & trimming.position > reads.length.limit ) {
+      if (trimming.position%%1 == 0 &
+          trimming.position > reads.length.limit &
+          trimming.position <= max.width) {
         # Valid trimming.position
-        trimPos.together <- trimming.position
+        total.reads.number
+        trimPos.together <- rep(trimming.position, total.reads.number)
       } else {
         message("Invalid trimming.position: ", trimming.position, " !!")
         stop("'trimming.position' ERROR")
@@ -271,8 +324,8 @@ PostCheckRNASeqQualityTrimming <- function(path.prefix, sample.pattern) {
                                   recursive = FALSE,
                                   ignore.case = FALSE)
   raw.fastq <- list.files(path = paste0(path.prefix,
-                                        'gene_data/raw_fastq.gz/",
-                                        "original_untrimmed_fastq.gz'),
+                                        "gene_data/raw_fastq.gz/",
+                                        "original_untrimmed_fastq.gz/"),
                           pattern = sample.pattern,
                           all.files = FALSE,
                           full.names = FALSE,

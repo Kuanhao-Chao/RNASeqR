@@ -65,7 +65,7 @@ Run Gene Ontology(GO) and Kyoto Encyclopedia of Genes and Genomes(KEGG)
 \examples{
 data(yeast)
 \dontrun{
-RNASeqGoKegg_CMD(yeast,
+RNASeqGoKegg_CMD(RNASeqRParam  = yeast,
                  OrgDb.species = "org.Sc.sgd.db",
                  go.level = 3,
                  input.TYPE.ID = "GENENAME",
