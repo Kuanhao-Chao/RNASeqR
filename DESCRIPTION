@@ -53,8 +53,7 @@ Suggests:
 VignetteBuilder: 
   knitr
 SystemRequirements: 
-  RNASeqR only support Linux and macOS. Window is not supported. 
-  SAMtools source code will be installed and compiled on your machine. More information about SAMtools requirement(https://github.com/samtools/samtools/blob/develop/INSTALL)
+  RNASeqR only support Linux and macOS. Window is not supported.
   Python2 is required. If your machine is Python3, make sure '2to3' command is available.
 BugReports: 
   https://github.com/HowardChao/RNASeqR/issues

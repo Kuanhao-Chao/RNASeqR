@@ -816,6 +816,8 @@ RNASeqGoKegg(exp,
 
 # Conlusion
 
+RNASeqR is an user-friendly R-based tool for running case-control study(two group) RNA-Seq analysis pipeline. The six main steps in this package is *Environment Setup*,  *Quality Assessment*, *Quality Trimming*, *Reads Alignment and Quantification*, *Gene-level Differential Expression Analysis* and *Functional Analysis.*
+The main features that RNASeqR provides are automated workflow, extendable file structure, comprehensive reports, data visualization on widely-used differential analysis tools etc. With this R package, doing two-group RNA-Seq analysis will be much easier and faster.
 
 # Session Information
 ```{r}
@@ -823,10 +825,6 @@ sessionInfo()
 ```
 
 # References
-
-https://www.rna-seqblog.com/introduction-to-rna-sequencing-and-analysis/
-
-https://en.wikipedia.org/wiki/RNA-Seq
 
 Pang CN et al., "Transcriptome and network analyses in Saccharomyces cerevisiae reveal that amphotericin B and lactoferrin synergy disrupt metal homeostasis and stress response.", Sci Rep, 2017 Jan 12;7:40232
 
