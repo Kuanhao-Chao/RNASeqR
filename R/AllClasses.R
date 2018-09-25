@@ -126,7 +126,12 @@ RNASeqRParam <- function(path.prefix          = NA,
       path.prefix <- paste0(path.prefix, "/")
     }
   }
-  # 4. check input.path.prefix
+  # 4. check 'phenodata'
+  bool.phenodata <- CheckPhenodata(input.path.prefix,
+                                   genome.name,
+                                   sample.pattern,
+                                   independent.variable)
+  # 5. check input.path.prefix
   bool.input.path.prefix <- CheckInputPrefixPath(input.path.prefix)
   if (bool.input.path.prefix){
     # add '/' to the path.prefix
@@ -137,7 +142,7 @@ RNASeqRParam <- function(path.prefix          = NA,
     }
   }
   # check sample.pattern is valid file name !!
-  # 5. check sample.pattern that can't have '.fastq.gz'
+  # 6. check sample.pattern that can't have '.fastq.gz'
   fast.gz.extend <- tools::file_ext(sample.pattern)
   if (fast.gz.extend == "gz" || fast.gz.extend == "fastq") {
     message("(\u2718) : 'sample.pattern' can't include file ",
@@ -152,12 +157,9 @@ RNASeqRParam <- function(path.prefix          = NA,
   # This determine whether to run 'CreateHisat2Index'
   bool.input.dir.indices <- input.dir.files.list$optional.indices.bool
   # below still need to fix
-  # 7. check 'phenodata'
-  bool.phenodata <- CheckPhenodata(input.path.prefix,
-                                   genome.name,
-                                   sample.pattern,
-                                   independent.variable)
-  # 8. check 'case.group' and 'control.group'
+
+
+  # 7. check 'case.group' and 'control.group'
   bool.control.control.group <- CheckCaseControlGroup(input.path.prefix,
                                                       independent.variable,
                                                       case.group, control.group)
@@ -363,7 +365,7 @@ CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
                                "input_files/indices/"))
   optional.indices.bool <- FALSE
   # check whether sample pattern matches the file names~
-  if (isTRUE(raw.fastq.dir)) {
+  if (raw.fastq.dir) {
     raw.fastq <- list.files(path = paste0(input.path.prefix,
                                           "input_files/raw_fastq.gz/"),
                             pattern = sample.pattern, all.files = FALSE,
@@ -534,7 +536,8 @@ CheckPhenodata <- function(input.path.prefix,
                               sort(pheno_data$ids))
   if (!bool.length || !bool.identical) {
     message("(\u2718) : 'ids' column doesn't match the smaple_id in ",
-            "'input_files/raw_fastq.gz'. Please check the file.\n" )
+            "'input_files/raw_fastq.gz'. Please check the file and ",
+            "'input_files/raw_fastq.gz' directory.\n" )
     stop("'ids' mismatch ERROR")
   }
   ids.list <- paste(sort(extract.fastq.gz.sample.names), collapse = ", ")
