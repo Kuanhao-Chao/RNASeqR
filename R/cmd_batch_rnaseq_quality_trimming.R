@@ -204,6 +204,10 @@ myFilterAndTrim <- function(fl.name,
     file.rename(from = file2, to = file2.untrimmed)
     # Sequence complexity (H) is calculated based on the dinucleotide
     # composition using the formula (Shannon entropy):
+    message(paste0("     \u25CF Reading \"", basename(file1.untrimmed),
+                   "\" file in R, please wait\n"))
+    message(paste0("     \u25CF Reading '", basename(file2.untrimmed),
+                   "' file in R, please wait\n"))
     file1.read <- ShortRead::readFastq(file1.untrimmed)
     file2.read <- ShortRead::readFastq(file2.untrimmed)
     if (length(file1.read) == length(file2.read)) {
