@@ -126,12 +126,7 @@ RNASeqRParam <- function(path.prefix          = NA,
       path.prefix <- paste0(path.prefix, "/")
     }
   }
-  # 4. check 'phenodata'
-  bool.phenodata <- CheckPhenodata(input.path.prefix,
-                                   genome.name,
-                                   sample.pattern,
-                                   independent.variable)
-  # 5. check input.path.prefix
+  # 4. check input.path.prefix
   bool.input.path.prefix <- CheckInputPrefixPath(input.path.prefix)
   if (bool.input.path.prefix){
     # add '/' to the path.prefix
@@ -141,6 +136,11 @@ RNASeqRParam <- function(path.prefix          = NA,
       input.path.prefix <- paste0(input.path.prefix, "/")
     }
   }
+  # 5. check 'phenodata'
+  bool.phenodata <- CheckPhenodata(input.path.prefix,
+                                   genome.name,
+                                   sample.pattern,
+                                   independent.variable)
   # check sample.pattern is valid file name !!
   # 6. check sample.pattern that can't have '.fastq.gz'
   fast.gz.extend <- tools::file_ext(sample.pattern)
