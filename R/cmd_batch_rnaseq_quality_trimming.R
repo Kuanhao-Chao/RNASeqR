@@ -205,7 +205,7 @@ myFilterAndTrim <- function(fl.name,
     # Sequence complexity (H) is calculated based on the dinucleotide
     # composition using the formula (Shannon entropy):
     message(paste0("     \u25CF Reading \"", basename(file1.untrimmed),
-                   "\" file in R, please wait\n"))
+                   "\"RN file in R, please wait\n"))
     message(paste0("     \u25CF Reading '", basename(file2.untrimmed),
                    "' file in R, please wait\n"))
     file1.read <- ShortRead::readFastq(file1.untrimmed)

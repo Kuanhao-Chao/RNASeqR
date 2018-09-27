@@ -98,12 +98,12 @@ setClass("RNASeqRParam",
 #'                     case.group           = "60mins_ID20_amphotericin_B",
 #'                     control.group        = "60mins_ID20_control")
 RNASeqRParam <- function(path.prefix          = NA,
-                                input.path.prefix    = NA,
-                                genome.name          = NA,
-                                sample.pattern       = NA,
-                                independent.variable = NA,
-                                case.group           = NA,
-                                control.group        = NA) {
+                         input.path.prefix    = NA,
+                         genome.name          = NA,
+                         sample.pattern       = NA,
+                         independent.variable = NA,
+                         case.group           = NA,
+                         control.group        = NA) {
   # check input parameters
   CheckInputParamNa(path.prefix,
                     input.path.prefix,
