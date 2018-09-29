@@ -21,11 +21,12 @@
 #'
 #' @param RNASeqRParam S4 object instance of experiment-related
 #'   parameters
+#' @param SAMtools.or.Rsamtools Default value is \code{Rsamtools}. User can set
+#'   to \code{SAMtools} to use command-line-based 'samtools' instead.
 #' @param num.parallel.threads Specify the number of processing threads (CPUs)
-#'   to use for transcript assembly. The default is 1.
-#' @param Rsamtools.maxMemory A numerical(1) indicating the maximal amount of
-#'   memory (in MB) that the function is allowed to use. More details please
-#'   refer to 'Rsamtools' package
+#'   to use for each step. The default is 1.
+#' @param Rsamtools.nCores The number of cores to use when running
+#'   'Rsamtools' step.
 #' @param Hisat2.Index.run Whether to run 'HISAT2 index' step in this function
 #'   step. Default value is \code{TRUE}. Set \code{FALSE} to skip
 #'   'HISAT2 index' step.
@@ -72,8 +73,9 @@
 #' RNASeqReadProcess_CMD(RNASeqRParam = yeast,
 #'                       num.parallel.threads = 10)}
 RNASeqReadProcess_CMD <- function(RNASeqRParam,
+                                  SAMtools.or.Rsamtools     = "Rsamtools",
                                   num.parallel.threads      = 1,
-                                  Rsamtools.maxMemory       = 512,
+                                  Rsamtools.nCores          = 1,
                                   Hisat2.Index.run          = TRUE,
                                   Hisat2.Alignment.run      = TRUE,
                                   Rsamtools.Bam.run         = TRUE,
@@ -96,8 +98,9 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
   second <- paste0("RNASeqReadProcess(RNASeqRParam = 'INSIDE'",
                    ", which.trigger = 'INSIDE'",
                    ", INSIDE.path.prefix = '", INSIDE.path.prefix,
+                   "', SAMtools.or.Rsamtools = '", SAMtools.or.Rsamtools,
                    "', num.parallel.threads = ", num.parallel.threads,
-                   ", Rsamtools.maxMemory = ", Rsamtools.maxMemory,
+                   ", Rsamtools.nCores = ", Rsamtools.nCores,
                    ", Hisat2.Index.run = ", Hisat2.Index.run,
                    ", Hisat2.Alignment.run = ", Hisat2.Alignment.run,
                    ", Rsamtools.Bam.run = ", Rsamtools.Bam.run,
@@ -155,11 +158,12 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
 #'   this value.
 #' @param INSIDE.path.prefix Default value is \code{NA}. User should not change
 #'   this value.
+#' @param SAMtools.or.Rsamtools Default value is \code{Rsamtools}. User can set
+#'   to \code{SAMtools} to use command-line-based 'samtools' instead.
 #' @param num.parallel.threads Specify the number of processing threads (CPUs)
-#'   to use for transcript assembly. The default is 1.
-#' @param Rsamtools.maxMemory A numerical(1) indicating the maximal amount of
-#'   memory (in MB) that the function is allowed to use. More details please
-#'   refer to 'Rsamtools' package
+#'   to use for each step. The default is 1.
+#' @param Rsamtools.nCores The number of cores to use when running
+#'   'Rsamtools' step.
 #' @param Hisat2.Index.run Whether to run 'HISAT2 index' step in this function
 #'   step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2 index' step.
@@ -203,8 +207,9 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
 RNASeqReadProcess <- function(RNASeqRParam,
                               which.trigger             = "OUTSIDE",
                               INSIDE.path.prefix        = NA,
+                              SAMtools.or.Rsamtools     = "Rsamtools",
                               num.parallel.threads      = 1,
-                              Rsamtools.maxMemory       = 512,
+                              Rsamtools.nCores          = 1,
                               Hisat2.Index.run          = TRUE,
                               Hisat2.Alignment.run      = TRUE,
                               Rsamtools.Bam.run         = TRUE,
@@ -215,6 +220,10 @@ RNASeqReadProcess <- function(RNASeqRParam,
                               PreDECountTable.run       = TRUE,
                               check.s4.print            = TRUE) {
   CheckOperatingSystem(FALSE)
+  if (SAMtools.or.Rsamtools != "Rsamtools" &
+      SAMtools.or.Rsamtools != "SAMtools") {
+    stop("'SAMtools.or.Rsamtools' must be 'Rsamtools' or 'SAMtools'!!")
+  }
   # If `which.trigger` is OUTSIDE, then directory must be built
   # If `which.trigger` is INSIDE, then directory must not be
   #  built here(will created in CMD)
@@ -259,11 +268,12 @@ RNASeqReadProcess <- function(RNASeqRParam,
                            num.parallel.threads)
   }
   if (Rsamtools.Bam.run) {
-    RSamtoolsToBam(path.prefix,
+    RSamtoolsToBam(SAMtools.or.Rsamtools,
+                   path.prefix,
                    genome.name,
                    sample.pattern,
                    num.parallel.threads,
-                   Rsamtools.maxMemory)
+                   Rsamtools.nCores)
   }
   if (StringTie.Assemble.run) {
     StringTieAssemble(path.prefix,

@@ -46,7 +46,8 @@ Imports:
   utils,
   DOSE,
   ShortRead,
-  Biostrings
+  Biostrings,
+  parallel
 Suggests:
   knitr,
   RNASeqRData

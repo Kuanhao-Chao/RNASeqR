@@ -682,9 +682,7 @@ CheckHisat2 <- function(print=TRUE){
     return(TRUE)
   }
   else{
-    message("(\u2718) : 'hisat2' command is not found on this device. ",
-            "Please run 'InstallAll()' to install the necessary ",
-            "programs or 'ExportPath' to update the path.\n\n")
+    message("(\u2718) : 'hisat2' command is not found on this device!! \n\n")
     return(FALSE)
   }
 }
@@ -704,9 +702,7 @@ CheckStringTie <- function(print=TRUE){
     return(TRUE)
   }
   else{
-    message("(\u2718) : 'stringtie' command is not found on this device. ",
-            "Please run 'InstallAll()' to install the necessary programs ",
-            "or 'ExportPath' to update the path.\n\n")
+    message("(\u2718) : 'stringtie' command is not found on this device!! \n\n")
     return(FALSE)
   }
 }
@@ -726,9 +722,28 @@ CheckGffcompare <- function(print=TRUE) {
     return(TRUE)
   }
   else{
-    message("(\u2718) : \'gffcompare\' command is not found on this device. ",
-            "Please run 'InstallAll()' to install the necessary programs ",
-            "or 'ExportPath' to update the path.\n\n")
+    message("(\u2718) : \'gffcompare\' ",
+            "command is not found on this device!!\n\n")
+    return(FALSE)
+  }
+}
+
+# Check 'Samtools'
+CheckSamtools <- function(print=TRUE){
+  if (print) {
+    message("\u25CF  Checking samtools command\n")
+  }
+  samtools.old <- system( "samtools --version",
+                          ignore.stdout = !print,
+                          ignore.stderr = !print) == 0
+  if (isTRUE(samtools.old)){
+    if (isTRUE(print)){
+      message("(\u2714) : 'samtools' is installed\n\n")
+    }
+    return(TRUE)
+  }
+  else{
+    message("(\u2718) : \'samtools\' command is not found on this device!!\n\n")
     return(FALSE)
   }
 }

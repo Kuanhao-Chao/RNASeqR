@@ -142,7 +142,7 @@ CreateHisat2Index <- function (path.prefix,
 Hisat2AlignmentDefault <- function(path.prefix,
                                    genome.name,
                                    sample.pattern,
-                                   num.parallel.threads = 8) {
+                                   num.parallel.threads) {
   if (isTRUE(CheckHisat2(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix,
                                         genome.name,
@@ -291,11 +291,12 @@ Hisat2ReportAssemble <- function(path.prefix,
 }
 
 # use 'Rsamtools' to sort and convert the SAM files to BAM
-RSamtoolsToBam <- function(path.prefix,
+RSamtoolsToBam <- function(SAMtools.or.Rsamtools,
+                           path.prefix,
                            genome.name,
                            sample.pattern,
-                           num.parallel.threads = 8,
-                           Rsamtools.maxMemory){
+                           num.parallel.threads,
+                           Rsamtools.nCores){
   check.results <- ProgressGenesFiles(path.prefix,
                                       genome.name,
                                       sample.pattern,
@@ -304,26 +305,90 @@ RSamtoolsToBam <- function(path.prefix,
   message(paste0("************** ",
                  "Rsamtools converting '.sam' to '.bam' ",
                  "**************\n"))
+  command.list <- c()
   if (check.results$sam.files.number.df != 0){
-    command.list <- c()
-    command.list <- c(command.list,
-                      "* Rsamtools Converting '.sam' to '.bam' : ")
-    sample.table <- table(gsub(paste0(".sam$"),
-                               replacement = "",
-                               check.results$sam.files.df))
-    iteration.num <- length(sample.table)
-    sample.name <- names(sample.table)
-    sample.value <- as.vector(sample.table)
-    for( i in seq_len(iteration.num)){
-      ba.file <- Rsamtools::asBam(file = paste0(path.prefix,
-                                                "gene_data/raw_sam/",
-                                                sample.name[i], ".sam"),
-                                  destination = paste0(path.prefix,
-                                                       "gene_data/raw_bam/",
-                                                       sample.name[i]),
-                                  overwrite = TRUE,
-                                  maxMemory = Rsamtools.maxMemory)
-      command.list <- c(command.list, ba.file)
+    if (SAMtools.or.Rsamtools == "SAMtools") {
+      check.sam <- CheckSamtools()
+      if (check.sam) {
+        command.list <- c(command.list,
+                          "* SAMtools Converting '.sam' to '.bam' : ")
+        sample.table <- table(gsub(paste0(".sam$"),
+                                   replacement = "",
+                                   check.results$sam.files.df))
+        sample.name <- names(sample.table)
+        for( i in sample.name){
+          whole.command <- paste("sort -@", num.parallel.threads,
+                                 "-o", paste0(path.prefix, "gene_data/raw_bam/", i, ".bam"),
+                                 paste0(path.prefix, "gene_data/raw_sam/", i, ".sam"))
+          if (i != 1) message("\n")
+          main.command <- "samtools"
+          message(c("Input command :", paste(main.command, whole.command), "\n"))
+          command.list <- c(command.list,
+                            paste("    command :", main.command, whole.command))
+          command.result <- system2(command = main.command, args = whole.command)
+          if (command.result != 0 ) {
+            message(paste0("(\u2718) '", main.command, "' is failed !!"))
+            stop(paste0("'", main.command, "' ERROR"))
+          }
+        }
+      } else {
+        message("(\u2718) : 'SAMtools.or.Rsamtools' parameter can't be set to 'SAMtools'",
+                " because 'samtools' command is not found in R shell through ",
+                "'system2()'. Please make sure 'samtools' is available",
+                " on your device or change 'SAMtools.or.Rsamtools' parameter ",
+                "to 'Rsamtools'!!\n\n")
+      }
+    } else if (SAMtools.or.Rsamtools == "Rsamtools") {
+      command.list <- c(command.list,
+                        "* Rsamtools Converting '.sam' to '.bam' : ")
+      sample.table <- table(gsub(paste0(".sam$"),
+                                 replacement = "",
+                                 check.results$sam.files.df))
+      iteration.num <- length(sample.table)
+      sample.name <- names(sample.table)
+      sam.files <- lapply(sample.name, function(x) {paste0(path.prefix,
+                                                           "gene_data/raw_sam/",
+                                                           x, ".sam")})
+      bam.files <- lapply(sample.name,
+                          function(x) {paste0(path.prefix,
+                                              "gene_data/raw_bam/",x)})
+      command.list <- c(command.list,
+                        paste0("     Running 'asBam' in Rsamtools in parallel:",
+                               Rsamtools.nCores, "\n"))
+      mcmapply(FUN = function(input.sam,output.bam) {
+        message("     Input SAM file: '", input.sam, "'\n")
+        message("     Creating BAM file: '", output.bam, ".bam'\n")
+        # Remove tmp file
+        # tmp_file <- tempfile()
+        # unlink(list.files(dirname(dirname(tmp_file)),
+        #                   pattern = "Rtmp*", full.names = TRUE),
+        #        recursive = TRUE, force = TRUE)
+        Rsamtools::asBam(file = input.sam,
+                         destination = output.bam,
+                         overwrite = TRUE)
+        message("     Ouput BAM file: '", output.bam, ".bam' is created\n")
+      }, sam.files, bam.files, mc.cores = Rsamtools.nCores)
+      # command.list <- c(command.list, output.log)
+
+      # iteration.num <- length(sample.table)
+      # sample.name <- names(sample.table)
+      # sample.value <- as.vector(sample.table)
+      # for( i in seq_len(iteration.num)){
+      #   input.sam <- paste0(path.prefix,
+      #                       "gene_data/raw_sam/",
+      #                       sample.name[i], ".sam")
+      #   output.bam <- paste0(path.prefix,
+      #                        "gene_data/raw_bam/",
+      #                        sample.name[i])
+      #   message("     Input SAM file: '", input.sam, "'\n")
+      #   message("     Creating BAM file: '", output.bam, ".bam'\n")
+      #   ba.file <- Rsamtools::asBam(file = input.sam,
+      #                               destination = output.bam,
+      #                               overwrite = TRUE,
+      #                               maxMemory = Rsamtools.maxMemory)
+      #   message("     Ouput BAM file: '", output.bam, ".bam' is created\n")
+      #   command.list <- c(command.list, ba.file)
+      # }
     }
     message("\n")
     command.list <- c(command.list, "\n")
@@ -338,7 +403,7 @@ RSamtoolsToBam <- function(path.prefix,
 StringTieAssemble <- function(path.prefix,
                               genome.name,
                               sample.pattern,
-                              num.parallel.threads = 8) {
+                              num.parallel.threads) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix,
                                         genome.name,
@@ -388,7 +453,7 @@ StringTieAssemble <- function(path.prefix,
 StringTieMergeTrans <- function(path.prefix,
                                 genome.name,
                                 sample.pattern,
-                                num.parallel.threads = 8) {
+                                num.parallel.threads) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix,
                                         genome.name,
@@ -447,7 +512,7 @@ StringTieMergeTrans <- function(path.prefix,
 StringTieToBallgown <- function(path.prefix,
                                 genome.name,
                                 sample.pattern,
-                                num.parallel.threads = 8) {
+                                num.parallel.threads) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix,
                                         genome.name,

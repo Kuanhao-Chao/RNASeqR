@@ -5,12 +5,13 @@
 \title{RNASeqReadProcess}
 \usage{
 RNASeqReadProcess(RNASeqRParam, which.trigger = "OUTSIDE",
-  INSIDE.path.prefix = NA, num.parallel.threads = 1,
-  Rsamtools.maxMemory = 512, Hisat2.Index.run = TRUE,
-  Hisat2.Alignment.run = TRUE, Rsamtools.Bam.run = TRUE,
-  StringTie.Assemble.run = TRUE, StringTie.Merge.Trans.run = TRUE,
-  Gffcompare.Ref.Sample.run = TRUE, StringTie.Ballgown.run = TRUE,
-  PreDECountTable.run = TRUE, check.s4.print = TRUE)
+  INSIDE.path.prefix = NA, SAMtools.or.Rsamtools = "Rsamtools",
+  num.parallel.threads = 1, Rsamtools.nCores = 1,
+  Hisat2.Index.run = TRUE, Hisat2.Alignment.run = TRUE,
+  Rsamtools.Bam.run = TRUE, StringTie.Assemble.run = TRUE,
+  StringTie.Merge.Trans.run = TRUE, Gffcompare.Ref.Sample.run = TRUE,
+  StringTie.Ballgown.run = TRUE, PreDECountTable.run = TRUE,
+  check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqRParam}{S4 object instance of experiment-related
@@ -22,12 +23,14 @@ this value.}
 \item{INSIDE.path.prefix}{Default value is \code{NA}. User should not change
 this value.}
 
-\item{num.parallel.threads}{Specify the number of processing threads (CPUs)
-to use for transcript assembly. The default is 1.}
+\item{SAMtools.or.Rsamtools}{Default value is \code{Rsamtools}. User can set
+to \code{SAMtools} to use command-line-based 'samtools' instead.}
 
-\item{Rsamtools.maxMemory}{A numerical(1) indicating the maximal amount of
-memory (in MB) that the function is allowed to use. More details please
-refer to 'Rsamtools' package}
+\item{num.parallel.threads}{Specify the number of processing threads (CPUs)
+to use for each step. The default is 1.}
+
+\item{Rsamtools.nCores}{The number of cores to use when running
+'Rsamtools' step.}
 
 \item{Hisat2.Index.run}{Whether to run 'HISAT2 index' step in this function
 step. Default value is \code{TRUE}.

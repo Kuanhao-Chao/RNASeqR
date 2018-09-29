@@ -13,6 +13,7 @@
 #' @import methods
 #' @import org.Hs.eg.db
 #' @import org.Sc.sgd.db
+#' @importFrom parallel mcmapply
 #' @importFrom tools file_ext
 #' @importFrom reticulate py_available py_config
 #' @importFrom systemPipeRdata genWorkenvir

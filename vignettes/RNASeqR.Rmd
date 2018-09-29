@@ -336,7 +336,7 @@ RNASeqQualityTrimming_CMD(exp)
 2. Run in R shell 
 Result will be reported in R shell. Make sure quality assessment is successfully finished before running the subsequent steps.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 RNASeqQualityTrimming(exp)
 ```
 
