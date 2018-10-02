@@ -627,17 +627,26 @@ PreDECountTable <- function(path.prefix,
     dir.create(file.path(paste0(path.prefix, 'gene_data/reads_count_matrix/')),
                showWarnings = FALSE)
   }
+  url <- "https://ccb.jhu.edu/software/stringtie/dl/prepDE.py"
   command.list <- c()
-  message("File path: ", paste0(path.prefix,
-                                "gene_data/reads_count_matrix/prepDE.py\n"))
-  # Change to read internal file (not download from internet~~)
-  pyfile <- system.file("extdata", "prepDE.py", package = "RNASeqR")
-  file.copy(from = pyfile,
-            to = paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py"))
+  command.list <- c(command.list, "* Installing 'prepDE.py' : ")
+  message(paste0(path.prefix, "gene_data/reads_count_matrix\n"))
+  current.path <- getwd()
+  setwd(paste0(path.prefix, "gene_data/reads_count_matrix/"))
+  file.download <- getURL(url, download.file,
+                          paste0(path.prefix,
+                                 "gene_data/reads_count_matrix/prepDE.py"))
 
+  message("Using R function : 'download.file()' is called. \n")
   command.list <- c(command.list,
-                    "    Using R function: 'system.file()' to load 'prepDE.py'")
+                    "    Using R function : 'download.file()' is called.")
   command.list <- c(command.list, "\n")
+  if (file.download != 0 ) {
+    message(paste0("(\u2718) '", main.command, "' is failed !!"))
+    stop(paste0("'", main.command, "' ERROR"))
+  }
+  message("'", path.prefix,
+          "gene_data/reads_count_matrix/prepDE.py' has been installed.\n\n")
   message("************** Creating 'sample_lst.txt' file ************\n")
   sample.files <- list.files(paste0(path.prefix, "gene_data/ballgown/"),
                              pattern = sample.pattern)
