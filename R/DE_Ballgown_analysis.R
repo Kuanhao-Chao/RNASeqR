@@ -28,12 +28,17 @@ BallgownAnalysis <- function(path.prefix,
   ###############################################
   ## Creating "ballgown_normalized_result.csv" ##
   ##############################################
-  pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
+  phenoData.result<- phenoDataWrap(path.prefix,
+                                   independent.variable,
+                                   case.group,
+                                   control.group)
+  pheno_data <- phenoData.result$pheno_data
+  # Order in ID!!
   pheno_data <- pheno_data[order(pheno_data$ids),]
+  # Refactor to make sure 1 is case and 2 is control
   pheno_data[independent.variable][[1]] <-
     factor(as.character(pheno_data[independent.variable][[1]]),
            levels = c(case.group, control.group))
-
   # make ballgown object
   ballgown.object <- ballgown::ballgown(dataDir = paste0(path.prefix,
                                                          "gene_data/ballgown"),
@@ -71,12 +76,14 @@ BallgownAnalysis <- function(path.prefix,
   # Change name
   colnames(FPKM.data.frame) <- gsub("FPKM.", "", colnames(FPKM.data.frame))
   ballgown.result <- cbind(FPKM.data.frame, de.statistic.result)
-  pre.de.pheno.data <- RawCountPreData(path.prefix,
-                                       independent.variable,
-                                       case.group,
-                                       control.group)
-  case.group.size <- pre.de.pheno.data$case.group.size
-  control.group.size <- pre.de.pheno.data$control.group.size
+
+  # save case and control data frame
+  case.group.data.frame <- phenoData.result$case.group.data.frame
+  control.group.data.frame <- phenoData.result$control.group.data.frame
+  # save case and control group size
+  case.group.size <- phenoData.result$case.group.size
+  control.group.size <- phenoData.result$control.group.size
+
   # Select FPKM sum not 0!!
   tmp <- seq_len(case.group.size+control.group.size)
   ballgown.result <- ballgown.result[rowSums(ballgown.result[,tmp]) > 0, ]
@@ -96,18 +103,16 @@ BallgownAnalysis <- function(path.prefix,
   # For case group
   case.ballgown.result <-
     data.frame(ballgown.result[,colnames(ballgown.result) %in%
-                                 as.character(pre.de.pheno.data$
-                                                case.group.data.frame$ids)])
+                                 as.character(case.group.data.frame$ids)])
   colnames(case.ballgown.result) <-
-    paste0(as.character(pre.de.pheno.data$case.group.data.frame$ids),
+    paste0(as.character(case.group.data.frame$ids),
            ".", case.group)
   # For control group
   control.ballgown.result <-
     data.frame(ballgown.result[,colnames(ballgown.result) %in%
-                                 as.character(pre.de.pheno.data$
-                                                control.group.data.frame$ids)])
+                                 as.character(control.group.data.frame$ids)])
   colnames(control.ballgown.result) <-
-    paste0(as.character(pre.de.pheno.data$control.group.data.frame$ids),
+    paste0(as.character(control.group.data.frame$ids),
            ".", control.group)
   # Storing whole ballgown report
   total.data.frame <- cbind("gene.name" = ballgown.result$gene.name,

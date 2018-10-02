@@ -738,12 +738,12 @@ CheckSamtools <- function(print=TRUE){
                           ignore.stderr = !print) == 0
   if (isTRUE(samtools.old)){
     if (isTRUE(print)){
-      message("(\u2714) : 'samtools' is installed\n\n")
+      message("(\u2714) : 'samtools' is installed\n")
     }
     return(TRUE)
   }
   else{
-    message("(\u2718) : \'samtools\' command is not found on this device!!\n\n")
+    message("(\u2718) : \'samtools\' command is not found on this device!!\n")
     return(FALSE)
   }
 }

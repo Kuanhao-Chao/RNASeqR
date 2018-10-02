@@ -17,19 +17,19 @@ DESeq2RawCountAnalysis <- function(path.prefix,
   #############################################
   ## Creating "DESeq2_normalized_result.csv" ##
   #############################################
-  pre.de.pheno.data <- RawCountPreData(path.prefix,
-                                       independent.variable,
-                                       case.group,
-                                       control.group)
-  raw.count <- pre.de.pheno.data$gene.count.matrix
-  raw.count.gene.name <- pre.de.pheno.data$gene.count.name
-
-  message("\u25CF Creating 'DGEList' object from count matrix ... \n")
+  phenoData.result<- phenoDataWrap(path.prefix,
+                                   independent.variable,
+                                   case.group,
+                                   control.group)
+  pheno.data <- phenoData.result$pheno_data
+  rawCount.result <- RawCountWrap(path.prefix)
+  raw.count <- rawCount.result$gene.count.matrix
+  raw.count.gene.name <- rawCount.result$gene.count.name
   # creatin gene name data frame
   gene.data.frame <- data.frame(gene.name = raw.count.gene.name)
   # create design data.frame (independent.variable)
-  # !! reorder (sort)
-  pheno.data <- pre.de.pheno.data$pheno_data
+
+  # Order in ID!!
   pheno.data <- pheno.data[order(pheno.data$ids),]
   colData <- pheno.data[independent.variable]
   row.names(colData) <- pheno.data$ids
@@ -37,7 +37,6 @@ DESeq2RawCountAnalysis <- function(path.prefix,
   colData$independent.variable <- factor(as.character(colData$
                                                         independent.variable),
                                          levels = c(case.group, control.group))
-
   # creat DESeqDataSet
   # Rows of colData correspond to columns of countData
   message("\u25CF Creating 'DESeqDataSet' object from count matrix ... \n")
@@ -61,14 +60,14 @@ DESeq2RawCountAnalysis <- function(path.prefix,
   normalized.count.table <- DESeq2::counts(dds_de, normalized=TRUE)
 
   # For case group
-  case.id <- as.character(pre.de.pheno.data$case.group.data.frame$ids)
+  case.id <- as.character(phenoData.result$case.group.data.frame$ids)
   case.mrn.data.frame <-
     data.frame(normalized.count.table[,colnames(normalized.count.table) %in%
                                         case.id])
   colnames(case.mrn.data.frame) <- paste0(case.id, ".", case.group)
 
   # For control group
-  control.id <- as.character(pre.de.pheno.data$control.group.data.frame$ids)
+  control.id <- as.character(phenoData.result$control.group.data.frame$ids)
   control.mrn.data.frame <-
     data.frame(normalized.count.table[,colnames(normalized.count.table) %in%
                                         control.id])
@@ -97,8 +96,8 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                                    !is.na(DESeq2.result$log2FC) &
                                    (DESeq2.result$log2FC != -Inf), ]
   # Write result into file (csv)
-  case.group.size <- pre.de.pheno.data$case.group.size
-  control.group.size <- pre.de.pheno.data$control.group.size
+  case.group.size <- phenoData.result$case.group.size
+  control.group.size <- phenoData.result$control.group.size
   write.csv(DESeq2.result[,c(2:(case.group.size+1))],
             file = paste0(path.prefix,
                           "RNASeq_results/DESeq2_analysis/",
@@ -133,7 +132,6 @@ DESeq2RawCountAnalysis <- function(path.prefix,
             file = paste0(path.prefix, "RNASeq_results/DESeq2_analysis/",
                           "DESeq2_normalized_DE_result.csv"),
             row.names=FALSE)
-
 
 
   #########################

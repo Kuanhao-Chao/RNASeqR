@@ -101,13 +101,13 @@ BoxViolinPlot <- function(which.analysis,
                                 control.group)
   case.normalized <- csv.results$case
   control.normalized <- csv.results$control
-  pre.pheno_data <- RawCountPreData(path.prefix,
-                                    independent.variable,
-                                    case.group,
-                                    control.group)
+  phenoData.result<- phenoDataWrap(path.prefix,
+                                   independent.variable,
+                                   case.group,
+                                   control.group)
   my_colors=c("#00AFBB", "#E7B800")
-  color.group <- c(rep(1, pre.pheno_data$case.group.size),
-                   rep(2, pre.pheno_data$case.group.size))
+  color.group <- c(rep(1, phenoData.result$case.group.size),
+                   rep(2, phenoData.result$case.group.size))
   independent.variable.data.frame <- cbind(case.normalized, control.normalized)
   log2.normalized.value = log2(independent.variable.data.frame+1)
   log2.normalized.value <- reshape2::melt(log2.normalized.value)
@@ -197,17 +197,17 @@ PCAPlot <- function(which.analysis,
     dir.create(paste0(path.prefix, "RNASeq_results/",
                       which.analysis, "/images/preDE/PCA/"))
   }
-  pre.pheno_data <- RawCountPreData(path.prefix,
-                                    independent.variable,
-                                    case.group,
-                                    control.group)
+  phenoData.result<- phenoDataWrap(path.prefix,
+                                   independent.variable,
+                                   case.group,
+                                   control.group)
   # The independent.variable group
-  grp = factor(c(rep(case.group, pre.pheno_data$case.group.size),
-                 rep(control.group,  pre.pheno_data$case.group.size)),
+  grp = factor(c(rep(case.group, phenoData.result$case.group.size),
+                 rep(control.group,  phenoData.result$case.group.size)),
                levels = c(case.group, control.group))
   # color group
-  color.group <- c(rep(1, pre.pheno_data$case.group.size),
-                   rep(2, pre.pheno_data$case.group.size))
+  color.group <- c(rep(1, phenoData.result$case.group.size),
+                   rep(2, phenoData.result$case.group.size))
   independent.variable.data.frame <- cbind(case.normalized, control.normalized)
   normalized.trans <- data.frame(t(independent.variable.data.frame))
   normalized.trans$attribute <- grp
@@ -335,10 +335,10 @@ CorrelationPlot <- function(which.analysis,
     dir.create(paste0(path.prefix, "RNASeq_results/",
                       which.analysis, "/images/preDE/Correlation/"))
   }
-  pre.pheno_data <- RawCountPreData(path.prefix,
-                                    independent.variable,
-                                    case.group,
-                                    control.group)
+  phenoData.result<- phenoDataWrap(path.prefix,
+                                   independent.variable,
+                                   case.group,
+                                   control.group)
   independent.variable.data.frame <- cbind(case.normalized, control.normalized)
   res <- round(stats::cor(independent.variable.data.frame,
                           method = c("pearson", "kendall", "spearman")), 3)
@@ -566,14 +566,14 @@ DEPCAPlot <- function(which.analysis,
                                     strsplit(which.analysis,
                                              split = "_")[[1]][1],
                                     "_normalized_DE_result.csv"))
-  pre.pheno_data <- RawCountPreData(path.prefix,
-                                    independent.variable,
-                                    case.group,
-                                    control.group)
+  phenoData.result<- phenoDataWrap(path.prefix,
+                                   independent.variable,
+                                   case.group,
+                                   control.group)
   # This is to get the result of normalized count
   DE.csv.normalized.count.only <-
-    DE.csv.results[,2:(pre.pheno_data$case.group.size +
-                         pre.pheno_data$case.group.size + 1)]
+    DE.csv.results[,2:(phenoData.result$case.group.size +
+                         phenoData.result$case.group.size + 1)]
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/",
                         which.analysis, "/images/DE/PCA/"))){
     dir.create(paste0(path.prefix, "RNASeq_results/",
@@ -581,12 +581,12 @@ DEPCAPlot <- function(which.analysis,
   }
   my_colors=c("#00AFBB", "#E7B800")
   # The independent.variable group
-  grp = factor(c(rep(case.group, pre.pheno_data$case.group.size),
-                 rep(control.group,  pre.pheno_data$case.group.size)),
+  grp = factor(c(rep(case.group, phenoData.result$case.group.size),
+                 rep(control.group,  phenoData.result$case.group.size)),
                levels = c(case.group, control.group))
   # color group
-  color.group <- c(rep(1, pre.pheno_data$case.group.size),
-                   rep(2, pre.pheno_data$case.group.size))
+  color.group <- c(rep(1, phenoData.result$case.group.size),
+                   rep(2, phenoData.result$case.group.size))
   normalized.trans <- data.frame(t(DE.csv.normalized.count.only))
   normalized.trans$attribute <- grp
   pca = FactoMineR::PCA(normalized.trans, ncp=2,
@@ -701,10 +701,10 @@ DEHeatmap <- function(which.analysis,
                                     strsplit(which.analysis,
                                              split = "_")[[1]][1],
                                     "_normalized_DE_result.csv"))
-  pre.pheno_data <- RawCountPreData(path.prefix,
-                                    independent.variable,
-                                    case.group,
-                                    control.group)
+  phenoData.result<- phenoDataWrap(path.prefix,
+                                   independent.variable,
+                                   case.group,
+                                   control.group)
   ## Maybe change !!!! temp !!
   DE.csv.results <- DE.csv.results[DE.csv.results$gene.name != ".",]
   message(paste0("     \u25CF Checking found ",
@@ -717,23 +717,23 @@ DEHeatmap <- function(which.analysis,
     DE.csv.results <- DE.csv.results[!duplicated(DE.csv.results$gene.name),]
 
     # Decide sample name whether to show
-    if (pre.pheno_data$case.group.size + pre.pheno_data$case.group.size > 16) {
+    if (phenoData.result$case.group.size + phenoData.result$case.group.size > 16) {
       message(paste0("          \u25CF Total sample number: ",
-                     pre.pheno_data$case.group.size +
-                       pre.pheno_data$case.group.size,
+                     phenoData.result$case.group.size +
+                       phenoData.result$case.group.size,
                      " (sample name will not be shown).\n"))
       show.sample.name <- FALSE
     } else {
       message(paste0("          \u25CF Total sample number: ",
-                     pre.pheno_data$case.group.size +
-                       pre.pheno_data$case.group.size,
+                     phenoData.result$case.group.size +
+                       phenoData.result$case.group.size,
                      " (sample name will be shown).\n"))
       show.sample.name <- TRUE
     }
     # Decide gene name whether to show
     DE.csv.normalized.count.only <-
-      DE.csv.results[,2:(pre.pheno_data$case.group.size +
-                           pre.pheno_data$case.group.size + 1)]
+      DE.csv.results[,2:(phenoData.result$case.group.size +
+                           phenoData.result$case.group.size + 1)]
     row.names(DE.csv.normalized.count.only) <- DE.csv.results$gene.name
     if (nrow(DE.csv.normalized.count.only) > 60) {
       message(paste0("          \u25CF Found ",
@@ -752,22 +752,22 @@ DEHeatmap <- function(which.analysis,
     log.data.frame <- log2(DE.csv.normalized.count.only+1)
     # Getting log control mean
     control.log.average <-
-      rowMeans(log.data.frame[seq_len(pre.pheno_data$case.group.size)])
+      rowMeans(log.data.frame[seq_len(phenoData.result$case.group.size)])
     message(paste0("     \u25CF Each log2(",
                    which.count.normalization,
                    "+1) minus average of control.\n"))
     log.data.frame.minus <- log.data.frame - control.log.average
     df.new <- scale(log.data.frame.minus)
-    pre.pheno_data <- RawCountPreData(path.prefix,
-                                      independent.variable,
-                                      case.group,
-                                      control.group)
+    phenoData.result<- phenoDataWrap(path.prefix,
+                                     independent.variable,
+                                     case.group,
+                                     control.group)
     # The independent.variable group
     # Do for annotation ! (grouping in pheatmap)
     annotation_list = factor(c(rep(case.group,
-                                   pre.pheno_data$case.group.size),
+                                   phenoData.result$case.group.size),
                                rep(control.group,
-                                   pre.pheno_data$case.group.size)),
+                                   phenoData.result$case.group.size)),
                              levels = c(case.group, control.group))
     annotation <- data.frame(Var1 = annotation_list)
     colnames(annotation) <- independent.variable

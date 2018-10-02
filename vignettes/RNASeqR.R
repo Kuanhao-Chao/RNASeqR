@@ -54,12 +54,6 @@ grid.raster(img, just = "center")
 RNASeqQualityAssessment(exp)
 
 ## ---- eval=FALSE-----------------------------------------------------------
-#  RNASeqQualityTrimming_CMD(exp)
-
-## ---- warning=FALSE, eval=FALSE--------------------------------------------
-#  RNASeqQualityTrimming(exp)
-
-## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqReadProcess_CMD(exp)
 
 ## ---- warning=FALSE--------------------------------------------------------

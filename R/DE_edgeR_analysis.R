@@ -16,26 +16,29 @@ edgeRRawCountAnalysis <- function(path.prefix,
   #############################################
   ## Creating "edgeR_normalized_result.csv" ##
   ############################################
-  pre.de.pheno.data <- RawCountPreData(path.prefix,
-                                       independent.variable,
-                                       case.group,
-                                       control.group)
-  raw.count <- pre.de.pheno.data$gene.count.matrix
-  raw.count.gene.name <- pre.de.pheno.data$gene.count.name
-
-  # create DGEList object (edgeR)
-  message("\u25CF Creating 'DGEList' object from count matrix ... \n")
+  phenoData.result<- phenoDataWrap(path.prefix,
+                                   independent.variable,
+                                   case.group,
+                                   control.group)
+  pheno.data <- phenoData.result$pheno_data
+  rawCount.result <- RawCountWrap(path.prefix)
+  raw.count <- rawCount.result$gene.count.matrix
+  raw.count.gene.name <- rawCount.result$gene.count.name
+  # creatin gene name data frame
   gene.data.frame <- data.frame(gene.name = raw.count.gene.name)
-  pheno.data <- pre.de.pheno.data$pheno_data
+  # create design data.frame (independent.variable)
+  # Order in ID!!
   pheno.data <- pheno.data[order(pheno.data$ids),]
+  # Refactor 'independent.variable' for pheno.data
   pheno.data[independent.variable][[1]] <-
     factor(as.character(pheno.data[independent.variable][[1]]),
            levels = c(case.group, control.group))
 
+  message("\u25CF Creating 'DGEList' object from count matrix ... \n")
   deglist.object <-
-    edgeR::DGEList(counts=raw.count,
-                   group = pheno.data[independent.variable][[1]],
-                   genes = raw.count.gene.name)
+    edgeR::DGEList(counts = raw.count,
+                   group  = pheno.data[independent.variable][[1]],
+                   genes  = raw.count.gene.name)
   # Normalization with TMM (trimmed mean of M-values )
   message("     \u25CF Normalizing DGEList object (TMM) ... \n")
   deglist.object <- edgeR::calcNormFactors(deglist.object, method="TMM")
@@ -59,14 +62,14 @@ edgeRRawCountAnalysis <- function(path.prefix,
   normalized.count.table <- edgeR::cpm(dgList, normalized.lib.sizes=TRUE)
 
   # For case group
-  case.id <- as.character(pre.de.pheno.data$case.group.data.frame$ids)
+  case.id <- as.character(phenoData.result$case.group.data.frame$ids)
   case.cpm.data.frame <-
     data.frame(normalized.count.table[,colnames(normalized.count.table) %in%
                                         case.id])
   colnames(case.cpm.data.frame) <- paste0(case.id, ".", case.group)
 
   # For control group
-  control.id <- as.character(pre.de.pheno.data$control.group.data.frame$ids)
+  control.id <- as.character(phenoData.result$control.group.data.frame$ids)
   control.cpm.data.frame <-
     data.frame(normalized.count.table[,colnames(normalized.count.table) %in%
                                         control.id])
@@ -90,8 +93,8 @@ edgeRRawCountAnalysis <- function(path.prefix,
                                  (edgeR.result$log2FC != Inf) &
                                  !is.na(edgeR.result$log2FC) &
                                  (edgeR.result$log2FC != -Inf), ]
-  case.group.size <- pre.de.pheno.data$case.group.size
-  control.group.size <- pre.de.pheno.data$control.group.size
+  case.group.size <- phenoData.result$case.group.size
+  control.group.size <- phenoData.result$control.group.size
   # Write out csv file
   write.csv(edgeR.result[,c(2:(case.group.size+1))],
             file = paste0(path.prefix, "RNASeq_results/edgeR_analysis/",

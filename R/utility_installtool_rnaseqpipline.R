@@ -309,11 +309,12 @@ ParseResultCSV <- function(which.analysis,
               "statistic" = read.statistic.csv))
 }
 
-RawCountPreData <- function(path.prefix,
-                            independent.variable,
-                            case.group,
-                            control.group) {
-  # likelihood ratio test and quasi-likelihood F-test
+
+
+phenoDataWrap <- function(path.prefix,
+                          independent.variable,
+                          case.group,
+                          control.group) {
   # Read pheno_data
   pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
   case.group.data.frame <-
@@ -322,6 +323,14 @@ RawCountPreData <- function(path.prefix,
     pheno_data[pheno_data[independent.variable] == control.group, ]
   case.group.size <- length(row.names(case.group.data.frame))
   control.group.size <- length(row.names(control.group.data.frame))
+  return(list("pheno_data" = pheno_data,
+              "case.group.data.frame" = case.group.data.frame,
+              "control.group.data.frame" = control.group.data.frame,
+              "case.group.size" = case.group.size,
+              "control.group.size" = control.group.size))
+}
+
+RawCountWrap <- function(path.prefix) {
   # read in gene count table
   gene.count.table.raw <- read.csv(paste0(path.prefix,
                                           "gene_data/reads_count_matrix/",
@@ -335,12 +344,7 @@ RawCountPreData <- function(path.prefix,
     as.character(gene.count.table.raw$raw.count.name)
   # gene matrix
   gene.count.matrix <- as.matrix(gene.reads.count.table)
-  return(list("pheno_data" = pheno_data,
-              "case.group.data.frame" = case.group.data.frame,
-              "control.group.data.frame" = control.group.data.frame,
-              "case.group.size" = case.group.size,
-              "control.group.size" = control.group.size,
-              "gene.count.matrix" = gene.count.matrix,
+  return(list("gene.count.matrix" = gene.count.matrix,
               "gene.count.name" = gene.reads.count.gene.name))
 }
 

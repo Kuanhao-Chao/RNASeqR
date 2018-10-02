@@ -619,33 +619,25 @@ PreDECountTable <- function(path.prefix,
                             python.2to3,
                             print=TRUE) {
   # ftp server :
+  # 'prepDE.py' is from
   #  ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.1.0-source.zip
   message("\n\u2618\u2618\u2618 Raw Reads Count Creation :\n")
-  message("************** Installing prepDE.py ************\n")
+  message("************** Reading prepDE.py ************\n")
   if(!dir.exists(paste0(path.prefix, "gene_data/reads_count_matrix/"))){
     dir.create(file.path(paste0(path.prefix, 'gene_data/reads_count_matrix/')),
                showWarnings = FALSE)
   }
-  url <- "https://ccb.jhu.edu/software/stringtie/dl/prepDE.py"
   command.list <- c()
-  command.list <- c(command.list, "* Installing 'prepDE.py' : ")
-  message(paste0(path.prefix, "gene_data/reads_count_matrix\n"))
-  current.path <- getwd()
-  setwd(paste0(path.prefix, "gene_data/reads_count_matrix/"))
-  file.download <- getURL(url, download.file,
-                          paste0(path.prefix,
-                                 "gene_data/reads_count_matrix/prepDE.py"))
+  message("File path: ", paste0(path.prefix,
+                                "gene_data/reads_count_matrix/prepDE.py\n"))
+  # Change to read internal file (not download from internet~~)
+  pyfile <- system.file("extdata", "prepDE.py", package = "RNASeqR")
+  file.copy(from = pyfile,
+            to = paste0(path.prefix, "gene_data/reads_count_matrix/prepDE.py"))
 
-  message("Using R function : 'download.file()' is called. \n")
   command.list <- c(command.list,
-                    "    Using R function : 'download.file()' is called.")
+                    "    Using R function: 'system.file()' to load 'prepDE.py'")
   command.list <- c(command.list, "\n")
-  if (file.download != 0 ) {
-    message(paste0("(\u2718) '", main.command, "' is failed !!"))
-    stop(paste0("'", main.command, "' ERROR"))
-  }
-  message("'", path.prefix,
-          "gene_data/reads_count_matrix/prepDE.py' has been installed.\n\n")
   message("************** Creating 'sample_lst.txt' file ************\n")
   sample.files <- list.files(paste0(path.prefix, "gene_data/ballgown/"),
                              pattern = sample.pattern)
@@ -724,10 +716,8 @@ PreDECountTable <- function(path.prefix,
     command.list <- c(command.list, "\n")
     fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
     write(command.list, fileConn, append = TRUE)
-    on.exit(setwd(current.path))
     return(TRUE)
   } else {
-    on.exit(setwd(current.path))
     message(paste0("(\u26A0) Python is not available on your device!! ",
                    "Please install python to run ",
                    "python script 'prepDE.py'. Raw reads count table creation

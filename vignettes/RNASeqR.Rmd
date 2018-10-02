@@ -29,9 +29,9 @@ knitr::opts_chunk$set(tidy = FALSE,
 
 RNA-Seq is a revolutionary approach to investigate and discover the transcriptome using next-generation sequencing technologies [ref]. Typically, this transcriptome analysis aims to identify genes differentially expressed among different conditions or tissues, resulting in the understanding of the important pathways that are associated with conditions.[ref]
 
-RNASeqR is an user-friendly R-based tool for running RNA-Seq analysis pipeline including quality assessment, reads alignment and quantification, differential expression analysis, and functional analysis. The main features of this package are automated workflow, comprehensive report with data visualization and extendable file structure. In this package, new tuxedo pipeline published in Nature Protocols in 2016 can be fully implemented under R environment with extra functions such as reads quality assessment, trimming and functional analysis.
+RNASeqR is an user-friendly R-based tool for running RNA-Seq analysis pipeline including quality assessment, reads alignment and quantification, differential expression analysis, and functional analysis. The main features of this package are automated workflow, comprehensive report with data visualization and extendable file structure. In this package, new tuxedo pipeline published in Nature Protocols in 2016 can be fully implemented under R environment with extra functions such as reads quality assessment and functional analysis.
 
-The following are main tools that are used in this package: '[HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml)' for reads alignment(Kim et al. 2015); '[StringTie](https://ccb.jhu.edu/software/stringtie/)' for alignments assembly and transcripts quantification(Pertea et al. 2015); '[Rsamtools](https://bioconductor.org/packages/release/bioc/html/Rsamtools.html)' for converting `SAM` files to `BAM` files(Morgan et al. 2018); '[Gffcompare](https://ccb.jhu.edu/software/stringtie/gffcompare.shtml)' for comparing merged `GTF` file with reference `GTF` file; '[systemPipeR](https://bioconductor.org/packages/release/bioc/html/systemPipeR.html)' package for quality assessment(Backman et al. 2016); '[ShortRead](https://bioconductor.org/packages/release/bioc/html/ShortRead.html)' package for quality trimming(Morgan et al. 2009); '[ballgown](https://bioconductor.org/packages/release/bioc/html/ballgown.html)' package(Fu et al. 2018), '[DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)' package(Love et al. 2014) and '[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)' package(Robinson et al. 2010;McCarthy et al. 2012) for finding potential differential expressed genes; '[clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)' package(Yu et al. 2012) for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis.
+The following are main tools that are used in this package: '[HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml)' for reads alignment(Kim et al. 2015); '[StringTie](https://ccb.jhu.edu/software/stringtie/)' for alignments assembly and transcripts quantification(Pertea et al. 2015); '[Rsamtools](https://bioconductor.org/packages/release/bioc/html/Rsamtools.html)' for converting `SAM` files to `BAM` files(Morgan et al. 2018); '[Gffcompare](https://ccb.jhu.edu/software/stringtie/gffcompare.shtml)' for comparing merged `GTF` file with reference `GTF` file; '[systemPipeR](https://bioconductor.org/packages/release/bioc/html/systemPipeR.html)' package for quality assessment(Backman et al. 2016); '[ballgown](https://bioconductor.org/packages/release/bioc/html/ballgown.html)' package(Fu et al. 2018), '[DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)' package(Love et al. 2014) and '[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)' package(Robinson et al. 2010;McCarthy et al. 2012) for finding potential differential expressed genes; '[clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)' package(Yu et al. 2012) for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis.
 
 The central concept behind this package is that **each step involved in RNA-Seq data analysis is a function call in R**. At the beginning, users will create a `RNASeqRParam` S4 object by running `RNASeqRParam()` constructor function for all variable checking. After the creation of `RNASeqRParam`, it will be used as input of the following analysis function.
 
@@ -39,13 +39,11 @@ The central concept behind this package is that **each step involved in RNA-Seq 
 
 2. `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()`: (Optional) to run quality assessment step.
 
-3. `RNASeqQualityTrimming_CMD()` or `RNASeqQualityTrimming()`: (Optional) to run quality trimming step.
+3. `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`: to run reads alignment and quatification.
 
-4. `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`: to run reads alignment and quatification.
+4. `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`: to run differential analysis via different R packages.
 
-5. `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`: to run differential analysis via different R packages.
-
-6. `RNASeqGoKegg_CMD()` or `RNASeqGoKegg()`: to conduct GO and KEGG analysis.
+5. `RNASeqGoKegg_CMD()` or `RNASeqGoKegg()`: to conduct GO and KEGG analysis.
 
 Functions with `CMD` suffix create an R script and run `nohup R CMD BATCH script.R` in background. Functions with no `CMD` suffix process in R shell. After running the above functions, the whole RNA-Seq analysis is done and generated files in each step will be stored in organized file directory. `RNASeqR` package makes two-group RNA-Seq analysis **more efficient** and **easier** for users.
 
@@ -302,42 +300,6 @@ Result will be reported in R shell. Make sure quality assessment is successfully
 
 ```{r, warning=FALSE}
 RNASeqQualityAssessment(exp)
-```
-
-# Quality Trimming of `FASTQ` sequence data
-
-This is also an **optional step** of RNA-Seq workflow in this package. However, it is recommended when the bad quality of sequencing reads exist. To trim the raw reads in `FASTQ` files, users can either run `RNASeqQualityTrimming_CMD()` to execute process in background or run `RNASeqQualityTrimming()` to execute process in R shell. After finishing quality trimming, it is highly suggested to re-conduct quality assessment. Different quality assessment result will be stored in different directories with index of processing order.
-
-## "ShortRead" Quality Trimming
-
-In this step, [ShortRead](http://bioconductor.org/packages/release/bioc/html/ShortRead.html) package is ultilized for trimming the bad quality ends off the reads and the details are as follows:
-
-1. `FASTQ` files with `sample.pattern` in *'gene_data/raw_fastq.gz'* will be listed and be check. This trimming function only support paired-end `FASTQ` files.
-
-2. The probability of error per each base pair is calculated by Phred Quality in `FASTQ` files and the cumulative probability of error of each base pair will also be calculated. The threshold cumulative probability `cum.error`, with default value `1`, is used to find the trimming point of paired end files.
-
-3. `reads.length.limit`, with default value 36,  determines the minimum base pair length of reads. Length of reads less than `reads.length.limit` will be filtered out.
-
-4. Untrimmed original `FASTQ` files are moved to *'gene_data/raw_fastq.gz/original_untrimmed_fastq.gz'*, and trimmed reads are written to *'gene_data/raw_fastq.gz/'*
-
-5. It is strongly recommended to run `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()` for quality assessment after quality trimming.
-
-## Example
-
-Run `RNASeqQualityTrimming_CMD()` or `RNASeqQualityTrimming()`. 
-
-1. Run in background
-Result will be reported in *'Rscript_out/Quality_Trimming.Rout'*. Make sure quality trimming is successfully finished before running the subsequent steps.
-
-```{r, eval=FALSE}
-RNASeqQualityTrimming_CMD(exp)
-```
-
-2. Run in R shell 
-Result will be reported in R shell. Make sure quality assessment is successfully finished before running the subsequent steps.
-
-```{r, warning=FALSE, eval=FALSE}
-RNASeqQualityTrimming(exp)
 ```
 
 # Reads Alignment and Quantification
@@ -816,7 +778,7 @@ RNASeqGoKegg(exp,
 
 # Conlusion
 
-RNASeqR is an user-friendly R-based tool for running case-control study(two group) RNA-Seq analysis pipeline. The six main steps in this package is *Environment Setup*,  *Quality Assessment*, *Quality Trimming*, *Reads Alignment and Quantification*, *Gene-level Differential Expression Analysis* and *Functional Analysis.*
+RNASeqR is an user-friendly R-based tool for running case-control study(two group) RNA-Seq analysis pipeline. The six main steps in this package is *Environment Setup*,  *Quality Assessment*, *Reads Alignment and Quantification*, *Gene-level Differential Expression Analysis* and *Functional Analysis.*
 The main features that RNASeqR provides are automated workflow, extendable file structure, comprehensive reports, data visualization on widely-used differential analysis tools etc. With this R package, doing two-group RNA-Seq analysis will be much easier and faster.
 
 # Session Information

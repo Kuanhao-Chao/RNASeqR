@@ -230,7 +230,7 @@ RNASeqDifferentialAnalysis <- function(RNASeqRParam,
     Hisat2ReportAssemble(path.prefix, genome.name, sample.pattern)
   }
   message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  ",
-          "Start 'ballgown', 'DESeq2' 'edgeR' analyses  ",
+          "Start Differential Expression Analysis  ",
           "\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
   if (ballgown.run) {
     BallgownAnalysis(path.prefix,
