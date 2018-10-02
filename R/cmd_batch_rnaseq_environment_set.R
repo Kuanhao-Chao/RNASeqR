@@ -431,7 +431,7 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
     os.file.name <- "hisat2-2.1.0"
     url <- paste0(url, os.file.name.zip)
   } else if (os == "osx"){
-    os.file.name <- "hisat2-2.1.0-OSX_x86_64.zip"
+    os.file.name.zip <- "hisat2-2.1.0-OSX_x86_64.zip"
     os.file.name <- "hisat2-2.1.0"
     url <- paste0(url, os.file.name)
   } else if (os == "windows"){
