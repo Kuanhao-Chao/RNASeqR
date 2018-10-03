@@ -369,21 +369,23 @@ CopyInputDir <- function(path.prefix,
   message(c("     \u25CF Copying From :",
             paste0(input.path.prefix, "input_files/",
                    genome.name, ".gtf"), "\n"))
+  gtf.des <- paste0(path.prefix, "gene_data/ref_genes/", genome.name, ".gtf")
+  file.remove(gtf.des)
   file.symlink(paste0(input.path.prefix, "input_files/", genome.name, ".gtf"),
-               paste0(path.prefix, "gene_data/ref_genes/", genome.name, ".gtf"))
-  message(c("     \u25CF           To :"),
-          paste0(path.prefix, "gene_data/ref_genes/",
-                 genome.name, ".gtf", "\n"))
+               gtf.des)
+  message(c("     \u25CF           To :"), gtf.des, "\n")
+  fa.des <- paste0(path.prefix, "gene_data/ref_genome/", genome.name, ".fa")
   message(c("     \u25CF Copying From :",
             paste0(input.path.prefix, "input_files/",
                    genome.name, ".fa"),  "\n"))
+  file.remove(fa.des)
   file.symlink(paste0(input.path.prefix, "input_files/", genome.name, ".fa"),
-               paste0(path.prefix, "gene_data/ref_genome/", genome.name, ".fa"))
-  message(c("     \u25CF           To :"),
-          paste0(path.prefix, "gene_data/ref_genome/",
-                 genome.name, ".fa", "\n"))
+               fa.des)
+  message(c("     \u25CF           To :"), fa.des, "\n")
   message(c("     \u25CF Copying From :",
             paste0(input.path.prefix, "input_files/", "raw_fastq.gz/"),  "\n"))
+  unlink(paste0(path.prefix, "gene_data/raw_fastq.gz/"), recursive = TRUE)
+  dir.create(paste0(path.prefix, "gene_data/raw_fastq.gz/"))
   raw_fastq.gz.subfiles <- list.files(path = paste0(input.path.prefix,
                                                     "input_files/",
                                                     "raw_fastq.gz"),
@@ -398,13 +400,16 @@ CopyInputDir <- function(path.prefix,
             paste0(path.prefix, "gene_data/raw_fastq.gz/"), "\n"))
   message(c("     \u25CF Copying From :",
             paste0(input.path.prefix, "input_files/phenodata.csv"),  "\n"))
-  file.symlink(paste0(input.path.prefix, "input_files/phenodata.csv")
-               , paste0(path.prefix, "gene_data/phenodata.csv"))
-  message(c("     \u25CF           To :"),
-          paste0(path.prefix, "gene_data/phenodata.csv\n"))
+  pheno.des <- paste0(path.prefix, "gene_data/phenodata.csv")
+  file.remove(pheno.des)
+  file.symlink(paste0(input.path.prefix, "input_files/phenodata.csv"),
+               pheno.des)
+  message(c("     \u25CF           To :"), pheno.des, "\n")
   if (isTRUE(indices.optional)) {
     message(c("     \u25CF Copying From :",
               paste0(input.path.prefix, "input_files/", "indices/"),  "\n"))
+    unlink(paste0(path.prefix, "gene_data/indices/"), recursive = TRUE)
+    dir.create(paste0(path.prefix, "gene_data/indices/"))
     indices.subfiles <- list.files(path = paste0(input.path.prefix,
                                                  "input_files/", "indices"),
                                    pattern = paste0(genome.name,
@@ -433,7 +438,7 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
   } else if (os == "osx"){
     os.file.name.zip <- "hisat2-2.1.0-OSX_x86_64.zip"
     os.file.name <- "hisat2-2.1.0"
-    url <- paste0(url, os.file.name)
+    url <- paste0(url, os.file.name.zip)
   } else if (os == "windows"){
     stop("Hisat2 is not supporting windows.\n\n")
     return(FALSE)
@@ -507,9 +512,9 @@ InstallStringTieBinary <- function(path.prefix, os.type){
     os.file.name <- "stringtie-1.3.4d.Linux_x86_64"
     url <- paste0(url, os.file.name.zip)
   } else if (os == "osx"){
-    os.file.name <- "stringtie-1.3.4d.OSX_x86_64.tar.gz"
+    os.file.name.zip <- "stringtie-1.3.4d.OSX_x86_64.tar.gz"
     os.file.name <- "stringtie-1.3.4d.OSX_x86_64"
-    url <- paste0(url, os.file.name)
+    url <- paste0(url, os.file.name.zip)
   } else if (os == "windows"){
     stop("Stringtie is not supporting windows.\n\n")
     return(FALSE)
@@ -569,9 +574,9 @@ InstallGffcompareBinary <- function(path.prefix, os.type){
     os.file.name <- "gffcompare-0.10.4.Linux_x86_64"
     url <- paste0(url, os.file.name.zip)
   } else if (os == "osx"){
-    os.file.name <- "gffcompare-0.10.4.OSX_x86_64.tar.gz"
+    os.file.name.zip <- "gffcompare-0.10.4.OSX_x86_64.tar.gz"
     os.file.name <- "gffcompare-0.10.4.OSX_x86_64"
-    url <- paste0(url, os.file.name)
+    url <- paste0(url, os.file.name.zip)
   } else if (os == "windows"){
     stop("Gffcompare is not supporting windows.\n\n")
     return(FALSE)

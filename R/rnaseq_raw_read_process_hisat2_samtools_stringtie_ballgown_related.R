@@ -34,6 +34,7 @@ CreateHisat2Index <- function (path.prefix,
                                     args = whole.command)
           # break is return is not 0 (means success!)
           if (command.result != 0 ) {
+            on.exit(setwd(current.path))
             message("(\u2718) '", main.command, "' is failed !!")
             stop(paste0("'", main.command, "' ERROR"))
           }
@@ -50,6 +51,7 @@ CreateHisat2Index <- function (path.prefix,
           command.result <- system2(command = main.command,
                                     args = whole.command)
           if (command.result != 0 ) {
+            on.exit(setwd(current.path))
             message(paste0("(\u2718) '", main.command, "' is failed !!"))
             stop(paste0("'", main.command, "' ERROR"))
           }
@@ -69,6 +71,7 @@ CreateHisat2Index <- function (path.prefix,
           command.result <- system2(command = main.command,
                                     args = whole.command)
           if (command.result != 0 ) {
+            on.exit(setwd(current.path))
             message("(\u2718) '", main.command, "' is failed !!")
             stop(paste0("'", main.command, "' ERROR"))
           }
@@ -86,6 +89,7 @@ CreateHisat2Index <- function (path.prefix,
           command.result <- system2(command = main.command,
                                     args = whole.command)
           if (command.result != 0 ) {
+            on.exit(setwd(current.path))
             message("(\u2718) '", main.command, "' is failed !!")
             stop(paste0("'", main.command, "' ERROR"))
           }
@@ -103,6 +107,7 @@ CreateHisat2Index <- function (path.prefix,
           command.result <- system2(command = main.command,
                                     args = whole.command)
           if (command.result != 0 ) {
+            on.exit(setwd(current.path))
             message("(\u2718) '", main.command, "' is failed !!")
             stop(paste0("'", main.command, "' ERROR"))
           }
@@ -119,6 +124,7 @@ CreateHisat2Index <- function (path.prefix,
           command.result <- system2(command = main.command,
                                     args = whole.command)
           if (command.result != 0 ) {
+            on.exit(setwd(current.path))
             message("(\u2718) '", main.command, "' is failed !!")
             stop(paste0("'", main.command, "' ERROR"))
           }
@@ -131,6 +137,7 @@ CreateHisat2Index <- function (path.prefix,
         message("'", path.prefix, "gene_data/indices/",
                 genome.name, "_tran.*.ht2' has been created.\n\n")
       } else {
+        on.exit(setwd(current.path))
         stop(c(paste0("(\u2718) '", genome.name, ".gtf' "), "or",
                paste0(" '", genome.name, ".fa'"), "is missing.\n\n"))
       }
@@ -163,6 +170,7 @@ Hisat2AlignmentDefault <- function(path.prefix,
                                    replacement = "",
                                    deleteback)
       if (isTRUE(length(unique(sample.table.r.value)) != 1)){
+        on.exit(setwd(current.path))
         stop("(\u2718) Inconsistent formats. Please check files are all",
              paste0("'XXX_*.fastq.gz'"), "\n\n")
       } else {
@@ -195,6 +203,7 @@ Hisat2AlignmentDefault <- function(path.prefix,
           command.result <- system2(command = main.command,
                                     args = whole.command)
           if (command.result != 0 ) {
+            on.exit(setwd(current.path))
             message(paste0("(\u2718) '", main.command, "' is failed !!"))
             stop(paste0("'", main.command, "' ERROR"))
           }
@@ -206,6 +215,7 @@ Hisat2AlignmentDefault <- function(path.prefix,
         on.exit(setwd(current.path))
       }
     } else {
+      on.exit(setwd(current.path))
       stop(c(paste0("(\u2718) '", genome.name, "_tran.*.ht2' "),
              "or 'XXX_*.fastq.gz' is missing.\n\n"))
     }
@@ -433,6 +443,7 @@ StringTieAssemble <- function(path.prefix,
                           paste("    command :", main.command, whole.command))
         command.result <- system2(command = main.command, args = whole.command)
         if (command.result != 0 ) {
+          on.exit(setwd(current.path))
           message(paste0("(\u2718) '", main.command, "' is failed !!"))
           stop(paste0("'", main.command, "' ERROR"))
         }
@@ -443,6 +454,7 @@ StringTieAssemble <- function(path.prefix,
       write(command.list, fileConn, append = TRUE)
       on.exit(setwd(current.path))
     } else {
+      on.exit(setwd(current.path))
       stop(c(paste0("(\u2718) '", genome.name, ".gtf' "),
              "or 'XXX.bam' is missing.\n\n"))
     }
@@ -493,6 +505,7 @@ StringTieMergeTrans <- function(path.prefix,
                         paste("    command :", main.command, whole.command))
       command.result <- system2(command = main.command, args = whole.command)
       if (command.result != 0 ) {
+        on.exit(setwd(current.path))
         message(paste0("(\u2718) '", main.command, "' is failed !!"))
         stop(paste0("'", main.command, "' ERROR"))
       }
@@ -502,6 +515,7 @@ StringTieMergeTrans <- function(path.prefix,
       write(command.list, fileConn, append = TRUE)
       on.exit(setwd(current.path))
     } else {
+      on.exit(setwd(current.path))
       stop(c(paste0("(\u2718) :'", genome.name, ".gtf' "),
              "or", " 'XXX.gtf' is missing.\n\n"))
     }
@@ -552,6 +566,7 @@ StringTieToBallgown <- function(path.prefix,
                           paste("    command :", main.command, whole.command))
         command.result <- system2(command = main.command, args = whole.command)
         if (command.result != 0 ) {
+          on.exit(setwd(current.path))
           message(paste0("(\u2718) '", main.command, "' is failed !!"))
           stop(paste0("'", main.command, "' ERROR"))
         }
@@ -562,6 +577,7 @@ StringTieToBallgown <- function(path.prefix,
       write(command.list, fileConn, append = TRUE)
       on.exit(setwd(current.path))
     } else {
+      on.exit(setwd(current.path))
       stop(c(paste0("(\u2718) 'stringtie_merged.gtf' "),
              "or", " 'XXX.bam' is missing.\n\n"))
     }
@@ -596,6 +612,7 @@ GffcompareRefSample <- function(path.prefix,
                         paste("    command :", main.command, whole.command))
       command.result <- system2(command = main.command, args = whole.command)
       if (command.result != 0 ) {
+        on.exit(setwd(current.path))
         message("(\u2718) '", main.command, "' is failed !!")
         stop(paste0("'", main.command, "' ERROR"))
       }
@@ -605,6 +622,7 @@ GffcompareRefSample <- function(path.prefix,
       write(command.list, fileConn, append = TRUE)
       on.exit(setwd(current.path))
     } else {
+      on.exit(setwd(current.path))
       stop(c(paste0("(\u2718) '", genome.name, ".gtf' "),
              "or", paste0(" 'stringtie_merged.gtf'"), "is missing.\n\n"))
     }
@@ -642,6 +660,7 @@ PreDECountTable <- function(path.prefix,
                     "    Using R function : 'download.file()' is called.")
   command.list <- c(command.list, "\n")
   if (file.download != 0 ) {
+    on.exit(setwd(current.path))
     message(paste0("(\u2718) '", main.command, "' is failed !!"))
     stop(paste0("'", main.command, "' ERROR"))
   }
@@ -690,10 +709,12 @@ PreDECountTable <- function(path.prefix,
         command.list <- c(command.list, "\n")
         command.result <- system2(command = main.command, args = whole.command)
         if (command.result != 0 ) {
+          on.exit(setwd(current.path))
           message(paste0("(\u2718) '", main.command, "' is failed !!"))
           stop(paste0("'", main.command, "' ERROR"))
         }
       } else {
+        on.exit(setwd(current.path))
         message("(\u26A0) 2to3 command is not available on your device !\n\n'")
         return(TRUE)
       }
@@ -713,6 +734,7 @@ PreDECountTable <- function(path.prefix,
                               args = whole.command,
                               wait = TRUE)
     if (command.result != 0 ) {
+      on.exit(setwd(current.path))
       message(paste0("(\u2718) '", main.command, "' is failed !!"))
       stop(paste0("'", main.command, "' ERROR"))
     }
@@ -725,8 +747,10 @@ PreDECountTable <- function(path.prefix,
     command.list <- c(command.list, "\n")
     fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
     write(command.list, fileConn, append = TRUE)
+    on.exit(setwd(current.path))
     return(TRUE)
   } else {
+    on.exit(setwd(current.path))
     message(paste0("(\u26A0) Python is not available on your device!! ",
                    "Please install python to run ",
                    "python script 'prepDE.py'. Raw reads count table creation
