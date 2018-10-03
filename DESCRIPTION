@@ -45,7 +45,6 @@ Imports:
   stats,
   utils,
   DOSE,
-  ShortRead,
   Biostrings,
   parallel
 Suggests:
