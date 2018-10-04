@@ -51,7 +51,9 @@ Functions with `CMD` suffix will create an R script and  run `nohup R CMD BATCH 
 
 # Sample Definition
 
-Sample data used in this vignette can be downloaded from `RNASeqRData` experiment package. It was originated from [NCBI's Sequence Read Archive](http://www.ncbi.nlm.nih.gov/sra) for the entries SRR3396381, SRR3396382, SRR3396384, SRR3396385, SRR3396386, and SRR3396387. These samples were from Saccharomyces cerevisiae. Suitable reference genome and gene annotation files for this species can be further downloaded from either iGenomes or Ensembl R64-1-1. To create mini data for demonstration purpose, reads aligned to the region from 0 to 100000 at chromosome XV were extracted.
+Sample data used in this vignette can be downloaded from `RNASeqRData` experiment package. It was originated from [NCBI's Sequence Read Archive](http://www.ncbi.nlm.nih.gov/sra) for the entries SRR3396381, SRR3396382, SRR3396384, SRR3396385, SRR3396386, and SRR3396387. These samples were from Saccharomyces cerevisiae. Suitable reference genome and gene annotation files for this species can be further downloaded from iGenomes, Ensembl, R64-1-1. To create mini data for demonstration purpose, reads aligned to the region from 0 to 100000 at chromosome XV were extracted. The following analysis results of this mini data will be shown in this vignette. 
+
+For more case-control real data RNA-Seq analysis results of this package, please go to this website (https://github.com/HowardChao/RNASeqR_analysis_result).
 
 # System Requirements
 
@@ -337,6 +339,8 @@ In preparation step(`RNASeqRParam` creation step), *'indices/'* directory is che
 
 ## The *Rsamtools `SAM` to `BAM`* Converter
 
+In this step, users can choose whether they want to use 'Rsamtools'(R package) or 'SAMtools'(command-line-based tool) to do files conversion by setting `SAMtools.or.Rsamtools `parameter `Rsamtools` or `SAMtools`. By default, `Rsamtools` will be used.  However, if the size of RNA-Seq data are too large, 'Rsamtools' might not be able to finish this process due to the Rtmp file issue, therefore 'SAMtools' is recommended. Users have to make sure 'samtools' command is available on the workstation beforehands or ERROR will be reported. 
+
 * Input: '`sample.pattern`.sam'
 
 * Output: '`sample.pattern`.bam'
@@ -460,7 +464,8 @@ img <- readPNG("figure/Alignment_report.png")
 
 ## General Data Visualization
 
-Here we illustrate general data visualization before and after differential expression analysis. The results based on each differential analysis tool(*ballgown*, *DESeq2*, *edgeR*) are kept in the directory 'RNASeq_results/' separately. The statistical results based on MRN-normalized value through DESeq2 R package are presented as follows: 
+Here we illustrate general data visualization before and after differential expression analysis. The results based on each differential analysis tool(*ballgown*, *DESeq2*, *edgeR*) are kept in the directory 'RNASeq_results/' separately. These plots shown below are the statistical results visualization of toy data in `RNASeqRData` package based on MRN-normalized value through DESeq2.
+For real data analysis results, please go to this website: https://howardchao.github.io/RNASeqR_analysis_result/.
 
 ### Before Differential Expression Analysis
 
@@ -644,13 +649,13 @@ grid.raster(img, just = "center")
 
 * **Dispersion_Plot_DESeq2.png**: To display the dispersion estimates before and after normalization using `plotDispEsts()`. The x-axis denotes the mean of normalized counts while y-axis represents the dispersion estimates value by `plotDispEsts()` in [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html).
 ```{r fig.width=6, height=6, echo=FALSE}
-img <- readPNG("figure/DESeq2_Dispersion_Plot_DESeq2.png")
+img <- readPNG("figure/preDE/Dispersion_Plot_DESeq2.png")
 grid.raster(img, just = "center")
 ```
 
 * **MA_Plot_DESeq2.png**: To display the diﬀerences of expression value between two groups by transforming the data onto log2-based ratio (x-axis) and log2-based mean (y-axis) scales by `plotMA()` in [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html).
 ```{r fig.width=6, height=6, echo=FALSE}
-img <- readPNG("figure/DESeq2_MA_Plot_DESeq2.png")
+img <- readPNG("figure/DE/MA_Plot_DESeq2.png")
 grid.raster(img, just = "center")
 ```
 

@@ -136,11 +136,11 @@ img <- readPNG("figure/ballgown_MA_Plot_ggplot2.png")
 grid.raster(img, just = "center")
 
 ## ----fig.width=6, height=6, echo=FALSE-------------------------------------
-img <- readPNG("figure/DESeq2_Dispersion_Plot_DESeq2.png")
+img <- readPNG("figure/preDE/Dispersion_Plot_DESeq2.png")
 grid.raster(img, just = "center")
 
 ## ----fig.width=6, height=6, echo=FALSE-------------------------------------
-img <- readPNG("figure/DESeq2_MA_Plot_DESeq2.png")
+img <- readPNG("figure/DE/MA_Plot_DESeq2.png")
 grid.raster(img, just = "center")
 
 ## ----fig.width=6, height=6, echo=FALSE-------------------------------------
