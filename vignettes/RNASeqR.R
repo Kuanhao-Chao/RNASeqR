@@ -53,15 +53,19 @@ grid.raster(img, just = "center")
 ## ---- warning=FALSE--------------------------------------------------------
 RNASeqQualityAssessment(exp)
 
+## ----fig.width=6,fig.height=6, echo=FALSE----------------------------------
+img <- readPNG("figure/Alignment_Report/Alignment_Result_ggplot2.png")
+grid.raster(img, just = "center")
+
+## ----fig.width=6,fig.height=6, echo=FALSE----------------------------------
+img <- readPNG("figure/Alignment_Report/Overall_Mapping_rate_ggplot2.png")
+grid.raster(img, just = "center")
+
 ## ---- eval=FALSE-----------------------------------------------------------
 #  RNASeqReadProcess_CMD(exp)
 
 ## ---- warning=FALSE--------------------------------------------------------
 RNASeqReadProcess(exp)
-
-## ----fig.width=10, echo=FALSE----------------------------------------------
-img <- readPNG("figure/Alignment_report.png")
- grid.raster(img, just = "center")
 
 ## ----fig.width=6, height=6, echo=FALSE-------------------------------------
 img <- readPNG("figure/preDE/Frequency/Frequency_Plot_normalized_count_ggplot2.png")

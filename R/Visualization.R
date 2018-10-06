@@ -1,3 +1,72 @@
+#################################
+#### Alignment visualization ####
+#################################
+AlignmentPlot <- function(path.prefix,
+                          independent.variable,
+                          case.group,
+                          control.group) {
+  Alignment_report_reads <- read.csv(paste0(path.prefix, "RNASeq_results/Alignment_Report/Alignment_report_reads.csv"), row.names = 1, header = TRUE)
+  Overall.map.rates <- read.csv(paste0(path.prefix, "RNASeq_results/Alignment_Report/Overall_Mapping_rate.csv"), row.names = 1, header = TRUE)
+  Alignment_report_reads$samples <- row.names(Alignment_report_reads)
+  melted <- reshape2::melt(Alignment_report_reads, id.vars = c("samples"))
+  melted$value <- as.numeric(melted$value)
+  ggplot(data=melted,
+         aes(x = melted$samples,
+             y = melted$value,
+             fill = melted$variable)) +
+    geom_bar(stat="identity", position=position_dodge()) +
+    theme_bw() +
+    geom_text(aes(label=value,
+                  angle = 90),
+              size = 3,
+              position = position_dodge(width=1),
+              check_overlap = TRUE) +
+    xlab("Samples") + ylab("Mapping Reads") +
+    ggtitle("Bar Plot (Each condition reads)") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1),
+          plot.title = element_text(size = 15, face = "bold", hjust = 0.5),
+          axis.title.x = element_text(size = 10),
+          axis.title.y = element_text(size = 10),
+          legend.position="top") +
+    scale_fill_discrete(name = "Conditions")
+  ggsave(paste0(path.prefix,
+                "RNASeq_results/",
+                "Alignment_Report/Alignment_Result_ggplot2.png"),
+         dpi = 300,
+         width = 7,
+         height = 7)
+  phenoData.result<- phenoDataWrap(path.prefix,
+                                   independent.variable,
+                                   case.group,
+                                   control.group)
+  my_colors=c("#00AFBB", "#E7B800")
+  color.group <- c(rep(1, phenoData.result$case.group.size),
+                   rep(2, phenoData.result$case.group.size))
+  Overall.map.rates$samples <- row.names(Overall.map.rates)
+  colnames(Overall.map.rates) <- c("rates", "samples")
+  ggplot(data=Overall.map.rates,
+         aes(x = Overall.map.rates$samples,
+             y = Overall.map.rates$rates)) +
+    geom_bar(stat = "identity", fill=my_colors[as.numeric(color.group)]) +
+    theme_bw() + xlab("Samples") + ylab("Mapping Rates") +
+    ggtitle("Bar Plot (Over all Mapping Rates)") +
+    geom_text(aes(label = Overall.map.rates$rates,
+                  angle = 90),
+              size = 4,
+              position = position_dodge(width=1),
+              check_overlap = TRUE) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1),
+          plot.title = element_text(size = 15, face = "bold", hjust = 0.5),
+          axis.title.x = element_text(size = 10),
+          axis.title.y = element_text(size = 10))
+  ggsave(paste0(path.prefix,
+                "RNASeq_results/",
+                "Alignment_Report/Overall_Mapping_rate_ggplot2.png"),
+         dpi = 300,
+         width = 7,
+         height = 7)
+}
+
 ###################################################
 #### Pre-differential expression visualization ####
 ###################################################

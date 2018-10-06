@@ -223,11 +223,18 @@ RNASeqDifferentialAnalysis <- function(RNASeqRParam,
   independent.variable <- "@"(RNASeqRParam, independent.variable)
   case.group <- "@"(RNASeqRParam, case.group)
   control.group <- "@"(RNASeqRParam, control.group)
-
   PreRNASeqDifferentialAnalysis(path.prefix = path.prefix,
                                 sample.pattern = sample.pattern)
-  if (file.exists(paste0(path.prefix, "Rscript_out/Read_Process.Rout"))) {
-    Hisat2ReportAssemble(path.prefix, genome.name, sample.pattern)
+  if (file.exists(paste0(path.prefix,
+                         "RNASeq_results/Alignment_Report/",
+                         "Alignment_report_reads.csv")) &
+      file.exists(paste0(path.prefix,
+                         "RNASeq_results/Alignment_Report/",
+                         "Overall_Mapping_rate.csv"))) {
+    AlignmentPlot(path.prefix,
+                  independent.variable,
+                  case.group,
+                  control.group)
   }
   message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  ",
           "Start Differential Expression Analysis  ",

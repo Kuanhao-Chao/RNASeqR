@@ -149,7 +149,10 @@ CreateHisat2Index <- function (path.prefix,
 Hisat2AlignmentDefault <- function(path.prefix,
                                    genome.name,
                                    sample.pattern,
-                                   num.parallel.threads) {
+                                   num.parallel.threads,
+                                   independent.variable,
+                                   case.group,
+                                   control.group) {
   if (isTRUE(CheckHisat2(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix,
                                         genome.name,
@@ -180,6 +183,8 @@ Hisat2AlignmentDefault <- function(path.prefix,
         iteration.num <- length(sample.table)
         sample.name <- names(sample.table)
         sample.value <- as.vector(sample.table)
+        alignment.result <- data.frame(matrix(0, ncol = 0, nrow = 5))
+        total.map.rates <- c()
         for( i in seq_len(iteration.num)){
           current.sub.command <- ""
           total.sub.command <- ""
@@ -201,13 +206,58 @@ Hisat2AlignmentDefault <- function(path.prefix,
           command.list <- c(command.list,
                             paste("    command :", main.command, whole.command))
           command.result <- system2(command = main.command,
-                                    args = whole.command)
-          if (command.result != 0 ) {
+                                    args = whole.command,
+                                    stderr = TRUE, stdout = TRUE)
+          # Total reads
+          total.reads <- gsub(" reads; of these:", "", command.result[1])
+          # aligned concordantly exactly 1 time
+          concordantly_1_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned concordantly exactly 1 time", "", command.result[4]))
+          # aligned concordantly >1 times
+          concordantly_more_1_times <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned concordantly >1 times", "", command.result[5]))
+          # aligned dicordantly 1 time
+          dicordantly_1_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned discordantly 1 time", "", command.result[8]))
+          # aligned 0 times concordantly or discordantly
+          not_dicordantly_concordantly <- as.numeric(gsub(" pairs aligned 0 times concordantly or discordantly; of these:", "", command.result[10]))
+          # Total mapping rate
+          total.map.rate <- as.numeric(gsub("% overall alignment rate", "", command.result[15]))
+          total.map.rates <- c(total.map.rates, total.map.rate)
+          one.result <- c(total.reads, concordantly_1_time, concordantly_more_1_times, dicordantly_1_time, not_dicordantly_concordantly)
+          alignment.result[[sample.name[i]]] <- one.result
+          if (length(command.result) == 0) {
             on.exit(setwd(current.path))
             message(paste0("(\u2718) '", main.command, "' is failed !!"))
             stop(paste0("'", main.command, "' ERROR"))
           }
         }
+        row.names(alignment.result) <- c("total_reads", "concordantly_1", "concordantly_more_1", "dicordantly_1", "not_both")
+        alignment.result[] <- lapply(alignment.result, as.character)
+        alignment.result[] <- lapply(alignment.result, as.numeric)
+        if(!dir.exists(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))){
+          dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
+        }
+        trans.df  <- data.frame(t(alignment.result))
+        write.csv(trans.df,
+                  file = paste0(path.prefix,
+                                "RNASeq_results/",
+                                "Alignment_Report/Alignment_report_reads.csv"),
+                  row.names = TRUE)
+        trans.df.portion  <- data.frame(t(alignment.result))
+        trans.df.portion$concordantly_1 <- trans.df.portion$concordantly_1 / trans.df.portion$total_reads
+        trans.df.portion$concordantly_more_1 <- trans.df.portion$concordantly_more_1 / trans.df.portion$total_reads
+        trans.df.portion$dicordantly_1 <- trans.df.portion$dicordantly_1 / trans.df.portion$total_reads
+        trans.df.portion$not_both <- trans.df.portion$not_both / trans.df.portion$total_reads
+        write.csv(trans.df.portion,
+                  file = paste0(path.prefix,
+                                "RNASeq_results/",
+                                "Alignment_Report/Alignment_report_proportion.csv"),
+                  row.names = TRUE)
+        names(total.map.rates) <- sample.name
+        total.map.rates <- data.frame(total.map.rates)
+        write.csv(total.map.rates,
+                  file = paste0(path.prefix,
+                                "RNASeq_results/",
+                                "Alignment_Report/Overall_Mapping_rate.csv"),
+                  row.names = TRUE)
         message("\n")
         command.list <- c(command.list, "\n")
         fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
@@ -221,84 +271,84 @@ Hisat2AlignmentDefault <- function(path.prefix,
     }
   }
 }
-
-# Report Hisat2 assemble rate
-Hisat2ReportAssemble <- function(path.prefix,
-                                 genome.name,
-                                 sample.pattern){
-  check.results <- ProgressGenesFiles(path.prefix,
-                                      genome.name,
-                                      sample.pattern,
-                                      print=FALSE)
-  message("\n************** Reporting Hisat2 Alignment **************\n")
-  if (check.results$phenodata.file.df &&
-      check.results$bam.files.number.df != 0){
-    file.read <- paste0(path.prefix, "Rscript_out/Read_Process.Rout")
-    sample.name <- sort(gsub(paste0(".bam$"),
-                             replacement = "",
-                             check.results$bam.files.df))
-    iteration.num <- length(sample.name)
-    load.data <- readChar(file.read, file.info(file.read)$size)
-    # overall alignment rate
-    overall.alignment <- strsplit(load.data, "\n")
-    overall.alignment.with.NA <-
-      stringr::str_extract(overall.alignment[[1]],
-                           "[0-9]*.[0-9]*% overall alignment rate")
-    overall.alignment.result <-
-      overall.alignment.with.NA[!is.na(overall.alignment.with.NA)]
-    overall.alignment.result.cut <- gsub(" overall alignment rate",
-                                         " ",
-                                         overall.alignment.result)
-    # different mapping rate
-    first.split <- strsplit(load.data,
-                            paste0("\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
-                                   "\\* Hisat2 Alignment \\*",
-                                   "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\n"))
-    second.split <- strsplit(first.split[[1]][2],
-                             paste0("\n\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
-                                    "\\* Current progress of RNA-seq files in"))
-    split.lines <- strsplit(second.split[[1]][1], "\n")
-    alignment.rate.with.NA <-
-      stringr::str_extract(split.lines[[1]],
-                           "[0-9]* \\([0-9]*.[0-9]*%\\) aligned concordantly")
-    alignment.first.result <-
-      alignment.rate.with.NA[!is.na(alignment.rate.with.NA)]
-    alignment.first.result.cut1 <- gsub(") aligned concordantly",
-                                        " ",
-                                        alignment.first.result)
-    alignment.first.result.cut2 <- gsub("[0-9]* \\(",
-                                        " ",
-                                        alignment.first.result.cut1)
-    report.data.frame <- data.frame(matrix(0, ncol = 0, nrow = 3))
-    row.names(report.data.frame) <- c("Unique mapping rate",
-                                      "Multiple mapping rate",
-                                      "Overall alignment rate")
-    for( i in seq_len(iteration.num)){
-      add.column <- c()
-      for( j in (i*3-1):(i*3)){
-        add.column <- c(add.column, alignment.first.result.cut2[j])
-      }
-      add.column <- c(add.column, overall.alignment.result.cut[i])
-      report.data.frame[[(sample.name[i])]] <- add.column
-    }
-    if(!dir.exists(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))){
-      dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
-    }
-    write.csv(report.data.frame,
-              file = paste0(path.prefix,
-                            "RNASeq_results/",
-                            "Alignment_Report/Alignment_report.csv"))
-    png(paste0(path.prefix,
-               "RNASeq_results/Alignment_Report/Alignment_report.png"),
-        width = iteration.num*100 + 200, height = 40*4)
-    p <- gridExtra::grid.table(report.data.frame)
-    print(p)
-    dev.off()
-    message("Results are in ",
-            paste0("'", path.prefix, "RNASeq_results/Alignment_Report/'"),
-            "\n\n")
-  }
-}
+#
+# # Report Hisat2 assemble rate
+# Hisat2ReportAssemble <- function(path.prefix,
+#                                  genome.name,
+#                                  sample.pattern){
+#   check.results <- ProgressGenesFiles(path.prefix,
+#                                       genome.name,
+#                                       sample.pattern,
+#                                       print=FALSE)
+#   message("\n************** Reporting Hisat2 Alignment **************\n")
+#   if (check.results$phenodata.file.df &&
+#       check.results$bam.files.number.df != 0){
+#     file.read <- paste0(path.prefix, "Rscript_out/Read_Process.Rout")
+#     sample.name <- sort(gsub(paste0(".bam$"),
+#                              replacement = "",
+#                              check.results$bam.files.df))
+#     iteration.num <- length(sample.name)
+#     load.data <- readChar(file.read, file.info(file.read)$size)
+#     # overall alignment rate
+#     overall.alignment <- strsplit(load.data, "\n")
+#     overall.alignment.with.NA <-
+#       stringr::str_extract(overall.alignment[[1]],
+#                            "[0-9]*.[0-9]*% overall alignment rate")
+#     overall.alignment.result <-
+#       overall.alignment.with.NA[!is.na(overall.alignment.with.NA)]
+#     overall.alignment.result.cut <- gsub(" overall alignment rate",
+#                                          " ",
+#                                          overall.alignment.result)
+#     # different mapping rate
+#     first.split <- strsplit(load.data,
+#                             paste0("\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
+#                                    "\\* Hisat2 Alignment \\*",
+#                                    "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\n"))
+#     second.split <- strsplit(first.split[[1]][2],
+#                              paste0("\n\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
+#                                     "\\* Current progress of RNA-seq files in"))
+#     split.lines <- strsplit(second.split[[1]][1], "\n")
+#     alignment.rate.with.NA <-
+#       stringr::str_extract(split.lines[[1]],
+#                            "[0-9]* \\([0-9]*.[0-9]*%\\) aligned concordantly")
+#     alignment.first.result <-
+#       alignment.rate.with.NA[!is.na(alignment.rate.with.NA)]
+#     alignment.first.result.cut1 <- gsub(") aligned concordantly",
+#                                         " ",
+#                                         alignment.first.result)
+#     alignment.first.result.cut2 <- gsub("[0-9]* \\(",
+#                                         " ",
+#                                         alignment.first.result.cut1)
+#     report.data.frame <- data.frame(matrix(0, ncol = 0, nrow = 3))
+#     row.names(report.data.frame) <- c("Unique mapping rate",
+#                                       "Multiple mapping rate",
+#                                       "Overall alignment rate")
+#     for( i in seq_len(iteration.num)){
+#       add.column <- c()
+#       for( j in (i*3-1):(i*3)){
+#         add.column <- c(add.column, alignment.first.result.cut2[j])
+#       }
+#       add.column <- c(add.column, overall.alignment.result.cut[i])
+#       report.data.frame[[(sample.name[i])]] <- add.column
+#     }
+#     if(!dir.exists(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))){
+#       dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
+#     }
+#     write.csv(report.data.frame,
+#               file = paste0(path.prefix,
+#                             "RNASeq_results/",
+#                             "Alignment_Report/Alignment_report.csv"))
+#     png(paste0(path.prefix,
+#                "RNASeq_results/Alignment_Report/Alignment_report.png"),
+#         width = iteration.num*100 + 200, height = 40*4)
+#     p <- gridExtra::grid.table(report.data.frame)
+#     print(p)
+#     dev.off()
+#     message("Results are in ",
+#             paste0("'", path.prefix, "RNASeq_results/Alignment_Report/'"),
+#             "\n\n")
+#   }
+# }
 
 # use 'Rsamtools' to sort and convert the SAM files to BAM
 RSamtoolsToBam <- function(SAMtools.or.Rsamtools,

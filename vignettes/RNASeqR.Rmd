@@ -336,6 +336,20 @@ In preparation step(`RNASeqRParam` creation step), *'indices/'* directory is che
 
 2. Write *'RNASeq_results/COMMAND.txt'*
     * Shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
+    
+
+3. Summary dataframe for alignment reads, rates in terms of tabular(`CSV`) and picture(`PNG`) format are created and kept at the directory 'RNASeq_results/Alignment_Report'.
+
+
+```{r fig.width=6,fig.height=6, echo=FALSE}
+img <- readPNG("figure/Alignment_Report/Alignment_Result_ggplot2.png")
+grid.raster(img, just = "center")
+```
+
+```{r fig.width=6,fig.height=6, echo=FALSE}
+img <- readPNG("figure/Alignment_Report/Overall_Mapping_rate_ggplot2.png")
+grid.raster(img, just = "center")
+```
 
 ## The *Rsamtools `SAM` to `BAM`* Converter
 
@@ -451,16 +465,6 @@ RNASeqReadProcess(exp)
 # Gene-level Differential Analyses
 
 This is the **third necessary step** of RNA-Seq workflow in this package. To identify differential expressed genes, users can either run `RNASeqDifferentialAnalysis_CMD()` to execute process in background or run `RNASeqDifferentialAnalysis()` to execute process in R shell. In this package, we provide three normalized expression values, Fragments Per Kilobase per Million(FPKM)(Mortazavi et al. 2008), normalized counts by means of Median of Ratios Normalization(MRN) or Trimmed Mean of M-values(TMM), with proper statistical analyses using R packages, 'ballgown', 'stats', 'DESeq2' and 'edgeR'. Gene IDs from StringTie and Ballgown R package will be mapped to 'gene_name' in GTF file for further functional analysis.
-
-## Tabular Format for Reads Alignment
-
-As long as users finished running `RNASeqRawReadProcess_CMD()` ahead, summary reports for alignment rates in terms of tabular(`CSV`) and picture(`PNG`) format are created and kept at the directory 'Rscript_out/Read_Process.Rout'.
-
-
-```{r fig.width=10, echo=FALSE}
-img <- readPNG("figure/Alignment_report.png")
- grid.raster(img, just = "center")
-```
 
 ## General Data Visualization
 
@@ -751,9 +755,8 @@ grid.raster(img, just = "center")
 ```
 
 ## KEGG Pathway Analysis
-Kyoto Encyclopedia of Genes and Genomes(KEGG) is a database resource for understanding functions and utilities of the biological system from molecular-level information ([KEGG website](https://www.genome.jp/kegg/)). In this process, KEGG gene set enrichment analysis, KEGG over-representation test are implemented by [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) package.
 
-Kyoto Encyclopedia of Genes and Genomes(KEGG) is a database resource for understanding functions and utilities of the biological system from molecular-level information([KEGG website](https://www.genome.jp/kegg/)). In this step, KEGG over-representation test can be conducted by clusterProfiler package. KEGG over-representation test of differential expressed genes is conducted using `enrichKEGG()`. KEGG over-representation result will be stored in `CSV`. The pathway IDs that found in of KEGG over-representation will be visualized with `pathview` package. KEGG pathway URL will also be stored.
+Kyoto Encyclopedia of Genes and Genomes(KEGG) is a database resource for understanding functions and utilities of the biological system from molecular-level information([KEGG website](https://www.genome.jp/kegg/)). In this step, KEGG over-representation test can be conducted by [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) package. KEGG over-representation test of differential expressed genes is conducted using `enrichKEGG()`. KEGG over-representation result will be stored in `CSV`. The pathway IDs that found in of KEGG over-representation will be visualized with `pathview` package. KEGG pathway URL will also be stored.
 
 In this example, due to the limited differential expressed genes, no over-represented pathways are found.
 

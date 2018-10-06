@@ -251,6 +251,42 @@ KEGGAnalysis <- function(which.analysis,
                 file = paste0(path.prefix, "RNASeq_results/",
                               which.analysis, "/KEGG_analysis/",
                               dir_name, "/KEGG_Overrepresentation.csv"))
+      # Create directory for visualization
+      if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis,
+                            "/KEGG_analysis/", dir_name, "/images/"))){
+        dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis,
+                          "/KEGG_analysis/", dir_name, "/images/"))
+      }
+      # Do visualization!!
+      # bar plot
+      message(paste0("               \u25CF Plotting 'KEGG",
+                     "_Overrepresentation_Bar_Plot_clusterProfiler.png' \n"))
+      barplot(kk, showCategory=12, font.size= 7,
+              title = "Over-representation Bar Plot") +
+        theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
+              axis.title.x = element_text(size = 10),
+              axis.title.y = element_text(size = 10))
+      ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis,
+                    "/KEGG_analysis/", dir_name, "/images/KEGG",
+                    "_Overrepresentation_Bar_Plot_clusterProfiler.png"),
+             dpi = 300,
+             width = 7,
+             height = 7)
+
+      # dot plot
+      message(paste0("               \u25CF Plotting 'KEGG",
+                     "_Overrepresentation_Dot_Plot_clusterProfiler.png' \n"))
+      clusterProfiler::dotplot(kk, font.size = 7,
+                               title = "Over-representation Dot Plot")+
+        theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
+              axis.title.x = element_text(size = 10),
+              axis.title.y = element_text(size = 10))
+      ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis,
+                    "/KEGG_analysis/", dir_name, "/images/KEGG",
+                    "_Overrepresentation_Dot_Plot_clusterProfiler.png"),
+             dpi = 300,
+             width = 7,
+             height = 7)
       # Visualize and create url for only top 5 !!
       if (nrow(kk.data.frame) > 5) {
         kk.data.frame <- kk.data.frame[1:5, ]

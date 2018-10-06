@@ -246,6 +246,9 @@ RNASeqReadProcess <- function(RNASeqRParam,
   input.path.prefix <- "@"(RNASeqRParam, input.path.prefix)
   genome.name <- "@"(RNASeqRParam, genome.name)
   sample.pattern <- "@"(RNASeqRParam, sample.pattern)
+  independent.variable <- "@"(RNASeqRParam, independent.variable)
+  case.group <- "@"(RNASeqRParam, case.group)
+  control.group <- "@"(RNASeqRParam, control.group)
   python.variable <- "@"(RNASeqRParam, python.variable)
   python.variable.answer <- python.variable$check.answer
   python.variable.version <- python.variable$python.version
@@ -265,7 +268,10 @@ RNASeqReadProcess <- function(RNASeqRParam,
     Hisat2AlignmentDefault(path.prefix,
                            genome.name,
                            sample.pattern,
-                           num.parallel.threads)
+                           num.parallel.threads,
+                           independent.variable,
+                           case.group,
+                           control.group)
   }
   if (Rsamtools.Bam.run) {
     RSamtoolsToBam(SAMtools.or.Rsamtools,
