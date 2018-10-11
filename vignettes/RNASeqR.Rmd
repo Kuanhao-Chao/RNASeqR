@@ -27,7 +27,7 @@ knitr::opts_chunk$set(tidy = FALSE,
 
 # Introduction
 
-RNA-Seq is a revolutionary approach to investigate and discover the transcriptome using next-generation sequencing technologies [ref]. Typically, this transcriptome analysis aims to identify genes differentially expressed among different conditions or tissues, resulting in the understanding of the important pathways that are associated with conditions.[ref]
+RNA-Seq is a revolutionary approach to investigate and discover the transcriptome using next-generation sequencing technologies(Wang et al.). Typically, this transcriptome analysis aims to identify genes differentially expressed among different conditions or tissues, resulting in the understanding of the important pathways that are associated with conditions(Trapnell et al.).
 
 RNASeqR is an user-friendly R-based tool for running RNA-Seq analysis pipeline including quality assessment, reads alignment and quantification, differential expression analysis, and functional analysis. The main features of this package are automated workflow, comprehensive report with data visualization and extendable file structure. In this package, new tuxedo pipeline published in Nature Protocols in 2016 can be fully implemented under R environment with extra functions such as reads quality assessment and functional analysis.
 
@@ -84,9 +84,10 @@ Recommended:
 # Installation
 
 ```{r install, eval=FALSE, warning=FALSE}
-source("http://bioconductor.org/biocLite.R") # Sources the biocLite.R installation script 
-biocLite("RNASeqR") # Installs RNASeqR 
-biocLite("RNASeqRData") # Installs RNASeqRData
+if (!require("BiocManager")) {
+    install.packages("BiocManager")
+}
+BiocManager::install("RNASeqRData")
 ```
 
 
@@ -179,8 +180,7 @@ library(RNASeqRData)
 
 ```{r}
 input_files.path <- system.file("extdata/", package = "RNASeqRData")
-rnaseq_result.path <- "/tmp/yeast_example/"
-dir.create(rnaseq_result.path)
+rnaseq_result.path <- tempdir(check = TRUE)
 list.files(input_files.path, recursive = TRUE)
 ```
 
@@ -188,12 +188,12 @@ Check the files in *'inputfiles/'* directory.
 
 ```{r, warning=FALSE}
 exp <- RNASeqRParam(path.prefix = rnaseq_result.path, 
-                           input.path.prefix = input_files.path, 
-                           genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", 
-                           sample.pattern = "SRR[0-9]*_XV",
-                           independent.variable = "state", 
-                           case.group = "60mins_ID20_amphotericin_B", 
-                           control.group = "60mins_ID20_control")
+                    input.path.prefix = input_files.path, 
+                    genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", 
+                    sample.pattern = "SRR[0-9]*_XV",
+                    independent.variable = "state", 
+                    case.group = "60mins_ID20_amphotericin_B", 
+                    control.group = "60mins_ID20_control")
 ```
 
 In this example, `RNASeqRParam` S4 object is store in `exp` for subsequent RNA-Seq analysis steps. Any ERROR occured in checking steps will terminate the program.
@@ -795,6 +795,10 @@ sessionInfo()
 ```
 
 # References
+
+Wang, Z., Gerstein, M., & Snyder, M. (2009). RNA-Seq: a revolutionary tool for transcriptomics. Nature Reviews. Genetics, 10(1), 57–63. http://doi.org/10.1038/nrg2484
+
+Trapnell, C., Hendrickson, D. G., Sauvageau, M., Goff, L., Rinn, J. L., & Pachter, L. (2013). Differential analysis of gene regulation at transcript resolution with RNA-seq. Nature biotechnology, 31(1), 46.
 
 Pang CN et al., "Transcriptome and network analyses in Saccharomyces cerevisiae reveal that amphotericin B and lactoferrin synergy disrupt metal homeostasis and stress response.", Sci Rep, 2017 Jan 12;7:40232
 

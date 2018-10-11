@@ -315,12 +315,12 @@ edgeRRawCountAnalysis <- function(path.prefix,
                   control.group)
 
       } else {
-        cat ("(\u26A0) Less than one differential expressed gene term found !!",
-             " Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
+        message("(\u26A0) Less than one differential expressed gene term found",
+                " !! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
       }
     } else {
-      cat ("(\u26A0) Less than one gene terms found !!! ",
-           "Skip visualization step !!! \n\n")
+      message("(\u26A0) Less than one gene terms found !!! ",
+              "Skip visualization step !!! \n\n")
     }
   } else {
     message("(\u2718) necessary file is missing!! Something ERROR happend ",

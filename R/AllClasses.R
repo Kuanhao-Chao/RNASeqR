@@ -87,9 +87,9 @@ setClass("RNASeqRParam",
 #' @export
 #' @author Kuan-Hao Chao
 #' @examples
+#'
 #' input_files.path <- system.file("extdata/", package = "RNASeqRData")
-#' rnaseq_result.path <- "/tmp/yeast_example/"
-#' dir.create(rnaseq_result.path)
+#' rnaseq_result.path <- tempdir(check = TRUE)
 #' exp <- RNASeqRParam(path.prefix          = rnaseq_result.path,
 #'                     input.path.prefix    = input_files.path,
 #'                     genome.name          = "Saccharomyces_cerevisiae_XV_Ensembl",
@@ -189,7 +189,7 @@ RNASeqRParam <- function(path.prefix          = NA,
 CheckInputParamNa <- function(path.prefix, input.path.prefix, genome.name,
                               sample.pattern, independent.variable,
                               case.group, control.group) {
-  message(c("************** Checking input parameters ************\n"))
+  message("************** Checking input parameters ************\n")
   if (is.na(path.prefix) || is.na(input.path.prefix) ||
       is.na(genome.name) || is.na(sample.pattern) ||
       is.na(independent.variable) ||
@@ -224,7 +224,7 @@ CheckInputParamNa <- function(path.prefix, input.path.prefix, genome.name,
 # inner function : get operating system
 CheckOperatingSystem <- function(print = TRUE){
   if (print) {
-    message(c("************** Checking operating system type ************\n"))
+    message("************** Checking operating system type ************\n")
   }
   sysinf <- Sys.info()
   if (!is.null(sysinf)){
@@ -253,7 +253,7 @@ CheckOperatingSystem <- function(print = TRUE){
 
 # inner fucntion : check python version
 CheckPython <- function() {
-  message(c("************** Checking python version ************\n"))
+  message("************** Checking python version ************\n")
   # have to check python !!!
   if (reticulate::py_available(initialize = "TRUE")){
     message("(\u2714) : Python is available on your device!\n")
@@ -276,7 +276,7 @@ CheckPython <- function() {
 
 # inner function : check 2to3 availability
 Check2to3 <- function() {
-  message(c("************** Checking 2to3 command ************\n"))
+  message("************** Checking 2to3 command ************\n")
   a <- system2("2to3", "--help", stdout = FALSE)
   if (a == 0) {
     message("(\u2714) : 2to3 command is available on your device!\n\n")
@@ -291,7 +291,7 @@ Check2to3 <- function() {
 CheckPrefixPath <- function(path.prefix) {
   # Check the prefix exist
   if (isTRUE(dir.exists(path.prefix))){
-    message(c("************** Setting prefix path ************\n"))
+    message("************** Setting prefix path ************\n")
     if (substr(path.prefix, nchar(path.prefix), nchar(path.prefix)) != "/") {
       path.prefix <- paste0(path.prefix, "/")
     }
@@ -508,7 +508,7 @@ CheckPhenodata <- function(input.path.prefix,
                            sample.pattern,
                            independent.variable) {
   # have to sort the column !! and sort them in the correct order
-  message(c("************** Checking phenodata  ************\n"))
+  message("************** Checking phenodata  ************\n")
   pheno_data <- read.csv(paste0(input.path.prefix, "input_files/phenodata.csv"))
   # Covert all column to character
   pheno_data <- data.frame(lapply(pheno_data, as.character),
@@ -620,7 +620,7 @@ CheckS4Object <- function(RNASeqRParam, print = TRUE) {
   if (isS4(RNASeqRParam) &&
       class(RNASeqRParam)[1] == "RNASeqRParam") {
     if (print) {
-      message(c("************** Checking validity of S4 input ************\n"))
+      message("************** Checking validity of S4 input ************\n")
       message("     (\u2714) : input is valid ",
               "'RNASeqRParam' instance! \n\n")
     }

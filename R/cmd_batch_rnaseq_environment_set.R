@@ -365,25 +365,24 @@ CopyInputDir <- function(path.prefix,
                          genome.name,
                          sample.pattern,
                          indices.optional) {
-  message(c("************** Directory Copying ************\n"))
-  message(c("     \u25CF Copying From :",
-            paste0(input.path.prefix, "input_files/",
-                   genome.name, ".gtf"), "\n"))
+  message("************** Directory Copying ************\n")
+  message("     \u25CF Copying From :",input.path.prefix,
+          "input_files/", genome.name, ".gtf\n")
   gtf.des <- paste0(path.prefix, "gene_data/ref_genes/", genome.name, ".gtf")
   file.remove(gtf.des)
   file.symlink(paste0(input.path.prefix, "input_files/", genome.name, ".gtf"),
                gtf.des)
-  message(c("     \u25CF           To :"), gtf.des, "\n")
+  message("     \u25CF           To :", gtf.des, "\n")
   fa.des <- paste0(path.prefix, "gene_data/ref_genome/", genome.name, ".fa")
-  message(c("     \u25CF Copying From :",
-            paste0(input.path.prefix, "input_files/",
-                   genome.name, ".fa"),  "\n"))
+  message("     \u25CF Copying From :",
+          input.path.prefix, "input_files/",
+          genome.name, ".fa",  "\n")
   file.remove(fa.des)
   file.symlink(paste0(input.path.prefix, "input_files/", genome.name, ".fa"),
                fa.des)
-  message(c("     \u25CF           To :"), fa.des, "\n")
-  message(c("     \u25CF Copying From :",
-            paste0(input.path.prefix, "input_files/", "raw_fastq.gz/"),  "\n"))
+  message("     \u25CF           To :", fa.des, "\n")
+  message("     \u25CF Copying From :",
+          input.path.prefix, "input_files/", "raw_fastq.gz/",  "\n")
   unlink(paste0(path.prefix, "gene_data/raw_fastq.gz/"), recursive = TRUE)
   dir.create(paste0(path.prefix, "gene_data/raw_fastq.gz/"))
   raw_fastq.gz.subfiles <- list.files(path = paste0(input.path.prefix,
@@ -396,18 +395,18 @@ CopyInputDir <- function(path.prefix,
          function(x) file.symlink(x, paste0(path.prefix,
                                             "gene_data/raw_fastq.gz")),
          FUN.VALUE = TRUE)
-  message(c("     \u25CF           To :",
-            paste0(path.prefix, "gene_data/raw_fastq.gz/"), "\n"))
-  message(c("     \u25CF Copying From :",
-            paste0(input.path.prefix, "input_files/phenodata.csv"),  "\n"))
+  message("     \u25CF           To :",
+          path.prefix, "gene_data/raw_fastq.gz/\n")
+  message("     \u25CF Copying From :",
+          input.path.prefix, "input_files/phenodata.csv\n")
   pheno.des <- paste0(path.prefix, "gene_data/phenodata.csv")
   file.remove(pheno.des)
   file.symlink(paste0(input.path.prefix, "input_files/phenodata.csv"),
                pheno.des)
-  message(c("     \u25CF           To :"), pheno.des, "\n")
+  message("     \u25CF           To :", pheno.des, "\n")
   if (isTRUE(indices.optional)) {
-    message(c("     \u25CF Copying From :",
-              paste0(input.path.prefix, "input_files/", "indices/"),  "\n"))
+    message("     \u25CF Copying From :",
+            input.path.prefix, "input_files/", "indices/\n")
     unlink(paste0(path.prefix, "gene_data/indices/"), recursive = TRUE)
     dir.create(paste0(path.prefix, "gene_data/indices/"))
     indices.subfiles <- list.files(path = paste0(input.path.prefix,
@@ -473,7 +472,7 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
                                           "RNASeq_bin/Unpacked/"))
   if (command.result != 0 ) {
     message("(\u2718) '", main.command, "' is failed !!")
-    stop(paste0("'", main.command, "' ERROR"))
+    stop("'", main.command, "' ERROR")
   }
   message("hisat2 binaries\n\n")
   message("\n************** Moving Hisat2 Binary ************")
@@ -494,7 +493,7 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
                          overwrite = TRUE)
   if (command.result != 0 ) {
     message("(\u2718) 'file.copy()' is failed !!")
-    stop(paste0("'file.copy()' ERROR"))
+    stop("'file.copy()' ERROR")
   }
   message("\n'", path.prefix, "RNASeq_bin/Download/",
           os.file.name.zip, "' has been installed.\n")
@@ -545,7 +544,7 @@ InstallStringTieBinary <- function(path.prefix, os.type){
                                 compressed = "gzip")
   if (file.unpacked != 0 ) {
     message("(\u2718) 'utils::untar()' is failed !!")
-    stop(paste0("'utils::untar()' ERROR"))
+    stop("'utils::untar()' ERROR")
   }
   message("\n************** Moving stringtie Binary ************")
   file.move <- file.copy(from = paste0(path.prefix, "RNASeq_bin/Unpacked/",
@@ -554,14 +553,14 @@ InstallStringTieBinary <- function(path.prefix, os.type){
                          overwrite = TRUE)
   if (!file.move) {
     message("(\u2718) 'file.copy()' is failed !!")
-    stop(paste0("'file.copy()' ERROR"))
+    stop("'file.copy()' ERROR")
   }
   message("\n'", path.prefix,
           "RNASeq_bin/Download/",
           os.file.name.zip, "' has been installed.\n")
   message("StringTie has been unpacked. ('",
           path.prefix, "RNASeq_bin/Unpacked/",
-          os.file.name, "')", "\n\n")
+          os.file.name, "')\n\n")
   return(TRUE)
 }
 
@@ -607,7 +606,7 @@ InstallGffcompareBinary <- function(path.prefix, os.type){
                                 compressed = "gzip")
   if (file.unpacked != 0 ) {
     message("(\u2718) 'utils::untar()' is failed !!")
-    stop(paste0("'utils::untar()' ERROR"))
+    stop("'utils::untar()' ERROR")
   }
   message("\n************** Moving gffcompare Binary ************")
   file.move <- file.copy(from = paste0(path.prefix, "RNASeq_bin/Unpacked/",
@@ -616,7 +615,7 @@ InstallGffcompareBinary <- function(path.prefix, os.type){
                          overwrite = TRUE)
   if (!file.move) {
     message("(\u2718) 'file.copy()' is failed !!")
-    stop(paste0("'file.copy()' ERROR"))
+    stop("'file.copy()' ERROR")
   }
   message("\n'", path.prefix, "RNASeq_bin/Download/",
           os.file.name.zip, "' has been installed.\n")
@@ -652,9 +651,9 @@ InstallAll <- function(path.prefix,
             install.software,
             "will be installed. ... \n")
     message("   \u261E\u261E  Compressed files will be in '",
-            path.prefix, "RNASeq_bin/Download/'", "\n")
+            path.prefix, "RNASeq_bin/Download/'\n")
     message("   \u261E\u261E  Unpacked files will be in '",
-            path.prefix, "RNASeq_bin/Unpacked/'", "\n")
+            path.prefix, "RNASeq_bin/Unpacked/'\n")
     message("   \u261E\u261E  Binary files will be copied to '",
             path.prefix, "RNASeq_bin/'", "\n\n")
   }
@@ -781,10 +780,10 @@ CheckToolAll <- function(path.prefix, print=TRUE) {
       isTRUE(gff.check)){
     return(TRUE)
   } else {
-    stop(paste0("(\u2718) Necessary program is missing.\n     ",
-                "1. Check 'INSTALL_TOOLS.Rout' whether tools are ",
-                "properly installed.\n     ",
-                "2. Run 'ExportPath()' to set the environment.\n\n"))
+    stop("(\u2718) Necessary program is missing.\n     ",
+         "1. Check 'INSTALL_TOOLS.Rout' whether tools are ",
+         "properly installed.\n     ",
+         "2. Run 'ExportPath()' to set the environment.\n\n")
     return(FALSE)
   }
 }

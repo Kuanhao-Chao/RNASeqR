@@ -275,11 +275,11 @@ BallgownAnalysis <- function(path.prefix,
                   case.group,
                   control.group)
       } else {
-        cat ("(\u26A0) Less than one differential expressed gene terms found ",
-             "!!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
+        message("(\u26A0) Less than one differential expressed gene terms ",
+                "found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")
       }
     } else {
-      cat ("(\u26A0) Less than one gene terms are found !!! ",
+      message("(\u26A0) Less than one gene terms are found !!! ",
            "Skip visualization step !!! \n\n")
     }
   } else {
