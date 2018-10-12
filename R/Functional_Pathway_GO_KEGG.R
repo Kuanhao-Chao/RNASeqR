@@ -16,7 +16,7 @@ GOAnalysis <- function(which.analysis,
                        go.level,
                        input.TYPE.ID) {
   CheckGoLevel(go.level)
-  message(paste0("\u2694\u2694 Gene Ontology Analysis \n"))
+  message("\u2694\u2694 Gene Ontology Analysis \n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/",
                         which.analysis, "/GO_analysis/"))){
     dir.create(paste0(path.prefix, "RNASeq_results/",
@@ -36,7 +36,7 @@ GOAnalysis <- function(which.analysis,
       message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
               "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
               "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n")
-      message(paste0("\u25CF '", i, "' : \n"))
+      message("\u25CF '", i, "' : \n")
       #####################
       #### Checking DE ####
       #####################
@@ -89,8 +89,8 @@ GOAnalysis <- function(which.analysis,
                                 "/GO_", i, "_Classification.csv"))
 
         # Visualization
-        message(paste0("               \u25CF Plotting 'GO_", i,
-                       "_Classification_Bar_Plot_clusterProfiler.png' \n"))
+        message("               \u25CF Plotting 'GO_", i,
+                "_Classification_Bar_Plot_clusterProfiler.png' \n")
         barplot(ggo, drop=TRUE, showCategory=15, font.size = 7,
                 title = "GO Classification Bar Plot") +
           theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
@@ -136,25 +136,25 @@ GOAnalysis <- function(which.analysis,
       # variable : "holm", "hochberg", "hommel",
       #            "bonferroni", "BH", "BY", "fdr", "none"
       ego.data.frame <- data.frame(ego)
-      message(paste0("          \u25CF (\u2714) GO over-representation test (",
-                     i,") enriched term found : ",
-                     length(row.names(ego.data.frame)), "\n"))
+      message("          \u25CF (\u2714) GO over-representation test (",
+              i,") enriched term found : ",
+              length(row.names(ego.data.frame)), "\n")
       if (length(row.names(ego.data.frame)) > 0) {
         if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis,
                               "/GO_analysis/", dir_name, "/", i, "/images"))){
           dir.create(paste0(path.prefix, "RNASeq_results/", which.analysis,
                             "/GO_analysis/", dir_name, "/", i, "/images"))
         }
-        message(paste0("               \u25CF Writing 'GO_", i,
-                       "_Overrepresentation.csv' \n"))
+        message("               \u25CF Writing 'GO_", i,
+                "_Overrepresentation.csv' \n")
         write.csv(ego.data.frame,
                   file = paste0(path.prefix, "RNASeq_results/", which.analysis,
                                 "/GO_analysis/", dir_name, "/", i,
                                 "/GO_", i, "_Overrepresentation.csv"))
         # visualization
         # bar plot
-        message(paste0("               \u25CF Plotting 'GO_", i,
-                       "_Overrepresentation_Bar_Plot_clusterProfiler.png' \n"))
+        message("               \u25CF Plotting 'GO_", i,
+                "_Overrepresentation_Bar_Plot_clusterProfiler.png' \n")
         barplot(ego, showCategory=12, font.size= 7,
                 title = "Over-representation Bar Plot") +
           theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
@@ -168,8 +168,8 @@ GOAnalysis <- function(which.analysis,
                height = 7)
 
         # dot plot
-        message(paste0("               \u25CF Plotting 'GO_", i,
-                       "_Overrepresentation_Dot_Plot_clusterProfiler.png' \n"))
+        message("               \u25CF Plotting 'GO_", i,
+                "_Overrepresentation_Dot_Plot_clusterProfiler.png' \n")
         clusterProfiler::dotplot(ego, font.size = 7,
                                  title = "Over-representation Dot Plot")+
           theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
@@ -182,7 +182,7 @@ GOAnalysis <- function(which.analysis,
                width = 7,
                height = 7)
       } else {
-        message(paste0("          \u25CF (\u26A0) No enriched term is found.\n"))
+        message("          \u25CF (\u26A0) No enriched term is found.\n")
         file.create(paste0(path.prefix, "RNASeq_results/", which.analysis,
                            "/GO_analysis/", dir_name, "/", i,
                            "/GO_OVERREPRESENTATION_NO_TERM"))
@@ -196,8 +196,7 @@ KEGGAnalysis <- function(which.analysis,
                          OrgDb.species,
                          input.TYPE.ID,
                          KEGG.organism) {
-  message(paste0("\u2694\u2694 Kyoto Encyclopedia of ",
-                 "Genes and Genomes Analysis \n"))
+  message("\u2694\u2694 Kyoto Encyclopedia of Genes and Genomes Analysis \n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/",
                         which.analysis, "/KEGG_analysis/"))){
     dir.create(paste0(path.prefix, "RNASeq_results/",
@@ -216,8 +215,8 @@ KEGGAnalysis <- function(which.analysis,
     #### Checking DE ####
     #####################
     message("\u25CF Checking differential expression gene number ... \n")
-    message(paste0("     \u25CF Differential expression gene number : ",
-                   length(DE_results_kegg$return.kegg.id), "\n"))
+    message("     \u25CF Differential expression gene number : ",
+            length(DE_results_kegg$return.kegg.id), "\n")
     dir_name <- paste0("KEGG_DE_Overrepresentation")
     if(!dir.exists(paste0(path.prefix, "RNASeq_results/", which.analysis,
                           "/KEGG_analysis/", dir_name))){
@@ -233,7 +232,7 @@ KEGGAnalysis <- function(which.analysis,
     message("\u25CF KEGG Over-representation Test ... \n")
     # KEGG Over-representation test
     message("     Found kegg gene ID : ",
-            paste(head(DE_results_kegg$return.kegg.id), " "), "...\n")
+            head(DE_results_kegg$return.kegg.id), " ...\n")
     kk <- clusterProfiler::enrichKEGG(gene         = DE_results_kegg$return.kegg.id,
                                       keyType      = "kegg",
                                       organism     = KEGG.organism,
@@ -241,11 +240,10 @@ KEGGAnalysis <- function(which.analysis,
     kk.data.frame <- data.frame(kk)
     # Row size have to bigger than 0!
     if (length(row.names(kk.data.frame)) > 0) {
-      message(paste0("     \u25CF (\u2714) KEGG ",
-                     "over-representation test enriched term found! ",
-                     length(row.names(kk.data.frame)), "\n"))
-      message(paste0("          \u25CF Writing ",
-                     "'KEGG_Overrepresentation.csv' \n"))
+      message("     \u25CF (\u2714) KEGG ",
+              "over-representation test enriched term found! ",
+              length(row.names(kk.data.frame)), "\n")
+      message("          \u25CF Writing 'KEGG_Overrepresentation.csv' \n")
       # All ID pathway will be plotted!
       write.csv(kk.data.frame,
                 file = paste0(path.prefix, "RNASeq_results/",
@@ -259,8 +257,8 @@ KEGGAnalysis <- function(which.analysis,
       }
       # Do visualization!!
       # bar plot
-      message(paste0("               \u25CF Plotting 'KEGG",
-                     "_Overrepresentation_Bar_Plot_clusterProfiler.png' \n"))
+      message("               \u25CF Plotting 'KEGG",
+              "_Overrepresentation_Bar_Plot_clusterProfiler.png' \n")
       barplot(kk, showCategory=12, font.size= 7,
               title = "Over-representation Bar Plot") +
         theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
@@ -274,8 +272,8 @@ KEGGAnalysis <- function(which.analysis,
              height = 7)
 
       # dot plot
-      message(paste0("               \u25CF Plotting 'KEGG",
-                     "_Overrepresentation_Dot_Plot_clusterProfiler.png' \n"))
+      message("               \u25CF Plotting 'KEGG",
+              "_Overrepresentation_Dot_Plot_clusterProfiler.png' \n")
       clusterProfiler::dotplot(kk, font.size = 7,
                                title = "Over-representation Dot Plot")+
         theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
@@ -299,10 +297,9 @@ KEGGAnalysis <- function(which.analysis,
         }
         current.path <- getwd()
         # get the url from KEGG result
-        message(paste0("          \u25CF Finding '", i, "' KEGG URL ... \n"))
+        message("          \u25CF Finding '", i, "' KEGG URL ... \n")
         KEGGUrl <- GetKEGGUrl(kk, i)
-        message(paste0("               \u25CF Writting 'URL_",
-                       i, "_Pathway.txt' \n"))
+        message("               \u25CF Writting 'URL_", i, "_Pathway.txt' \n")
         write(KEGGUrl,
               file = paste0(path.prefix, "RNASeq_results/", which.analysis,
                             "/KEGG_analysis/", dir_name, "/", i,
@@ -351,10 +348,10 @@ DEGeneList <- function(which.analysis,
   #### DE ####
   ############
   if (length(gene_name) == 0) {
-    message(paste0("No annotated gene terms are found in '",
-                   path.prefix, "RNASeq_results/", which.analysis, "/",
-                   strsplit(which.analysis, "_")[[1]][1],
-                   "_normalized_DE_result.csv'\n\n"))
+    message("No annotated gene terms are found in '",
+            path.prefix, "RNASeq_results/", which.analysis, "/",
+            strsplit(which.analysis, "_")[[1]][1],
+            "_normalized_DE_result.csv'\n\n")
     return(return.id = NA)
   } else {
     gene.df.DE <- clusterProfiler::bitr(gene_name,
@@ -390,10 +387,10 @@ KEGGDEGeneList <- function(which.analysis,
   #### DE ####
   ############
   if (length(gene_name) == 0) {
-    message(paste0("No annotated gene terms are found in '",
-                   path.prefix, "RNASeq_results/", which.analysis, "/",
-                   strsplit(which.analysis, "_")[[1]][1],
-                   "_normalized_DE_result.csv'\n\n"))
+    message("No annotated gene terms are found in '",
+            path.prefix, "RNASeq_results/", which.analysis, "/",
+            strsplit(which.analysis, "_")[[1]][1],
+            "_normalized_DE_result.csv'\n\n")
     return(list(return.kegg.id = NA,
                 return.ENTREZID = NA))
   } else {
@@ -429,7 +426,7 @@ GetKEGGUrl <- function(x, pathID) {
 
 CheckGoLevel <- function(go.level) {
   whether.integer <- go.level%%1 == 0
-  message(paste0("\u25CF Checking 'go.level' value : ", go.level, "\n"))
+  message("\u25CF Checking 'go.level' value : ", go.level, "\n")
   if (whether.integer) {
     message("(\u2714) 'go.level' is integer! Valid\n\n")
   } else {

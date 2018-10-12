@@ -155,15 +155,15 @@ BallgownAnalysis <- function(path.prefix,
                           "ballgown_normalized_result.csv"),
             row.names=FALSE)
 
-  message(paste0("     \u25CF Selecting differential expressed genes",
-                 "(ballgown) ==> p-value : ", ballgown.pval,
-                 "  log2(Fold Change) : ", ballgown.log2FC, " ...\n"))
+  message("     \u25CF Selecting differential expressed genes",
+          "(ballgown) ==> p-value : ", ballgown.pval,
+          "  log2(Fold Change) : ", ballgown.log2FC, " ...\n")
   ballgown.result.DE <-
     ballgown.result[((ballgown.result$log2FC>ballgown.log2FC) |
                        (ballgown.result$log2FC<(-ballgown.log2FC))) &
                       (ballgown.result$pval<ballgown.pval), ]
-  message(paste0("          \u25CF Total '", nrow(ballgown.result.DE),
-                 "' DEG have been found !!!\n"))
+  message("          \u25CF Total '", nrow(ballgown.result.DE),
+          "' DEG have been found !!!\n")
   write.csv(ballgown.result.DE,
             file = paste0(path.prefix,
                           "RNASeq_results/ballgown_analysis/",
@@ -291,7 +291,7 @@ BallgownAnalysis <- function(path.prefix,
 # Transcription related plot
 BallgownTranscriptRelatedPlot <- function(path.prefix){
   # draw for distribution of transcript count per gene
-  message(paste0("\u25CF Plotting Transcript related plot\n"))
+  message("\u25CF Plotting Transcript related plot\n")
   texpr.read.csv <- read.csv(paste0(path.prefix,
                                     "RNASeq_results/ballgown_analysis/",
                                     "ballgown_R_object/texpr.csv"))
@@ -325,11 +325,10 @@ BallgownTranscriptRelatedPlot <- function(path.prefix){
   legend("topright", legend_text, lty=NULL)
   par(cex = cex.before)
   dev.off()
-  message("(\u2714) : '",
-          paste0(path.prefix,
-                 "RNASeq_results/ballgown_analysis/images/Transcript_Related/",
-                 "Distribution_Transcript_Count_per_Gene_Plot.png"),
-                 "' has been created. \n")
+  message("(\u2714) : '", path.prefix,
+          "RNASeq_results/ballgown_analysis/images/Transcript_Related/",
+          "Distribution_Transcript_Count_per_Gene_Plot.png",
+          "' has been created. \n")
 
   # draw the distribution of transcript length
   full_table <- texpr.read.csv
@@ -354,8 +353,8 @@ BallgownTranscriptRelatedPlot <- function(path.prefix){
   par(cex = cex.before)
   dev.off()
   message("(\u2714) : '",
-          paste0(path.prefix, "RNASeq_results/ballgown_analysis/images/",
-                 "Transcript_Related/Distribution_Transcript_Length_Plot.png"),
+          path.prefix, "RNASeq_results/ballgown_analysis/images/",
+          "Transcript_Related/Distribution_Transcript_Length_Plot.png",
           "' has been created. \n\n")
 }
 

@@ -111,8 +111,8 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
                    ", PreDECountTable.run = ", PreDECountTable.run, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
-  message(paste0("\u2605 '", path.prefix,
-                 "Rscript/Read_Process.R' has been created.\n"))
+  message("\u2605 '", path.prefix,
+          "Rscript/Read_Process.R' has been created.\n")
   if (run) {
     R.home.lib <- R.home()
     R.home.bin <- gsub("/lib/R", "/bin/R", R.home.lib)
@@ -123,10 +123,10 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
                           "Rscript_out/Read_Process.Rout"),
             stdout = "",
             wait = FALSE)
-    message(paste0("\u2605 RNASeq alignment, assembly, quantification, ",
-                   "mergence, comparison, reads process are doing in the ",
-                   "background. Check current progress in '", path.prefix,
-                   "Rscript_out/Read_Process.Rout'\n\n"))
+    message("\u2605 RNASeq alignment, assembly, quantification, ",
+            "mergence, comparison, reads process are doing in the ",
+            "background. Check current progress in '", path.prefix,
+            "Rscript_out/Read_Process.Rout'\n\n")
   }
 }
 

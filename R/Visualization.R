@@ -5,8 +5,14 @@ AlignmentPlot <- function(path.prefix,
                           independent.variable,
                           case.group,
                           control.group) {
-  Alignment_report_reads <- read.csv(paste0(path.prefix, "RNASeq_results/Alignment_Report/Alignment_report_reads.csv"), row.names = 1, header = TRUE)
-  Overall.map.rates <- read.csv(paste0(path.prefix, "RNASeq_results/Alignment_Report/Overall_Mapping_rate.csv"), row.names = 1, header = TRUE)
+  Alignment_report_reads <- read.csv(paste0(path.prefix,
+                                            "RNASeq_results/Alignment_Report/",
+                                            "Alignment_report_reads.csv"),
+                                     row.names = 1, header = TRUE)
+  Overall.map.rates <- read.csv(paste0(path.prefix,
+                                       "RNASeq_results/Alignment_Report/",
+                                       "Overall_Mapping_rate.csv"),
+                                row.names = 1, header = TRUE)
   Alignment_report_reads$samples <- row.names(Alignment_report_reads)
   melted <- reshape2::melt(Alignment_report_reads, id.vars = c("samples"))
   melted$value <- as.numeric(melted$value)
@@ -77,7 +83,7 @@ FrequencyPlot <- function(which.analysis,
                           independent.variable,
                           case.group,
                           control.group) {
-  message(paste0("\u25CF Plotting  Frequency plot\n"))
+  message("\u25CF Plotting  Frequency plot\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/",
                         which.analysis, "/images/preDE/Frequency"))){
     dir.create(paste0(path.prefix, "RNASeq_results/",
@@ -121,10 +127,8 @@ FrequencyPlot <- function(which.analysis,
          dpi = 300,
          width = 7,
          height = 7)
-  message("(\u2714) : '",
-          paste0(path.prefix,
-                 "RNASeq_results/", which.analysis,
-                 "/images/Frequency_Plot_normalized_count_ggplot2.png"),
+  message("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis,
+          "/images/Frequency_Plot_normalized_count_ggplot2.png",
           "' has been created. \n\n")
 
   melted.data <- reshape2::melt(log2(independent.variable.data.frame+1))
@@ -147,11 +151,10 @@ FrequencyPlot <- function(which.analysis,
          dpi = 300,
          width = 7,
          height = 7)
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/",
-                        which.analysis, "/images/",
-                        "Frequency_Plot_log_normalized_count_ggplot2.png"),
-                 "' has been created. \n\n"))
+  message("(\u2714) : '",
+          path.prefix, "RNASeq_results/", which.analysis, "/images/",
+          "Frequency_Plot_log_normalized_count_ggplot2.png",
+          "' has been created. \n\n")
 }
 
 # Box plot and violin plot
@@ -187,7 +190,7 @@ BoxViolinPlot <- function(which.analysis,
                       which.analysis, "/images/preDE/Distribution/"))
   }
   # Box plot
-  message(paste0("\u25CF Plotting Box plot\n"))
+  message("\u25CF Plotting Box plot\n")
   ggplot(data = log2.normalized.value,
          aes(x=log2.normalized.value$samples,
              y=log2.normalized.value[which.count.normalization][[1]]),
@@ -207,13 +210,11 @@ BoxViolinPlot <- function(which.analysis,
          width = 7,
          height = 7)
   # dev.off()
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/",
-                        which.analysis, "/images/preDE/",
-                        "Distribution/Box_Plot_ggplot2.png"),
-                 "' has been created. \n\n"))
+  message("(\u2714) : '",
+          path.prefix, "RNASeq_results/",which.analysis, "/images/preDE/",
+          "Distribution/Box_Plot_ggplot2.png' has been created. \n\n")
   # Violin plot
-  message(paste0("\u25CF Plotting Violin plot\n"))
+  message("\u25CF Plotting Violin plot\n")
   ggplot(data = log2.normalized.value,
          aes(x=log2.normalized.value$samples,
              y=log2.normalized.value[which.count.normalization][[1]],
@@ -236,10 +237,10 @@ BoxViolinPlot <- function(which.analysis,
          dpi = 300,
          width = 7,
          height = 7)
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/", which.analysis,
-                        "/images/preDE/Distribution/Violin_Plot_ggplot2.png"),
-                 "' has been created. \n\n"))
+  message("(\u2714) : '",
+          path.prefix, "RNASeq_results/", which.analysis,
+          "/images/preDE/Distribution/Violin_Plot_ggplot2.png",
+          "' has been created. \n\n")
 }
 
 # PCA plot
@@ -252,7 +253,7 @@ PCAPlot <- function(which.analysis,
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-
   #practical-guide/112-pca-principal-component-analysis-essentials/
   # load gene name for further usage
-  message(paste0("\u25CF Plotting PCA related plot\n"))
+  message("\u25CF Plotting PCA related plot\n")
   csv.results <- ParseResultCSV(which.analysis,
                                 which.count.normalization,
                                 path.prefix,
@@ -304,10 +305,9 @@ PCAPlot <- function(which.analysis,
          width = 7,
          height = 7)
 
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/", which.analysis,
-                        "/images/preDE/PCA/Dimension_PCA_Plot_factoextra.png"),
-                 "' has been created. \n"))
+  message("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis,
+          "/images/preDE/PCA/Dimension_PCA_Plot_factoextra.png",
+          "' has been created. \n")
   #var$coord: coordinates of variables to create a scatter plot
   #var$cos2: represents the quality of representation for variables on the
   #          factor map. It’s calculated as the squared coordinates:
@@ -340,10 +340,8 @@ PCAPlot <- function(which.analysis,
          dpi = 300,
          width = 7,
          height = 7)
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/", which.analysis,
-                        "/images/preDE/PCA/PCA_Plot_factoextra.png"),
-                 "' has been created. \n"))
+  message("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis,
+          "/images/preDE/PCA/PCA_Plot_factoextra.png' has been created. \n")
 
   normalized.res.PCA <- FactoMineR::PCA(normalized.trans,
                                         scale.unit=TRUE, ncp=2,
@@ -376,10 +374,9 @@ PCAPlot <- function(which.analysis,
          dpi = 300,
          width = 7,
          height = 7)
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/", which.analysis,
-                        "/images/preDE/PCA/PCA_Plot_ggplot2.png"),
-                 "' has been created. \n\n"))
+  message("(\u2714) : '",
+          path.prefix, "RNASeq_results/", which.analysis,
+          "/images/preDE/PCA/PCA_Plot_ggplot2.png' has been created. \n\n")
 }
 
 #Correlation plot
@@ -390,7 +387,7 @@ CorrelationPlot <- function(which.analysis,
                             case.group,
                             control.group){
   # load gene name for further usage
-  message(paste0("\u25CF Plotting Correlation plot\n"))
+  message("\u25CF Plotting Correlation plot\n")
   csv.results <- ParseResultCSV(which.analysis,
                                 which.count.normalization,
                                 path.prefix,
@@ -430,11 +427,10 @@ CorrelationPlot <- function(which.analysis,
   mtext(expression(bold("Correlation Dot Plot (corrplot)")))
   par(cex = cex.before)
   dev.off()
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/", which.analysis,
-                        "/images/preDE/Correlation/",
-                        "Correlation_Dot_Plot_corrplot.png"),
-                 "' has been created. \n"))
+  message("(\u2714) : '",
+          path.prefix, "RNASeq_results/", which.analysis,
+          "/images/preDE/Correlation/Correlation_Dot_Plot_corrplot.png",
+          "' has been created. \n")
 
   # Correlation_plot.png
   png(paste0(path.prefix, "RNASeq_results/", which.analysis,
@@ -446,11 +442,9 @@ CorrelationPlot <- function(which.analysis,
       res=300)
   PerformanceAnalytics::chart.Correlation(res, histogram=TRUE, pch=19)
   dev.off()
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/", which.analysis,
-                        "/images/preDE/Correlation/",
-                        "Correlation_Bar_Plot_PerformanceAnalytics.png"),
-                 "' has been created. \n"))
+  message("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis,
+          "/images/preDE/Correlation/",
+          "Correlation_Bar_Plot_PerformanceAnalytics.png' has been created. \n")
 
   # Correlation_heat_plot.png
   melted_res <- reshape2::melt(res)
@@ -481,11 +475,10 @@ CorrelationPlot <- function(which.analysis,
          dpi = 300,
          width = 7,
          height = 7)
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/", which.analysis,
-                        "/images/preDE/Correlation/",
-                        "Correlation_Heat_Plot_ggplot2.png"),
-                 "' has been created. \n\n"))
+  message("(\u2714) : '",
+          path.prefix, "RNASeq_results/", which.analysis,
+          "/images/preDE/Correlation/Correlation_Heat_Plot_ggplot2.png",
+          "' has been created. \n\n")
 }
 
 ###################################################
@@ -501,7 +494,7 @@ VolcanoPlot <- function(which.analysis,
                         condition.pval,
                         condition.log2FC) {
   # load gene name for further usage
-  message(paste0("\u25CF Plotting Volcano plot\n"))
+  message("\u25CF Plotting Volcano plot\n")
   normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/",
                                         which.analysis, "/",
                                         strsplit(which.analysis, "_")[[1]][1],
@@ -559,10 +552,8 @@ VolcanoPlot <- function(which.analysis,
          dpi = 300,
          width = 7,
          height = 7)
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/", which.analysis,
-                        "/images/DE/Volcano_Plot_ggplot2.png"),
-                 "' has been created. \n\n"))
+  message("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis,
+          "/images/DE/Volcano_Plot_ggplot2.png' has been created. \n\n")
 }
 
 # MA plot
@@ -584,7 +575,7 @@ MAPlot <- function(which.analysis,
   case.size <- length(case.normalized)
   control.normalized <- csv.results$control
   control.size <- length(control.normalized)
-  message(paste0("\u25CF Plotting MA plot\n"))
+  message("\u25CF Plotting MA plot\n")
   normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/",
                                         which.analysis, "/",
                                         strsplit(which.analysis, "_")[[1]][1],
@@ -613,10 +604,8 @@ MAPlot <- function(which.analysis,
          dpi = 300,
          width = 7,
          height = 7)
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/", which.analysis,
-                        "/images/preDE/MA_Plot_ggplot2.png"),
-                 "' has been created. \n\n"))
+  message("(\u2714) : '", path.prefix, "RNASeq_results/", which.analysis,
+          "/images/preDE/MA_Plot_ggplot2.png' has been created. \n\n")
 }
 
 # PCA plot
@@ -629,7 +618,7 @@ DEPCAPlot <- function(which.analysis,
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-
   #practical-guide/112-pca-principal-component-analysis-essentials/
   # load gene name for further usage
-  message(paste0("\u25CF Plotting PCA related plot\n"))
+  message("\u25CF Plotting PCA related plot\n")
   DE.csv.results <- read.csv(paste0(path.prefix, "RNASeq_results/",
                                     which.analysis, "/",
                                     strsplit(which.analysis,
@@ -678,10 +667,10 @@ DEPCAPlot <- function(which.analysis,
          dpi = 300,
          width = 7,
          height = 7)
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/", which.analysis,
-                        "/images/DE/PCA/Dimension_PCA_Plot_factoextra.png"),
-                 "' has been created. \n"))
+  message("(\u2714) : '",
+          path.prefix, "RNASeq_results/", which.analysis,
+          "/images/DE/PCA/Dimension_PCA_Plot_factoextra.png",
+          "' has been created. \n")
   #var$coord: coordinates of variables to create a scatter plot
   #var$cos2: represents the quality of representation for variables on the
   #          factor map. It’s calculated as the squared coordinates:
@@ -715,10 +704,9 @@ DEPCAPlot <- function(which.analysis,
          dpi = 300,
          width = 7,
          height = 7)
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/", which.analysis,
-                        "/images/DE/PCA/PCA_Plot_factoextra.png"),
-                 "' has been created. \n"))
+  message("(\u2714) : '",
+          path.prefix, "RNASeq_results/", which.analysis,
+          "/images/DE/PCA/PCA_Plot_factoextra.png' has been created. \n")
 
   normalized.res.PCA <- FactoMineR::PCA(normalized.trans,
                                         scale.unit=TRUE, ncp=2,
@@ -750,10 +738,9 @@ DEPCAPlot <- function(which.analysis,
          dpi = 300,
          width = 7,
          height = 7)
-  message(paste0("(\u2714) : '",
-                 paste0(path.prefix, "RNASeq_results/", which.analysis,
-                        "/images/DE/PCA/PCA_Plot_ggplot2.png"),
-                 "' has been created. \n\n"))
+  message("(\u2714) : '",
+          path.prefix, "RNASeq_results/", which.analysis,
+          "/images/DE/PCA/PCA_Plot_ggplot2.png' has been created. \n\n")
 }
 
 DEHeatmap <- function(which.analysis,
@@ -763,8 +750,7 @@ DEHeatmap <- function(which.analysis,
                       case.group,
                       control.group) {
   # load gene name for further usage
-  message(paste0("\u25CF Plotting Differential ",
-                 "Expressed Heatmap related plot\n"))
+  message("\u25CF Plotting Differential Expressed Heatmap related plot\n")
   DE.csv.results <- read.csv(paste0(path.prefix, "RNASeq_results/",
                                     which.analysis, "/",
                                     strsplit(which.analysis,
@@ -776,10 +762,9 @@ DEHeatmap <- function(which.analysis,
                                    control.group)
   ## Maybe change !!!! temp !!
   DE.csv.results <- DE.csv.results[DE.csv.results$gene.name != ".",]
-  message(paste0("     \u25CF Checking found ",
-                 "differential express transcript term.\n"))
+  message("     \u25CF Checking found differential express transcript term.\n")
   if (nrow(DE.csv.results) == 0) {
-    message(paste0("          \u25CF (\u26A0) No term were found.\n\n"))
+    message("          \u25CF (\u26A0) No term were found.\n\n")
   } else {
     DE.csv.results <- DE.csv.results[order(abs(DE.csv.results$log2FC),
                                            decreasing = TRUE),]
@@ -787,16 +772,16 @@ DEHeatmap <- function(which.analysis,
 
     # Decide sample name whether to show
     if (phenoData.result$case.group.size + phenoData.result$case.group.size > 16) {
-      message(paste0("          \u25CF Total sample number: ",
-                     phenoData.result$case.group.size +
-                       phenoData.result$case.group.size,
-                     " (sample name will not be shown).\n"))
+      message("          \u25CF Total sample number: ",
+              phenoData.result$case.group.size +
+                phenoData.result$case.group.size,
+              " (sample name will not be shown).\n")
       show.sample.name <- FALSE
     } else {
-      message(paste0("          \u25CF Total sample number: ",
-                     phenoData.result$case.group.size +
-                       phenoData.result$case.group.size,
-                     " (sample name will be shown).\n"))
+      message("          \u25CF Total sample number: ",
+              phenoData.result$case.group.size +
+                phenoData.result$case.group.size,
+              " (sample name will be shown).\n")
       show.sample.name <- TRUE
     }
     # Decide gene name whether to show
@@ -805,26 +790,22 @@ DEHeatmap <- function(which.analysis,
                            phenoData.result$case.group.size + 1)]
     row.names(DE.csv.normalized.count.only) <- DE.csv.results$gene.name
     if (nrow(DE.csv.normalized.count.only) > 60) {
-      message(paste0("          \u25CF Found ",
-                     nrow(DE.csv.normalized.count.only),
-                     " terms. More than 60 terms ",
-                     "(gene names will not be shown).\n"))
+      message("          \u25CF Found ",
+              nrow(DE.csv.normalized.count.only),
+              " terms. More than 60 terms (gene names will not be shown).\n")
       show.gene.name <- FALSE
     } else {
-      message(paste0("          \u25CF Found ",
-                     nrow(DE.csv.normalized.count.only),
-                     " terms (gene names will be shown).\n"))
+      message("          \u25CF Found ", nrow(DE.csv.normalized.count.only),
+              " terms (gene names will be shown).\n")
       show.gene.name <- TRUE
     }
-    message(paste0("     \u25CF Calculating log2(",
-                   which.count.normalization, "+1).\n"))
+    message("     \u25CF Calculating log2(",which.count.normalization, "+1).\n")
     log.data.frame <- log2(DE.csv.normalized.count.only+1)
     # Getting log control mean
     control.log.average <-
       rowMeans(log.data.frame[seq_len(phenoData.result$case.group.size)])
-    message(paste0("     \u25CF Each log2(",
-                   which.count.normalization,
-                   "+1) minus average of control.\n"))
+    message("     \u25CF Each log2(", which.count.normalization,
+            "+1) minus average of control.\n")
     log.data.frame.minus <- log.data.frame - control.log.average
     df.new <- scale(log.data.frame.minus)
     phenoData.result<- phenoDataWrap(path.prefix,
@@ -850,8 +831,8 @@ DEHeatmap <- function(which.analysis,
 
     # Check Na(list) or Infinite(numeric)
     if (any(is.na((df.new)) | is.infinite((df.new)))) {
-      message(paste0("(\u26A0) : There are invalid value after ",
-                     "scaling DEG dataframe. Heatmap can't be drawn !\n\n"))
+      message("(\u26A0) : There are invalid value after ",
+              "scaling DEG dataframe. Heatmap can't be drawn !\n\n")
     } else {
       redgreen <- c("blue", "white", "red")
       pal <- colorRampPalette(redgreen)(100)
@@ -870,8 +851,8 @@ DEHeatmap <- function(which.analysis,
                                            "/images/DE/",
                                            "Heatmap_Plot_pheatmap.png"),
                          fontsize = 7)
-      message(paste0("(\u2714) : '", path.prefix, "RNASeq_results/",
-                     which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png"),
+      message("(\u2714) : '", path.prefix, "RNASeq_results/",
+              which.analysis, "/images/DE/Heatmap_Plot_pheatmap.png",
               "' has been created. \n\n")
     }
   }

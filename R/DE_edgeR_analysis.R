@@ -117,9 +117,9 @@ edgeRRawCountAnalysis <- function(path.prefix,
             row.names=FALSE)
 
   # Slecet DE genes (condition)
-  message(paste0("     \u25CF Selecting differential ",
-                 "expressed genes(edgeR) ==> p-value : ",
-                 edgeR.pval, "  log2(Fold Change) : ", edgeR.log2FC, " ...\n"))
+  message("     \u25CF Selecting differential ",
+          "expressed genes(edgeR) ==> p-value : ",
+          edgeR.pval, "  log2(Fold Change) : ", edgeR.log2FC, " ...\n")
   edgeR.result.DE <- edgeR.result[((edgeR.result$log2FC>edgeR.log2FC) |
                                      (edgeR.result$log2FC<(-edgeR.log2FC))) &
                                     (edgeR.result$pval<edgeR.pval), ]
@@ -212,10 +212,8 @@ edgeRRawCountAnalysis <- function(path.prefix,
       title("MDS Plot")
       par(cex = cex.before)
       dev.off()
-      message(paste0("(\u2714) : '",
-                     paste0(path.prefix, "RNASeq_results/edgeR_analysis/",
-                            "images/preDE/MDS_Plot_edgeR.png"),
-                     "' has been created. \n\n"))
+      message("(\u2714) : '", path.prefix, "RNASeq_results/edgeR_analysis/",
+              "images/preDE/MDS_Plot_edgeR.png' has been created. \n\n")
 
       # MeanVar plot
       message("\u25CF Plotting MeanVar plot ... \n")
@@ -232,10 +230,8 @@ edgeRRawCountAnalysis <- function(path.prefix,
       graphics::title("Mean-Variance Plot")
       par(cex = cex.before)
       dev.off()
-      message(paste0("(\u2714) : '",
-                     paste0(path.prefix, "RNASeq_results/edgeR_analysis/",
-                            "images/preDE/MeanVar_Plot_edgeR.png"),
-                     "' has been created. \n\n"))
+      message("(\u2714) : '", path.prefix, "RNASeq_results/edgeR_analysis/",
+              "images/preDE/MeanVar_Plot_edgeR.png' has been created. \n\n")
       # BCV plot
       message("\u25CF Plotting BCV plot ...\n")
       png(paste0(path.prefix, "RNASeq_results/edgeR_analysis/images/preDE/",
@@ -251,10 +247,9 @@ edgeRRawCountAnalysis <- function(path.prefix,
       graphics::title("BCV Plot")
       par(cex = cex.before)
       dev.off()
-      message(paste0("(\u2714) : '",
-                     paste0(path.prefix, "RNASeq_results/",
-                            "edgeR_analysis/images/preDE/BCV_Plot_edgeR.png"),
-                     "' has been created. \n\n"))
+      message("(\u2714) : '", path.prefix, "RNASeq_results/",
+              "edgeR_analysis/images/preDE/BCV_Plot_edgeR.png",
+              "' has been created. \n\n")
       ############
       #### DE ####
       ############
@@ -292,10 +287,9 @@ edgeRRawCountAnalysis <- function(path.prefix,
       graphics::title(paste0(case.group, " vs ", control.group))
       par(cex = cex.before)
       dev.off()
-      message(paste0("(\u2714) : '",
-                     paste0(path.prefix, "RNASeq_results/",
-                            "edgeR_analysis/images/preDE/Smear_Plot_edgeR.png"),
-                     "' has been created. \n\n"))
+      message("(\u2714) : '",path.prefix, "RNASeq_results/",
+              "edgeR_analysis/images/preDE/Smear_Plot_edgeR.png",
+              "' has been created. \n\n")
 
       if (nrow(edgeR.result.DE) > 1) {
         # PCA plot

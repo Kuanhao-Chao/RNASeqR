@@ -118,10 +118,10 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                           "DESeq2_normalized_result.csv"),
             row.names=FALSE)
 
-  message(paste0("     \u25CF Selecting differential expressed genes",
-                 "(DESeq2) ==> padj-value : ",
-                 DESeq2.pval, "  log2(Fold Change) : ",
-                 DESeq2.log2FC, " ...\n"))
+  message("     \u25CF Selecting differential expressed genes",
+          "(DESeq2) ==> padj-value : ",
+          DESeq2.pval, "  log2(Fold Change) : ",
+          DESeq2.log2FC, " ...\n")
   DESeq2.result.DE <- DESeq2.result[((DESeq2.result$log2FC>DESeq2.log2FC) |
                                        (DESeq2.result$log2FC<(-DESeq2.log2FC)))&
                                       (DESeq2.result$pval<DESeq2.pval), ]
@@ -187,10 +187,10 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                       case.group,
                       control.group)
       # dispersion plot
-      message(paste0("\u25CF Plotting  Dispersion plot\n"))
+      message("\u25CF Plotting  Dispersion plot\n")
       png(paste0(path.prefix,
-                 paste0("RNASeq_results/DESeq2_analysis/",
-                        "images/preDE/Dispersion_Plot_DESeq2.png")),
+                 "RNASeq_results/DESeq2_analysis/",
+                 "images/preDE/Dispersion_Plot_DESeq2.png"),
           width=5,
           height=5,
           units="in",
@@ -202,10 +202,8 @@ DESeq2RawCountAnalysis <- function(path.prefix,
       title("Dispersion plot")
       par(cex = cex.before)
       dev.off()
-      message(paste0("(\u2714) : '",
-                     paste0("RNASeq_results/DESeq2_analysis/images/DE/",
-                            "Dispersion_Plot_DESeq2.png"),
-                     "' has been created. \n\n"))
+      message("(\u2714) : 'RNASeq_results/DESeq2_analysis/images/DE/",
+              "Dispersion_Plot_DESeq2.png' has been created. \n\n")
 
       ############
       #### DE ####
@@ -226,10 +224,9 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                   DESeq2.log2FC)
 
       # MA plot
-      message(paste0("\u25CF Plotting  MA plot\n"))
-      png(paste0(path.prefix,
-                 paste0("RNASeq_results/DESeq2_analysis/",
-                        "images/DE/MA_Plot_DESeq2.png")),
+      message("\u25CF Plotting  MA plot\n")
+      png(paste0(path.prefix,"RNASeq_results/DESeq2_analysis/",
+                 "images/DE/MA_Plot_DESeq2.png"),
           width=5,
           height=5,
           units="in",
@@ -241,11 +238,9 @@ DESeq2RawCountAnalysis <- function(path.prefix,
       title("MA (MD) Plot")
       par(cex = cex.before)
       dev.off()
-      message(paste0("(\u2714) : '",
-                     paste0(path.prefix,
-                            "RNASeq_results/",
-                            "DESeq2_analysis/images/DE/MA_Plot_DESeq2.png"),
-                     "' has been created. \n\n"))
+      message("(\u2714) : '",path.prefix, "RNASeq_results/",
+              "DESeq2_analysis/images/DE/MA_Plot_DESeq2.png",
+              "' has been created. \n\n")
 
       # Check DESeq2.result.DE before visulization!!
       if (nrow(DESeq2.result.DE) > 1) {
