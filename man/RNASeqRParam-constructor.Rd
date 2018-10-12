@@ -35,7 +35,6 @@ an object of class \code{RNASeqRParam}
 Constructor function for RNASeqRParam objects
 }
 \examples{
-
 input_files.path <- system.file("extdata/", package = "RNASeqRData")
 rnaseq_result.path <- tempdir(check = TRUE)
 exp <- RNASeqRParam(path.prefix          = rnaseq_result.path,

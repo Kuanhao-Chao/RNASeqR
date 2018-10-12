@@ -22,6 +22,7 @@ Check whether 'Hisat2', 'Stringtie' and 'Gffcompare'
 }
 \examples{
 data(yeast)
+\dontrun{
 CheckToolAll(yeast@path.prefix,
-             print=TRUE)
+             print=TRUE)}
 }
