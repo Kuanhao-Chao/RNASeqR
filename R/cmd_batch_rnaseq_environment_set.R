@@ -767,8 +767,9 @@ CheckSamtools <- function(print=TRUE){
 #' @export
 #' @examples
 #' data(yeast)
+#' \dontrun{
 #' CheckToolAll(yeast@@path.prefix,
-#'              print=TRUE)
+#'              print=TRUE)}
 CheckToolAll <- function(path.prefix, print=TRUE) {
   message("************** Checking Availability of Commands ************\n")
   ExportPath(path.prefix)
