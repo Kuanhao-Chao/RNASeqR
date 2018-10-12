@@ -49,8 +49,8 @@ RNASeqQualityAssessment_CMD <- function(RNASeqRParam,
                    ", INSIDE.path.prefix = '", INSIDE.path.prefix,"')")
   writeLines(c(first, second), fileConn)
   close(fileConn)
-  message(paste0("\u2605 '", path.prefix,
-                 "Rscript/Quality_Assessment.R' has been created.\n"))
+  message("\u2605 '", path.prefix,
+          "Rscript/Quality_Assessment.R' has been created.\n")
   if (run) {
     R.home.lib <- R.home()
     R.home.bin <- gsub("/lib/R", "/bin/R", R.home.lib)
@@ -61,9 +61,9 @@ RNASeqQualityAssessment_CMD <- function(RNASeqRParam,
                           path.prefix, "Rscript_out/Quality_Assessment.Rout"),
             stdout = "",
             wait = FALSE)
-    message(paste0("\u2605 Tools are installing in the background. ",
-                   "Check current progress in '", path.prefix,
-                   "Rscript_out/Quality_Assessment.Rout'\n\n"))
+    message("\u2605 Tools are installing in the background. ",
+            "Check current progress in '", path.prefix,
+            "Rscript_out/Quality_Assessment.Rout'\n\n")
   }
 }
 
@@ -154,9 +154,10 @@ RNASeqQualityAssessment <- function(RNASeqRParam,
                                   full.names = FALSE,
                                   recursive = FALSE,
                                   ignore.case = FALSE)
-  message(paste0("************** Quality Assessment **************\n"))
+  message("************** Quality Assessment **************\n")
   folder <- paste0(path.prefix, "gene_data/raw_fastq.gz")
   files <- list.files(folder, sample.pattern, full.names = TRUE)
+  # Other package reports
   # message(paste0("\u25CF 1. R package \"Rqc\" quality assessment\n"))
   # message(paste0("     \u25CF  Running 'rqcQA()' ...  ",
   #                "Please wait \u231B\u231B\u231B\n"))
@@ -179,7 +180,7 @@ RNASeqQualityAssessment <- function(RNASeqRParam,
                                 QA.count, "/systemPipeR/")),
                showWarnings = FALSE)
   }
-  message(paste0("\u25CF 2. R package \"systemPipeR\" quality assessment\n"))
+  message("\u25CF 2. R package \"systemPipeR\" quality assessment\n")
   current.path <- getwd()
   setwd(paste0(path.prefix,
                "RNASeq_results/QA_results/QA_",
@@ -188,7 +189,7 @@ RNASeqQualityAssessment <- function(RNASeqRParam,
   # create 'RNASeq' directory
   systemPipeRdata::genWorkenvir(workflow="rnaseq")
   # create targets.txt
-  message(paste0("     \u25CF  Writing \"data.list.txt\"\n"))
+  message("     \u25CF  Writing \"data.list.txt\"\n")
   raw.fastq.data.frame <- data.frame("FileName" = files,
                                      "SampleName" = gsub(".fastq.gz",
                                                          "",
@@ -201,24 +202,24 @@ RNASeqQualityAssessment <- function(RNASeqRParam,
               quote = FALSE)
   args <- systemPipeR::systemArgs(sysma="rnaseq/param/trim.param",
                                   mytargets="data.list.txt")
-  message(paste0("     \u25CF  Running 'seeFastq()' ...  ",
-                 "Please wait \u231B\u231B\u231B\n"))
+  message("     \u25CF  Running 'seeFastq()' ...  ",
+          "Please wait \u231B\u231B\u231B\n")
   fqlist <- systemPipeR::seeFastq(fastq=systemPipeR::infile1(args),
                                   batchsize=10000, klength=8)
-  message(paste0("     \u25CF  Creating 'fastqReport.pdf' ...  ",
-                 "Please wait \u231B\u231B\u231B\n"))
+  message("     \u25CF  Creating 'fastqReport.pdf' ...  ",
+          "Please wait \u231B\u231B\u231B\n")
   pdf(paste0(path.prefix, "RNASeq_results/QA_results/QA_", QA.count,
              "/systemPipeR/fastqReport.pdf"),
       height=18, width=4*length(fqlist))
   systemPipeR::seeFastqPlot(fqlist)
   dev.off()
   on.exit(setwd(current.path))
-  message(paste0("     \u25CF  Removing 'RNASeq' directory...  ",
-                 "Please wait \u231B\u231B\u231B\n"))
+  message("     \u25CF  Removing 'RNASeq' directory...  ",
+          "Please wait \u231B\u231B\u231B\n")
   unlink(paste0(path.prefix, "RNASeq_results/QA_results/QA_",
                 QA.count, "/systemPipeR/rnaseq"),
          recursive = TRUE)
-  message(paste0("     (\u2714) : systemPipeR assessment success ~~\n\n"))
+  message("     (\u2714) : systemPipeR assessment success ~~\n\n")
   # if(!dir.exists(paste0(path.prefix,
   #                       "RNASeq_results/QA_results/QA_",
   #                       QA.count,
@@ -304,15 +305,14 @@ PostCheckRNASeqQualityAssessment <- function(path.prefix) {
       #                QA.count, "/Rqc/Rqc_report.html' is missing!\n"))
     # }
     if (!file.systemPipeR.data) {
-      message(paste0("'", path.prefix, "RNASeq_results/QA_results/QA_",
-                     QA.count,
-                     "/systemPipeR/data.list.txt' is missing!\n"))
+      message("'", path.prefix, "RNASeq_results/QA_results/QA_",
+              QA.count,
+              "/systemPipeR/data.list.txt' is missing!\n")
     }
     if (!file.systemPipeR.result){
-      message(paste0("'", path.prefix,
-                     "RNASeq_results/QA_results/QA_",
-                     QA.count,
-                     "/systemPipeR/fastqReport.pdf' is missing!\n"))
+      message("'", path.prefix,
+              "RNASeq_results/QA_results/QA_",
+              QA.count, "/systemPipeR/fastqReport.pdf' is missing!\n")
     }
     # if (!file.ShortRead.result) {
       # message(paste0("'", path.prefix,
@@ -323,17 +323,17 @@ PostCheckRNASeqQualityAssessment <- function(path.prefix) {
     stop("RNASeqQualityAssessment() post-check ERROR")
   } else {
     message("(\u2714) : RNASeqQualityAssessment() post-check is valid\n\n")
-    message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                   "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                   "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                   "\u2605\u2605\u2605\u2605\n"))
-    message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                   "\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605",
-                   "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n"))
-    message(paste0("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                   "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                   "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-                   "\u2605\u2605\u2605\u2605\n"))
+    message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+            "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+            "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+            "\u2605\u2605\u2605\u2605\n")
+    message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+            "\u2605\u2605\u2605 Success!! \u2605\u2605\u2605\u2605",
+            "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n")
+    message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+            "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+            "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+            "\u2605\u2605\u2605\u2605\n")
   }
 }
 

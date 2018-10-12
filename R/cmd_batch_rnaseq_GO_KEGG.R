@@ -83,8 +83,8 @@ RNASeqGoKegg_CMD <- function(RNASeqRParam,
                    "', KEGG.organism = '",KEGG.organism, "')")
   writeLines(c(first, second), fileConn)
   close(fileConn)
-  message(paste0("\u2605 '", path.prefix,
-                 "Rscript/GO_KEGG_Analysis.R' has been created.\n"))
+  message("\u2605 '", path.prefix,
+          "Rscript/GO_KEGG_Analysis.R' has been created.\n")
   if (run) {
     R.home.lib <- R.home()
     R.home.bin <- gsub("/lib/R", "/bin/R", R.home.lib)

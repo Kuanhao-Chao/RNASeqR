@@ -12,3 +12,4 @@ Rplots.pdf
 RNASeqR.html
 RNASeqR.R
 DE_TPM.R
+cmd_batch_rnaseq_quality_trimming.R
