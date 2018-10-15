@@ -1,15 +1,4 @@
-#' Show the details about RNASeqRParam S4 obejct
-#'
-#'@name show
-#'@exportMethod show
-#' @docType methods
-#' @rdname eexpr
-#' @param x a RNASeqRParam object
-#' @return None
-#'
-#' @examples
-#' data(yeast)
-#' show(yeast)
+# the show method:
 setMethod('show', 'RNASeqRParam', function(object){
   cat("RNASeqRParam S4 object\n",
       "             os.type :", object@os.type, "\n",
