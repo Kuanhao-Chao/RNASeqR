@@ -1,3 +1,3 @@
-CHANGES IN VERSION 0.99.22
+CHANGES IN VERSION 0.99.23
 ------------------------
  o Add show method for 'RNASeqRParam' S4 object and revise vignette. <2018-10-16 Tue>
