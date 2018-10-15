@@ -5,8 +5,8 @@
 \alias{yeast}
 \title{Toy RNASeqRParam object}
 \description{
-Small RNASeqRParam S4 object created with checked valid parameters for
-  demonstration purposes
+Small RNASeqRParam S4 object created with checked valid
+  parameters for demonstration purposes
 }
 \examples{
 data(yeast)

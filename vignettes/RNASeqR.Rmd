@@ -1,5 +1,5 @@
 ---
-title: "RNASeqR : RNA-Seq differential expression analysis based on one independent variable analysis"
+title: "RNASeqR : RNA-Seq analysis based on one independent variable"
 author: "Author: Kuan-Hao Chao (ntueeb05howard@gmail.com)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`"
 output: 
@@ -11,7 +11,7 @@ output:
 #bibliography: bibliography.bib
 fontsize: 14pt
 vignette: >
-  %\VignetteIndexEntry{RNA-Seq workflow for one independent variable analysis}
+  %\VignetteIndexEntry{RNA-Seq analysis based on one independent variable}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteDepends{}
   %\VignetteEncoding{UTF-8}
@@ -51,7 +51,7 @@ Functions with `CMD` suffix will create an R script and  run `nohup R CMD BATCH 
 
 # Sample Definition
 
-Sample data used in this vignette can be downloaded from `RNASeqRData` experiment package. It was originated from [NCBI's Sequence Read Archive](http://www.ncbi.nlm.nih.gov/sra) for the entries SRR3396381, SRR3396382, SRR3396384, SRR3396385, SRR3396386, and SRR3396387. These samples were from Saccharomyces cerevisiae. Suitable reference genome and gene annotation files for this species can be further downloaded from iGenomes, Ensembl, R64-1-1. To create mini data for demonstration purpose, reads aligned to the region from 0 to 100000 at chromosome XV were extracted. The following analysis results of this mini data will be shown in this vignette. 
+Sample data used in this vignette can be downloaded from `RNASeqRData` experiment package. It was originated from [NCBI's Sequence Read Archive](http://www.ncbi.nlm.nih.gov/sra) for the entries SRR3396381, SRR3396382, SRR3396384, SRR3396385, SRR3396386, and SRR3396387. These samples were from Saccharomyces cerevisiae. Suitable reference genome and gene annotation files for this species can be further downloaded from iGenomes, Ensembl, R64-1-1. To create mini data for demonstration purpose, reads aligned to the region from 0 to 100000 at chromosome XV were extracted. The following analysis results of this mini data will be shown in this vignette. The experiment data package is [here](https://github.com/HowardChao/RNASeqRData)
 
 For more case-control real data RNA-Seq analysis results of this package, please go to this website (https://github.com/HowardChao/RNASeqR_analysis_result).
 
@@ -194,6 +194,9 @@ exp <- RNASeqRParam(path.prefix = rnaseq_result.path,
                     independent.variable = "state", 
                     case.group = "60mins_ID20_amphotericin_B", 
                     control.group = "60mins_ID20_control")
+```
+```{r, warning=FALSE}
+show(exp)
 ```
 
 In this example, `RNASeqRParam` S4 object is store in `exp` for subsequent RNA-Seq analysis steps. Any ERROR occured in checking steps will terminate the program.

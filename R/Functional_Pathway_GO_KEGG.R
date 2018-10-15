@@ -53,7 +53,7 @@ GOAnalysis <- function(which.analysis,
                           which.analysis, "/GO_analysis/", dir_name))
       }
       if(!dir.exists(paste0(path.prefix, "RNASeq_results/",
-                            which.analysis, "/GO_analysis/", dir_name, "/", i))){
+                            which.analysis, "/GO_analysis/",dir_name, "/", i))){
         dir.create(paste0(path.prefix, "RNASeq_results/",
                           which.analysis, "/GO_analysis/", dir_name, "/", i))
       }
@@ -93,7 +93,7 @@ GOAnalysis <- function(which.analysis,
                 "_Classification_Bar_Plot_clusterProfiler.png' \n")
         barplot(ggo, drop=TRUE, showCategory=15, font.size = 7,
                 title = "GO Classification Bar Plot") +
-          theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
+          theme(plot.title = element_text(size = 15, hjust = 0.5,face = "bold"),
                 axis.title.x = element_text(size = 10),
                 axis.title.y = element_text(size = 10))
         ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis,
@@ -118,7 +118,7 @@ GOAnalysis <- function(which.analysis,
                           which.analysis, "/GO_analysis/", dir_name))
       }
       if(!dir.exists(paste0(path.prefix, "RNASeq_results/",
-                            which.analysis, "/GO_analysis/", dir_name, "/", i))){
+                            which.analysis, "/GO_analysis/",dir_name, "/", i))){
         dir.create(paste0(path.prefix, "RNASeq_results/",
                           which.analysis, "/GO_analysis/", dir_name, "/", i))
       }
@@ -130,7 +130,7 @@ GOAnalysis <- function(which.analysis,
       # GO over-representation test
       ego <- clusterProfiler::enrichGO(gene          = DE_results,
                                        keyType       = "ENTREZID",
-                                       OrgDb         = OrgDb.species,   # variable
+                                       OrgDb         = OrgDb.species, # variable
                                        ont           = i,
                                        pAdjustMethod = "BH")
       # variable : "holm", "hochberg", "hommel",
@@ -157,7 +157,7 @@ GOAnalysis <- function(which.analysis,
                 "_Overrepresentation_Bar_Plot_clusterProfiler.png' \n")
         barplot(ego, showCategory=12, font.size= 7,
                 title = "Over-representation Bar Plot") +
-          theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
+          theme(plot.title = element_text(size = 15, hjust = 0.5,face = "bold"),
                 axis.title.x = element_text(size = 10),
                 axis.title.y = element_text(size = 10))
         ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis,
@@ -172,7 +172,7 @@ GOAnalysis <- function(which.analysis,
                 "_Overrepresentation_Dot_Plot_clusterProfiler.png' \n")
         clusterProfiler::dotplot(ego, font.size = 7,
                                  title = "Over-representation Dot Plot")+
-          theme(plot.title = element_text(size = 15, hjust = 0.5, face = "bold"),
+          theme(plot.title = element_text(size = 15, hjust = 0.5,face = "bold"),
                 axis.title.x = element_text(size = 10),
                 axis.title.y = element_text(size = 10))
         ggsave(paste0(path.prefix, "RNASeq_results/", which.analysis,
@@ -233,7 +233,7 @@ KEGGAnalysis <- function(which.analysis,
     # KEGG Over-representation test
     message("     Found kegg gene ID : ",
             head(DE_results_kegg$return.kegg.id), " ...\n")
-    kk <- clusterProfiler::enrichKEGG(gene         = DE_results_kegg$return.kegg.id,
+    kk <- clusterProfiler::enrichKEGG(gene    = DE_results_kegg$return.kegg.id,
                                       keyType      = "kegg",
                                       organism     = KEGG.organism,
                                       pvalueCutoff = 0.05)

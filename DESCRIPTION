@@ -1,7 +1,7 @@
 Package: RNASeqR
 Type: Package
 Title: RNASeqR: RNA-Seq workflow for case-control study
-Version: 0.99.19
+Version: 0.99.20
 Date: 2018-8-7
 Author: Kuan-Hao Chao
 Maintainer: Kuan-Hao Chao <ntueeb05howard@gmail.com>
@@ -49,12 +49,14 @@ Imports:
   parallel
 Suggests:
   knitr,
+  png,
   RNASeqRData
 VignetteBuilder: 
   knitr
 SystemRequirements: 
   RNASeqR only support Linux and macOS. Window is not supported.
-  Python2 is required. If your machine is Python3, make sure '2to3' command is available.
+  Python2 is highly recommended. 
+  If your machine is Python3, make sure '2to3' command is available.
 BugReports: 
   https://github.com/HowardChao/RNASeqR/issues
 URL: 
