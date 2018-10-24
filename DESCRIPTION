@@ -1,7 +1,7 @@
 Package: RNASeqR
 Type: Package
 Title: RNASeqR: RNA-Seq workflow for case-control study
-Version: 0.99.23
+Version: 0.99.24
 Date: 2018-8-7
 Author: Kuan-Hao Chao
 Maintainer: Kuan-Hao Chao <ntueeb05howard@gmail.com>
@@ -9,8 +9,12 @@ biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq,
            GeneExpression, GeneSetEnrichment, Alignment, QualityControl, 
            DifferentialExpression, FunctionalPrediction, ExperimentalDesign, 
            GO, KEGG, Visualization, Normalization, Pathways, Clustering
-Description: This R package is designed for case-control study RNA-Seq analysis. 
-  Five steps: Environment Setup, Quality Assessment, Quality Trimming, Reads Processing, Differential Expression Analysis.
+Description: This R package is designed for case-control RNA-Seq analysis (two-group). 
+  There are six steps: RNASeqRParam S4 Object Creation, Environment Setup, Quality Assessment, 
+  Reads Alignment & Quantification, Gene-level Differential Analyses, Functional Analyses. 
+  Each step corresponds to a function. By running each function in order, a basic 
+  RNASeq analysis would be done.
+
 License: Artistic-2.0
 Encoding: UTF-8
 RoxygenNote: 6.1.0
