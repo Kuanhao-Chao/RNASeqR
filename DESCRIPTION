@@ -10,11 +10,10 @@ biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq,
            DifferentialExpression, FunctionalPrediction, ExperimentalDesign, 
            GO, KEGG, Visualization, Normalization, Pathways, Clustering
 Description: This R package is designed for case-control RNA-Seq analysis (two-group). 
-  There are six steps: RNASeqRParam S4 Object Creation, Environment Setup, Quality Assessment, 
-  Reads Alignment & Quantification, Gene-level Differential Analyses, Functional Analyses. 
-  Each step corresponds to a function. After running each function in order, a basic 
-  RNASeq analysis would be done easily.
-
+  There are six steps: "RNASeqRParam S4 Object Creation", "Environment Setup", "Quality Assessment", 
+  "Reads Alignment & Quantification", "Gene-level Differential Analyses" and "Functional Analyses". 
+  Each step corresponds to a function in this package. After running functions in order, 
+  a basic RNASeq analysis would be done easily.
 License: Artistic-2.0
 Encoding: UTF-8
 RoxygenNote: 6.1.0

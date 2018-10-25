@@ -27,7 +27,7 @@ knitr::opts_chunk$set(tidy = FALSE,
 
 # Introduction
 
-RNA-Seq is a revolutionary approach to investigate and discover the transcriptome using next-generation sequencing technologies(Wang et al.). Typically, this transcriptome analysis aims to identify genes differentially expressed among different conditions or tissues, resulting in the understanding of the important pathways that are associated with conditions(Trapnell et al.).
+RNA-Seq is a revolutionary approach to investigate and discover the transcriptome using next-generation sequencing technologies(Wang et al.). Typically, this transcriptome analysis aims to identify genes differentially expressed among different conditions or tissues, resulting in the understanding of the important pathways that are associated with conditions(Wang et al.).
 
 RNASeqR is an user-friendly R-based tool for running RNA-Seq analysis pipeline including quality assessment, reads alignment and quantification, differential expression analysis, and functional analysis. The main features of this package are automated workflow, comprehensive report with data visualization and extendable file structure. In this package, new tuxedo pipeline published in Nature Protocols in 2016 can be fully implemented under R environment with extra functions such as reads quality assessment and functional analysis.
 
@@ -93,7 +93,7 @@ BiocManager::install("RNASeqRData")
 
 # "RNASeqRParam" S4 Object Creation
 
-This is the **preparation step** of RNA-Seq  workﬂow in this package. Prior to conducting RNA-Seq analysis, it is necessary to implement a constructor function, called `RNASeqRParam()` and create a `RNASeqRParam` S4 object which stores parameters not only for pre-checking but also for utilizing as input parameters in the following analyses. 
+This is the **first step** of RNA-Seq workﬂow in this package. Prior to conducting RNA-Seq analysis, it is necessary to implement a constructor function, called `RNASeqRParam()` and create a `RNASeqRParam` S4 object which stores parameters not only for pre-checking but also for utilizing as input parameters in the following analyses. 
 
 ## `RNASeqRParam` Slots Explanation
 There are 11 slots in `RNASeqRParam`: 
@@ -154,7 +154,7 @@ grid.raster(img, just = "center")
 
 11. `indices.optional` : logical value whether *'input_files/indices/'* is exit. Value is `TRUE` or `FALSE`
 
-## `RNASeqRParam` Constructor Checking Steps
+## `RNASeqRParam` Constructor Checking
 
 1. Create a new directory for RNA-Seq analysis. It is highly recommended to create a new directory without any files inside. The parameter `path.prefix` of `RNASeqRParam()` constructor should be the absolute path of this new directory. All the RNA-Seq related files that generated in the following steps will be stored inside of this directory.
 
@@ -203,7 +203,7 @@ In this example, `RNASeqRParam` S4 object is store in `exp` for subsequent RNA-S
 
 # Environment Setup
 
-This is the **first necessary step** of RNA-Seq workflow in this package. To set up the environment, run `RNASeqEnvironmentSet_CMD()` to execute process in background or running `RNASeqEnvironmentSet()` to execute process in R shell.
+This is the **second step** of RNA-Seq workflow in this package. To set up the environment, run `RNASeqEnvironmentSet_CMD()` to execute process in background or running `RNASeqEnvironmentSet()` to execute process in R shell.
 
 ## Files Setup
 
@@ -266,7 +266,7 @@ RNASeqEnvironmentSet(exp)
 
 # Quality Assessment of `FASTQ` sequence data
 
-This is an **optional step** of RNA-Seq workflow in this package. However, it is strongly recommended before processing the alignment step. To evaluate the quality of raw reads in `FASTQ` files, it can be achieved by running `RNASeqQualityAssessment_CMD()` to execute process in background or running `RNASeqQualityAssessment()` to execute process in R shell.
+This is the **third step** of RNA-Seq workflow in this package. Different from other necessary steps, it is optional and can be run several times with each result stored seperately. Although this step can be skipped, it is strongly recommended before processing the alignment step. To evaluate the quality of raw reads in `FASTQ` files, it can be achieved by running `RNASeqQualityAssessment_CMD()` to execute process in background or running `RNASeqQualityAssessment()` to execute process in R shell.
 
 ## "systemPipeR" Quality Assessment
 
@@ -309,7 +309,7 @@ RNASeqQualityAssessment(exp)
 
 # Reads Alignment and Quantification
 
-This is a **second necessary step** of RNA-Seq workflow in this package. To process raw reads `FASTQ` files, users can either run `RNASeqRawReadProcess_CMD()` to execute process in background or run `RNASeqRawReadProcess()` to execute process in R shell. For further details about commands and parameters that executed during each step, please check the reported *'RNASeq_results/COMMAND.txt'*.
+This is a **fourth step** of RNA-Seq workflow in this package. To process raw reads `FASTQ` files, users can either run `RNASeqRawReadProcess_CMD()` to execute process in background or run `RNASeqRawReadProcess()` to execute process in R shell. For further details about commands and parameters that executed during each step, please check the reported *'RNASeq_results/COMMAND.txt'*.
 
 ## The *HISAT2* Indexer
 
@@ -467,7 +467,7 @@ RNASeqReadProcess(exp)
 
 # Gene-level Differential Analyses
 
-This is the **third necessary step** of RNA-Seq workflow in this package. To identify differential expressed genes, users can either run `RNASeqDifferentialAnalysis_CMD()` to execute process in background or run `RNASeqDifferentialAnalysis()` to execute process in R shell. In this package, we provide three normalized expression values, Fragments Per Kilobase per Million(FPKM)(Mortazavi et al. 2008), normalized counts by means of Median of Ratios Normalization(MRN) or Trimmed Mean of M-values(TMM), with proper statistical analyses using R packages, 'ballgown', 'stats', 'DESeq2' and 'edgeR'. Gene IDs from StringTie and Ballgown R package will be mapped to 'gene_name' in GTF file for further functional analysis.
+This is the **fifth step** of RNA-Seq workflow in this package. To identify differential expressed genes, users can either run `RNASeqDifferentialAnalysis_CMD()` to execute process in background or run `RNASeqDifferentialAnalysis()` to execute process in R shell. In this package, we provide three normalized expression values, Fragments Per Kilobase per Million(FPKM)(Mortazavi et al. 2008), normalized counts by means of Median of Ratios Normalization(MRN) or Trimmed Mean of M-values(TMM), with proper statistical analyses using R packages, 'ballgown', 'stats', 'DESeq2' and 'edgeR'. Gene IDs from StringTie and Ballgown R package will be mapped to 'gene_name' in GTF file for further functional analysis.
 
 ## General Data Visualization
 
@@ -729,7 +729,7 @@ RNASeqDifferentialAnalysis(exp)
 
 # Functional Analysis
 
-This is the **third optional step** of RNA-Seq workflow in this package. [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) is used for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis based on the differential expressed genes(DEG) found in three different differential analyses. User can either run `RNASeqGoKegg_CMD()` to execute process in background or run `RNASeqGoKegg()` to execute process in R shell. 
+This is the **sixth step** of RNA-Seq workflow in this package. [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) is used for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis based on the differential expressed genes(DEG) found in three different differential analyses. User can either run `RNASeqGoKegg_CMD()` to execute process in background or run `RNASeqGoKegg()` to execute process in R shell. 
 In this step, users have to provide gene name type, `input.TYPE.ID`, that used in StringTie, ballgown and supported in `OrgDb.species` annotation package for target species. In GO functional analysis and KEGG pathway analysis, `input.TYPE.ID` ID type will be converted into `ENTREZID` ID type by `bitr()` function in clusterProfiler first. Those `input.TYPE.ID` with no corresponding `ENTREZID` will return `NA` and be filtered out. The genes with `Inf` or `-Inf` log2 fold change will be filtered out too. ID conversion will be done in each differential analysis tools, ballgown, DESeq2 and edgeR.
 
 In this example, the RNA-Seq analysis target species is *Saccharomyces cerevisiae*(yeast). The `OrgDb.species` is `org.Sc.sgd.db`; the `input.TYPE.ID` is `GENENAME`. IDs are converted from `GENENAME` to `ENTREZID`.
@@ -799,9 +799,7 @@ sessionInfo()
 
 # References
 
-Wang, Z., Gerstein, M., & Snyder, M. (2009). RNA-Seq: a revolutionary tool for transcriptomics. Nature Reviews. Genetics, 10(1), 57–63. http://doi.org/10.1038/nrg2484
-
-Trapnell, C., Hendrickson, D. G., Sauvageau, M., Goff, L., Rinn, J. L., & Pachter, L. (2013). Differential analysis of gene regulation at transcript resolution with RNA-seq. Nature biotechnology, 31(1), 46.
+Wang, Z., Gerstein, M., & Snyder, M. (2009). RNA-Seq: a revolutionary tool for transcriptomics. Nature reviews genetics, 10(1), 57.
 
 Pang CN et al., "Transcriptome and network analyses in Saccharomyces cerevisiae reveal that amphotericin B and lactoferrin synergy disrupt metal homeostasis and stress response.", Sci Rep, 2017 Jan 12;7:40232
 
