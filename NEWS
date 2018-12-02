@@ -1,3 +1,15 @@
+CHANGES IN VERSION 1.0.2
+------------------------
+ o Add new biocView tag "ImmunoOncology" <2018-12-2 Thu>
+
+CHANGES IN VERSION 1.0.1
+------------------------
+ o Update RNASeqR.Rmd. <2018-12-2 Thu>
+
+CHANGES IN VERSION 1.0.0
+------------------------
+ o RNASeqR Release Bioconductor 3.8. <2018-10-29 Thu>
+
 CHANGES IN VERSION 0.99.25
 ------------------------
  o Update vignette rmd file. <2018-10-26 Thu>
