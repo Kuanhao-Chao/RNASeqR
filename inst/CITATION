@@ -1,0 +1,17 @@
+citEntry(entry="article",
+         title = "RNASeqR: an R package for automated two-group RNA-Seq analysis workflow",
+         author = personList( as.person("Kuan-Hao Chao"),
+                              as.person("Yi-Wen Hsiao"),
+                              as.person("Yi-Fang Lee"),
+                              as.person("Chien-Yueh Lee"),
+                              as.person("Liang-Chuan Lai"),
+                              as.person("Mong-Hsun Tsai"),
+                              as.person("Tzu-Pin Lu"),
+                              as.person("Eric Y. Chuang")),
+         year = 2019,
+         journal = "bioRxiv",
+         doi = "10.1101/641324",
+         textVersion =
+         paste("Chao, K.H., Hsiao, Y.W., Lee, Y.F., Lee, C.Y., Lai, L.C., Tsai, M.H., Lu, T.P, Chuang, E.Y.",
+                "RNASeqR: an R package for automated two-group RNA-Seq analysis workflow",
+                "bioRxiv preprint (2019)" ) )
