@@ -374,7 +374,7 @@ Hisat2AlignmentDefault <- function(path.prefix,
 CreateSTARIndex <- function (path.prefix,
                              genome.name,
                              sample.pattern,
-                             thread_num,
+                             num.parallel.threads,
                              Read.length,
                              splice.site.info = TRUE,
                              exon.info = TRUE) {
@@ -391,7 +391,7 @@ CreateSTARIndex <- function (path.prefix,
       command.list <- c(command.list, "* Creating STAR Index : ")
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/indices/"))
-      whole.command <- paste("--runThreadN", thread_num, "--runMode",
+      whole.command <- paste("--runThreadN", num.parallel.threads, "--runMode",
                              "genomeGenerate", "--genomeDir",
                              paste0(path.prefix, "gene_data/indices/"),
                              "--genomeFastaFiles",
@@ -442,6 +442,16 @@ STARAlignmentDefault <- function(path.prefix,
                                         print=TRUE)
     message("\n\u2618\u2618\u2618 Alignment :\n")
     message("************** STAR Alignment **************\n")
+    samples.star.dir <- dir.create(file.path(paste0(path.prefix,
+                                                    "gene_data/raw_star")),
+                                   showWarnings = FALSE) == 0
+    if (!isTRUE(samples.star.dir)) {
+      message("     (\u2714) : Create '", path.prefix,
+              "gene_data/raw_star/'.\n")
+    } else {
+      message("     (\u26A0) : '", path.prefix,
+              "gene_data/raw_star/' has already be created.\n")
+    }
     if (check.results$ht2.files.number.df != 0 &&
         check.results$fastq.gz.files.number.df != 0){
       command.list <- c()
@@ -478,13 +488,23 @@ STARAlignmentDefault <- function(path.prefix,
             total.sub.command <- paste(total.sub.command, current.sub.command)
           }
 
-
-
+          samples.star.dir.in <- dir.create(file.path(paste0(path.prefix,
+                                                             "gene_data/raw_star/",
+                                                             sample.name[i])),
+                                            showWarnings = FALSE) == 0
+          samples.star.dir.output <- paste0(path.prefix, "gene_data/raw_star/",
+                                            sample.name[i], "/")
+          if (!isTRUE(samples.star.dir.in)) {
+            message("     (\u2714) : Create '", samples.star.dir.output, ".\n")
+          } else {
+            message("     (\u26A0) : '", samples.star.dir.output,
+                    " has already be created.\n")
+          }
           whole.command <- paste("--runThreadN", num.parallel.threads,
                                  "--genomeDir",
                                  paste0(path.prefix, "gene_data/indices/"),
                                  "--readFilesIn", total.sub.command,
-                                 "--outFileNamePrefix",
+                                 "--outFileNamePrefix", samples.star.dir.output,
                                  "--readFilesCommand", "zcat")
           if (i != 1) message("\n")
           main.command <- "STAR"
@@ -494,12 +514,116 @@ STARAlignmentDefault <- function(path.prefix,
           command.result <- system2(command = main.command,
                                     args = whole.command,
                                     stderr = TRUE, stdout = TRUE)
+
+
+
+
+
+
+
+
+
+
+          Log.final.out <-  paste0(path.prefix, "gene_data/raw_star/", sample.name[i], "/Log.final.out")
+          Log.final.out.read.in <- read.delim(Log.final.out, header = FALSE, sep = "\t", dec = ".")
+          Log.final.out.read.in.num <- as.numeric(levels(Log.final.out.read.in["V2"][[1]])[as.integer(Log.final.out.read.in["V2"][[1]])])
+          # Total reads
+          total.reads <- Log.final.out.read.in.num[5]
+          # Uniquely_mapped
+          Uniquely_mapping <- Log.final.out.read.in.num[8]
+          # mapped to multiple loci
+          multi_mapping_multiple_loci <- Log.final.out.read.in.num[23]
+          # mapped to too many loci
+          multi_mapping_many_loci <- Log.final.out.read.in.num[25]
+
+
+          # reads unmapped: too many mismatches
+          unmapped_many_mismatches <- Log.final.out.read.in.num[28]
+          # reads unmapped: too short
+          unmapped_short <- Log.final.out.read.in.num[30]
+          # reads unmapped: other
+          unmapped_other <- Log.final.out.read.in.num[32]
+          # number of chimeric reads
+          chimeric_reads <- Log.final.out.read.in.num[35]
+
+
+
+
+
+
+
+
+          # Total mapping rate
+          total.map.rate <- as.numeric(gsub("% overall alignment rate", "", command.result[15]))
+          total.map.rates <- c(total.map.rates, total.map.rate)
+          one.result <- c(total.reads, concordantly_1_time, concordantly_more_1_times, dicordantly_1_time, not_dicordantly_concordantly)
+          alignment.result[[sample.name[i]]] <- one.result
+
+
+
+
+
+
+
+
           if (length(command.result) == 0) {
             on.exit(setwd(current.path))
             message("(\u2718) '", main.command, "' is failed !!")
             stop("'", main.command, "' ERROR")
           }
+          file.symlink(paste0(path.prefix, "gene_data/raw_star/", sample.name[i], "/Aligned.out.sam"),
+                       paste0(path.prefix, "gene_data/raw_sam/", sample.name[i], ".sam"))
         }
+
+
+
+
+
+
+
+
+
+
+        row.names(alignment.result) <- c("total_reads", "concordantly_1", "concordantly_more_1", "dicordantly_1", "not_both")
+        alignment.result[] <- lapply(alignment.result, as.character)
+        alignment.result[] <- lapply(alignment.result, as.numeric)
+        if(!dir.exists(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))){
+          dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
+        }
+        trans.df  <- data.frame(t(alignment.result))
+        write.csv(trans.df,
+                  file = paste0(path.prefix,
+                                "RNASeq_results/",
+                                "Alignment_Report/Alignment_report_reads.csv"),
+                  row.names = TRUE)
+        trans.df.portion  <- data.frame(t(alignment.result))
+        trans.df.portion$concordantly_1 <- trans.df.portion$concordantly_1 / trans.df.portion$total_reads
+        trans.df.portion$concordantly_more_1 <- trans.df.portion$concordantly_more_1 / trans.df.portion$total_reads
+        trans.df.portion$dicordantly_1 <- trans.df.portion$dicordantly_1 / trans.df.portion$total_reads
+        trans.df.portion$not_both <- trans.df.portion$not_both / trans.df.portion$total_reads
+        write.csv(trans.df.portion,
+                  file = paste0(path.prefix,
+                                "RNASeq_results/",
+                                "Alignment_Report/Alignment_report_proportion.csv"),
+                  row.names = TRUE)
+        names(total.map.rates) <- sample.name
+        total.map.rates <- data.frame(total.map.rates)
+        write.csv(total.map.rates,
+                  file = paste0(path.prefix,
+                                "RNASeq_results/",
+                                "Alignment_Report/Overall_Mapping_rate.csv"),
+                  row.names = TRUE)
+
+
+
+
+
+
+
+
+
+
+
         message("\n")
         command.list <- c(command.list, "\n")
         fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
@@ -513,21 +637,6 @@ STARAlignmentDefault <- function(path.prefix,
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # use 'Rsamtools' to sort and convert the SAM files to BAM
 RSamtoolsToBam <- function(SAMtools.or.Rsamtools,
