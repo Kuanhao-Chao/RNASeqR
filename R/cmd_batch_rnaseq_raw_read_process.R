@@ -33,6 +33,21 @@
 #' @param Hisat2.Alignment.run Whether to run 'HISAT2 alignment' step in this
 #'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2 alignment' step.
+#'
+#'
+#'
+#'
+#' @param STAR.Index.run Whether to run 'STAR index' step in this function
+#'   step. Default value is \code{FALSE}. Set \code{TRUE} to run
+#'   'STAR index' step.
+#' @param STAR.Alignment.run Whether to run 'STAR alignment' step in this
+#'   function step. Default value is \code{FALSE}.
+#'   Set \code{TRUE} to run 'STAR alignment' step.
+#'
+#'
+#'
+#'
+#'
 #' @param Rsamtools.Bam.run Whether to run 'Rsamtools SAM to BAM' step in this
 #'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'Rsamtools SAM to BAM' step.
@@ -78,6 +93,8 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
                                   Rsamtools.nCores          = 1,
                                   Hisat2.Index.run          = TRUE,
                                   Hisat2.Alignment.run      = TRUE,
+                                  STAR.Index.run            = FALSE,
+                                  STAR.Alignment.run        = FALSE,
                                   Rsamtools.Bam.run         = TRUE,
                                   StringTie.Assemble.run    = TRUE,
                                   StringTie.Merge.Trans.run = TRUE,
@@ -170,6 +187,19 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
 #' @param Hisat2.Alignment.run Whether to run 'HISAT2 alignment' step in this
 #'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2 alignment' step.
+#'
+#'
+#'
+#' @param STAR.Index.run Whether to run 'STAR index' step in this function
+#'   step. Default value is \code{FALSE}. Set \code{TRUE} to run
+#'   'STAR index' step.
+#' @param STAR.Alignment.run Whether to run 'STAR alignment' step in this
+#'   function step. Default value is \code{FALSE}.
+#'   Set \code{TRUE} to run 'STAR alignment' step.
+#'
+#'
+#'
+#'
 #' @param Rsamtools.Bam.run Whether to run 'Rsamtools SAM to BAM' step in this
 #'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'Rsamtools SAM to BAM' step.
@@ -212,6 +242,8 @@ RNASeqReadProcess <- function(RNASeqRParam,
                               Rsamtools.nCores          = 1,
                               Hisat2.Index.run          = TRUE,
                               Hisat2.Alignment.run      = TRUE,
+                              STAR.Index.run            = FALSE,
+                              STAR.Alignment.run        = FALSE,
                               Rsamtools.Bam.run         = TRUE,
                               StringTie.Assemble.run    = TRUE,
                               StringTie.Merge.Trans.run = TRUE,
@@ -260,6 +292,28 @@ RNASeqReadProcess <- function(RNASeqRParam,
                                       genome.name,
                                       sample.pattern,
                                       print=FALSE)
+
+
+  # Check alignemnt selection first !
+  if (isTRUE(Hisat2.Alignment.run) && isTRUE(STAR.Alignment.run)) {
+    stop("Hisat2 and STAR can not run at the same time !")
+  } else if (isTRUE(Hisat2.Alignment.run) && !isTRUE(STAR.Alignment.run)) {
+    message("Hisat2 is selected as aligner in the pipeline !")
+  } else if (!isTRUE(Hisat2.Alignment.run) && isTRUE(STAR.Alignment.run)) {
+
+    STAR.Index.run            = FALSE,
+    STAR.Alignment.run        = FALSE,
+
+
+    if (isTRUE(STAR.Index.run) && isTRUE(STAR.Alignment.run)) {
+      # Do nothing here !
+    } else {
+      stop("'STAR.Index.run' and 'STAR.Alignment.run' must be TRUE at the same time !")
+    }
+    message("STAR is selected as aligner in the pipeline !")
+  }
+
+
   if (check.results$ht2.files.number.df == 0 &&
       !indices.optional & Hisat2.Index.run) {
     CreateHisat2Index(path.prefix, genome.name, sample.pattern)
@@ -273,6 +327,47 @@ RNASeqReadProcess <- function(RNASeqRParam,
                            case.group,
                            control.group)
   }
+
+
+  if (STAR.Index.run) {
+    STARAlignmentDefault(path.prefix,
+                         genome.name,
+                         sample.pattern,
+                         num.parallel.threads,
+                         independent.variable,
+                         case.group,
+                         control.group)
+  }
+  if (STAR.Alignment.run) {
+    STARAlignmentDefault(path.prefix,
+                         genome.name,
+                         sample.pattern,
+                         num.parallel.threads,
+                         independent.variable,
+                         case.group,
+                         control.group)
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   if (Rsamtools.Bam.run) {
     RSamtoolsToBam(SAMtools.or.Rsamtools,
                    path.prefix,

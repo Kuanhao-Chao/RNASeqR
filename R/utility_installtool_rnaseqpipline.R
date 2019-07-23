@@ -94,8 +94,6 @@ ProgressGenesFiles <- function(path.prefix,
             path.prefix, "gene_data/' to fix the error.\n\n")
   }
   ht2.files <- list.files(path = paste0(path.prefix, "gene_data", '/indices/'),
-                          pattern = paste0("^", genome.name,
-                                           "_tran.[0-9]*.ht2"),
                           all.files = FALSE,
                           full.names = FALSE,
                           recursive = FALSE,
@@ -111,8 +109,7 @@ ProgressGenesFiles <- function(path.prefix,
     }
   } else {
     if (print) {
-      message("(\u231B) : '", path.prefix, "gene_data/indices/",
-              genome.name, "_tran.*.ht2' is not exit\n")
+      message("(\u231B) : '", path.prefix, "gene_data/indices/*' is not exit\n")
     }
   }
   # Target sam files !!

@@ -502,6 +502,107 @@ InstallHisat2Bianry <- function(path.prefix, os.type){
   return(TRUE)
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+InstallStarBianry <- function(path.prefix, os.type){
+  os <- os.type
+  url <- "https://github.com/alexdobin/STAR/archive/"
+  if (os == "linux"){
+    os.file.name.zip <- "star-2.7.1a.zip"
+    os.file.name <- "start-2.7.1a"
+    url <- paste0(url, "2.7.1a.zip")
+  } else if (os == "osx"){
+    os.file.name.zip <- "star-2.7.1a.zip"
+    os.file.name <- "start-2.7.1a"
+    url <- paste0(url, "2.7.1a.zip")
+  } else if (os == "windows"){
+    stop("STAR is not supporting windows.\n\n")
+    return(FALSE)
+  } else {
+    stop("Unknow operating system.\n\n")
+    return(FALSE)
+  }
+  message("************** Installing Hisat2 (",
+          os.file.name.zip, ") ************\n")
+  file.download <- getURL(url, download.file, paste0(path.prefix,
+                                                     "RNASeq_bin/Download/",
+                                                     os.file.name.zip))
+  if (file.download == 0) {
+    message("STAR binaries were downloaded successfully!!\n")
+  }
+  message("\n************** Unpacking STAR (",
+          os.file.name.zip, ") ************\n")
+  if (dir.exists(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name))) {
+    unlink(paste0(path.prefix, "RNASeq_bin/Unpacked/", os.file.name),
+           recursive = TRUE)
+  }
+
+  # utils::unzip(zipfile = paste0(path.prefix, "RNASeq_bin/Download/",
+  #                               os.file.name.zip),
+  #              exdir = paste0(path.prefix,
+  #                             "RNASeq_bin/Unpacked/"),
+  #              overwrite = TRUE)
+  main.command <- "unzip"
+  command.result <- system2(command = main.command,
+                            args = paste0(path.prefix, "RNASeq_bin/Download/",
+                                          os.file.name.zip, " -d ", path.prefix,
+                                          "RNASeq_bin/Unpacked/"))
+  if (command.result != 0 ) {
+    message("(\u2718) '", main.command, "' is failed !!")
+    stop("'", main.command, "' ERROR")
+  }
+  message("STAR binaries\n\n")
+  message("\n************** Moving STAR Binary ************")
+  if (os == "osx") {
+    file.target.star <- list.files(path = paste0(path.prefix,
+                                                 "RNASeq_bin/Unpacked/",
+                                                 "STAR-2.7.1a/bin/",
+                                                 "MacOSX_x86_64"),
+                                   pattern = "STAR*",
+                                   full.names = TRUE)
+  } else if (os == "linux") {
+    file.target.star <- list.files(path = paste0(path.prefix,
+                                                 "RNASeq_bin/Unpacked/",
+                                                 "STAR-2.7.1a/bin/",
+                                                 "Linux_x86_64"),
+                                   pattern = "STAR*",
+                                   full.names = TRUE)
+  }
+  file.move <- file.copy(from = file.target.star,
+                         to = paste0(path.prefix, "RNASeq_bin/"),
+                         overwrite = TRUE)
+  if (command.result != 0 ) {
+    message("(\u2718) 'file.copy()' is failed !!")
+    stop("'file.copy()' ERROR")
+  }
+  message("\n'", path.prefix, "RNASeq_bin/Download/",
+          os.file.name.zip, "' has been installed.\n")
+  message("STAR has been unpacked. ('", path.prefix,
+          "RNASeq_bin/Unpacked/STAR-2.7.1a/')", "\n\n")
+  return(TRUE)
+}
+
+
 # Install stringtie binary
 InstallStringTieBinary <- function(path.prefix, os.type){
   os <- os.type
@@ -691,6 +792,25 @@ CheckHisat2 <- function(print=TRUE){
   }
 }
 
+# Check 'STAR'
+CheckSTAR <- function(print=TRUE){
+  if (print) {
+    message("\u25CF  Checking STAR command\n")
+  }
+  STAR.installed <- system("STAR --version",
+                             ignore.stdout = !print,
+                             ignore.stderr = !print) == 0
+  if (isTRUE(STAR.installed)){
+    if (isTRUE(print)){
+      message("(\u2714) : 'STAR' is installed\n\n")
+    }
+    return(TRUE)
+  } else {
+    message("(\u2718) : 'STAR' command is not found on this device!! \n\n")
+    return(FALSE)
+  }
+}
+
 # Check 'stringtie'
 CheckStringTie <- function(print=TRUE){
   if (print){
@@ -774,11 +894,13 @@ CheckToolAll <- function(path.prefix, print=TRUE) {
   message("************** Checking Availability of Commands ************\n")
   ExportPath(path.prefix)
   hisat2.check <- CheckHisat2(print)
+  STAR.check <- CheckSTAR(print)
   stringtie.check <- CheckStringTie(print)
   gff.check <- CheckGffcompare(print)
   if (isTRUE(hisat2.check) &&
       isTRUE(stringtie.check) &&
-      isTRUE(gff.check)){
+      isTRUE(gff.check) &&
+      isTRUE(STAR.check)){
     return(TRUE)
   } else {
     stop("(\u2718) Necessary program is missing.\n     ",

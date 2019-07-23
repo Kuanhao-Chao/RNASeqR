@@ -271,6 +271,7 @@ Hisat2AlignmentDefault <- function(path.prefix,
     }
   }
 }
+
 #
 # # Report Hisat2 assemble rate
 # Hisat2ReportAssemble <- function(path.prefix,
@@ -349,6 +350,224 @@ Hisat2AlignmentDefault <- function(path.prefix,
 #             "\n\n")
 #   }
 # }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Creating STAR index
+# Creat STAR index for further use
+CreateSTARIndex <- function (path.prefix,
+                             genome.name,
+                             sample.pattern,
+                             thread_num,
+                             Read.length,
+                             splice.site.info = TRUE,
+                             exon.info = TRUE) {
+  if (isTRUE(CheckSTAR(print=FALSE))){
+    # Check file progress
+    check.results <- ProgressGenesFiles(path.prefix,
+                                        genome.name,
+                                        sample.pattern,
+                                        print=TRUE)
+    message("\n\u2618\u2618\u2618 Index Creation :\n")
+    message("************** Creating STAR Index **************\n")
+    if (check.results$gtf.file.logic.df && check.results$fa.file.logic.df){
+      command.list <- c()
+      command.list <- c(command.list, "* Creating STAR Index : ")
+      current.path <- getwd()
+      setwd(paste0(path.prefix, "gene_data/indices/"))
+      whole.command <- paste("--runThreadN", thread_num, "--runMode",
+                             "genomeGenerate", "--genomeDir",
+                             paste0(path.prefix, "gene_data/indices/"),
+                             "--genomeFastaFiles",
+                             paste0(path.prefix, 'gene_data/ref_genome/',
+                                    genome.name, '.fa'),
+                             "--sjdbGTFfile",
+                             paste0(path.prefix, "gene_data/ref_genes/",
+                                    genome.name, ".gtf"),
+                             "--sjdbOverhang", Read.length-1)
+      main.command <- "STAR"
+      message("Input command : ", paste(main.command, whole.command), "\n")
+      command.list <- c(command.list,
+                        paste("    command :", main.command, whole.command))
+      command.result <- system2(command = main.command,
+                                args = whole.command)
+      if (command.result != 0 ) {
+        on.exit(setwd(current.path))
+        message("(\u2718) '", main.command, "' is failed !!")
+        stop("'", main.command, "' ERROR")
+      }
+      message("\n")
+      command.list <- c(command.list, "\n")
+      fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
+      write(command.list, fileConn, append = TRUE)
+      on.exit(setwd(current.path))
+      message("'", path.prefix, "gene_data/indices/",
+              genome.name, "STAR indices has been created.\n\n")
+    } else {
+      on.exit(setwd(current.path))
+      stop("(\u2718) '", genome.name, ".gtf' or",
+           " '", genome.name, ".fa'is missing.\n\n")
+    }
+  }
+}
+
+# STAR alignment default
+STARAlignmentDefault <- function(path.prefix,
+                                 genome.name,
+                                 sample.pattern,
+                                 num.parallel.threads,
+                                 independent.variable,
+                                 case.group,
+                                 control.group) {
+  if (isTRUE(CheckSTAR(print=FALSE))) {
+    check.results <- ProgressGenesFiles(path.prefix,
+                                        genome.name,
+                                        sample.pattern,
+                                        print=TRUE)
+    message("\n\u2618\u2618\u2618 Alignment :\n")
+    message("************** STAR Alignment **************\n")
+    if (check.results$ht2.files.number.df != 0 &&
+        check.results$fastq.gz.files.number.df != 0){
+      command.list <- c()
+      command.list <- c(command.list, "* STAR Alignment : ")
+      # Map reads to each alignment
+      current.path <- getwd()
+      setwd(paste0(path.prefix, "gene_data/"))
+      deleteback <- gsub("[1-2]*.fastq.gz$", replacement = "",
+                         check.results$fastq.gz.files.df)
+      sample.table.r.value <- gsub(paste0("[A-Z, a-z]*[0-9]*_"),
+                                   replacement = "",
+                                   deleteback)
+      if (isTRUE(length(unique(sample.table.r.value)) != 1)){
+        on.exit(setwd(current.path))
+        stop("(\u2718) Inconsistent formats. Please check files are all",
+             "'XXX_*.fastq.gz'\n\n")
+      } else {
+        sample.table <- table(gsub(paste0("_[1-2]*.fastq.gz$"),
+                                   replacement = "",
+                                   check.results$fastq.gz.files.df))
+        iteration.num <- length(sample.table)
+        sample.name <- names(sample.table)
+        sample.value <- as.vector(sample.table)
+        alignment.result <- data.frame(matrix(0, ncol = 0, nrow = 5))
+        total.map.rates <- c()
+        for( i in seq_len(iteration.num)){
+          current.sub.command <- ""
+          total.sub.command <- ""
+          for ( j in seq_len(sample.value[i])){
+            current.sub.command <- paste(paste0("-", j),
+                                         paste0("raw_fastq.gz/",
+                                                sample.name[i], "_",
+                                                sample.table.r.value[1],
+                                                j, ".fastq.gz"))
+            total.sub.command <- paste(total.sub.command, current.sub.command)
+          }
+          whole.command <- paste("-p", num.parallel.threads,"--dta -x",
+                                 paste0("indices/", genome.name, "_tran"),
+                                 total.sub.command, "-S",
+                                 paste0("raw_sam/", sample.name[i],".sam") )
+          if (i != 1) message("\n")
+          main.command <- "hisat2"
+          message("Input command : ", paste(main.command, whole.command), "\n")
+          command.list <- c(command.list,
+                            paste("    command :", main.command, whole.command))
+          command.result <- system2(command = main.command,
+                                    args = whole.command,
+                                    stderr = TRUE, stdout = TRUE)
+          # Total reads
+          total.reads <- gsub(" reads; of these:", "", command.result[1])
+          # aligned concordantly exactly 1 time
+          concordantly_1_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned concordantly exactly 1 time", "", command.result[4]))
+          # aligned concordantly >1 times
+          concordantly_more_1_times <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned concordantly >1 times", "", command.result[5]))
+          # aligned dicordantly 1 time
+          dicordantly_1_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned discordantly 1 time", "", command.result[8]))
+          # aligned 0 times concordantly or discordantly
+          not_dicordantly_concordantly <- as.numeric(gsub(" pairs aligned 0 times concordantly or discordantly; of these:", "", command.result[10]))
+          # Total mapping rate
+          total.map.rate <- as.numeric(gsub("% overall alignment rate", "", command.result[15]))
+          total.map.rates <- c(total.map.rates, total.map.rate)
+          one.result <- c(total.reads, concordantly_1_time, concordantly_more_1_times, dicordantly_1_time, not_dicordantly_concordantly)
+          alignment.result[[sample.name[i]]] <- one.result
+          if (length(command.result) == 0) {
+            on.exit(setwd(current.path))
+            message("(\u2718) '", main.command, "' is failed !!")
+            stop("'", main.command, "' ERROR")
+          }
+        }
+        row.names(alignment.result) <- c("total_reads", "concordantly_1", "concordantly_more_1", "dicordantly_1", "not_both")
+        alignment.result[] <- lapply(alignment.result, as.character)
+        alignment.result[] <- lapply(alignment.result, as.numeric)
+        if(!dir.exists(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))){
+          dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
+        }
+        trans.df  <- data.frame(t(alignment.result))
+        write.csv(trans.df,
+                  file = paste0(path.prefix,
+                                "RNASeq_results/",
+                                "Alignment_Report/Alignment_report_reads.csv"),
+                  row.names = TRUE)
+        trans.df.portion  <- data.frame(t(alignment.result))
+        trans.df.portion$concordantly_1 <- trans.df.portion$concordantly_1 / trans.df.portion$total_reads
+        trans.df.portion$concordantly_more_1 <- trans.df.portion$concordantly_more_1 / trans.df.portion$total_reads
+        trans.df.portion$dicordantly_1 <- trans.df.portion$dicordantly_1 / trans.df.portion$total_reads
+        trans.df.portion$not_both <- trans.df.portion$not_both / trans.df.portion$total_reads
+        write.csv(trans.df.portion,
+                  file = paste0(path.prefix,
+                                "RNASeq_results/",
+                                "Alignment_Report/Alignment_report_proportion.csv"),
+                  row.names = TRUE)
+        names(total.map.rates) <- sample.name
+        total.map.rates <- data.frame(total.map.rates)
+        write.csv(total.map.rates,
+                  file = paste0(path.prefix,
+                                "RNASeq_results/",
+                                "Alignment_Report/Overall_Mapping_rate.csv"),
+                  row.names = TRUE)
+        message("\n")
+        command.list <- c(command.list, "\n")
+        fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
+        write(command.list, fileConn, append = TRUE)
+        on.exit(setwd(current.path))
+      }
+    } else {
+      on.exit(setwd(current.path))
+      stop("(\u2718) '", genome.name, "_tran.*.ht2' ",
+           "or 'XXX_*.fastq.gz' is missing.\n\n")
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # use 'Rsamtools' to sort and convert the SAM files to BAM
 RSamtoolsToBam <- function(SAMtools.or.Rsamtools,
