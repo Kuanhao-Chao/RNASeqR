@@ -471,75 +471,35 @@ STARAlignmentDefault <- function(path.prefix,
           current.sub.command <- ""
           total.sub.command <- ""
           for ( j in seq_len(sample.value[i])){
-            current.sub.command <- paste(paste0("-", j),
-                                         paste0("raw_fastq.gz/",
+            current.sub.command <- paste(paste0("raw_fastq.gz/",
                                                 sample.name[i], "_",
                                                 sample.table.r.value[1],
                                                 j, ".fastq.gz"))
             total.sub.command <- paste(total.sub.command, current.sub.command)
           }
-          whole.command <- paste("-p", num.parallel.threads,"--dta -x",
-                                 paste0("indices/", genome.name, "_tran"),
-                                 total.sub.command, "-S",
-                                 paste0("raw_sam/", sample.name[i],".sam") )
+
+
+
+          whole.command <- paste("--runThreadN", num.parallel.threads,
+                                 "--genomeDir",
+                                 paste0(path.prefix, "gene_data/indices/"),
+                                 "--readFilesIn", total.sub.command,
+                                 "--outFileNamePrefix",
+                                 "--readFilesCommand", "zcat")
           if (i != 1) message("\n")
-          main.command <- "hisat2"
+          main.command <- "STAR"
           message("Input command : ", paste(main.command, whole.command), "\n")
           command.list <- c(command.list,
                             paste("    command :", main.command, whole.command))
           command.result <- system2(command = main.command,
                                     args = whole.command,
                                     stderr = TRUE, stdout = TRUE)
-          # Total reads
-          total.reads <- gsub(" reads; of these:", "", command.result[1])
-          # aligned concordantly exactly 1 time
-          concordantly_1_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned concordantly exactly 1 time", "", command.result[4]))
-          # aligned concordantly >1 times
-          concordantly_more_1_times <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned concordantly >1 times", "", command.result[5]))
-          # aligned dicordantly 1 time
-          dicordantly_1_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned discordantly 1 time", "", command.result[8]))
-          # aligned 0 times concordantly or discordantly
-          not_dicordantly_concordantly <- as.numeric(gsub(" pairs aligned 0 times concordantly or discordantly; of these:", "", command.result[10]))
-          # Total mapping rate
-          total.map.rate <- as.numeric(gsub("% overall alignment rate", "", command.result[15]))
-          total.map.rates <- c(total.map.rates, total.map.rate)
-          one.result <- c(total.reads, concordantly_1_time, concordantly_more_1_times, dicordantly_1_time, not_dicordantly_concordantly)
-          alignment.result[[sample.name[i]]] <- one.result
           if (length(command.result) == 0) {
             on.exit(setwd(current.path))
             message("(\u2718) '", main.command, "' is failed !!")
             stop("'", main.command, "' ERROR")
           }
         }
-        row.names(alignment.result) <- c("total_reads", "concordantly_1", "concordantly_more_1", "dicordantly_1", "not_both")
-        alignment.result[] <- lapply(alignment.result, as.character)
-        alignment.result[] <- lapply(alignment.result, as.numeric)
-        if(!dir.exists(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))){
-          dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
-        }
-        trans.df  <- data.frame(t(alignment.result))
-        write.csv(trans.df,
-                  file = paste0(path.prefix,
-                                "RNASeq_results/",
-                                "Alignment_Report/Alignment_report_reads.csv"),
-                  row.names = TRUE)
-        trans.df.portion  <- data.frame(t(alignment.result))
-        trans.df.portion$concordantly_1 <- trans.df.portion$concordantly_1 / trans.df.portion$total_reads
-        trans.df.portion$concordantly_more_1 <- trans.df.portion$concordantly_more_1 / trans.df.portion$total_reads
-        trans.df.portion$dicordantly_1 <- trans.df.portion$dicordantly_1 / trans.df.portion$total_reads
-        trans.df.portion$not_both <- trans.df.portion$not_both / trans.df.portion$total_reads
-        write.csv(trans.df.portion,
-                  file = paste0(path.prefix,
-                                "RNASeq_results/",
-                                "Alignment_Report/Alignment_report_proportion.csv"),
-                  row.names = TRUE)
-        names(total.map.rates) <- sample.name
-        total.map.rates <- data.frame(total.map.rates)
-        write.csv(total.map.rates,
-                  file = paste0(path.prefix,
-                                "RNASeq_results/",
-                                "Alignment_Report/Overall_Mapping_rate.csv"),
-                  row.names = TRUE)
         message("\n")
         command.list <- c(command.list, "\n")
         fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
@@ -548,7 +508,7 @@ STARAlignmentDefault <- function(path.prefix,
       }
     } else {
       on.exit(setwd(current.path))
-      stop("(\u2718) '", genome.name, "_tran.*.ht2' ",
+      stop("(\u2718) 'indices/*' ",
            "or 'XXX_*.fastq.gz' is missing.\n\n")
     }
   }
