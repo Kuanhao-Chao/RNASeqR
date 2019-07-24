@@ -33,7 +33,8 @@ AlignmentPlot <- function(path.prefix,
           plot.title = element_text(size = 15, face = "bold", hjust = 0.5),
           axis.title.x = element_text(size = 10),
           axis.title.y = element_text(size = 10),
-          legend.position="top") +
+          legend.position="top",
+          legend.text = element_text(size = 6)) +
     scale_fill_discrete(name = "Conditions")
   ggsave(paste0(path.prefix,
                 "RNASeq_results/",

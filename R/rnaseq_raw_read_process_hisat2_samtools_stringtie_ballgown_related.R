@@ -242,10 +242,10 @@ Hisat2AlignmentDefault <- function(path.prefix,
                                 "Alignment_Report/Alignment_report_reads.csv"),
                   row.names = TRUE)
         trans.df.portion  <- data.frame(t(alignment.result))
-        trans.df.portion$concordantly_1 <- trans.df.portion$concordantly_1 / trans.df.portion$total_reads
-        trans.df.portion$concordantly_more_1 <- trans.df.portion$concordantly_more_1 / trans.df.portion$total_reads
-        trans.df.portion$dicordantly_1 <- trans.df.portion$dicordantly_1 / trans.df.portion$total_reads
-        trans.df.portion$not_both <- trans.df.portion$not_both / trans.df.portion$total_reads
+        trans.df.portion$concordantly_1 <- round(trans.df.portion$concordantly_1 / trans.df.portion$total_reads, 4)
+        trans.df.portion$concordantly_more_1 <- round(trans.df.portion$concordantly_more_1 / trans.df.portion$total_reads, 4)
+        trans.df.portion$dicordantly_1 <- round(trans.df.portion$dicordantly_1 / trans.df.portion$total_reads, 4)
+        trans.df.portion$not_both <- round(trans.df.portion$not_both / trans.df.portion$total_reads, 4)
         write.csv(trans.df.portion,
                   file = paste0(path.prefix,
                                 "RNASeq_results/",
@@ -475,7 +475,7 @@ STARAlignmentDefault <- function(path.prefix,
         iteration.num <- length(sample.table)
         sample.name <- names(sample.table)
         sample.value <- as.vector(sample.table)
-        alignment.result <- data.frame(matrix(0, ncol = 0, nrow = 5))
+        alignment.result <- data.frame(matrix(0, ncol = 0, nrow = 8))
         total.map.rates <- c()
         for( i in seq_len(iteration.num)){
           current.sub.command <- ""
@@ -514,28 +514,17 @@ STARAlignmentDefault <- function(path.prefix,
           command.result <- system2(command = main.command,
                                     args = whole.command,
                                     stderr = TRUE, stdout = TRUE)
-
-
-
-
-
-
-
-
-
-
           Log.final.out <-  paste0(path.prefix, "gene_data/raw_star/", sample.name[i], "/Log.final.out")
           Log.final.out.read.in <- read.delim(Log.final.out, header = FALSE, sep = "\t", dec = ".")
-          Log.final.out.read.in.num <- as.numeric(levels(Log.final.out.read.in["V2"][[1]])[as.integer(Log.final.out.read.in["V2"][[1]])])
+          Log.final.out.read.in.num <- suppressWarnings(as.numeric(levels(Log.final.out.read.in["V2"][[1]])[as.integer(Log.final.out.read.in["V2"][[1]])]))
           # Total reads
           total.reads <- Log.final.out.read.in.num[5]
           # Uniquely_mapped
-          Uniquely_mapping <- Log.final.out.read.in.num[8]
+          uniquely_mapping <- Log.final.out.read.in.num[8]
           # mapped to multiple loci
           multi_mapping_multiple_loci <- Log.final.out.read.in.num[23]
           # mapped to too many loci
           multi_mapping_many_loci <- Log.final.out.read.in.num[25]
-
 
           # reads unmapped: too many mismatches
           unmapped_many_mismatches <- Log.final.out.read.in.num[28]
@@ -545,27 +534,15 @@ STARAlignmentDefault <- function(path.prefix,
           unmapped_other <- Log.final.out.read.in.num[32]
           # number of chimeric reads
           chimeric_reads <- Log.final.out.read.in.num[35]
-
-
-
-
-
-
-
-
           # Total mapping rate
-          total.map.rate <- as.numeric(gsub("% overall alignment rate", "", command.result[15]))
+          total.map.rate <- round(((uniquely_mapping + multi_mapping_multiple_loci + multi_mapping_many_loci) / total.reads) * 100, digits = 2)
           total.map.rates <- c(total.map.rates, total.map.rate)
-          one.result <- c(total.reads, concordantly_1_time, concordantly_more_1_times, dicordantly_1_time, not_dicordantly_concordantly)
+          one.result <- c(total.reads, uniquely_mapping,
+                          multi_mapping_multiple_loci, multi_mapping_many_loci,
+                          unmapped_many_mismatches, unmapped_short,
+                          unmapped_other, chimeric_reads)
+
           alignment.result[[sample.name[i]]] <- one.result
-
-
-
-
-
-
-
-
           if (length(command.result) == 0) {
             on.exit(setwd(current.path))
             message("(\u2718) '", main.command, "' is failed !!")
@@ -574,17 +551,13 @@ STARAlignmentDefault <- function(path.prefix,
           file.symlink(paste0(path.prefix, "gene_data/raw_star/", sample.name[i], "/Aligned.out.sam"),
                        paste0(path.prefix, "gene_data/raw_sam/", sample.name[i], ".sam"))
         }
-
-
-
-
-
-
-
-
-
-
-        row.names(alignment.result) <- c("total_reads", "concordantly_1", "concordantly_more_1", "dicordantly_1", "not_both")
+        row.names(alignment.result) <- c("total_reads", "uniquely_mapping",
+                                         "multi_mapping_multiple_loci",
+                                         "multi_mapping_many_loci",
+                                         "unmapped_too_many_mismatches",
+                                         "unmapped_too_short",
+                                         "unmapped_other",
+                                         "chimeric_reads")
         alignment.result[] <- lapply(alignment.result, as.character)
         alignment.result[] <- lapply(alignment.result, as.numeric)
         if(!dir.exists(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))){
@@ -597,33 +570,26 @@ STARAlignmentDefault <- function(path.prefix,
                                 "Alignment_Report/Alignment_report_reads.csv"),
                   row.names = TRUE)
         trans.df.portion  <- data.frame(t(alignment.result))
-        trans.df.portion$concordantly_1 <- trans.df.portion$concordantly_1 / trans.df.portion$total_reads
-        trans.df.portion$concordantly_more_1 <- trans.df.portion$concordantly_more_1 / trans.df.portion$total_reads
-        trans.df.portion$dicordantly_1 <- trans.df.portion$dicordantly_1 / trans.df.portion$total_reads
-        trans.df.portion$not_both <- trans.df.portion$not_both / trans.df.portion$total_reads
+        trans.df.portion$uniquely_mapping <- round(trans.df.portion$uniquely_mapping / trans.df.portion$total_reads, 4)
+        trans.df.portion$multi_mapping_multiple_loci <- round(trans.df.portion$multi_mapping_multiple_loci / trans.df.portion$total_reads, 4)
+        trans.df.portion$multi_mapping_many_loci <- round(trans.df.portion$multi_mapping_many_loci / trans.df.portion$total_reads, 4)
+        trans.df.portion$unmapped_too_many_mismatches <- round(trans.df.portion$unmapped_too_many_mismatches / trans.df.portion$total_reads, 4)
+        trans.df.portion$unmapped_too_short <- round(trans.df.portion$unmapped_too_short / trans.df.portion$total_reads, 4)
+        trans.df.portion$unmapped_other <- round(trans.df.portion$unmapped_other / trans.df.portion$total_reads, 4)
+        trans.df.portion$chimeric_reads <- round(trans.df.portion$chimeric_reads / trans.df.portion$total_reads, 4)
         write.csv(trans.df.portion,
                   file = paste0(path.prefix,
                                 "RNASeq_results/",
                                 "Alignment_Report/Alignment_report_proportion.csv"),
                   row.names = TRUE)
         names(total.map.rates) <- sample.name
+
         total.map.rates <- data.frame(total.map.rates)
         write.csv(total.map.rates,
                   file = paste0(path.prefix,
                                 "RNASeq_results/",
                                 "Alignment_Report/Overall_Mapping_rate.csv"),
                   row.names = TRUE)
-
-
-
-
-
-
-
-
-
-
-
         message("\n")
         command.list <- c(command.list, "\n")
         fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")

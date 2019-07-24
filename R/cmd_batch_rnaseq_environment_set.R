@@ -542,7 +542,7 @@ InstallStarBianry <- function(path.prefix, os.type){
     stop("Unknow operating system.\n\n")
     return(FALSE)
   }
-  message("************** Installing Hisat2 (",
+  message("************** Installing STAR (",
           os.file.name.zip, ") ************\n")
   file.download <- getURL(url, download.file, paste0(path.prefix,
                                                      "RNASeq_bin/Download/",
