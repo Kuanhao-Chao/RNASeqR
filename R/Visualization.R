@@ -42,6 +42,7 @@ AlignmentPlot <- function(path.prefix,
          dpi = 300,
          width = 7,
          height = 7)
+
   phenoData.result<- phenoDataWrap(path.prefix,
                                    independent.variable,
                                    case.group,
