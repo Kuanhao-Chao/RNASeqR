@@ -4,7 +4,13 @@ CreateHisat2Index <- function (path.prefix,
                                genome.name,
                                sample.pattern,
                                splice.site.info = TRUE,
-                               exon.info = TRUE) {
+                               exon.info = TRUE,
+                               Hisat2.Index.num.parallel.threads,
+                               Hisat2.large.index,
+                               Hisat2.local.ftab.chars,
+                               Hisat2.local.off.rate,
+                               Hisat2.ftab.chars,
+                               Hisat2.off.rate) {
   if (isTRUE(CheckHisat2(print=FALSE))){
     if (!is.logical(splice.site.info) || !is.logical(exon.info)) {
       stop("(\u2718) Please make sure the type of ",
@@ -58,7 +64,18 @@ CreateHisat2Index <- function (path.prefix,
           message("\n")
         }
         if (isTRUE(splice.site.info) && isTRUE(exon.info)) {
-          whole.command <- paste(paste('--ss', paste0(genome.name, '.ss'),
+          if (isTRUE(Hisat2.large.index)) {
+            Hisat2.large.index.value <- "--large-index"
+          } else {
+            Hisat2.large.index.value <- ""
+          }
+          whole.command <- paste(paste(Hisat2.large.index.value,
+                                       '-p', Hisat2.Index.num.parallel.threads,
+                                       '--localftabchars', Hisat2.local.ftab.chars,
+                                       '--localoffrate', Hisat2.local.off.rate,
+                                       '--ftabchars', Hisat2.ftab.chars,
+                                       '--offrate', Hisat2.off.rate,
+                                       '--ss', paste0(genome.name, '.ss'),
                                        "--exon", paste0(genome.name, '.exon'),
                                        paste0(path.prefix,
                                               'gene_data/ref_genome/',
@@ -66,6 +83,14 @@ CreateHisat2Index <- function (path.prefix,
                                        paste0(genome.name, '_tran')))
           main.command <- "hisat2-build"
           message("Input command : ", paste(main.command, whole.command), "\n")
+
+          # --large-index
+          #num.parallel.threads.hisat2.index  -p : 1
+          # --localftabchars : 6
+          # --localoffrate : 3
+          # --ftabchars : 10
+          # --offrate : 4
+
           command.list <- c(command.list,
                             paste("    command :", main.command, whole.command))
           command.result <- system2(command = main.command,
@@ -149,10 +174,48 @@ CreateHisat2Index <- function (path.prefix,
 Hisat2AlignmentDefault <- function(path.prefix,
                                    genome.name,
                                    sample.pattern,
-                                   num.parallel.threads,
                                    independent.variable,
                                    case.group,
-                                   control.group) {
+                                   control.group,
+                                   Hisat2.Alignment.num.parallel.threads,
+                                   Hisat2.Alignment.skip,
+                                   Hisat2.Alignment.qupto,
+                                   Hisat2.Alignment.trim5,
+                                   Hisat2.Alignment.trim3,
+                                   Hisat2.Alignment.phred,
+                                   Hisat2.Alignment.int.quals,
+                                   Hisat2.Alignment.n.ceil.1.function.type,
+                                   Hisat2.Alignment.n.ceil.2.constant.term,
+                                   Hisat2.Alignment.n.ceil.3.coefficient,
+                                   Hisat2.Alignment.mp.MX,
+                                   Hisat2.Alignment.mp.MN,
+                                   Hisat2.Alignment.sp.MX,
+                                   Hisat2.Alignment.sp.MN,
+                                   Hisat2.Alignment.np,
+                                   Hisat2.Alignment.rdg.1,
+                                   Hisat2.Alignment.rdg.2,
+                                   Hisat2.Alignment.rfg.1,
+                                   Hisat2.Alignment.rfg.2,
+                                   Hisat2.Alignment.score.min.1.function.type,
+                                   Hisat2.Alignment.score.min.2.constant.term,
+                                   Hisat2.Alignment.score.min.3.coefficient,
+                                   Hisat2.Alignment.pen.cansplice,
+                                   Hisat2.Alignment.penc.noncansplice,
+                                   Hisat2.Alignment.pen.canintronlen.1.function.type,
+                                   Hisat2.Alignment.pen.canintronlen.2.constant.term,
+                                   Hisat2.Alignment.pen.canintronlen.3.coefficient,
+                                   Hisat2.Alignment.pen.noncanintronlen.1.function.type,
+                                   Hisat2.Alignment.pen.noncanintronlen.2.constant.term,
+                                   Hisat2.Alignment.pen.noncanintronlen.3.coefficient,
+                                   Hisat2.Alignment.min.intronlen,
+                                   Hisat2.Alignment.max.intronlen,
+                                   Hisat2.Alignment.rna.strandness,
+                                   Hisat2.Alignment.k,
+                                   Hisat2.Alignment.max.seeds,
+                                   Hisat2.Alignment.secondary,
+                                   Hisat2.Alignment.minins,
+                                   Hisat2.Alignment.maxins,
+                                   Hisat2.Alignment.seed) {
   if (isTRUE(CheckHisat2(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix,
                                         genome.name,
@@ -196,7 +259,69 @@ Hisat2AlignmentDefault <- function(path.prefix,
                                                 j, ".fastq.gz"))
             total.sub.command <- paste(total.sub.command, current.sub.command)
           }
-          whole.command <- paste("-p", num.parallel.threads,"--dta -x",
+          if (Hisat2.Alignment.qupto == "None") {
+            qupto.value = ""
+          } else if (isTRUE(strtoi(Hisat2.Alignment.qupto)%%1==0)) {
+            # 'qupto' must be integer !
+            Hisat2.Alignment.qupto.value <- paste("--qseq", Hisat2.Alignment.qupto)
+          } else {
+            stop("'qupto' must be 'None' or integer")
+          }
+          if (isTRUE(Hisat2.Alignment.int.quals)) {
+            Hisat2.Alignment.int.quals.value = ""
+          } else {
+            Hisat2.Alignment.int.quals.value = "--int-quals"
+          }
+          if (Hisat2.Alignment.rna.strandness == "FR") {
+            Hisat2.Alignment.rna.strandness.value = "--rna-strandness FR"
+          } else if (Hisat2.Alignment.rna.strandness == "RF") {
+            Hisat2.Alignment.rna.strandness.value = "--rna-strandness RF"
+          } else if (Hisat2.Alignment.rna.strandness == "None") {
+            Hisat2.Alignment.rna.strandness.value = ""
+          } else {
+            stop("'rna.strandness' variable is out of range. It should be 'FR' or 'RF', 'None'.")
+          }
+          if (isTRUE(Hisat2.Alignment.secondary)) {
+            Hisat2.Alignment.secondary.value = "--secondary"
+          } else {
+            Hisat2.Alignment.secondary.value = ""
+          }
+          whole.command <- paste("--skip", Hisat2.Alignment.skip, Hisat2.Alignment.qupto.value,
+                                 "--trim5", Hisat2.Alignment.trim5,
+                                 "--trim3", Hisat2.Alignment.trim3,
+                                 paste0("--phred", Hisat2.Alignment.phred),
+                                 Hisat2.Alignment.int.quals.value,
+                                 "--n-ceil", Hisat2.Alignment.n.ceil.1.function.type,
+                                 Hisat2.Alignment.n.ceil.2.constant.term,
+                                 Hisat2.Alignment.n.ceil.3.coefficient,
+                                 "--mp", Hisat2.Alignment.mp.MX, Hisat2.Alignment.mp.MN,
+                                 "--sp", Hisat2.Alignment.sp.MX, Hisat2.Alignment.sp.MN,
+                                 "--np", Hisat2.Alignment.np,
+                                 "--rdg", Hisat2.Alignment.rdg.1, Hisat2.Alignment.rdg.2,
+                                 "--rfg", Hisat2.Alignment.rfg.1, Hisat2.Alignment.rfg.2,
+                                 "--score-min" ,Hisat2.Alignment.score.min.1.function.type,
+                                 Hisat2.Alignment.score.min.2.constant.term,
+                                 Hisat2.Alignment.score.min.3.coefficient,
+                                 "--pen-cansplice", Hisat2.Alignment.pen.cansplice,
+                                 "--pen-noncansplice", Hisat2.Alignment.penc.noncansplice,
+                                 "--pen-canintronlen",
+                                 Hisat2.Alignment.pen.canintronlen.1.function.type,
+                                 Hisat2.Alignment.pen.canintronlen.2.constant.term,
+                                 Hisat2.Alignment.pen.canintronlen.3.coefficient,
+                                 "--pen-noncanintronlen",
+                                 Hisat2.Alignment.pen.noncanintronlen.1.function.type,
+                                 Hisat2.Alignment.pen.noncanintronlen.2.constant.term,
+                                 Hisat2.Alignment.pen.noncanintronlen.3.coefficient,
+                                 "--min-intronlen", Hisat2.Alignment.min.intronlen,
+                                 "--max-intronlen", Hisat2.Alignment.max.intronlen,
+                                 Hisat2.Alignment.rna.strandness.value,
+                                 "-k", Hisat2.Alignment.k,
+                                 "--max-seeds", Hisat2.Alignment.max.seeds,
+                                 Hisat2.Alignment.secondary.value,
+                                 "--minins", Hisat2.Alignment.minins,
+                                 "--maxins", Hisat2.Alignment.maxins,
+                                 "--seed", Hisat2.Alignment.seed, "--time",
+                                 "-p", Hisat2.Alignment.num.parallel.threads,"--dta -x",
                                  paste0("indices/", genome.name, "_tran"),
                                  total.sub.command, "-S",
                                  paste0("raw_sam/", sample.name[i],".sam") )
@@ -272,114 +397,18 @@ Hisat2AlignmentDefault <- function(path.prefix,
   }
 }
 
-#
-# # Report Hisat2 assemble rate
-# Hisat2ReportAssemble <- function(path.prefix,
-#                                  genome.name,
-#                                  sample.pattern){
-#   check.results <- ProgressGenesFiles(path.prefix,
-#                                       genome.name,
-#                                       sample.pattern,
-#                                       print=FALSE)
-#   message("\n************** Reporting Hisat2 Alignment **************\n")
-#   if (check.results$phenodata.file.df &&
-#       check.results$bam.files.number.df != 0){
-#     file.read <- paste0(path.prefix, "Rscript_out/Read_Process.Rout")
-#     sample.name <- sort(gsub(paste0(".bam$"),
-#                              replacement = "",
-#                              check.results$bam.files.df))
-#     iteration.num <- length(sample.name)
-#     load.data <- readChar(file.read, file.info(file.read)$size)
-#     # overall alignment rate
-#     overall.alignment <- strsplit(load.data, "\n")
-#     overall.alignment.with.NA <-
-#       stringr::str_extract(overall.alignment[[1]],
-#                            "[0-9]*.[0-9]*% overall alignment rate")
-#     overall.alignment.result <-
-#       overall.alignment.with.NA[!is.na(overall.alignment.with.NA)]
-#     overall.alignment.result.cut <- gsub(" overall alignment rate",
-#                                          " ",
-#                                          overall.alignment.result)
-#     # different mapping rate
-#     first.split <- strsplit(load.data,
-#                             paste0("\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
-#                                    "\\* Hisat2 Alignment \\*",
-#                                    "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\n"))
-#     second.split <- strsplit(first.split[[1]][2],
-#                              paste0("\n\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
-#                                     "\\* Current progress of RNA-seq files in"))
-#     split.lines <- strsplit(second.split[[1]][1], "\n")
-#     alignment.rate.with.NA <-
-#       stringr::str_extract(split.lines[[1]],
-#                            "[0-9]* \\([0-9]*.[0-9]*%\\) aligned concordantly")
-#     alignment.first.result <-
-#       alignment.rate.with.NA[!is.na(alignment.rate.with.NA)]
-#     alignment.first.result.cut1 <- gsub(") aligned concordantly",
-#                                         " ",
-#                                         alignment.first.result)
-#     alignment.first.result.cut2 <- gsub("[0-9]* \\(",
-#                                         " ",
-#                                         alignment.first.result.cut1)
-#     report.data.frame <- data.frame(matrix(0, ncol = 0, nrow = 3))
-#     row.names(report.data.frame) <- c("Unique mapping rate",
-#                                       "Multiple mapping rate",
-#                                       "Overall alignment rate")
-#     for( i in seq_len(iteration.num)){
-#       add.column <- c()
-#       for( j in (i*3-1):(i*3)){
-#         add.column <- c(add.column, alignment.first.result.cut2[j])
-#       }
-#       add.column <- c(add.column, overall.alignment.result.cut[i])
-#       report.data.frame[[(sample.name[i])]] <- add.column
-#     }
-#     if(!dir.exists(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))){
-#       dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
-#     }
-#     write.csv(report.data.frame,
-#               file = paste0(path.prefix,
-#                             "RNASeq_results/",
-#                             "Alignment_Report/Alignment_report.csv"))
-#     png(paste0(path.prefix,
-#                "RNASeq_results/Alignment_Report/Alignment_report.png"),
-#         width = iteration.num*100 + 200, height = 40*4)
-#     p <- gridExtra::grid.table(report.data.frame)
-#     print(p)
-#     dev.off()
-#     message("Results are in ",
-#             paste0("'", path.prefix, "RNASeq_results/Alignment_Report/'"),
-#             "\n\n")
-#   }
-# }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # Creating STAR index
 # Creat STAR index for further use
 CreateSTARIndex <- function (path.prefix,
                              genome.name,
                              sample.pattern,
-                             num.parallel.threads,
-                             Read.length,
-                             splice.site.info = TRUE,
-                             exon.info = TRUE) {
+                             STAR.Index.num.parallel.threads = 1,
+                             STAR.Index.sjdbOverhang.Read.length = 100,
+                             STAR.Index.genomeSAindexNbases = 14,
+                             STAR.Index.genomeChrBinNbits = 18,
+                             STAR.Index.genomeSAsparseD = 1) {
   if (isTRUE(CheckSTAR(print=FALSE))){
-    # Check file progress
     check.results <- ProgressGenesFiles(path.prefix,
                                         genome.name,
                                         sample.pattern,
@@ -391,8 +420,12 @@ CreateSTARIndex <- function (path.prefix,
       command.list <- c(command.list, "* Creating STAR Index : ")
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/indices/"))
-      whole.command <- paste("--runThreadN", num.parallel.threads, "--runMode",
-                             "genomeGenerate", "--genomeDir",
+      whole.command <- paste("--genomeSAindexNbases", genomeSAindexNbases,
+                             "--genomeChrBinNbits", genomeChrBinNbits,
+                             "--genomeSAsparseD", genomeSAsparseD,
+                             "--runThreadN", num.parallel.threads.star.index,
+                             "--runMode", "genomeGenerate",
+                             "--genomeDir",
                              paste0(path.prefix, "gene_data/indices/"),
                              "--genomeFastaFiles",
                              paste0(path.prefix, 'gene_data/ref_genome/',
@@ -400,7 +433,7 @@ CreateSTARIndex <- function (path.prefix,
                              "--sjdbGTFfile",
                              paste0(path.prefix, "gene_data/ref_genes/",
                                     genome.name, ".gtf"),
-                             "--sjdbOverhang", Read.length-1)
+                             "--sjdbOverhang", sjdbOverhang.Read.length-1)
       main.command <- "STAR"
       message("Input command : ", paste(main.command, whole.command), "\n")
       command.list <- c(command.list,
@@ -431,10 +464,56 @@ CreateSTARIndex <- function (path.prefix,
 STARAlignmentDefault <- function(path.prefix,
                                  genome.name,
                                  sample.pattern,
-                                 num.parallel.threads,
-                                 independent.variable,
-                                 case.group,
-                                 control.group) {
+                                 STAR.Alignment.num.parallel.threads,
+                                 STAR.Alignment.genomeLoad,
+                                 STAR.Alignment.readMapNumber,
+                                 STAR.Alignment.clip3pNbases,
+                                 STAR.Alignment.clip5pNbases,
+                                 STAR.Alignment.clip3pAdapterSeq,
+                                 STAR.Alignment.clip3pAdapterMMp,
+                                 STAR.Alignment.clip3pAfterAdapterNbases,
+                                 STAR.Alignment.limitGenomeGenerateRAM,
+                                 STAR.Alignment.limitIObufferSize,
+                                 STAR.Alignment.limitOutSAMoneReadBytes,
+                                 STAR.Alignment.limitOutSJoneRead,
+                                 STAR.Alignment.limitOutSJcollapsed,
+                                 STAR.Alignment.limitBAMsortRAM,
+                                 STAR.Alignment.outReadsUnmapped,
+                                 STAR.Alignment.outQSconversionAdd,
+                                 STAR.Alignment.outSAMprimaryFlag,
+                                 STAR.Alignment.outSAMmapqUnique,
+                                 STAR.Alignment.scoreGap,
+                                 STAR.Alignment.scoreGapNoncan,
+                                 STAR.Alignment.scoreGapGCAG,
+                                 STAR.Alignment.scoreGapATAC,
+                                 STAR.Alignment.scoreGenomicLengthLog2scale,
+                                 STAR.Alignment.scoreDelOpen,
+                                 STAR.Alignment.scoreDelBase,
+                                 STAR.Alignment.scoreInsOpen,
+                                 STAR.Alignment.scoreInsBase,
+                                 STAR.Alignment.scoreStitchSJshift,
+                                 STAR.Alignment.seedSearchStartLmax,
+                                 STAR.Alignment.seedSearchStartLmaxOverLread,
+                                 STAR.Alignment.seedSearchLmax,
+                                 STAR.Alignment.seedMultimapNmax,
+                                 STAR.Alignment.seedPerReadNmax,
+                                 STAR.Alignment.seedPerWindowNmax,
+                                 STAR.Alignment.seedNoneLociPerWindow,
+                                 STAR.Alignment.alignIntronMin,
+                                 STAR.Alignment.alignIntronMax,
+                                 STAR.Alignment.alignMatesGapMax,
+                                 STAR.Alignment.alignSJoverhangMin,
+                                 STAR.Alignment.alignSJDBoverhangMin,
+                                 STAR.Alignment.alignSplicedMateMapLmin,
+                                 STAR.Alignment.alignSplicedMateMapLminOverLmate,
+                                 STAR.Alignment.alignWindowsPerReadNmax,
+                                 STAR.Alignment.alignTranscriptsPerWindowNmax,
+                                 STAR.Alignment.alignTranscriptsPerReadNmax,
+                                 STAR.Alignment.alignEndsType,
+                                 STAR.Alignment.winAnchorMultimapNmax,
+                                 STAR.Alignment.winBinNbits,
+                                 STAR.Alignment.winAnchorDistNbins,
+                                 STAR.Alignment.winFlankNbins) {
   if (isTRUE(CheckSTAR(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix,
                                         genome.name,
@@ -500,7 +579,107 @@ STARAlignmentDefault <- function(path.prefix,
             message("     (\u26A0) : '", samples.star.dir.output,
                     " has already be created.\n")
           }
-          whole.command <- paste("--runThreadN", num.parallel.threads,
+          # --genomeLoad : NoSharedMemory
+          # --readMapNumber : -1
+          # --clip3pNbases : 0
+          # --clip5pNbases : 0
+          # --clip3pAdapterSeq : -
+          # --clip3pAdapterMMp : 0.1
+          # --clip3pAfterAdapterNbases : 0
+          # --limitGenomeGenerateRAM : 31000000000
+          # --limitIObufferSize : 150000000
+          # --limitOutSAMoneReadBytes : 100000
+          # --limitOutSJoneRead : 1000
+          # --limitOutSJcollapsed : 1000000
+          # --limitBAMsortRAM : 0
+          # --outReadsUnmapped : None
+          # --outQSconversionAdd : 0
+          # --outSAMprimaryFlag : OneBestScore
+          # --outSAMmapqUnique : 255
+          # --scoreGap : 0
+          # --scoreGapNoncan : -8
+          # --scoreGapGCAG : -4
+          # --scoreGapATAC : -8
+          # --scoreGenomicLengthLog2scale : -0.25
+          # --scoreDelOpen : -2
+          # --scoreDelBase : -2
+          # --scoreInsOpen : -2
+          # --scoreInsBase : -2
+          # --scoreStitchSJshift : 1
+          # --seedSearchStartLmax : 50
+          # --seedSearchStartLmaxOverLread : 1.0
+          # --seedSearchLmax : 0
+          # --seedMultimapNmax : 10000
+          # --seedPerReadNmax : 1000
+          # --seedPerWindowNmax : 50
+          # --seedNoneLociPerWindow : 10
+          # --alignIntronMin : 21
+          # --alignIntronMax : 0
+          # --alignMatesGapMax : 0
+          # --alignSJoverhangMin : 5
+          # --alignSJDBoverhangMin : 3
+          # --alignSplicedMateMapLmin : 0
+          # --alignSplicedMateMapLminOverLmate : 0.66
+          # --alignWindowsPerReadNmax : 10000
+          # --alignTranscriptsPerWindowNmax : 100
+          # --alignTranscriptsPerReadNmax : 10000
+          # --alignEndsType : Local
+          # --winAnchorMultimapNmax : 50
+          # --winBinNbits : 16
+          # --winAnchorDistNbins : 9
+          # --winFlankNbins : 4
+
+          whole.command <- paste("--runThreadN", STAR.Alignment.num.parallel.threads,
+                                 "--runMode", "alignReads",
+                                 "--genomeLoad", STAR.Alignment.genomeLoad,
+                                 "--readMapNumber", STAR.Alignment.readMapNumber,
+                                 "--clip3pNbases", STAR.Alignment.clip3pNbases,
+                                 "--clip5pNbases", STAR.Alignment.clip5pNbases,
+                                 "--clip3pAdapterSeq", STAR.Alignment.clip3pAdapterSeq,
+                                 "--clip3pAdapterMMp", STAR.Alignment.clip3pAdapterMMp,
+                                 "--clip3pAfterAdapterNbases", STAR.Alignment.clip3pAfterAdapterNbases,
+                                 "--limitGenomeGenerateRAM", STAR.Alignment.limitGenomeGenerateRAM,
+                                 "--limitIObufferSize", STAR.Alignment.limitIObufferSize,
+                                 "--limitOutSAMoneReadBytes", STAR.Alignment.limitOutSAMoneReadBytes,
+                                 "--limitOutSJoneRead", STAR.Alignment.limitOutSJoneRead,
+                                 "--limitOutSJcollapsed", STAR.Alignment.limitOutSJcollapsed,
+                                 "--limitBAMsortRAM", STAR.Alignment.limitBAMsortRAM,
+                                 "--outReadsUnmapped", STAR.Alignment.outReadsUnmapped,
+                                 "--outQSconversionAdd", STAR.Alignment.outQSconversionAdd,
+                                 "--outSAMprimaryFlag", STAR.Alignment.outSAMprimaryFlag,
+                                 "--outSAMmapqUnique", STAR.Alignment.outSAMmapqUnique,
+                                 "--scoreGap", STAR.Alignment.scoreGap,
+                                 "--scoreGapNoncan", STAR.Alignment.scoreGapNoncan,
+                                 "--scoreGapGCAG", STAR.Alignment.scoreGapGCAG,
+                                 "--scoreGapATAC", STAR.Alignment.scoreGapATAC,
+                                 "--scoreGenomicLengthLog2scale", STAR.Alignment.scoreGenomicLengthLog2scale,
+                                 "--scoreDelOpen", STAR.Alignment.scoreDelOpen,
+                                 "--scoreDelBase", STAR.Alignment.scoreDelBase,
+                                 "--scoreInsOpen", STAR.Alignment.scoreInsOpen,
+                                 "--scoreInsBase", STAR.Alignment.scoreInsBase,
+                                 "--scoreStitchSJshift", STAR.Alignment.scoreStitchSJshift,
+                                 "--seedSearchStartLmax", STAR.Alignment.seedSearchStartLmax,
+                                 "--seedSearchStartLmaxOverLread", STAR.Alignment.seedSearchStartLmaxOverLread,
+                                 "--seedSearchLmax", STAR.Alignment.seedSearchLmax,
+                                 "--seedMultimapNmax", STAR.Alignment.seedMultimapNmax,
+                                 "--seedPerReadNmax", STAR.Alignment.seedPerReadNmax,
+                                 "--seedPerWindowNmax", STAR.Alignment.seedPerWindowNmax,
+                                 "--seedNoneLociPerWindow", STAR.Alignment.seedNoneLociPerWindow,
+                                 "--alignIntronMin", STAR.Alignment.alignIntronMin,
+                                 "--alignIntronMax", STAR.Alignment.alignIntronMax,
+                                 "--alignMatesGapMax", STAR.Alignment.alignMatesGapMax,
+                                 "--alignSJoverhangMin", STAR.Alignment.alignSJoverhangMin,
+                                 "--alignSJDBoverhangMin", STAR.Alignment.alignSJDBoverhangMin,
+                                 "--alignSplicedMateMapLmin", STAR.Alignment.alignSplicedMateMapLmin,
+                                 "--alignSplicedMateMapLminOverLmate", STAR.Alignment.alignSplicedMateMapLminOverLmate,
+                                 "--alignWindowsPerReadNmax", STAR.Alignment.alignWindowsPerReadNmax,
+                                 "--alignTranscriptsPerWindowNmax", STAR.Alignment.alignTranscriptsPerWindowNmax,
+                                 "--alignTranscriptsPerReadNmax", STAR.Alignment.alignTranscriptsPerReadNmax,
+                                 "--alignEndsType", STAR.Alignment.alignEndsType,
+                                 "--winAnchorMultimapNmax", STAR.Alignment.winAnchorMultimapNmax,
+                                 "--winBinNbits", STAR.Alignment.winBinNbits,
+                                 "--winAnchorDistNbins", STAR.Alignment.winAnchorDistNbins,
+                                 "--winFlankNbins", STAR.Alignment.winFlankNbins,
                                  "--genomeDir",
                                  paste0(path.prefix, "gene_data/indices/"),
                                  "--readFilesIn", total.sub.command,
@@ -606,10 +785,10 @@ STARAlignmentDefault <- function(path.prefix,
 
 # use 'Rsamtools' to sort and convert the SAM files to BAM
 RSamtoolsToBam <- function(SAMtools.or.Rsamtools,
+                           Samtools.Bam.num.parallel.threads,
                            path.prefix,
                            genome.name,
                            sample.pattern,
-                           num.parallel.threads,
                            Rsamtools.nCores){
   check.results <- ProgressGenesFiles(path.prefix,
                                       genome.name,
@@ -630,7 +809,7 @@ RSamtoolsToBam <- function(SAMtools.or.Rsamtools,
                                    check.results$sam.files.df))
         sample.name <- names(sample.table)
         for( i in sample.name){
-          whole.command <- paste("sort -@", num.parallel.threads,
+          whole.command <- paste("sort -@", Samtools.Bam.num.parallel.threads,
                                  "-o", paste0(path.prefix, "gene_data/raw_bam/", i, ".bam"),
                                  paste0(path.prefix, "gene_data/raw_sam/", i, ".sam"))
           if (i != 1) message("\n")
@@ -716,7 +895,12 @@ RSamtoolsToBam <- function(SAMtools.or.Rsamtools,
 StringTieAssemble <- function(path.prefix,
                               genome.name,
                               sample.pattern,
-                              num.parallel.threads) {
+                              Stringtie.Assembly.num.parallel.threads,
+                              Stringtie.Assembly.f,
+                              Stringtie.Assembly.m,
+                              Stringtie.Assembly.c,
+                              Stringtie.Assembly.g,
+                              Stringtie.Assembly.M) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix,
                                         genome.name,
@@ -734,8 +918,11 @@ StringTieAssemble <- function(path.prefix,
                                check.results$bam.files.df))
       iteration.num <- length(sample.name)
       for( i in seq_len(iteration.num)){
-        whole.command <- paste("-p", num.parallel.threads,
-                               "-G",paste0("ref_genes/", genome.name, ".gtf"),
+        whole.command <- paste("-p", Stringtie.Assembly.num.parallel.threads,
+                               "-f", Stringtie.Assembly.f, "-m", Stringtie.Assembly.m,
+                               "-c", Stringtie.Assembly.c, "-g", Stringtie.Assembly.g,
+                               "-M", Stringtie.Assembly.M,
+                               "-G", paste0("ref_genes/", genome.name, ".gtf"),
                                "-o", paste0("raw_gtf/", sample.name[i], ".gtf"),
                                "-l", sample.name[i],
                                paste0("raw_bam/", sample.name[i], ".bam"))
@@ -767,7 +954,7 @@ StringTieAssemble <- function(path.prefix,
 StringTieMergeTrans <- function(path.prefix,
                                 genome.name,
                                 sample.pattern,
-                                num.parallel.threads) {
+                                Stringtie.Merge.num.parallel.threads) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix,
                                         genome.name,
@@ -796,7 +983,7 @@ StringTieMergeTrans <- function(path.prefix,
       write.file<-file("merged/mergelist.txt")
       writeLines(write.content, write.file)
       close(write.file)
-      whole.command <- paste("--merge -p", num.parallel.threads,
+      whole.command <- paste("--merge -p", num.parallel.threads.stringtie.merge,
                              "-G", paste0("ref_genes/", genome.name, ".gtf"),
                              "-o", "merged/stringtie_merged.gtf",
                              "merged/mergelist.txt")
@@ -826,7 +1013,7 @@ StringTieMergeTrans <- function(path.prefix,
 StringTieToBallgown <- function(path.prefix,
                                 genome.name,
                                 sample.pattern,
-                                num.parallel.threads) {
+                                Stringtie.2.Ballgown.num.parallel.threads) {
   if (isTRUE(CheckStringTie(print=FALSE))) {
     check.results <- ProgressGenesFiles(path.prefix,
                                         genome.name,
@@ -851,7 +1038,7 @@ StringTieToBallgown <- function(path.prefix,
       for( i in seq_len(iteration.num)){
         # '-e' only estimate the abundance of given reference transcripts
         # (requires -G)
-        whole.command <- paste("-e -B -p", num.parallel.threads,
+        whole.command <- paste("-e -B -p", num.parallel.threads.stringtie.2.ballgown,
                                "-G", "merged/stringtie_merged.gtf",
                                "-o", paste0("ballgown/", sample.name[i],
                                             "/", sample.name[i], ".gtf"),
@@ -1056,3 +1243,83 @@ PreDECountTable <- function(path.prefix,
     return(TRUE)
   }
 }
+
+#
+# # Report Hisat2 assemble rate
+# Hisat2ReportAssemble <- function(path.prefix,
+#                                  genome.name,
+#                                  sample.pattern){
+#   check.results <- ProgressGenesFiles(path.prefix,
+#                                       genome.name,
+#                                       sample.pattern,
+#                                       print=FALSE)
+#   message("\n************** Reporting Hisat2 Alignment **************\n")
+#   if (check.results$phenodata.file.df &&
+#       check.results$bam.files.number.df != 0){
+#     file.read <- paste0(path.prefix, "Rscript_out/Read_Process.Rout")
+#     sample.name <- sort(gsub(paste0(".bam$"),
+#                              replacement = "",
+#                              check.results$bam.files.df))
+#     iteration.num <- length(sample.name)
+#     load.data <- readChar(file.read, file.info(file.read)$size)
+#     # overall alignment rate
+#     overall.alignment <- strsplit(load.data, "\n")
+#     overall.alignment.with.NA <-
+#       stringr::str_extract(overall.alignment[[1]],
+#                            "[0-9]*.[0-9]*% overall alignment rate")
+#     overall.alignment.result <-
+#       overall.alignment.with.NA[!is.na(overall.alignment.with.NA)]
+#     overall.alignment.result.cut <- gsub(" overall alignment rate",
+#                                          " ",
+#                                          overall.alignment.result)
+#     # different mapping rate
+#     first.split <- strsplit(load.data,
+#                             paste0("\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
+#                                    "\\* Hisat2 Alignment \\*",
+#                                    "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\n"))
+#     second.split <- strsplit(first.split[[1]][2],
+#                              paste0("\n\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
+#                                     "\\* Current progress of RNA-seq files in"))
+#     split.lines <- strsplit(second.split[[1]][1], "\n")
+#     alignment.rate.with.NA <-
+#       stringr::str_extract(split.lines[[1]],
+#                            "[0-9]* \\([0-9]*.[0-9]*%\\) aligned concordantly")
+#     alignment.first.result <-
+#       alignment.rate.with.NA[!is.na(alignment.rate.with.NA)]
+#     alignment.first.result.cut1 <- gsub(") aligned concordantly",
+#                                         " ",
+#                                         alignment.first.result)
+#     alignment.first.result.cut2 <- gsub("[0-9]* \\(",
+#                                         " ",
+#                                         alignment.first.result.cut1)
+#     report.data.frame <- data.frame(matrix(0, ncol = 0, nrow = 3))
+#     row.names(report.data.frame) <- c("Unique mapping rate",
+#                                       "Multiple mapping rate",
+#                                       "Overall alignment rate")
+#     for( i in seq_len(iteration.num)){
+#       add.column <- c()
+#       for( j in (i*3-1):(i*3)){
+#         add.column <- c(add.column, alignment.first.result.cut2[j])
+#       }
+#       add.column <- c(add.column, overall.alignment.result.cut[i])
+#       report.data.frame[[(sample.name[i])]] <- add.column
+#     }
+#     if(!dir.exists(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))){
+#       dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
+#     }
+#     write.csv(report.data.frame,
+#               file = paste0(path.prefix,
+#                             "RNASeq_results/",
+#                             "Alignment_Report/Alignment_report.csv"))
+#     png(paste0(path.prefix,
+#                "RNASeq_results/Alignment_Report/Alignment_report.png"),
+#         width = iteration.num*100 + 200, height = 40*4)
+#     p <- gridExtra::grid.table(report.data.frame)
+#     print(p)
+#     dev.off()
+#     message("Results are in ",
+#             paste0("'", path.prefix, "RNASeq_results/Alignment_Report/'"),
+#             "\n\n")
+#   }
+# }
+
