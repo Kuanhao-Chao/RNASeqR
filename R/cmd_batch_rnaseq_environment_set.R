@@ -24,6 +24,9 @@
 #' @param install.hisat2 Whether to install 'HISAT2' in this function step.
 #'   Default value is\code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2' installation.
+#' @param install.STAR Whether to install 'STAR' in this function step.
+#'   Default value is\code{TRUE}.
+#'   Set \code{FALSE} to skip 'STAR' installation.
 #' @param install.stringtie Whether to install 'StringTie'
 #'   in this function step. Default value is \code{TRUE}.
 #'   Set\code{FALSE} to skip 'StringTie' installation.
@@ -50,6 +53,7 @@
 #' RNASeqEnvironmentSet_CMD(yeast)}
 RNASeqEnvironmentSet_CMD <- function(RNASeqRParam,
                                      install.hisat2     = TRUE,
+                                     install.STAR       = TRUE,
                                      install.stringtie  = TRUE,
                                      install.gffcompare = TRUE,
                                      run                = TRUE,
@@ -122,6 +126,9 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqRParam,
 #' @param install.hisat2 Whether to install 'HISAT2' in this function step.
 #'   Default value is\code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2' installation.
+#' @param install.STAR Whether to install 'STAR' in this function step.
+#'   Default value is\code{TRUE}.
+#'   Set \code{FALSE} to skip 'STAR' installation.
 #' @param install.stringtie Whether to install 'StringTie'
 #'   in this function step. Default value is \code{TRUE}.
 #'   Set\code{FALSE} to skip 'StringTie' installation.
@@ -145,6 +152,7 @@ RNASeqEnvironmentSet <- function(RNASeqRParam,
                                  which.trigger      = "OUTSIDE",
                                  INSIDE.path.prefix = NA,
                                  install.hisat2     = TRUE,
+                                 install.STAR       = TRUE,
                                  install.stringtie  = TRUE,
                                  install.gffcompare = TRUE,
                                  check.s4.print     = TRUE) {
@@ -182,6 +190,7 @@ RNASeqEnvironmentSet <- function(RNASeqRParam,
   InstallAll(path.prefix,
              os.type,
              install.hisat2,
+             install.STAR,
              install.stringtie,
              install.gffcompare)
   ExportPath(path.prefix)
@@ -729,6 +738,7 @@ InstallGffcompareBinary <- function(path.prefix, os.type){
 InstallAll <- function(path.prefix,
                        os.type,
                        install.hisat2,
+                       install.STAR,
                        install.stringtie,
                        install.gffcompare) {
   message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  ",
@@ -737,6 +747,9 @@ InstallAll <- function(path.prefix,
   install.software <- ""
   if (install.hisat2) {
     install.software <- paste0(install.software, "\u25CF'hisat2' ")
+  }
+  if (install.STAR) {
+    install.software <- paste0(install.software, "\u25CF'STAR' ")
   }
   if (install.stringtie) {
     install.software <- paste0(install.software, "\u25CF'stringtie' ")
@@ -761,6 +774,10 @@ InstallAll <- function(path.prefix,
   if (install.hisat2) {
     message("\u2618\u2618 Hisat2 processing ...\n")
     InstallHisat2Bianry(path.prefix, os.type)
+  }
+  if (install.STAR) {
+    message("\u2618\u2618 STAR processing ...\n")
+    InstallStarBianry(path.prefix, os.type)
   }
   if (install.stringtie) {
     message("\u2618\u2618 Stringtie processing ...\n")
@@ -958,3 +975,4 @@ PostRNASeqEnvironmentSet <- function(path.prefix,
           "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
           "\u2605\n")
 }
+

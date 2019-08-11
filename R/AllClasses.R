@@ -629,3 +629,4 @@ CheckS4Object <- function(RNASeqRParam, print = TRUE) {
     stop("Invalid 'RNASeqRParam' input ERROR")
   }
 }
+

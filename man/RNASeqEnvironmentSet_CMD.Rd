@@ -5,8 +5,8 @@
 \title{RNASeqEnvironmentSet_CMD}
 \usage{
 RNASeqEnvironmentSet_CMD(RNASeqRParam, install.hisat2 = TRUE,
-  install.stringtie = TRUE, install.gffcompare = TRUE, run = TRUE,
-  check.s4.print = TRUE)
+  install.STAR = TRUE, install.stringtie = TRUE,
+  install.gffcompare = TRUE, run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqRParam}{S4 object instance of experiment-related
@@ -15,6 +15,10 @@ parameters}
 \item{install.hisat2}{Whether to install 'HISAT2' in this function step.
 Default value is\code{TRUE}.
 Set \code{FALSE} to skip 'HISAT2' installation.}
+
+\item{install.STAR}{Whether to install 'STAR' in this function step.
+Default value is\code{TRUE}.
+Set \code{FALSE} to skip 'STAR' installation.}
 
 \item{install.stringtie}{Whether to install 'StringTie'
 in this function step. Default value is \code{TRUE}.

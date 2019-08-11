@@ -5,12 +5,101 @@
 \title{RNASeqReadProcess_CMD}
 \usage{
 RNASeqReadProcess_CMD(RNASeqRParam, SAMtools.or.Rsamtools = "Rsamtools",
-  num.parallel.threads = 1, Rsamtools.nCores = 1,
-  Hisat2.Index.run = TRUE, Hisat2.Alignment.run = TRUE,
-  Rsamtools.Bam.run = TRUE, StringTie.Assemble.run = TRUE,
-  StringTie.Merge.Trans.run = TRUE, Gffcompare.Ref.Sample.run = TRUE,
-  StringTie.Ballgown.run = TRUE, PreDECountTable.run = TRUE,
-  run = TRUE, check.s4.print = TRUE)
+  Hisat2.Index.run = TRUE, Hisat2.Index.num.parallel.threads = "1",
+  Hisat2.Index.large.index = FALSE,
+  Hisat2.Index.local.ftab.chars = "6",
+  Hisat2.Index.local.off.rate = "3", Hisat2.Index.ftab.chars = "10",
+  Hisat2.Index.off.rate = "4", Hisat2.Alignment.run = TRUE,
+  Hisat2.Alignment.num.parallel.threads = "1",
+  Hisat2.Alignment.skip = "0", Hisat2.Alignment.trim5 = "0",
+  Hisat2.Alignment.trim3 = "0",
+  Hisat2.Alignment.n.ceil.1.function.type = "L",
+  Hisat2.Alignment.n.ceil.2.constant.term = "0",
+  Hisat2.Alignment.n.ceil.3.coefficient = "0.15",
+  Hisat2.Alignment.mp.MX = "6", Hisat2.Alignment.mp.MN = "2",
+  Hisat2.Alignment.sp.MX = "2", Hisat2.Alignment.sp.MN = "1",
+  Hisat2.Alignment.np = "1", Hisat2.Alignment.rdg.1 = "5",
+  Hisat2.Alignment.rdg.2 = "3", Hisat2.Alignment.rfg.1 = "5",
+  Hisat2.Alignment.rfg.2 = "3",
+  Hisat2.Alignment.score.min.1.function.type = "L",
+  Hisat2.Alignment.score.min.2.constant.term = "0",
+  Hisat2.Alignment.score.min.3.coefficient = "-0.2",
+  Hisat2.Alignment.pen.cansplice = "0",
+  Hisat2.Alignment.penc.noncansplice = "12",
+  Hisat2.Alignment.pen.canintronlen.1.function.type = "G",
+  Hisat2.Alignment.pen.canintronlen.2.constant.term = "-8",
+  Hisat2.Alignment.pen.canintronlen.3.coefficient = "1",
+  Hisat2.Alignment.pen.noncanintronlen.1.function.type = "G",
+  Hisat2.Alignment.pen.noncanintronlen.2.constant.term = "-8",
+  Hisat2.Alignment.pen.noncanintronlen.3.coefficient = "1",
+  Hisat2.Alignment.min.intronlen = "20",
+  Hisat2.Alignment.max.intronlen = "500000",
+  Hisat2.Alignment.rna.strandness = "None", Hisat2.Alignment.k = "5",
+  Hisat2.Alignment.max.seeds = "5", Hisat2.Alignment.secondary = FALSE,
+  Hisat2.Alignment.minins = "0", Hisat2.Alignment.maxins = "500",
+  Hisat2.Alignment.seed = "0", STAR.Index.num.parallel.threads = "1",
+  STAR.Index.sjdbOverhang.Read.length = "100",
+  STAR.Index.genomeSAindexNbases = "14",
+  STAR.Index.genomeChrBinNbits = "18",
+  STAR.Index.genomeSAsparseD = "1", STAR.Alignment.run = FALSE,
+  STAR.Alignment.num.parallel.threads = "1",
+  STAR.Alignment.genomeLoad = "NoSharedMemory",
+  STAR.Alignment.readMapNumber = "-1",
+  STAR.Alignment.clip3pNbases = "0", STAR.Alignment.clip5pNbases = "0",
+  STAR.Alignment.clip3pAdapterSeq = "-",
+  STAR.Alignment.clip3pAdapterMMp = "0.1",
+  STAR.Alignment.clip3pAfterAdapterNbases = "0",
+  STAR.Alignment.limitGenomeGenerateRAM = "31000000000",
+  STAR.Alignment.limitIObufferSize = "150000000",
+  STAR.Alignment.limitOutSAMoneReadBytes = "100000",
+  STAR.Alignment.limitOutSJoneRead = "1000",
+  STAR.Alignment.limitOutSJcollapsed = "1000000",
+  STAR.Alignment.limitBAMsortRAM = "0",
+  STAR.Alignment.outReadsUnmapped = "None",
+  STAR.Alignment.outQSconversionAdd = "0",
+  STAR.Alignment.outSAMprimaryFlag = "OneBestScore",
+  STAR.Alignment.outSAMmapqUnique = "255",
+  STAR.Alignment.scoreGap = "0", STAR.Alignment.scoreGapNoncan = "-8",
+  STAR.Alignment.scoreGapGCAG = "-4",
+  STAR.Alignment.scoreGapATAC = "-8",
+  STAR.Alignment.scoreGenomicLengthLog2scale = "-0.25",
+  STAR.Alignment.scoreDelOpen = "-2",
+  STAR.Alignment.scoreDelBase = "-2",
+  STAR.Alignment.scoreInsOpen = "-2",
+  STAR.Alignment.scoreInsBase = "-2",
+  STAR.Alignment.scoreStitchSJshift = "1",
+  STAR.Alignment.seedSearchStartLmax = "50",
+  STAR.Alignment.seedSearchStartLmaxOverLread = "1.0",
+  STAR.Alignment.seedSearchLmax = "0",
+  STAR.Alignment.seedMultimapNmax = "10000",
+  STAR.Alignment.seedPerReadNmax = "1000",
+  STAR.Alignment.seedPerWindowNmax = "50",
+  STAR.Alignment.seedNoneLociPerWindow = "10",
+  STAR.Alignment.alignIntronMin = "21",
+  STAR.Alignment.alignIntronMax = "0",
+  STAR.Alignment.alignMatesGapMax = "0",
+  STAR.Alignment.alignSJoverhangMin = "5",
+  STAR.Alignment.alignSJDBoverhangMin = "3",
+  STAR.Alignment.alignSplicedMateMapLmin = "0",
+  STAR.Alignment.alignSplicedMateMapLminOverLmate = "0.66",
+  STAR.Alignment.alignWindowsPerReadNmax = "10000",
+  STAR.Alignment.alignTranscriptsPerWindowNmax = "100",
+  STAR.Alignment.alignTranscriptsPerReadNmax = "10000",
+  STAR.Alignment.alignEndsType = "Local",
+  STAR.Alignment.winAnchorMultimapNmax = "50",
+  STAR.Alignment.winBinNbits = "16",
+  STAR.Alignment.winAnchorDistNbins = "9",
+  STAR.Alignment.winFlankNbins = "4", Rsamtools.Bam.run = TRUE,
+  Samtools.Bam.num.parallel.threads = "1", Rsamtools.nCores = "1",
+  StringTie.Assemble.run = TRUE,
+  Stringtie.Assembly.num.parallel.threads = "1",
+  Stringtie.Assembly.f = "0.1", Stringtie.Assembly.m = "200",
+  Stringtie.Assembly.c = "2.5", Stringtie.Assembly.g = "50",
+  Stringtie.Assembly.M = "0.95", StringTie.Merge.Trans.run = TRUE,
+  Stringtie.Merge.num.parallel.threads = "1",
+  Gffcompare.Ref.Sample.run = TRUE, StringTie.Ballgown.run = TRUE,
+  Stringtie.2.Ballgown.num.parallel.threads = "1",
+  PreDECountTable.run = TRUE, run = TRUE, check.s4.print = TRUE)
 }
 \arguments{
 \item{RNASeqRParam}{S4 object instance of experiment-related
@@ -19,31 +108,344 @@ parameters}
 \item{SAMtools.or.Rsamtools}{Default value is \code{Rsamtools}. User can set
 to \code{SAMtools} to use command-line-based 'samtools' instead.}
 
-\item{num.parallel.threads}{Specify the number of processing threads (CPUs)
-to use for each step. The default is 1.}
-
-\item{Rsamtools.nCores}{The number of cores to use when running
-'Rsamtools' step.}
-
 \item{Hisat2.Index.run}{Whether to run 'HISAT2 index' step in this function
 step. Default value is \code{TRUE}. Set \code{FALSE} to skip
 'HISAT2 index' step.}
+
+\item{Hisat2.Index.num.parallel.threads}{Specify the number of processing
+threads (CPUs) to use for Hisat2 index step. The default is \code{"1"}}
+
+\item{Hisat2.Index.large.index}{Hisat2 index terminal '--large-index' option.
+Default value is \code{FALSE}}
+
+\item{Hisat2.Index.local.ftab.chars}{Hisat2 index terminal '-t/--ftabchars'
+option. Default value is \code{"6"}}
+
+\item{Hisat2.Index.local.off.rate}{Hisat2 index terminal '--localoffrate'
+option. Default value is \code{"3"}}
+
+\item{Hisat2.Index.ftab.chars}{Hisat2 index terminal '--localftabchars'
+option. Default value is \code{"10"}}
+
+\item{Hisat2.Index.off.rate}{Hisat2 index terminal '--offrate' option.
+Default value is \code{"4"}}
 
 \item{Hisat2.Alignment.run}{Whether to run 'HISAT2 alignment' step in this
 function step. Default value is \code{TRUE}.
 Set \code{FALSE} to skip 'HISAT2 alignment' step.}
 
+\item{Hisat2.Alignment.num.parallel.threads}{Specify the number of processing
+threads (CPUs) to use for Hisat2 alignment step. The default is \code{"1"}}
+
+\item{Hisat2.Alignment.skip}{Hisat2 alignment terminal '-s/--skip' option.
+Default value is \code{"0"}}
+
+\item{Hisat2.Alignment.trim5}{Hisat2 alignment terminal '-5/--trim5' option.
+Default value is \code{"0"}}
+
+\item{Hisat2.Alignment.trim3}{Hisat2 alignment terminal '-3/--trim3' option.
+Default value is \code{"0"}}
+
+\item{Hisat2.Alignment.n.ceil.1.function.type}{Hisat2 alignment terminal
+'--n-ceil' option. Default value is \code{"L"}}
+
+\item{Hisat2.Alignment.n.ceil.2.constant.term}{Hisat2 alignment terminal
+'--n-ceil' option. Default value is \code{"0"}}
+
+\item{Hisat2.Alignment.n.ceil.3.coefficient}{Hisat2 alignment terminal
+'--n-ceil' option. Default value is \code{"0.15"}}
+
+\item{Hisat2.Alignment.mp.MX}{Hisat2 alignment terminal '--mp MX' option.
+Default value is \code{"6"}}
+
+\item{Hisat2.Alignment.mp.MN}{Hisat2 alignment terminal '--mp MN' option.
+Default value is \code{"2"}}
+
+\item{Hisat2.Alignment.sp.MX}{Hisat2 alignment terminal '--sp MX' option.
+Default value is \code{"2"}}
+
+\item{Hisat2.Alignment.sp.MN}{Hisat2 alignment terminal '--sp MN' option.
+Default value is \code{"1"}}
+
+\item{Hisat2.Alignment.np}{Hisat2 alignment terminal '--np' option.
+Default value is \code{"1"}}
+
+\item{Hisat2.Alignment.rdg.1}{Hisat2 alignment terminal '--rdg' first option.
+Default value is \code{"5"}}
+
+\item{Hisat2.Alignment.rdg.2}{Hisat2 alignment terminal '--rdg' first option.
+Default value is \code{"3"}}
+
+\item{Hisat2.Alignment.rfg.1}{Hisat2 alignment terminal '--rfg' first option.
+Default value is \code{"5"}}
+
+\item{Hisat2.Alignment.rfg.2}{Hisat2 alignment terminal '--rfg' first option.
+Default value is \code{"3"}}
+
+\item{Hisat2.Alignment.score.min.1.function.type}{Hisat2 alignment terminal
+'--rdg' first option. Default value is \code{"L"}}
+
+\item{Hisat2.Alignment.score.min.2.constant.term}{Hisat2 alignment terminal
+'--rdg' first option. Default value is \code{"0"}}
+
+\item{Hisat2.Alignment.score.min.3.coefficient}{Hisat2 alignment terminal
+'--rdg' first option. Default value is \code{"-0.2"}}
+
+\item{Hisat2.Alignment.pen.cansplice}{Hisat2 alignment terminal
+'--pen-cansplice' first option. Default value is \code{"-0"}}
+
+\item{Hisat2.Alignment.penc.noncansplice}{Hisat2 alignment terminal
+'--pen-noncansplice' option. Default value is \code{"12"}}
+
+\item{Hisat2.Alignment.pen.canintronlen.1.function.type}{Hisat2 alignment
+terminal '--pen-canintronlen' first option. Default value is \code{"G"}}
+
+\item{Hisat2.Alignment.pen.canintronlen.2.constant.term}{Hisat2 alignment
+terminal '--pen-canintronlen' second option. Default value is \code{"-8"}}
+
+\item{Hisat2.Alignment.pen.canintronlen.3.coefficient}{Hisat2 alignment
+terminal '--pen-canintronlen' third option. Default value is \code{"1"}}
+
+\item{Hisat2.Alignment.pen.noncanintronlen.1.function.type}{Hisat2 alignment
+terminal '--pen-noncanintronlen' first option. Default value is \code{"G"}}
+
+\item{Hisat2.Alignment.pen.noncanintronlen.2.constant.term}{Hisat2 alignment
+terminal '--pen-noncanintronlen' second option. Default value is \code{"-8"}}
+
+\item{Hisat2.Alignment.pen.noncanintronlen.3.coefficient}{Hisat2 alignment
+terminal '--pen-noncanintronlen' third option. Default value is \code{"1"}}
+
+\item{Hisat2.Alignment.min.intronlen}{Hisat2 alignment terminal
+'--min-intronlen' option. Default value is \code{"20"}}
+
+\item{Hisat2.Alignment.max.intronlen}{Hisat2 alignment terminal '--max-intronlen'
+option. Default value is \code{"20"}}
+
+\item{Hisat2.Alignment.rna.strandness}{Hisat2 alignment terminal '--rna-strandness'
+option. Default value is \code{"None"}}
+
+\item{Hisat2.Alignment.k}{Hisat2 alignment terminal '-k' option.
+Default value is \code{"5"}}
+
+\item{Hisat2.Alignment.max.seeds}{Hisat2 alignment terminal '--max-seeds' option.
+Default value is \code{"5"}}
+
+\item{Hisat2.Alignment.secondary}{Hisat2 alignment terminal '--secondary' option.
+Default value is \code{"FALSE"}}
+
+\item{Hisat2.Alignment.minins}{Hisat2 alignment terminal '-I/--minins' option.
+Default value is \code{"0"}}
+
+\item{Hisat2.Alignment.maxins}{Hisat2 alignment terminal '-X/--maxins' option.
+Default value is \code{"500"}}
+
+\item{Hisat2.Alignment.seed}{Hisat2 alignment terminal '-X/--maxins' option.
+Default value is \code{"0"}}
+
+\item{STAR.Index.num.parallel.threads}{Specify the number of processing
+threads (CPUs) to use for STAR index step. The default is \code{"1"}}
+
+\item{STAR.Index.sjdbOverhang.Read.length}{STAR index terminal
+'--sjdbOverhang' option. Default value is \code{"100"}}
+
+\item{STAR.Index.genomeSAindexNbases}{STAR index terminal
+'--genomeSAindexNbases' option. Default value is \code{"14"}}
+
+\item{STAR.Index.genomeChrBinNbits}{STAR index terminal
+'--genomeChrBinNbits' option. Default value is \code{"18"}}
+
+\item{STAR.Index.genomeSAsparseD}{STAR index terminal
+'--genomeSAsparseD' option. Default value is \code{"1"}}
+
+\item{STAR.Alignment.run}{Whether to run 'STAR index' step in this function
+step. Default value is \code{FALSE}. Set \code{TRUE} to run STAR alignment step.
+(need to set Hisat2.Index.run to \code{FALSE})}
+
+\item{STAR.Alignment.num.parallel.threads}{Specify the number of processing
+threads (CPUs) to use for STAR alignment step. The default is \code{"1"}}
+
+\item{STAR.Alignment.genomeLoad}{STAR alignment terminal '--genomeLoad'
+option. Default value is \code{"NoSharedMemory"}}
+
+\item{STAR.Alignment.readMapNumber}{STAR alignment terminal '--readMapNumber'
+option. Default value is \code{"-1"}}
+
+\item{STAR.Alignment.clip3pNbases}{STAR alignment terminal '--clip3pNbases'
+option. Default value is \code{"0"}}
+
+\item{STAR.Alignment.clip5pNbases}{STAR alignment terminal '--clip5pNbases'
+option. Default value is \code{"0"}}
+
+\item{STAR.Alignment.clip3pAdapterSeq}{STAR alignment terminal '--clip3pAdapterSeq'
+option. Default value is \code{"-"}}
+
+\item{STAR.Alignment.clip3pAdapterMMp}{STAR alignment terminal '--clip3pAdapterMMp'
+option. Default value is \code{"0.1"}}
+
+\item{STAR.Alignment.clip3pAfterAdapterNbases}{STAR alignment terminal
+'--clip3pAfterAdapterNbases' option. Default value is \code{"0"}}
+
+\item{STAR.Alignment.limitGenomeGenerateRAM}{STAR alignment terminal
+'--limitGenomeGenerateRAM' option. Default value is \code{"31000000000"}}
+
+\item{STAR.Alignment.limitIObufferSize}{STAR alignment terminal
+'--limitIObufferSize' option. Default value is \code{"150000000"}}
+
+\item{STAR.Alignment.limitOutSAMoneReadBytes}{STAR alignment terminal
+'--limitOutSAMoneReadBytes' option. Default value is \code{"100000"}}
+
+\item{STAR.Alignment.limitOutSJoneRead}{STAR alignment terminal
+'--limitOutSJoneRead' option. Default value is \code{"1000"}}
+
+\item{STAR.Alignment.limitOutSJcollapsed}{STAR alignment terminal
+'--limitOutSJcollapsed' option. Default value is \code{"1000000"}}
+
+\item{STAR.Alignment.limitBAMsortRAM}{STAR alignment terminal
+'--limitBAMsortRAM' option. Default value is \code{"0"}}
+
+\item{STAR.Alignment.outReadsUnmapped}{STAR alignment terminal
+'--outReadsUnmapped' option. Default value is \code{"None"}}
+
+\item{STAR.Alignment.outQSconversionAdd}{STAR alignment terminal
+'--outQSconversionAdd' option. Default value is \code{"0"}}
+
+\item{STAR.Alignment.outSAMprimaryFlag}{STAR alignment terminal
+'--outSAMprimaryFlag' option. Default value is \code{"OneBestScore"}}
+
+\item{STAR.Alignment.outSAMmapqUnique}{STAR alignment terminal
+'--outSAMmapqUnique' option. Default value is \code{"255"}}
+
+\item{STAR.Alignment.scoreGap}{STAR alignment terminal
+'--scoreGap' option. Default value is \code{"0"}}
+
+\item{STAR.Alignment.scoreGapNoncan}{STAR alignment terminal
+'--scoreGapNoncan' option. Default value is \code{"-8"}}
+
+\item{STAR.Alignment.scoreGapGCAG}{STAR alignment terminal
+'--scoreGapGCAG' option. Default value is \code{"-4"}}
+
+\item{STAR.Alignment.scoreGapATAC}{STAR alignment terminal
+'--scoreGapATAC' option. Default value is \code{"-8"}}
+
+\item{STAR.Alignment.scoreGenomicLengthLog2scale}{STAR alignment terminal
+'--scoreGenomicLengthLog2scale' option. Default value is \code{"-0.25"}}
+
+\item{STAR.Alignment.scoreDelOpen}{STAR alignment terminal
+'--scoreDelOpen' option. Default value is \code{"-2"}}
+
+\item{STAR.Alignment.scoreDelBase}{STAR alignment terminal
+'--scoreDelBase' option. Default value is \code{"-2"}}
+
+\item{STAR.Alignment.scoreInsOpen}{STAR alignment terminal
+'--scoreInsOpen' option. Default value is \code{"-2"}}
+
+\item{STAR.Alignment.scoreInsBase}{STAR alignment terminal
+'--scoreInsBase' option. Default value is \code{"-2"}}
+
+\item{STAR.Alignment.scoreStitchSJshift}{STAR alignment terminal
+'--scoreStitchSJshift' option. Default value is \code{"1"}}
+
+\item{STAR.Alignment.seedSearchStartLmax}{STAR alignment terminal
+'--scoreStitchSJshift' option. Default value is \code{"50"}}
+
+\item{STAR.Alignment.seedSearchStartLmaxOverLread}{STAR alignment terminal
+'--seedSearchStartLmaxOverLread' option. Default value is \code{"1.0"}}
+
+\item{STAR.Alignment.seedMultimapNmax}{STAR alignment terminal
+'--seedMultimapNmax' option. Default value is \code{"10000"}}
+
+\item{STAR.Alignment.seedPerReadNmax}{STAR alignment terminal
+'--seedPerReadNmax' option. Default value is \code{"1000"}}
+
+\item{STAR.Alignment.seedPerWindowNmax}{STAR alignment terminal
+'--seedPerWindowNmax' option. Default value is \code{"50"}}
+
+\item{STAR.Alignment.seedNoneLociPerWindow}{STAR alignment terminal
+'--seedNoneLociPerWindow' option. Default value is \code{"10"}}
+
+\item{STAR.Alignment.alignIntronMin}{STAR alignment terminal
+'--alignIntronMin' option. Default value is \code{"21"}}
+
+\item{STAR.Alignment.alignIntronMax}{STAR alignment terminal
+'--alignIntronMax' option. Default value is \code{"0"}}
+
+\item{STAR.Alignment.alignMatesGapMax}{STAR alignment terminal
+'--alignMatesGapMax' option. Default value is \code{"0"}}
+
+\item{STAR.Alignment.alignSJoverhangMin}{STAR alignment terminal
+'--alignSJoverhangMin' option. Default value is \code{"5"}}
+
+\item{STAR.Alignment.alignSJDBoverhangMin}{STAR alignment terminal
+'--alignSJDBoverhangMin' option. Default value is \code{"3"}}
+
+\item{STAR.Alignment.alignSplicedMateMapLmin}{STAR alignment terminal
+'--alignSplicedMateMapLmin' option. Default value is \code{"0"}}
+
+\item{STAR.Alignment.alignSplicedMateMapLminOverLmate}{STAR alignment terminal
+'--alignSplicedMateMapLminOverLmate' option. Default value is \code{"0.66"}}
+
+\item{STAR.Alignment.alignWindowsPerReadNmax}{STAR alignment terminal
+'--alignWindowsPerReadNmax' option. Default value is \code{"10000"}}
+
+\item{STAR.Alignment.alignTranscriptsPerWindowNmax}{STAR alignment terminal
+'--alignTranscriptsPerWindowNmax' option. Default value is \code{"100"}}
+
+\item{STAR.Alignment.alignTranscriptsPerReadNmax}{STAR alignment terminal
+'--alignTranscriptsPerReadNmax' option. Default value is \code{"10000"}}
+
+\item{STAR.Alignment.alignEndsType}{STAR alignment terminal
+'--alignEndsType' option. Default value is \code{"Local"}}
+
+\item{STAR.Alignment.winAnchorMultimapNmax}{STAR alignment terminal
+'--winAnchorMultimapNmax' option. Default value is \code{"50"}}
+
+\item{STAR.Alignment.winBinNbits}{STAR alignment terminal
+'--winBinNbits' option. Default value is \code{"16"}}
+
+\item{STAR.Alignment.winAnchorDistNbins}{STAR alignment terminal
+'--winAnchorDistNbins' option. Default value is \code{"9"}}
+
+\item{STAR.Alignment.winFlankNbins}{STAR alignment terminal
+'--winFlankNbins' option. Default value is \code{"4"}}
+
 \item{Rsamtools.Bam.run}{Whether to run 'Rsamtools SAM to BAM' step in this
 function step. Default value is \code{TRUE}.
 Set \code{FALSE} to skip 'Rsamtools SAM to BAM' step.}
+
+\item{Samtools.Bam.num.parallel.threads}{Specify the number of processing
+threads (CPUs) to use for Samtools sam to bam step. The default is \code{"1"}}
+
+\item{Rsamtools.nCores}{The number of cores to use when running
+'Rsamtools' step. Default value is \code{1}}
 
 \item{StringTie.Assemble.run}{Whether to run 'StringTie assembly' step in
 this function step. Default value is \code{TRUE}.
 Set \code{FALSE} to skip 'StringTie assembly' step.}
 
+\item{Stringtie.Assembly.num.parallel.threads}{Specify the number of processing
+threads (CPUs) to use for Stringtie assembly. The default is \code{"1"}}
+
+\item{Stringtie.Assembly.f}{Stringtie assembly terminal
+'-f' option. Default value is \code{"0.1"}}
+
+\item{Stringtie.Assembly.m}{Stringtie assembly terminal
+'-m' option. Default value is \code{"200"}}
+
+\item{Stringtie.Assembly.c}{Stringtie assembly terminal
+'-c' option. Default value is \code{"2.5"}}
+
+\item{Stringtie.Assembly.g}{Stringtie assembly terminal
+'-g' option. Default value is \code{"50"}}
+
+\item{Stringtie.Assembly.M}{Stringtie assembly terminal
+'-M' option. Default value is \code{"0.95"}}
+
 \item{StringTie.Merge.Trans.run}{Whether to run 'StringTie GTF merging' step
 in this function step. Default value is \code{TRUE}.
 Set \code{FALSE} to skip 'StringTie GTF merging' step.}
+
+\item{Stringtie.Merge.num.parallel.threads}{Specify the number of processing
+threads (CPUs) to use for Stringtie merge step. The default is \code{"1"}}
 
 \item{Gffcompare.Ref.Sample.run}{Whether to run 'Gffcompare comparison' step
 in this function step. Default value is \code{TRUE}.
@@ -52,6 +454,9 @@ Set \code{FALSE} to skip 'Gffcompare comparison' step.}
 \item{StringTie.Ballgown.run}{Whether to run 'StringTie ballgown creation'
 step in this function step. Default value is \code{TRUE}.
 Set \code{FALSE} to skip 'StringTie ballgown creation' step.}
+
+\item{Stringtie.2.Ballgown.num.parallel.threads}{Specify the number of processing
+threads (CPUs) to use for Stringtie to ballgown step. The default is \code{"1"}}
 
 \item{PreDECountTable.run}{Whether to run 'gene raw reads count creation'
 step in this function step. Default value is \code{TRUE}.
@@ -68,6 +473,9 @@ the result of checking \code{RNASeqRParam}
 will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE},
 the result of checking \code{RNASeqRParam} will not be in
 'Rscript_out/Environment_Set.Rout'.}
+
+\item{STAR.Alignment.seedSearchLmaxSTAR}{STAR alignment terminal
+'--seedSearchLmax' option. Default value is \code{"0"}}
 }
 \value{
 None
@@ -98,6 +506,7 @@ data(yeast)
 ## (or\\code{RNASeqEnvironmentSet()}) is executed successfully.
 RNASeqReadProcess_CMD(RNASeqRParam = yeast,
                       num.parallel.threads = 10)}
+
 }
 \author{
 Kuan-Hao Chao

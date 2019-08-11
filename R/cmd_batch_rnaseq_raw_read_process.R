@@ -20,46 +20,247 @@
 #'   in R shell, please see \code{RNASeqReadProcess()} function.\cr
 #'
 #' @param RNASeqRParam S4 object instance of experiment-related
-#'   parameters
+#' parameters
 #' @param SAMtools.or.Rsamtools Default value is \code{Rsamtools}. User can set
-#'   to \code{SAMtools} to use command-line-based 'samtools' instead.
-#' @param num.parallel.threads Specify the number of processing threads (CPUs)
-#'   to use for each step. The default is 1.
-#' @param Rsamtools.nCores The number of cores to use when running
-#'   'Rsamtools' step.
+#' to \code{SAMtools} to use command-line-based 'samtools' instead.
 #' @param Hisat2.Index.run Whether to run 'HISAT2 index' step in this function
-#'   step. Default value is \code{TRUE}. Set \code{FALSE} to skip
-#'   'HISAT2 index' step.
+#' step. Default value is \code{TRUE}. Set \code{FALSE} to skip
+#' 'HISAT2 index' step.
+#' @param Hisat2.Index.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for Hisat2 index step. The default is \code{"1"}
+#' @param Hisat2.Index.large.index Hisat2 index terminal '--large-index' option.
+#' Default value is \code{FALSE}
+#' @param Hisat2.Index.local.ftab.chars Hisat2 index terminal '-t/--ftabchars'
+#' option. Default value is \code{"6"}
+#' @param Hisat2.Index.local.off.rate Hisat2 index terminal '--localoffrate'
+#' option. Default value is \code{"3"}
+#' @param Hisat2.Index.ftab.chars Hisat2 index terminal '--localftabchars'
+#' option. Default value is \code{"10"}
+#' @param Hisat2.Index.off.rate Hisat2 index terminal '--offrate' option.
+#' Default value is \code{"4"}
 #' @param Hisat2.Alignment.run Whether to run 'HISAT2 alignment' step in this
 #'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2 alignment' step.
-#'
-#'
-#'
-#'
-#' @param STAR.Alignment.run Whether to run 'STAR alignment' step in this
-#'   function step. Default value is \code{FALSE}.
-#'   Set \code{TRUE} to run 'STAR alignment' step.
-#'
-#'
-#'
-#'
-#'
+#' @param Hisat2.Alignment.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for Hisat2 alignment step. The default is \code{"1"}
+#' @param Hisat2.Alignment.skip Hisat2 alignment terminal '-s/--skip' option.
+#' Default value is \code{"0"}
+#' @param Hisat2.Alignment.trim5 Hisat2 alignment terminal '-5/--trim5' option.
+#' Default value is \code{"0"}
+#' @param Hisat2.Alignment.trim3 Hisat2 alignment terminal '-3/--trim3' option.
+#' Default value is \code{"0"}
+#' @param Hisat2.Alignment.n.ceil.1.function.type Hisat2 alignment terminal
+#' '--n-ceil' option. Default value is \code{"L"}
+#' @param Hisat2.Alignment.n.ceil.2.constant.term Hisat2 alignment terminal
+#' '--n-ceil' option. Default value is \code{"0"}
+#' @param Hisat2.Alignment.n.ceil.3.coefficient Hisat2 alignment terminal
+#' '--n-ceil' option. Default value is \code{"0.15"}
+#' @param Hisat2.Alignment.mp.MX Hisat2 alignment terminal '--mp MX' option.
+#' Default value is \code{"6"}
+#' @param Hisat2.Alignment.mp.MN Hisat2 alignment terminal '--mp MN' option.
+#' Default value is \code{"2"}
+#' @param Hisat2.Alignment.sp.MX Hisat2 alignment terminal '--sp MX' option.
+#' Default value is \code{"2"}
+#' @param Hisat2.Alignment.sp.MN Hisat2 alignment terminal '--sp MN' option.
+#' Default value is \code{"1"}
+#' @param Hisat2.Alignment.np Hisat2 alignment terminal '--np' option.
+#' Default value is \code{"1"}
+#' @param Hisat2.Alignment.rdg.1 Hisat2 alignment terminal '--rdg' first option.
+#' Default value is \code{"5"}
+#' @param Hisat2.Alignment.rdg.2 Hisat2 alignment terminal '--rdg' first option.
+#' Default value is \code{"3"}
+#' @param Hisat2.Alignment.rfg.1 Hisat2 alignment terminal '--rfg' first option.
+#' Default value is \code{"5"}
+#' @param Hisat2.Alignment.rfg.2 Hisat2 alignment terminal '--rfg' first option.
+#' Default value is \code{"3"}
+#' @param Hisat2.Alignment.score.min.1.function.type Hisat2 alignment terminal
+#' '--rdg' first option. Default value is \code{"L"}
+#' @param Hisat2.Alignment.score.min.2.constant.term Hisat2 alignment terminal
+#' '--rdg' first option. Default value is \code{"0"}
+#' @param Hisat2.Alignment.score.min.3.coefficient Hisat2 alignment terminal
+#' '--rdg' first option. Default value is \code{"-0.2"}
+#' @param Hisat2.Alignment.pen.cansplice Hisat2 alignment terminal
+#' '--pen-cansplice' first option. Default value is \code{"-0"}
+#' @param Hisat2.Alignment.penc.noncansplice Hisat2 alignment terminal
+#' '--pen-noncansplice' option. Default value is \code{"12"}
+#' @param Hisat2.Alignment.pen.canintronlen.1.function.type Hisat2 alignment
+#' terminal '--pen-canintronlen' first option. Default value is \code{"G"}
+#' @param Hisat2.Alignment.pen.canintronlen.2.constant.term Hisat2 alignment
+#' terminal '--pen-canintronlen' second option. Default value is \code{"-8"}
+#' @param Hisat2.Alignment.pen.canintronlen.3.coefficient Hisat2 alignment
+#' terminal '--pen-canintronlen' third option. Default value is \code{"1"}
+#' @param Hisat2.Alignment.pen.noncanintronlen.1.function.type Hisat2 alignment
+#' terminal '--pen-noncanintronlen' first option. Default value is \code{"G"}
+#' @param Hisat2.Alignment.pen.noncanintronlen.2.constant.term Hisat2 alignment
+#' terminal '--pen-noncanintronlen' second option. Default value is \code{"-8"}
+#' @param Hisat2.Alignment.pen.noncanintronlen.3.coefficient Hisat2 alignment
+#' terminal '--pen-noncanintronlen' third option. Default value is \code{"1"}
+#' @param Hisat2.Alignment.min.intronlen Hisat2 alignment terminal
+#' '--min-intronlen' option. Default value is \code{"20"}
+#' @param Hisat2.Alignment.max.intronlen Hisat2 alignment terminal '--max-intronlen'
+#' option. Default value is \code{"20"}
+#' @param Hisat2.Alignment.rna.strandness Hisat2 alignment terminal '--rna-strandness'
+#' option. Default value is \code{"None"}
+#' @param Hisat2.Alignment.k Hisat2 alignment terminal '-k' option.
+#' Default value is \code{"5"}
+#' @param Hisat2.Alignment.max.seeds Hisat2 alignment terminal '--max-seeds' option.
+#' Default value is \code{"5"}
+#' @param Hisat2.Alignment.secondary Hisat2 alignment terminal '--secondary' option.
+#' Default value is \code{"FALSE"}
+#' @param Hisat2.Alignment.minins Hisat2 alignment terminal '-I/--minins' option.
+#' Default value is \code{"0"}
+#' @param Hisat2.Alignment.maxins Hisat2 alignment terminal '-X/--maxins' option.
+#' Default value is \code{"500"}
+#' @param Hisat2.Alignment.seed Hisat2 alignment terminal '-X/--maxins' option.
+#' Default value is \code{"0"}
+#' @param STAR.Index.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for STAR index step. The default is \code{"1"}
+#' @param STAR.Index.sjdbOverhang.Read.length STAR index terminal
+#' '--sjdbOverhang' option. Default value is \code{"100"}
+#' @param STAR.Index.genomeSAindexNbases STAR index terminal
+#' '--genomeSAindexNbases' option. Default value is \code{"14"}
+#' @param STAR.Index.genomeChrBinNbits STAR index terminal
+#' '--genomeChrBinNbits' option. Default value is \code{"18"}
+#' @param STAR.Index.genomeSAsparseD STAR index terminal
+#' '--genomeSAsparseD' option. Default value is \code{"1"}
+#' @param STAR.Alignment.run Whether to run 'STAR index' step in this function
+#' step. Default value is \code{FALSE}. Set \code{TRUE} to run STAR alignment step.
+#' (need to set Hisat2.Index.run to \code{FALSE})
+#' @param STAR.Alignment.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for STAR alignment step. The default is \code{"1"}
+#' @param STAR.Alignment.genomeLoad STAR alignment terminal '--genomeLoad'
+#' option. Default value is \code{"NoSharedMemory"}
+#' @param STAR.Alignment.readMapNumber STAR alignment terminal '--readMapNumber'
+#' option. Default value is \code{"-1"}
+#' @param STAR.Alignment.clip3pNbases STAR alignment terminal '--clip3pNbases'
+#' option. Default value is \code{"0"}
+#' @param STAR.Alignment.clip5pNbases STAR alignment terminal '--clip5pNbases'
+#' option. Default value is \code{"0"}
+#' @param STAR.Alignment.clip3pAdapterSeq STAR alignment terminal '--clip3pAdapterSeq'
+#' option. Default value is \code{"-"}
+#' @param STAR.Alignment.clip3pAdapterMMp STAR alignment terminal '--clip3pAdapterMMp'
+#' option. Default value is \code{"0.1"}
+#' @param STAR.Alignment.clip3pAfterAdapterNbases STAR alignment terminal
+#' '--clip3pAfterAdapterNbases' option. Default value is \code{"0"}
+#' @param STAR.Alignment.limitGenomeGenerateRAM  STAR alignment terminal
+#' '--limitGenomeGenerateRAM' option. Default value is \code{"31000000000"}
+#' @param STAR.Alignment.limitIObufferSize STAR alignment terminal
+#' '--limitIObufferSize' option. Default value is \code{"150000000"}
+#' @param STAR.Alignment.limitOutSAMoneReadBytes STAR alignment terminal
+#' '--limitOutSAMoneReadBytes' option. Default value is \code{"100000"}
+#' @param STAR.Alignment.limitOutSJoneRead STAR alignment terminal
+#' '--limitOutSJoneRead' option. Default value is \code{"1000"}
+#' @param STAR.Alignment.limitOutSJcollapsed STAR alignment terminal
+#' '--limitOutSJcollapsed' option. Default value is \code{"1000000"}
+#' @param STAR.Alignment.limitBAMsortRAM STAR alignment terminal
+#' '--limitBAMsortRAM' option. Default value is \code{"0"}
+#' @param STAR.Alignment.outReadsUnmapped STAR alignment terminal
+#' '--outReadsUnmapped' option. Default value is \code{"None"}
+#' @param STAR.Alignment.outQSconversionAdd STAR alignment terminal
+#' '--outQSconversionAdd' option. Default value is \code{"0"}
+#' @param STAR.Alignment.outSAMprimaryFlag STAR alignment terminal
+#' '--outSAMprimaryFlag' option. Default value is \code{"OneBestScore"}
+#' @param STAR.Alignment.outSAMmapqUnique STAR alignment terminal
+#' '--outSAMmapqUnique' option. Default value is \code{"255"}
+#' @param STAR.Alignment.scoreGap STAR alignment terminal
+#' '--scoreGap' option. Default value is \code{"0"}
+#' @param STAR.Alignment.scoreGapNoncan STAR alignment terminal
+#' '--scoreGapNoncan' option. Default value is \code{"-8"}
+#' @param STAR.Alignment.scoreGapGCAG STAR alignment terminal
+#' '--scoreGapGCAG' option. Default value is \code{"-4"}
+#' @param STAR.Alignment.scoreGapATAC STAR alignment terminal
+#' '--scoreGapATAC' option. Default value is \code{"-8"}
+#' @param STAR.Alignment.scoreGenomicLengthLog2scale STAR alignment terminal
+#' '--scoreGenomicLengthLog2scale' option. Default value is \code{"-0.25"}
+#' @param STAR.Alignment.scoreDelOpen STAR alignment terminal
+#' '--scoreDelOpen' option. Default value is \code{"-2"}
+#' @param STAR.Alignment.scoreDelBase STAR alignment terminal
+#' '--scoreDelBase' option. Default value is \code{"-2"}
+#' @param STAR.Alignment.scoreInsOpen STAR alignment terminal
+#' '--scoreInsOpen' option. Default value is \code{"-2"}
+#' @param STAR.Alignment.scoreInsBase STAR alignment terminal
+#' '--scoreInsBase' option. Default value is \code{"-2"}
+#' @param STAR.Alignment.scoreStitchSJshift STAR alignment terminal
+#' '--scoreStitchSJshift' option. Default value is \code{"1"}
+#' @param STAR.Alignment.seedSearchStartLmax STAR alignment terminal
+#' '--scoreStitchSJshift' option. Default value is \code{"50"}
+#' @param STAR.Alignment.seedSearchStartLmaxOverLread STAR alignment terminal
+#' '--seedSearchStartLmaxOverLread' option. Default value is \code{"1.0"}
+#' @param STAR.Alignment.seedSearchLmaxSTAR STAR alignment terminal
+#' '--seedSearchLmax' option. Default value is \code{"0"}
+#' @param STAR.Alignment.seedMultimapNmax STAR alignment terminal
+#' '--seedMultimapNmax' option. Default value is \code{"10000"}
+#' @param STAR.Alignment.seedPerReadNmax STAR alignment terminal
+#' '--seedPerReadNmax' option. Default value is \code{"1000"}
+#' @param STAR.Alignment.seedPerWindowNmax STAR alignment terminal
+#' '--seedPerWindowNmax' option. Default value is \code{"50"}
+#' @param STAR.Alignment.seedNoneLociPerWindow STAR alignment terminal
+#' '--seedNoneLociPerWindow' option. Default value is \code{"10"}
+#' @param STAR.Alignment.alignIntronMin STAR alignment terminal
+#' '--alignIntronMin' option. Default value is \code{"21"}
+#' @param STAR.Alignment.alignIntronMax STAR alignment terminal
+#' '--alignIntronMax' option. Default value is \code{"0"}
+#' @param STAR.Alignment.alignMatesGapMax STAR alignment terminal
+#' '--alignMatesGapMax' option. Default value is \code{"0"}
+#' @param STAR.Alignment.alignSJoverhangMin STAR alignment terminal
+#' '--alignSJoverhangMin' option. Default value is \code{"5"}
+#' @param STAR.Alignment.alignSJDBoverhangMin STAR alignment terminal
+#' '--alignSJDBoverhangMin' option. Default value is \code{"3"}
+#' @param STAR.Alignment.alignSplicedMateMapLmin STAR alignment terminal
+#' '--alignSplicedMateMapLmin' option. Default value is \code{"0"}
+#' @param STAR.Alignment.alignSplicedMateMapLminOverLmate STAR alignment terminal
+#' '--alignSplicedMateMapLminOverLmate' option. Default value is \code{"0.66"}
+#' @param STAR.Alignment.alignWindowsPerReadNmax STAR alignment terminal
+#' '--alignWindowsPerReadNmax' option. Default value is \code{"10000"}
+#' @param STAR.Alignment.alignTranscriptsPerWindowNmax STAR alignment terminal
+#' '--alignTranscriptsPerWindowNmax' option. Default value is \code{"100"}
+#' @param STAR.Alignment.alignTranscriptsPerReadNmax STAR alignment terminal
+#' '--alignTranscriptsPerReadNmax' option. Default value is \code{"10000"}
+#' @param STAR.Alignment.alignEndsType STAR alignment terminal
+#' '--alignEndsType' option. Default value is \code{"Local"}
+#' @param STAR.Alignment.winAnchorMultimapNmax STAR alignment terminal
+#' '--winAnchorMultimapNmax' option. Default value is \code{"50"}
+#' @param STAR.Alignment.winBinNbits STAR alignment terminal
+#' '--winBinNbits' option. Default value is \code{"16"}
+#' @param STAR.Alignment.winAnchorDistNbins STAR alignment terminal
+#' '--winAnchorDistNbins' option. Default value is \code{"9"}
+#' @param STAR.Alignment.winFlankNbins STAR alignment terminal
+#' '--winFlankNbins' option. Default value is \code{"4"}
 #' @param Rsamtools.Bam.run Whether to run 'Rsamtools SAM to BAM' step in this
 #'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'Rsamtools SAM to BAM' step.
+#' @param Samtools.Bam.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for Samtools sam to bam step. The default is \code{"1"}
+#' @param Rsamtools.nCores The number of cores to use when running
+#'  'Rsamtools' step. Default value is \code{1}
 #' @param StringTie.Assemble.run Whether to run 'StringTie assembly' step in
 #'   this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie assembly' step.
+#' @param Stringtie.Assembly.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for Stringtie assembly. The default is \code{"1"}
+#' @param Stringtie.Assembly.f Stringtie assembly terminal
+#' '-f' option. Default value is \code{"0.1"}
+#' @param Stringtie.Assembly.m Stringtie assembly terminal
+#' '-m' option. Default value is \code{"200"}
+#' @param Stringtie.Assembly.c Stringtie assembly terminal
+#' '-c' option. Default value is \code{"2.5"}
+#' @param Stringtie.Assembly.g Stringtie assembly terminal
+#' '-g' option. Default value is \code{"50"}
+#' @param Stringtie.Assembly.M Stringtie assembly terminal
+#' '-M' option. Default value is \code{"0.95"}
 #' @param StringTie.Merge.Trans.run Whether to run 'StringTie GTF merging' step
 #'   in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie GTF merging' step.
+#' @param Stringtie.Merge.num.parallel.threads  Specify the number of processing
+#' threads (CPUs) to use for Stringtie merge step. The default is \code{"1"}
 #' @param Gffcompare.Ref.Sample.run Whether to run 'Gffcompare comparison' step
 #'   in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'Gffcompare comparison' step.
 #' @param StringTie.Ballgown.run Whether to run 'StringTie ballgown creation'
 #'   step in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie ballgown creation' step.
+#' @param Stringtie.2.Ballgown.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for Stringtie to ballgown step. The default is \code{"1"}
 #' @param PreDECountTable.run Whether to run 'gene raw reads count creation'
 #'   step in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'gene raw reads count creation' step.
@@ -84,127 +285,125 @@
 #' ## (or\code{RNASeqEnvironmentSet()}) is executed successfully.
 #' RNASeqReadProcess_CMD(RNASeqRParam = yeast,
 #'                       num.parallel.threads = 10)}
+#'
+# Parameters: 119
 RNASeqReadProcess_CMD <- function(RNASeqRParam,
                                   SAMtools.or.Rsamtools     = "Rsamtools",
-                                  num.parallel.threads      = 1,
                                   Hisat2.Index.run          = TRUE,
-                                  Hisat2.Index.num.parallel.threads = 1,
+                                  Hisat2.Index.num.parallel.threads = "1",
                                   Hisat2.Index.large.index = FALSE,
-                                  Hisat2.Index.local.ftab.chars = 6,
-                                  Hisat2.Index.local.off.rate = 3,
-                                  Hisat2.Index.ftab.chars = 10,
-                                  Hisat2.Index.off.rate = 4,
+                                  Hisat2.Index.local.ftab.chars = "6",
+                                  Hisat2.Index.local.off.rate = "3",
+                                  Hisat2.Index.ftab.chars = "10",
+                                  Hisat2.Index.off.rate = "4",
                                   Hisat2.Alignment.run      = TRUE,
-                                  Hisat2.Alignment.num.parallel.threads = 1,
-                                  Hisat2.Alignment.skip = 0,
-                                  Hisat2.Alignment.qupto = "None",
-                                  Hisat2.Alignment.trim5 = 0,
-                                  Hisat2.Alignment.trim3 = 0,
-                                  Hisat2.Alignment.phred = 33,
-                                  Hisat2.Alignment.int.quals = FALSE,
+                                  Hisat2.Alignment.num.parallel.threads = "1",
+                                  Hisat2.Alignment.skip = "0",
+                                  Hisat2.Alignment.trim5 = "0",
+                                  Hisat2.Alignment.trim3 = "0",
                                   Hisat2.Alignment.n.ceil.1.function.type = "L",
-                                  Hisat2.Alignment.n.ceil.2.constant.term = 0,
-                                  Hisat2.Alignment.n.ceil.3.coefficient = 0.15,
-                                  Hisat2.Alignment.mp.MX = 6,
-                                  Hisat2.Alignment.mp.MN = 2,
-                                  Hisat2.Alignment.sp.MX = 2,
-                                  Hisat2.Alignment.sp.MN = 1,
-                                  Hisat2.Alignment.np = 1,
-                                  Hisat2.Alignment.rdg.1 = 5,
-                                  Hisat2.Alignment.rdg.2 = 3,
-                                  Hisat2.Alignment.rfg.1 = 5,
-                                  Hisat2.Alignment.rfg.2 = 3,
+                                  Hisat2.Alignment.n.ceil.2.constant.term = "0",
+                                  Hisat2.Alignment.n.ceil.3.coefficient = "0.15",
+                                  Hisat2.Alignment.mp.MX = "6",
+                                  Hisat2.Alignment.mp.MN = "2",
+                                  Hisat2.Alignment.sp.MX = "2",
+                                  Hisat2.Alignment.sp.MN = "1",
+                                  Hisat2.Alignment.np = "1",
+                                  Hisat2.Alignment.rdg.1 = "5",
+                                  Hisat2.Alignment.rdg.2 = "3",
+                                  Hisat2.Alignment.rfg.1 = "5",
+                                  Hisat2.Alignment.rfg.2 = "3",
                                   Hisat2.Alignment.score.min.1.function.type = "L",
-                                  Hisat2.Alignment.score.min.2.constant.term = 0,
-                                  Hisat2.Alignment.score.min.3.coefficient = -0.2,
-                                  Hisat2.Alignment.pen.cansplice = 0,
-                                  Hisat2.Alignment.penc.noncansplice = 12,
+                                  Hisat2.Alignment.score.min.2.constant.term = "0",
+                                  Hisat2.Alignment.score.min.3.coefficient = "-0.2",
+                                  Hisat2.Alignment.pen.cansplice = "0",
+                                  Hisat2.Alignment.penc.noncansplice = "12",
                                   Hisat2.Alignment.pen.canintronlen.1.function.type = "G",
-                                  Hisat2.Alignment.pen.canintronlen.2.constant.term = -8,
-                                  Hisat2.Alignment.pen.canintronlen.3.coefficient = 1,
+                                  Hisat2.Alignment.pen.canintronlen.2.constant.term = "-8",
+                                  Hisat2.Alignment.pen.canintronlen.3.coefficient = "1",
                                   Hisat2.Alignment.pen.noncanintronlen.1.function.type = "G",
-                                  Hisat2.Alignment.pen.noncanintronlen.2.constant.term = -8,
-                                  Hisat2.Alignment.pen.noncanintronlen.3.coefficient = 1,
-                                  Hisat2.Alignment.min.intronlen = 20,
-                                  Hisat2.Alignment.max.intronlen = 500000,
+                                  Hisat2.Alignment.pen.noncanintronlen.2.constant.term = "-8",
+                                  Hisat2.Alignment.pen.noncanintronlen.3.coefficient = "1",
+                                  Hisat2.Alignment.min.intronlen = "20",
+                                  Hisat2.Alignment.max.intronlen = "500000",
                                   Hisat2.Alignment.rna.strandness = "None",
-                                  Hisat2.Alignment.k = 5,
-                                  Hisat2.Alignment.max.seeds = 5,
+                                  Hisat2.Alignment.k = "5",
+                                  Hisat2.Alignment.max.seeds = "5",
                                   Hisat2.Alignment.secondary = FALSE,
-                                  Hisat2.Alignment.minins = 0,
-                                  Hisat2.Alignment.maxins = 500,
-                                  Hisat2.Alignment.seed = 0,
-                                  STAR.Index.num.parallel.threads = 1,
-                                  STAR.Index.sjdbOverhang.Read.length = 100,
-                                  STAR.Index.genomeSAindexNbases = 14,
-                                  STAR.Index.genomeChrBinNbits = 18,
-                                  STAR.Index.genomeSAsparseD = 1,
+                                  Hisat2.Alignment.minins = "0",
+                                  Hisat2.Alignment.maxins = "500",
+                                  Hisat2.Alignment.seed = "0",
+                                  STAR.Index.num.parallel.threads = "1",
+                                  STAR.Index.sjdbOverhang.Read.length = "100",
+                                  STAR.Index.genomeSAindexNbases = "14",
+                                  STAR.Index.genomeChrBinNbits = "18",
+                                  STAR.Index.genomeSAsparseD = "1",
                                   STAR.Alignment.run        = FALSE,
-                                  STAR.Alignment.num.parallel.threads = 1,
+                                  STAR.Alignment.num.parallel.threads = "1",
                                   STAR.Alignment.genomeLoad = "NoSharedMemory",
-                                  STAR.Alignment.readMapNumber = -1,
-                                  STAR.Alignment.clip3pNbases = 0,
-                                  STAR.Alignment.clip5pNbases = 0,
+                                  STAR.Alignment.readMapNumber = "-1",
+                                  STAR.Alignment.clip3pNbases = "0",
+                                  STAR.Alignment.clip5pNbases = "0",
                                   STAR.Alignment.clip3pAdapterSeq = "-",
-                                  STAR.Alignment.clip3pAdapterMMp = 0.1,
-                                  STAR.Alignment.clip3pAfterAdapterNbases = 0,
-                                  STAR.Alignment.limitGenomeGenerateRAM = 31000000000,
-                                  STAR.Alignment.limitIObufferSize = 150000000,
-                                  STAR.Alignment.limitOutSAMoneReadBytes = 100000,
-                                  STAR.Alignment.limitOutSJoneRead = 1000,
-                                  STAR.Alignment.limitOutSJcollapsed = 1000000,
-                                  STAR.Alignment.limitBAMsortRAM = 0,
+                                  STAR.Alignment.clip3pAdapterMMp = "0.1",
+                                  STAR.Alignment.clip3pAfterAdapterNbases = "0",
+                                  STAR.Alignment.limitGenomeGenerateRAM = "31000000000",
+                                  STAR.Alignment.limitIObufferSize = "150000000",
+                                  STAR.Alignment.limitOutSAMoneReadBytes = "100000",
+                                  STAR.Alignment.limitOutSJoneRead = "1000",
+                                  STAR.Alignment.limitOutSJcollapsed = "1000000",
+                                  STAR.Alignment.limitBAMsortRAM = "0",
                                   STAR.Alignment.outReadsUnmapped = "None",
-                                  STAR.Alignment.outQSconversionAdd = 0,
+                                  STAR.Alignment.outQSconversionAdd = "0",
                                   STAR.Alignment.outSAMprimaryFlag = "OneBestScore",
-                                  STAR.Alignment.outSAMmapqUnique = 255,
-                                  STAR.Alignment.scoreGap = 0,
-                                  STAR.Alignment.scoreGapNoncan = -8,
-                                  STAR.Alignment.scoreGapGCAG = -4,
-                                  STAR.Alignment.scoreGapATAC = -8,
-                                  STAR.Alignment.scoreGenomicLengthLog2scale = -0.25,
-                                  STAR.Alignment.scoreDelOpen = -2,
-                                  STAR.Alignment.scoreDelBase = -2,
-                                  STAR.Alignment.scoreInsOpen = -2,
-                                  STAR.Alignment.scoreInsBase = -2,
-                                  STAR.Alignment.scoreStitchSJshift = 1,
-                                  STAR.Alignment.seedSearchStartLmax = 50,
-                                  STAR.Alignment.seedSearchStartLmaxOverLread = 1.0,
-                                  STAR.Alignment.seedSearchLmax = 0,
-                                  STAR.Alignment.seedMultimapNmax = 10000,
-                                  STAR.Alignment.seedPerReadNmax = 1000,
-                                  STAR.Alignment.seedPerWindowNmax = 50,
-                                  STAR.Alignment.seedNoneLociPerWindow = 10,
-                                  STAR.Alignment.alignIntronMin = 21,
-                                  STAR.Alignment.alignIntronMax = 0,
-                                  STAR.Alignment.alignMatesGapMax = 0,
-                                  STAR.Alignment.alignSJoverhangMin = 5,
-                                  STAR.Alignment.alignSJDBoverhangMin = 3,
-                                  STAR.Alignment.alignSplicedMateMapLmin = 0,
-                                  STAR.Alignment.alignSplicedMateMapLminOverLmate = 0.66,
-                                  STAR.Alignment.alignWindowsPerReadNmax = 10000,
-                                  STAR.Alignment.alignTranscriptsPerWindowNmax = 100,
-                                  STAR.Alignment.alignTranscriptsPerReadNmax = 10000,
+                                  STAR.Alignment.outSAMmapqUnique = "255",
+                                  STAR.Alignment.scoreGap = "0",
+                                  STAR.Alignment.scoreGapNoncan = "-8",
+                                  STAR.Alignment.scoreGapGCAG = "-4",
+                                  STAR.Alignment.scoreGapATAC = "-8",
+                                  STAR.Alignment.scoreGenomicLengthLog2scale = "-0.25",
+                                  STAR.Alignment.scoreDelOpen = "-2",
+                                  STAR.Alignment.scoreDelBase = "-2",
+                                  STAR.Alignment.scoreInsOpen = "-2",
+                                  STAR.Alignment.scoreInsBase = "-2",
+                                  STAR.Alignment.scoreStitchSJshift = "1",
+                                  STAR.Alignment.seedSearchStartLmax = "50",
+                                  STAR.Alignment.seedSearchStartLmaxOverLread = "1.0",
+                                  STAR.Alignment.seedSearchLmax = "0",
+                                  STAR.Alignment.seedMultimapNmax = "10000",
+                                  STAR.Alignment.seedPerReadNmax = "1000",
+                                  STAR.Alignment.seedPerWindowNmax = "50",
+                                  STAR.Alignment.seedNoneLociPerWindow = "10",
+                                  STAR.Alignment.alignIntronMin = "21",
+                                  STAR.Alignment.alignIntronMax = "0",
+                                  STAR.Alignment.alignMatesGapMax = "0",
+                                  STAR.Alignment.alignSJoverhangMin = "5",
+                                  STAR.Alignment.alignSJDBoverhangMin = "3",
+                                  STAR.Alignment.alignSplicedMateMapLmin = "0",
+                                  STAR.Alignment.alignSplicedMateMapLminOverLmate = "0.66",
+                                  STAR.Alignment.alignWindowsPerReadNmax = "10000",
+                                  STAR.Alignment.alignTranscriptsPerWindowNmax = "100",
+                                  STAR.Alignment.alignTranscriptsPerReadNmax = "10000",
                                   STAR.Alignment.alignEndsType = "Local",
-                                  STAR.Alignment.winAnchorMultimapNmax = 50,
-                                  STAR.Alignment.winBinNbits = 16,
-                                  STAR.Alignment.winAnchorDistNbins = 9,
-                                  STAR.Alignment.winFlankNbins = 4,
+                                  STAR.Alignment.winAnchorMultimapNmax = "50",
+                                  STAR.Alignment.winBinNbits = "16",
+                                  STAR.Alignment.winAnchorDistNbins = "9",
+                                  STAR.Alignment.winFlankNbins = "4",
                                   Rsamtools.Bam.run         = TRUE,
-                                  Samtools.Bam.num.parallel.threads = 1,
-                                  Rsamtools.nCores          = 1,
+                                  Samtools.Bam.num.parallel.threads = "1",
+                                  Rsamtools.nCores          = "1",
                                   StringTie.Assemble.run    = TRUE,
-                                  Stringtie.Assembly.num.parallel.threads = 1,
-                                  Stringtie.Assembly.f = 0.1,
-                                  Stringtie.Assembly.m = 200,
-                                  Stringtie.Assembly.c = 2.5,
-                                  Stringtie.Assembly.g = 50,
-                                  Stringtie.Assembly.M = 0.95,
+                                  Stringtie.Assembly.num.parallel.threads = "1",
+                                  Stringtie.Assembly.f = "0.1",
+                                  Stringtie.Assembly.m = "200",
+                                  Stringtie.Assembly.c = "2.5",
+                                  Stringtie.Assembly.g = "50",
+                                  Stringtie.Assembly.M = "0.95",
                                   StringTie.Merge.Trans.run = TRUE,
-                                  Stringtie.Merge.num.parallel.threads = 1,
+                                  Stringtie.Merge.num.parallel.threads = "1",
                                   Gffcompare.Ref.Sample.run = TRUE,
                                   StringTie.Ballgown.run    = TRUE,
-                                  Stringtie.2.Ballgown.num.parallel.threads = 1,
+                                  Stringtie.2.Ballgown.num.parallel.threads = "1",
                                   PreDECountTable.run       = TRUE,
                                   run                       = TRUE,
                                   check.s4.print            = TRUE) {
@@ -221,7 +420,6 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
                    ", which.trigger = 'INSIDE'",
                    ", INSIDE.path.prefix = '", INSIDE.path.prefix,
                    "', SAMtools.or.Rsamtools = '", SAMtools.or.Rsamtools,
-                   "', num.parallel.threads = ", num.parallel.threads,
                    ", Rsamtools.nCores = ", Rsamtools.nCores,
                    ", Hisat2.Index.run = ", Hisat2.Index.run,
                    ", Hisat2.Alignment.run = ", Hisat2.Alignment.run,
@@ -282,41 +480,244 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
 #'   this value.
 #' @param SAMtools.or.Rsamtools Default value is \code{Rsamtools}. User can set
 #'   to \code{SAMtools} to use command-line-based 'samtools' instead.
-#' @param num.parallel.threads Specify the number of processing threads (CPUs)
-#'   to use for each step. The default is 1.
-#' @param Rsamtools.nCores The number of cores to use when running
-#'   'Rsamtools' step.
 #' @param Hisat2.Index.run Whether to run 'HISAT2 index' step in this function
-#'   step. Default value is \code{TRUE}.
-#'   Set \code{FALSE} to skip 'HISAT2 index' step.
+#' step. Default value is \code{TRUE}. Set \code{FALSE} to skip
+#' 'HISAT2 index' step.
+#' @param Hisat2.Index.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for Hisat2 index step. The default is \code{"1"}
+#' @param Hisat2.Index.large.index Hisat2 index terminal '--large-index' option.
+#' Default value is \code{FALSE}
+#' @param Hisat2.Index.local.ftab.chars Hisat2 index terminal '-t/--ftabchars'
+#' option. Default value is \code{"6"}
+#' @param Hisat2.Index.local.off.rate Hisat2 index terminal '--localoffrate'
+#' option. Default value is \code{"3"}
+#' @param Hisat2.Index.ftab.chars Hisat2 index terminal '--localftabchars'
+#' option. Default value is \code{"10"}
+#' @param Hisat2.Index.off.rate Hisat2 index terminal '--offrate' option.
+#' Default value is \code{"4"}
 #' @param Hisat2.Alignment.run Whether to run 'HISAT2 alignment' step in this
 #'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'HISAT2 alignment' step.
-#'
-#'
-#'
-#' @param STAR.Alignment.run Whether to run 'STAR alignment' step in this
-#'   function step. Default value is \code{FALSE}.
-#'   Set \code{TRUE} to run 'STAR alignment' step.
-#'
-#'
-#'
-#'
+#' @param Hisat2.Alignment.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for Hisat2 alignment step. The default is \code{"1"}
+#' @param Hisat2.Alignment.skip Hisat2 alignment terminal '-s/--skip' option.
+#' Default value is \code{"0"}
+#' @param Hisat2.Alignment.trim5 Hisat2 alignment terminal '-5/--trim5' option.
+#' Default value is \code{"0"}
+#' @param Hisat2.Alignment.trim3 Hisat2 alignment terminal '-3/--trim3' option.
+#' Default value is \code{"0"}
+#' @param Hisat2.Alignment.n.ceil.1.function.type Hisat2 alignment terminal
+#' '--n-ceil' option. Default value is \code{"L"}
+#' @param Hisat2.Alignment.n.ceil.2.constant.term Hisat2 alignment terminal
+#' '--n-ceil' option. Default value is \code{"0"}
+#' @param Hisat2.Alignment.n.ceil.3.coefficient Hisat2 alignment terminal
+#' '--n-ceil' option. Default value is \code{"0.15"}
+#' @param Hisat2.Alignment.mp.MX Hisat2 alignment terminal '--mp MX' option.
+#' Default value is \code{"6"}
+#' @param Hisat2.Alignment.mp.MN Hisat2 alignment terminal '--mp MN' option.
+#' Default value is \code{"2"}
+#' @param Hisat2.Alignment.sp.MX Hisat2 alignment terminal '--sp MX' option.
+#' Default value is \code{"2"}
+#' @param Hisat2.Alignment.sp.MN Hisat2 alignment terminal '--sp MN' option.
+#' Default value is \code{"1"}
+#' @param Hisat2.Alignment.np Hisat2 alignment terminal '--np' option.
+#' Default value is \code{"1"}
+#' @param Hisat2.Alignment.rdg.1 Hisat2 alignment terminal '--rdg' first option.
+#' Default value is \code{"5"}
+#' @param Hisat2.Alignment.rdg.2 Hisat2 alignment terminal '--rdg' first option.
+#' Default value is \code{"3"}
+#' @param Hisat2.Alignment.rfg.1 Hisat2 alignment terminal '--rfg' first option.
+#' Default value is \code{"5"}
+#' @param Hisat2.Alignment.rfg.2 Hisat2 alignment terminal '--rfg' first option.
+#' Default value is \code{"3"}
+#' @param Hisat2.Alignment.score.min.1.function.type Hisat2 alignment terminal
+#' '--rdg' first option. Default value is \code{"L"}
+#' @param Hisat2.Alignment.score.min.2.constant.term Hisat2 alignment terminal
+#' '--rdg' first option. Default value is \code{"0"}
+#' @param Hisat2.Alignment.score.min.3.coefficient Hisat2 alignment terminal
+#' '--rdg' first option. Default value is \code{"-0.2"}
+#' @param Hisat2.Alignment.pen.cansplice Hisat2 alignment terminal
+#' '--pen-cansplice' first option. Default value is \code{"-0"}
+#' @param Hisat2.Alignment.penc.noncansplice Hisat2 alignment terminal
+#' '--pen-noncansplice' option. Default value is \code{"12"}
+#' @param Hisat2.Alignment.pen.canintronlen.1.function.type Hisat2 alignment
+#' terminal '--pen-canintronlen' first option. Default value is \code{"G"}
+#' @param Hisat2.Alignment.pen.canintronlen.2.constant.term Hisat2 alignment
+#' terminal '--pen-canintronlen' second option. Default value is \code{"-8"}
+#' @param Hisat2.Alignment.pen.canintronlen.3.coefficient Hisat2 alignment
+#' terminal '--pen-canintronlen' third option. Default value is \code{"1"}
+#' @param Hisat2.Alignment.pen.noncanintronlen.1.function.type Hisat2 alignment
+#' terminal '--pen-noncanintronlen' first option. Default value is \code{"G"}
+#' @param Hisat2.Alignment.pen.noncanintronlen.2.constant.term Hisat2 alignment
+#' terminal '--pen-noncanintronlen' second option. Default value is \code{"-8"}
+#' @param Hisat2.Alignment.pen.noncanintronlen.3.coefficient Hisat2 alignment
+#' terminal '--pen-noncanintronlen' third option. Default value is \code{"1"}
+#' @param Hisat2.Alignment.min.intronlen Hisat2 alignment terminal
+#' '--min-intronlen' option. Default value is \code{"20"}
+#' @param Hisat2.Alignment.max.intronlen Hisat2 alignment terminal '--max-intronlen'
+#' option. Default value is \code{"20"}
+#' @param Hisat2.Alignment.rna.strandness Hisat2 alignment terminal '--rna-strandness'
+#' option. Default value is \code{"None"}
+#' @param Hisat2.Alignment.k Hisat2 alignment terminal '-k' option.
+#' Default value is \code{"5"}
+#' @param Hisat2.Alignment.max.seeds Hisat2 alignment terminal '--max-seeds' option.
+#' Default value is \code{"5"}
+#' @param Hisat2.Alignment.secondary Hisat2 alignment terminal '--secondary' option.
+#' Default value is \code{"FALSE"}
+#' @param Hisat2.Alignment.minins Hisat2 alignment terminal '-I/--minins' option.
+#' Default value is \code{"0"}
+#' @param Hisat2.Alignment.maxins Hisat2 alignment terminal '-X/--maxins' option.
+#' Default value is \code{"500"}
+#' @param Hisat2.Alignment.seed Hisat2 alignment terminal '-X/--maxins' option.
+#' Default value is \code{"0"}
+#' @param STAR.Index.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for STAR index step. The default is \code{"1"}
+#' @param STAR.Index.sjdbOverhang.Read.length STAR index terminal
+#' '--sjdbOverhang' option. Default value is \code{"100"}
+#' @param STAR.Index.genomeSAindexNbases STAR index terminal
+#' '--genomeSAindexNbases' option. Default value is \code{"14"}
+#' @param STAR.Index.genomeChrBinNbits STAR index terminal
+#' '--genomeChrBinNbits' option. Default value is \code{"18"}
+#' @param STAR.Index.genomeSAsparseD STAR index terminal
+#' '--genomeSAsparseD' option. Default value is \code{"1"}
+#' @param STAR.Alignment.run Whether to run 'STAR index' step in this function
+#' step. Default value is \code{FALSE}. Set \code{TRUE} to run STAR alignment step.
+#' (need to set Hisat2.Index.run to \code{FALSE})
+#' @param STAR.Alignment.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for STAR alignment step. The default is \code{"1"}
+#' @param STAR.Alignment.genomeLoad STAR alignment terminal '--genomeLoad'
+#' option. Default value is \code{"NoSharedMemory"}
+#' @param STAR.Alignment.readMapNumber STAR alignment terminal '--readMapNumber'
+#' option. Default value is \code{"-1"}
+#' @param STAR.Alignment.clip3pNbases STAR alignment terminal '--clip3pNbases'
+#' option. Default value is \code{"0"}
+#' @param STAR.Alignment.clip5pNbases STAR alignment terminal '--clip5pNbases'
+#' option. Default value is \code{"0"}
+#' @param STAR.Alignment.clip3pAdapterSeq STAR alignment terminal '--clip3pAdapterSeq'
+#' option. Default value is \code{"-"}
+#' @param STAR.Alignment.clip3pAdapterMMp STAR alignment terminal '--clip3pAdapterMMp'
+#' option. Default value is \code{"0.1"}
+#' @param STAR.Alignment.clip3pAfterAdapterNbases STAR alignment terminal
+#' '--clip3pAfterAdapterNbases' option. Default value is \code{"0"}
+#' @param STAR.Alignment.limitGenomeGenerateRAM  STAR alignment terminal
+#' '--limitGenomeGenerateRAM' option. Default value is \code{"31000000000"}
+#' @param STAR.Alignment.limitIObufferSize STAR alignment terminal
+#' '--limitIObufferSize' option. Default value is \code{"150000000"}
+#' @param STAR.Alignment.limitOutSAMoneReadBytes STAR alignment terminal
+#' '--limitOutSAMoneReadBytes' option. Default value is \code{"100000"}
+#' @param STAR.Alignment.limitOutSJoneRead STAR alignment terminal
+#' '--limitOutSJoneRead' option. Default value is \code{"1000"}
+#' @param STAR.Alignment.limitOutSJcollapsed STAR alignment terminal
+#' '--limitOutSJcollapsed' option. Default value is \code{"1000000"}
+#' @param STAR.Alignment.limitBAMsortRAM STAR alignment terminal
+#' '--limitBAMsortRAM' option. Default value is \code{"0"}
+#' @param STAR.Alignment.outReadsUnmapped STAR alignment terminal
+#' '--outReadsUnmapped' option. Default value is \code{"None"}
+#' @param STAR.Alignment.outQSconversionAdd STAR alignment terminal
+#' '--outQSconversionAdd' option. Default value is \code{"0"}
+#' @param STAR.Alignment.outSAMprimaryFlag STAR alignment terminal
+#' '--outSAMprimaryFlag' option. Default value is \code{"OneBestScore"}
+#' @param STAR.Alignment.outSAMmapqUnique STAR alignment terminal
+#' '--outSAMmapqUnique' option. Default value is \code{"255"}
+#' @param STAR.Alignment.scoreGap STAR alignment terminal
+#' '--scoreGap' option. Default value is \code{"0"}
+#' @param STAR.Alignment.scoreGapNoncan STAR alignment terminal
+#' '--scoreGapNoncan' option. Default value is \code{"-8"}
+#' @param STAR.Alignment.scoreGapGCAG STAR alignment terminal
+#' '--scoreGapGCAG' option. Default value is \code{"-4"}
+#' @param STAR.Alignment.scoreGapATAC STAR alignment terminal
+#' '--scoreGapATAC' option. Default value is \code{"-8"}
+#' @param STAR.Alignment.scoreGenomicLengthLog2scale STAR alignment terminal
+#' '--scoreGenomicLengthLog2scale' option. Default value is \code{"-0.25"}
+#' @param STAR.Alignment.scoreDelOpen STAR alignment terminal
+#' '--scoreDelOpen' option. Default value is \code{"-2"}
+#' @param STAR.Alignment.scoreDelBase STAR alignment terminal
+#' '--scoreDelBase' option. Default value is \code{"-2"}
+#' @param STAR.Alignment.scoreInsOpen STAR alignment terminal
+#' '--scoreInsOpen' option. Default value is \code{"-2"}
+#' @param STAR.Alignment.scoreInsBase STAR alignment terminal
+#' '--scoreInsBase' option. Default value is \code{"-2"}
+#' @param STAR.Alignment.scoreStitchSJshift STAR alignment terminal
+#' '--scoreStitchSJshift' option. Default value is \code{"1"}
+#' @param STAR.Alignment.seedSearchStartLmax STAR alignment terminal
+#' '--scoreStitchSJshift' option. Default value is \code{"50"}
+#' @param STAR.Alignment.seedSearchStartLmaxOverLread STAR alignment terminal
+#' '--seedSearchStartLmaxOverLread' option. Default value is \code{"1.0"}
+#' @param STAR.Alignment.seedSearchLmaxSTAR STAR alignment terminal
+#' '--seedSearchLmax' option. Default value is \code{"0"}
+#' @param STAR.Alignment.seedMultimapNmax STAR alignment terminal
+#' '--seedMultimapNmax' option. Default value is \code{"10000"}
+#' @param STAR.Alignment.seedPerReadNmax STAR alignment terminal
+#' '--seedPerReadNmax' option. Default value is \code{"1000"}
+#' @param STAR.Alignment.seedPerWindowNmax STAR alignment terminal
+#' '--seedPerWindowNmax' option. Default value is \code{"50"}
+#' @param STAR.Alignment.seedNoneLociPerWindow STAR alignment terminal
+#' '--seedNoneLociPerWindow' option. Default value is \code{"10"}
+#' @param STAR.Alignment.alignIntronMin STAR alignment terminal
+#' '--alignIntronMin' option. Default value is \code{"21"}
+#' @param STAR.Alignment.alignIntronMax STAR alignment terminal
+#' '--alignIntronMax' option. Default value is \code{"0"}
+#' @param STAR.Alignment.alignMatesGapMax STAR alignment terminal
+#' '--alignMatesGapMax' option. Default value is \code{"0"}
+#' @param STAR.Alignment.alignSJoverhangMin STAR alignment terminal
+#' '--alignSJoverhangMin' option. Default value is \code{"5"}
+#' @param STAR.Alignment.alignSJDBoverhangMin STAR alignment terminal
+#' '--alignSJDBoverhangMin' option. Default value is \code{"3"}
+#' @param STAR.Alignment.alignSplicedMateMapLmin STAR alignment terminal
+#' '--alignSplicedMateMapLmin' option. Default value is \code{"0"}
+#' @param STAR.Alignment.alignSplicedMateMapLminOverLmate STAR alignment terminal
+#' '--alignSplicedMateMapLminOverLmate' option. Default value is \code{"0.66"}
+#' @param STAR.Alignment.alignWindowsPerReadNmax STAR alignment terminal
+#' '--alignWindowsPerReadNmax' option. Default value is \code{"10000"}
+#' @param STAR.Alignment.alignTranscriptsPerWindowNmax STAR alignment terminal
+#' '--alignTranscriptsPerWindowNmax' option. Default value is \code{"100"}
+#' @param STAR.Alignment.alignTranscriptsPerReadNmax STAR alignment terminal
+#' '--alignTranscriptsPerReadNmax' option. Default value is \code{"10000"}
+#' @param STAR.Alignment.alignEndsType STAR alignment terminal
+#' '--alignEndsType' option. Default value is \code{"Local"}
+#' @param STAR.Alignment.winAnchorMultimapNmax STAR alignment terminal
+#' '--winAnchorMultimapNmax' option. Default value is \code{"50"}
+#' @param STAR.Alignment.winBinNbits STAR alignment terminal
+#' '--winBinNbits' option. Default value is \code{"16"}
+#' @param STAR.Alignment.winAnchorDistNbins STAR alignment terminal
+#' '--winAnchorDistNbins' option. Default value is \code{"9"}
+#' @param STAR.Alignment.winFlankNbins STAR alignment terminal
+#' '--winFlankNbins' option. Default value is \code{"4"}
 #' @param Rsamtools.Bam.run Whether to run 'Rsamtools SAM to BAM' step in this
 #'   function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'Rsamtools SAM to BAM' step.
+#' @param Samtools.Bam.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for Samtools sam to bam step. The default is \code{"1"}
+#' @param Rsamtools.nCores The number of cores to use when running
+#'  'Rsamtools' step. Default value is \code{1}
 #' @param StringTie.Assemble.run Whether to run 'StringTie assembly' step in
 #'   this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie assembly' step.
+#' @param Stringtie.Assembly.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for Stringtie assembly. The default is \code{"1"}
+#' @param Stringtie.Assembly.f Stringtie assembly terminal
+#' '-f' option. Default value is \code{"0.1"}
+#' @param Stringtie.Assembly.m Stringtie assembly terminal
+#' '-m' option. Default value is \code{"200"}
+#' @param Stringtie.Assembly.c Stringtie assembly terminal
+#' '-c' option. Default value is \code{"2.5"}
+#' @param Stringtie.Assembly.g Stringtie assembly terminal
+#' '-g' option. Default value is \code{"50"}
+#' @param Stringtie.Assembly.M Stringtie assembly terminal
+#' '-M' option. Default value is \code{"0.95"}
 #' @param StringTie.Merge.Trans.run Whether to run 'StringTie GTF merging' step
 #'   in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie GTF merging' step.
+#' @param Stringtie.Merge.num.parallel.threads  Specify the number of processing
+#' threads (CPUs) to use for Stringtie merge step. The default is \code{"1"}
 #' @param Gffcompare.Ref.Sample.run Whether to run 'Gffcompare comparison' step
 #'   in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'Gffcompare comparison' step.
 #' @param StringTie.Ballgown.run Whether to run 'StringTie ballgown creation'
 #'   step in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'StringTie ballgown creation' step.
+#' @param Stringtie.2.Ballgown.num.parallel.threads Specify the number of processing
+#' threads (CPUs) to use for Stringtie to ballgown step. The default is \code{"1"}
 #' @param PreDECountTable.run Whether to run 'gene raw reads count creation'
 #'   step in this function step. Default value is \code{TRUE}.
 #'   Set \code{FALSE} to skip 'gene raw reads count creation' step.
@@ -336,129 +737,126 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
 #' ##(or\code{RNASeqEnvironmentSet()}) is executed successfully.
 #' RNASeqReadProcess(RNASeqRParam         = yeast,
 #'                   num.parallel.threads = 10)}
+# Parameters: 120
 RNASeqReadProcess <- function(RNASeqRParam,
                               which.trigger             = "OUTSIDE",
                               INSIDE.path.prefix        = NA,
                               SAMtools.or.Rsamtools     = "Rsamtools",
-                              num.parallel.threads      = 1,
                               Hisat2.Index.run          = TRUE,
-                              Hisat2.Index.num.parallel.threads = 1,
+                              Hisat2.Index.num.parallel.threads = "1",
                               Hisat2.Index.large.index = FALSE,
-                              Hisat2.Index.local.ftab.chars = 6,
-                              Hisat2.Index.local.off.rate = 3,
-                              Hisat2.Index.ftab.chars = 10,
-                              Hisat2.Index.off.rate = 4,
+                              Hisat2.Index.local.ftab.chars = "6",
+                              Hisat2.Index.local.off.rate = "3",
+                              Hisat2.Index.ftab.chars = "10",
+                              Hisat2.Index.off.rate = "4",
                               Hisat2.Alignment.run      = TRUE,
-                              Hisat2.Alignment.num.parallel.threads = 1,
-                              Hisat2.Alignment.skip = 0,
-                              Hisat2.Alignment.qupto = "None",
-                              Hisat2.Alignment.trim5 = 0,
-                              Hisat2.Alignment.trim3 = 0,
-                              Hisat2.Alignment.phred = 33,
-                              Hisat2.Alignment.int.quals = FALSE,
+                              Hisat2.Alignment.num.parallel.threads = "1",
+                              Hisat2.Alignment.skip = "0",
+                              Hisat2.Alignment.trim5 = "0",
+                              Hisat2.Alignment.trim3 = "0",
                               Hisat2.Alignment.n.ceil.1.function.type = "L",
-                              Hisat2.Alignment.n.ceil.2.constant.term = 0,
-                              Hisat2.Alignment.n.ceil.3.coefficient = 0.15,
-                              Hisat2.Alignment.mp.MX = 6,
-                              Hisat2.Alignment.mp.MN = 2,
-                              Hisat2.Alignment.sp.MX = 2,
-                              Hisat2.Alignment.sp.MN = 1,
-                              Hisat2.Alignment.np = 1,
-                              Hisat2.Alignment.rdg.1 = 5,
-                              Hisat2.Alignment.rdg.2 = 3,
-                              Hisat2.Alignment.rfg.1 = 5,
-                              Hisat2.Alignment.rfg.2 = 3,
+                              Hisat2.Alignment.n.ceil.2.constant.term = "0",
+                              Hisat2.Alignment.n.ceil.3.coefficient = "0.15",
+                              Hisat2.Alignment.mp.MX = "6",
+                              Hisat2.Alignment.mp.MN = "2",
+                              Hisat2.Alignment.sp.MX = "2",
+                              Hisat2.Alignment.sp.MN = "1",
+                              Hisat2.Alignment.np = "1",
+                              Hisat2.Alignment.rdg.1 = "5",
+                              Hisat2.Alignment.rdg.2 = "3",
+                              Hisat2.Alignment.rfg.1 = "5",
+                              Hisat2.Alignment.rfg.2 = "3",
                               Hisat2.Alignment.score.min.1.function.type = "L",
-                              Hisat2.Alignment.score.min.2.constant.term = 0,
-                              Hisat2.Alignment.score.min.3.coefficient = -0.2,
-                              Hisat2.Alignment.pen.cansplice = 0,
-                              Hisat2.Alignment.penc.noncansplice = 12,
+                              Hisat2.Alignment.score.min.2.constant.term = "0",
+                              Hisat2.Alignment.score.min.3.coefficient = "-0.2",
+                              Hisat2.Alignment.pen.cansplice = "0",
+                              Hisat2.Alignment.penc.noncansplice = "12",
                               Hisat2.Alignment.pen.canintronlen.1.function.type = "G",
-                              Hisat2.Alignment.pen.canintronlen.2.constant.term = -8,
-                              Hisat2.Alignment.pen.canintronlen.3.coefficient = 1,
+                              Hisat2.Alignment.pen.canintronlen.2.constant.term = "-8",
+                              Hisat2.Alignment.pen.canintronlen.3.coefficient = "1",
                               Hisat2.Alignment.pen.noncanintronlen.1.function.type = "G",
-                              Hisat2.Alignment.pen.noncanintronlen.2.constant.term = -8,
-                              Hisat2.Alignment.pen.noncanintronlen.3.coefficient = 1,
-                              Hisat2.Alignment.min.intronlen = 20,
-                              Hisat2.Alignment.max.intronlen = 500000,
+                              Hisat2.Alignment.pen.noncanintronlen.2.constant.term = "-8",
+                              Hisat2.Alignment.pen.noncanintronlen.3.coefficient = "1",
+                              Hisat2.Alignment.min.intronlen = "20",
+                              Hisat2.Alignment.max.intronlen = "500000",
                               Hisat2.Alignment.rna.strandness = "None",
-                              Hisat2.Alignment.k = 5,
-                              Hisat2.Alignment.max.seeds = 5,
+                              Hisat2.Alignment.k = "5",
+                              Hisat2.Alignment.max.seeds = "5",
                               Hisat2.Alignment.secondary = FALSE,
-                              Hisat2.Alignment.minins = 0,
-                              Hisat2.Alignment.maxins = 500,
-                              Hisat2.Alignment.seed = 0,
-                              STAR.Index.num.parallel.threads = 1,
-                              STAR.Index.sjdbOverhang.Read.length = 100,
-                              STAR.Index.genomeSAindexNbases = 14,
-                              STAR.Index.genomeChrBinNbits = 18,
-                              STAR.Index.genomeSAsparseD = 1,
+                              Hisat2.Alignment.minins = "0",
+                              Hisat2.Alignment.maxins = "500",
+                              Hisat2.Alignment.seed = "0",
+                              STAR.Index.num.parallel.threads = "1",
+                              STAR.Index.sjdbOverhang.Read.length = "100",
+                              STAR.Index.genomeSAindexNbases = "14",
+                              STAR.Index.genomeChrBinNbits = "18",
+                              STAR.Index.genomeSAsparseD = "1",
                               STAR.Alignment.run        = FALSE,
-                              STAR.Alignment.num.parallel.threads = 1,
+                              STAR.Alignment.num.parallel.threads = "1",
                               STAR.Alignment.genomeLoad = "NoSharedMemory",
-                              STAR.Alignment.readMapNumber = -1,
-                              STAR.Alignment.clip3pNbases = 0,
-                              STAR.Alignment.clip5pNbases = 0,
+                              STAR.Alignment.readMapNumber = "-1",
+                              STAR.Alignment.clip3pNbases = "0",
+                              STAR.Alignment.clip5pNbases = "0",
                               STAR.Alignment.clip3pAdapterSeq = "-",
-                              STAR.Alignment.clip3pAdapterMMp = 0.1,
-                              STAR.Alignment.clip3pAfterAdapterNbases = 0,
-                              STAR.Alignment.limitGenomeGenerateRAM = 31000000000,
-                              STAR.Alignment.limitIObufferSize = 150000000,
-                              STAR.Alignment.limitOutSAMoneReadBytes = 100000,
-                              STAR.Alignment.limitOutSJoneRead = 1000,
-                              STAR.Alignment.limitOutSJcollapsed = 1000000,
-                              STAR.Alignment.limitBAMsortRAM = 0,
+                              STAR.Alignment.clip3pAdapterMMp = "0.1",
+                              STAR.Alignment.clip3pAfterAdapterNbases = "0",
+                              STAR.Alignment.limitGenomeGenerateRAM = "31000000000",
+                              STAR.Alignment.limitIObufferSize = "150000000",
+                              STAR.Alignment.limitOutSAMoneReadBytes = "100000",
+                              STAR.Alignment.limitOutSJoneRead = "1000",
+                              STAR.Alignment.limitOutSJcollapsed = "1000000",
+                              STAR.Alignment.limitBAMsortRAM = "0",
                               STAR.Alignment.outReadsUnmapped = "None",
-                              STAR.Alignment.outQSconversionAdd = 0,
+                              STAR.Alignment.outQSconversionAdd = "0",
                               STAR.Alignment.outSAMprimaryFlag = "OneBestScore",
-                              STAR.Alignment.outSAMmapqUnique = 255,
-                              STAR.Alignment.scoreGap = 0,
-                              STAR.Alignment.scoreGapNoncan = -8,
-                              STAR.Alignment.scoreGapGCAG = -4,
-                              STAR.Alignment.scoreGapATAC = -8,
-                              STAR.Alignment.scoreGenomicLengthLog2scale = -0.25,
-                              STAR.Alignment.scoreDelOpen = -2,
-                              STAR.Alignment.scoreDelBase = -2,
-                              STAR.Alignment.scoreInsOpen = -2,
-                              STAR.Alignment.scoreInsBase = -2,
-                              STAR.Alignment.scoreStitchSJshift = 1,
-                              STAR.Alignment.seedSearchStartLmax = 50,
-                              STAR.Alignment.seedSearchStartLmaxOverLread = 1.0,
-                              STAR.Alignment.seedSearchLmax = 0,
-                              STAR.Alignment.seedMultimapNmax = 10000,
-                              STAR.Alignment.seedPerReadNmax = 1000,
-                              STAR.Alignment.seedPerWindowNmax = 50,
-                              STAR.Alignment.seedNoneLociPerWindow = 10,
-                              STAR.Alignment.alignIntronMin = 21,
-                              STAR.Alignment.alignIntronMax = 0,
-                              STAR.Alignment.alignMatesGapMax = 0,
-                              STAR.Alignment.alignSJoverhangMin = 5,
-                              STAR.Alignment.alignSJDBoverhangMin = 3,
-                              STAR.Alignment.alignSplicedMateMapLmin = 0,
-                              STAR.Alignment.alignSplicedMateMapLminOverLmate = 0.66,
-                              STAR.Alignment.alignWindowsPerReadNmax = 10000,
-                              STAR.Alignment.alignTranscriptsPerWindowNmax = 100,
-                              STAR.Alignment.alignTranscriptsPerReadNmax = 10000,
+                              STAR.Alignment.outSAMmapqUnique = "255",
+                              STAR.Alignment.scoreGap = "0",
+                              STAR.Alignment.scoreGapNoncan = "-8",
+                              STAR.Alignment.scoreGapGCAG = "-4",
+                              STAR.Alignment.scoreGapATAC = "-8",
+                              STAR.Alignment.scoreGenomicLengthLog2scale = "-0.25",
+                              STAR.Alignment.scoreDelOpen = "-2",
+                              STAR.Alignment.scoreDelBase = "-2",
+                              STAR.Alignment.scoreInsOpen = "-2",
+                              STAR.Alignment.scoreInsBase = "-2",
+                              STAR.Alignment.scoreStitchSJshift = "1",
+                              STAR.Alignment.seedSearchStartLmax = "50",
+                              STAR.Alignment.seedSearchStartLmaxOverLread = "1.0",
+                              STAR.Alignment.seedSearchLmax = "0",
+                              STAR.Alignment.seedMultimapNmax = "10000",
+                              STAR.Alignment.seedPerReadNmax = "1000",
+                              STAR.Alignment.seedPerWindowNmax = "50",
+                              STAR.Alignment.seedNoneLociPerWindow = "10",
+                              STAR.Alignment.alignIntronMin = "21",
+                              STAR.Alignment.alignIntronMax = "0",
+                              STAR.Alignment.alignMatesGapMax = "0",
+                              STAR.Alignment.alignSJoverhangMin = "5",
+                              STAR.Alignment.alignSJDBoverhangMin = "3",
+                              STAR.Alignment.alignSplicedMateMapLmin = "0",
+                              STAR.Alignment.alignSplicedMateMapLminOverLmate = "0.66",
+                              STAR.Alignment.alignWindowsPerReadNmax = "10000",
+                              STAR.Alignment.alignTranscriptsPerWindowNmax = "100",
+                              STAR.Alignment.alignTranscriptsPerReadNmax = "10000",
                               STAR.Alignment.alignEndsType = "Local",
-                              STAR.Alignment.winAnchorMultimapNmax = 50,
-                              STAR.Alignment.winBinNbits = 16,
-                              STAR.Alignment.winAnchorDistNbins = 9,
-                              STAR.Alignment.winFlankNbins = 4,
+                              STAR.Alignment.winAnchorMultimapNmax = "50",
+                              STAR.Alignment.winBinNbits = "16",
+                              STAR.Alignment.winAnchorDistNbins = "9",
+                              STAR.Alignment.winFlankNbins = "4",
                               Rsamtools.Bam.run         = TRUE,
-                              Samtools.Bam.num.parallel.threads = 1,
-                              Rsamtools.nCores          = 1,
+                              Samtools.Bam.num.parallel.threads = "1",
+                              Rsamtools.nCores          = "1",
                               StringTie.Assemble.run    = TRUE,
-                              Stringtie.Assembly.num.parallel.threads = 1,
-                              Stringtie.Assembly.f = 0.1,
-                              Stringtie.Assembly.m = 200,
-                              Stringtie.Assembly.c = 2.5,
-                              Stringtie.Assembly.g = 50,
-                              Stringtie.Assembly.M = 0.95,
+                              Stringtie.Assembly.num.parallel.threads = "1",
+                              Stringtie.Assembly.f = "0.1",
+                              Stringtie.Assembly.m = "200",
+                              Stringtie.Assembly.c = "2.5",
+                              Stringtie.Assembly.g = "50",
+                              Stringtie.Assembly.M = "0.95",
                               StringTie.Merge.Trans.run = TRUE,
-                              Stringtie.Merge.num.parallel.threads = 1,
+                              Stringtie.Merge.num.parallel.threads = "1",
                               Gffcompare.Ref.Sample.run = TRUE,
                               StringTie.Ballgown.run    = TRUE,
-                              Stringtie.2.Ballgown.num.parallel.threads = 1,
+                              Stringtie.2.Ballgown.num.parallel.threads = "1",
                               PreDECountTable.run       = TRUE,
                               check.s4.print            = TRUE) {
   CheckOperatingSystem(FALSE)
@@ -516,20 +914,22 @@ RNASeqReadProcess <- function(RNASeqRParam,
 
   if (check.results$ht2.files.number.df == 0 &&
       !indices.optional & Hisat2.Index.run) {
+    # Parameters: 11
     CreateHisat2Index(path.prefix,
                       genome.name,
                       sample.pattern,
                       splice.site.info = TRUE,
                       exon.info = TRUE,
                       Hisat2.Index.num.parallel.threads,
-                      Hisat2.large.index,
-                      Hisat2.local.ftab.chars,
-                      Hisat2.local.off.rate,
-                      Hisat2.ftab.chars,
-                      Hisat2.off.rate)
+                      Hisat2.Index.large.index,
+                      Hisat2.Index.local.ftab.chars,
+                      Hisat2.Index.local.off.rate,
+                      Hisat2.Index.ftab.chars,
+                      Hisat2.Index.off.rate)
   }
 
   if (Hisat2.Alignment.run) {
+    # Parameters: 43
     Hisat2AlignmentDefault(path.prefix,
                            genome.name,
                            sample.pattern,
@@ -538,11 +938,8 @@ RNASeqReadProcess <- function(RNASeqRParam,
                            control.group,
                            Hisat2.Alignment.num.parallel.threads,
                            Hisat2.Alignment.skip,
-                           Hisat2.Alignment.qupto,
                            Hisat2.Alignment.trim5,
                            Hisat2.Alignment.trim3,
-                           Hisat2.Alignment.phred,
-                           Hisat2.Alignment.int.quals,
                            Hisat2.Alignment.n.ceil.1.function.type,
                            Hisat2.Alignment.n.ceil.2.constant.term,
                            Hisat2.Alignment.n.ceil.3.coefficient,
@@ -578,16 +975,16 @@ RNASeqReadProcess <- function(RNASeqRParam,
     }
 
   if (STAR.Alignment.run) {
-    STARAlignmentDefault(path.prefix,
-                         genome.name,
-                         sample.pattern,
-                         STAR.Index.num.parallel.threads,
-                         STAR.Index.sjdbOverhang.Read.length,
-                         STAR.Index.genomeSAindexNbases,
-                         STAR.Index.genomeChrBinNbits,
-                         STAR.Index.genomeSAsparseD)
-
-
+    # Parameters: 8
+    CreateSTARIndex(path.prefix,
+                    genome.name,
+                    sample.pattern,
+                    STAR.Index.num.parallel.threads,
+                    STAR.Index.sjdbOverhang.Read.length,
+                    STAR.Index.genomeSAindexNbases,
+                    STAR.Index.genomeChrBinNbits,
+                    STAR.Index.genomeSAsparseD)
+    # Parameters: 53
     STARAlignmentDefault(path.prefix,
                          genome.name,
                          sample.pattern,
@@ -645,6 +1042,7 @@ RNASeqReadProcess <- function(RNASeqRParam,
 
 
   if (Rsamtools.Bam.run) {
+    # Parameters: 6
     RSamtoolsToBam(SAMtools.or.Rsamtools,
                    Samtools.Bam.num.parallel.threads,
                    path.prefix,
@@ -653,6 +1051,7 @@ RNASeqReadProcess <- function(RNASeqRParam,
                    Rsamtools.nCores)
   }
   if (StringTie.Assemble.run) {
+    # Parameters: 9
     StringTieAssemble(path.prefix,
                       genome.name,
                       sample.pattern,
@@ -664,21 +1063,24 @@ RNASeqReadProcess <- function(RNASeqRParam,
                       Stringtie.Assembly.M)
   }
   if (StringTie.Merge.Trans.run) {
+    # Parameters: 4
     StringTieMergeTrans(path.prefix,
                         genome.name,
                         sample.pattern,
-                        num.parallel.threads)
+                        Stringtie.Merge.num.parallel.threads)
   }
   if (Gffcompare.Ref.Sample.run) {
+    # Parameters: 3
     GffcompareRefSample(path.prefix,
                         genome.name,
                         sample.pattern)
   }
   if (StringTie.Ballgown.run) {
+    # Parameters: 4
     StringTieToBallgown(path.prefix,
                         genome.name,
                         sample.pattern,
-                        num.parallel.threads)
+                        Stringtie.2.Ballgown.num.parallel.threads)
   }
   finals <- ProgressGenesFiles(path.prefix,
                                genome.name,
@@ -687,6 +1089,7 @@ RNASeqReadProcess <- function(RNASeqRParam,
   if (PreDECountTable.run &
       ((python.variable.answer & python.variable.version == 2) |
        python.variable.answer & python.variable.version == 3 & python.2to3)) {
+    # Parameters: 6
     PreDECountTable(path.prefix,
                     sample.pattern,
                     python.variable.answer,

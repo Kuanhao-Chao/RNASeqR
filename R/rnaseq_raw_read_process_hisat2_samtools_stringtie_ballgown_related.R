@@ -1,16 +1,17 @@
 # Creating Hisat2 index
 # Creat Hisat2 index for further use
+# Parameters: 11
 CreateHisat2Index <- function (path.prefix,
                                genome.name,
                                sample.pattern,
                                splice.site.info = TRUE,
                                exon.info = TRUE,
                                Hisat2.Index.num.parallel.threads,
-                               Hisat2.large.index,
-                               Hisat2.local.ftab.chars,
-                               Hisat2.local.off.rate,
-                               Hisat2.ftab.chars,
-                               Hisat2.off.rate) {
+                               Hisat2.Index.large.index,
+                               Hisat2.Index.local.ftab.chars,
+                               Hisat2.Index.local.off.rate,
+                               Hisat2.Index.ftab.chars,
+                               Hisat2.Index.off.rate) {
   if (isTRUE(CheckHisat2(print=FALSE))){
     if (!is.logical(splice.site.info) || !is.logical(exon.info)) {
       stop("(\u2718) Please make sure the type of ",
@@ -64,17 +65,17 @@ CreateHisat2Index <- function (path.prefix,
           message("\n")
         }
         if (isTRUE(splice.site.info) && isTRUE(exon.info)) {
-          if (isTRUE(Hisat2.large.index)) {
-            Hisat2.large.index.value <- "--large-index"
+          if (isTRUE(Hisat2.Index.large.index)) {
+            Hisat2.Index.large.index.value <- "--large-index"
           } else {
-            Hisat2.large.index.value <- ""
+            Hisat2.Index.large.index.value <- ""
           }
-          whole.command <- paste(paste(Hisat2.large.index.value,
+          whole.command <- paste(paste(Hisat2.Index.large.index.value,
                                        '-p', Hisat2.Index.num.parallel.threads,
-                                       '--localftabchars', Hisat2.local.ftab.chars,
-                                       '--localoffrate', Hisat2.local.off.rate,
-                                       '--ftabchars', Hisat2.ftab.chars,
-                                       '--offrate', Hisat2.off.rate,
+                                       '--localftabchars', Hisat2.Index.local.ftab.chars,
+                                       '--localoffrate', Hisat2.Index.local.off.rate,
+                                       '--ftabchars', Hisat2.Index.ftab.chars,
+                                       '--offrate', Hisat2.Index.off.rate,
                                        '--ss', paste0(genome.name, '.ss'),
                                        "--exon", paste0(genome.name, '.exon'),
                                        paste0(path.prefix,
@@ -84,12 +85,6 @@ CreateHisat2Index <- function (path.prefix,
           main.command <- "hisat2-build"
           message("Input command : ", paste(main.command, whole.command), "\n")
 
-          # --large-index
-          #num.parallel.threads.hisat2.index  -p : 1
-          # --localftabchars : 6
-          # --localoffrate : 3
-          # --ftabchars : 10
-          # --offrate : 4
 
           command.list <- c(command.list,
                             paste("    command :", main.command, whole.command))
@@ -171,6 +166,7 @@ CreateHisat2Index <- function (path.prefix,
 }
 
 # hisat2 alignment default
+# Parameters: 42
 Hisat2AlignmentDefault <- function(path.prefix,
                                    genome.name,
                                    sample.pattern,
@@ -179,11 +175,8 @@ Hisat2AlignmentDefault <- function(path.prefix,
                                    control.group,
                                    Hisat2.Alignment.num.parallel.threads,
                                    Hisat2.Alignment.skip,
-                                   Hisat2.Alignment.qupto,
                                    Hisat2.Alignment.trim5,
                                    Hisat2.Alignment.trim3,
-                                   Hisat2.Alignment.phred,
-                                   Hisat2.Alignment.int.quals,
                                    Hisat2.Alignment.n.ceil.1.function.type,
                                    Hisat2.Alignment.n.ceil.2.constant.term,
                                    Hisat2.Alignment.n.ceil.3.coefficient,
@@ -259,19 +252,6 @@ Hisat2AlignmentDefault <- function(path.prefix,
                                                 j, ".fastq.gz"))
             total.sub.command <- paste(total.sub.command, current.sub.command)
           }
-          if (Hisat2.Alignment.qupto == "None") {
-            qupto.value = ""
-          } else if (isTRUE(strtoi(Hisat2.Alignment.qupto)%%1==0)) {
-            # 'qupto' must be integer !
-            Hisat2.Alignment.qupto.value <- paste("--qseq", Hisat2.Alignment.qupto)
-          } else {
-            stop("'qupto' must be 'None' or integer")
-          }
-          if (isTRUE(Hisat2.Alignment.int.quals)) {
-            Hisat2.Alignment.int.quals.value = ""
-          } else {
-            Hisat2.Alignment.int.quals.value = "--int-quals"
-          }
           if (Hisat2.Alignment.rna.strandness == "FR") {
             Hisat2.Alignment.rna.strandness.value = "--rna-strandness FR"
           } else if (Hisat2.Alignment.rna.strandness == "RF") {
@@ -286,32 +266,36 @@ Hisat2AlignmentDefault <- function(path.prefix,
           } else {
             Hisat2.Alignment.secondary.value = ""
           }
-          whole.command <- paste("--skip", Hisat2.Alignment.skip, Hisat2.Alignment.qupto.value,
+          whole.command <- paste("--skip", Hisat2.Alignment.skip,
                                  "--trim5", Hisat2.Alignment.trim5,
                                  "--trim3", Hisat2.Alignment.trim3,
-                                 paste0("--phred", Hisat2.Alignment.phred),
-                                 Hisat2.Alignment.int.quals.value,
-                                 "--n-ceil", Hisat2.Alignment.n.ceil.1.function.type,
-                                 Hisat2.Alignment.n.ceil.2.constant.term,
-                                 Hisat2.Alignment.n.ceil.3.coefficient,
-                                 "--mp", Hisat2.Alignment.mp.MX, Hisat2.Alignment.mp.MN,
-                                 "--sp", Hisat2.Alignment.sp.MX, Hisat2.Alignment.sp.MN,
+                                 "--n-ceil",
+                                 paste0(Hisat2.Alignment.n.ceil.1.function.type,
+                                        ',', Hisat2.Alignment.n.ceil.2.constant.term,
+                                        ',', Hisat2.Alignment.n.ceil.3.coefficient),
+                                 "--mp",
+                                 paste0(Hisat2.Alignment.mp.MX, ',', Hisat2.Alignment.mp.MN),
+                                 "--sp",
+                                 paste0(Hisat2.Alignment.sp.MX, ',', Hisat2.Alignment.sp.MN),
                                  "--np", Hisat2.Alignment.np,
-                                 "--rdg", Hisat2.Alignment.rdg.1, Hisat2.Alignment.rdg.2,
-                                 "--rfg", Hisat2.Alignment.rfg.1, Hisat2.Alignment.rfg.2,
-                                 "--score-min" ,Hisat2.Alignment.score.min.1.function.type,
-                                 Hisat2.Alignment.score.min.2.constant.term,
-                                 Hisat2.Alignment.score.min.3.coefficient,
+                                 "--rdg",
+                                 paste0(Hisat2.Alignment.rdg.1, ',', Hisat2.Alignment.rdg.2),
+                                 "--rfg",
+                                 paste0(Hisat2.Alignment.rfg.1, ',', Hisat2.Alignment.rfg.2),
+                                 "--score-min",
+                                 paste0(Hisat2.Alignment.score.min.1.function.type,
+                                        ',', Hisat2.Alignment.score.min.2.constant.term,
+                                        ',', Hisat2.Alignment.score.min.3.coefficient),
                                  "--pen-cansplice", Hisat2.Alignment.pen.cansplice,
                                  "--pen-noncansplice", Hisat2.Alignment.penc.noncansplice,
                                  "--pen-canintronlen",
-                                 Hisat2.Alignment.pen.canintronlen.1.function.type,
-                                 Hisat2.Alignment.pen.canintronlen.2.constant.term,
-                                 Hisat2.Alignment.pen.canintronlen.3.coefficient,
+                                 paste0(Hisat2.Alignment.pen.canintronlen.1.function.type,
+                                        ',', Hisat2.Alignment.pen.canintronlen.2.constant.term,
+                                        ',', Hisat2.Alignment.pen.canintronlen.3.coefficient),
                                  "--pen-noncanintronlen",
-                                 Hisat2.Alignment.pen.noncanintronlen.1.function.type,
-                                 Hisat2.Alignment.pen.noncanintronlen.2.constant.term,
-                                 Hisat2.Alignment.pen.noncanintronlen.3.coefficient,
+                                 paste0(Hisat2.Alignment.pen.noncanintronlen.1.function.type,
+                                        ',', Hisat2.Alignment.pen.noncanintronlen.2.constant.term,
+                                        ',', Hisat2.Alignment.pen.noncanintronlen.3.coefficient),
                                  "--min-intronlen", Hisat2.Alignment.min.intronlen,
                                  "--max-intronlen", Hisat2.Alignment.max.intronlen,
                                  Hisat2.Alignment.rna.strandness.value,
@@ -400,14 +384,15 @@ Hisat2AlignmentDefault <- function(path.prefix,
 
 # Creating STAR index
 # Creat STAR index for further use
+# Parameters: 8
 CreateSTARIndex <- function (path.prefix,
                              genome.name,
                              sample.pattern,
-                             STAR.Index.num.parallel.threads = 1,
-                             STAR.Index.sjdbOverhang.Read.length = 100,
-                             STAR.Index.genomeSAindexNbases = 14,
-                             STAR.Index.genomeChrBinNbits = 18,
-                             STAR.Index.genomeSAsparseD = 1) {
+                             STAR.Index.num.parallel.threads,
+                             STAR.Index.sjdbOverhang.Read.length,
+                             STAR.Index.genomeSAindexNbases,
+                             STAR.Index.genomeChrBinNbits,
+                             STAR.Index.genomeSAsparseD) {
   if (isTRUE(CheckSTAR(print=FALSE))){
     check.results <- ProgressGenesFiles(path.prefix,
                                         genome.name,
@@ -420,10 +405,10 @@ CreateSTARIndex <- function (path.prefix,
       command.list <- c(command.list, "* Creating STAR Index : ")
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/indices/"))
-      whole.command <- paste("--genomeSAindexNbases", genomeSAindexNbases,
-                             "--genomeChrBinNbits", genomeChrBinNbits,
-                             "--genomeSAsparseD", genomeSAsparseD,
-                             "--runThreadN", num.parallel.threads.star.index,
+      whole.command <- paste("--genomeSAindexNbases", STAR.Index.genomeSAindexNbases,
+                             "--genomeChrBinNbits", STAR.Index.genomeChrBinNbits,
+                             "--genomeSAsparseD", STAR.Index.genomeSAsparseD,
+                             "--runThreadN", STAR.Index.num.parallel.threads,
                              "--runMode", "genomeGenerate",
                              "--genomeDir",
                              paste0(path.prefix, "gene_data/indices/"),
@@ -433,7 +418,7 @@ CreateSTARIndex <- function (path.prefix,
                              "--sjdbGTFfile",
                              paste0(path.prefix, "gene_data/ref_genes/",
                                     genome.name, ".gtf"),
-                             "--sjdbOverhang", sjdbOverhang.Read.length-1)
+                             "--sjdbOverhang", strtoi(STAR.Index.sjdbOverhang.Read.length)-1)
       main.command <- "STAR"
       message("Input command : ", paste(main.command, whole.command), "\n")
       command.list <- c(command.list,
@@ -461,6 +446,7 @@ CreateSTARIndex <- function (path.prefix,
 }
 
 # STAR alignment default
+# Parameters: 53
 STARAlignmentDefault <- function(path.prefix,
                                  genome.name,
                                  sample.pattern,
@@ -784,6 +770,7 @@ STARAlignmentDefault <- function(path.prefix,
 }
 
 # use 'Rsamtools' to sort and convert the SAM files to BAM
+# Parameters: 6
 RSamtoolsToBam <- function(SAMtools.or.Rsamtools,
                            Samtools.Bam.num.parallel.threads,
                            path.prefix,
@@ -892,6 +879,7 @@ RSamtoolsToBam <- function(SAMtools.or.Rsamtools,
 }
 
 # stringtie assemble and quantify expressed genes and transcripts
+# Parameters: 9
 StringTieAssemble <- function(path.prefix,
                               genome.name,
                               sample.pattern,
@@ -951,6 +939,7 @@ StringTieAssemble <- function(path.prefix,
 }
 
 # stringtie merge transcripts from all samples
+# Parameters: 4
 StringTieMergeTrans <- function(path.prefix,
                                 genome.name,
                                 sample.pattern,
@@ -983,7 +972,7 @@ StringTieMergeTrans <- function(path.prefix,
       write.file<-file("merged/mergelist.txt")
       writeLines(write.content, write.file)
       close(write.file)
-      whole.command <- paste("--merge -p", num.parallel.threads.stringtie.merge,
+      whole.command <- paste("--merge -p", Stringtie.Merge.num.parallel.threads,
                              "-G", paste0("ref_genes/", genome.name, ".gtf"),
                              "-o", "merged/stringtie_merged.gtf",
                              "merged/mergelist.txt")
@@ -1010,6 +999,7 @@ StringTieMergeTrans <- function(path.prefix,
 }
 
 # stringtie estimate transcript abundances and create table count for Ballgown
+# Parameters: 4
 StringTieToBallgown <- function(path.prefix,
                                 genome.name,
                                 sample.pattern,
@@ -1038,7 +1028,7 @@ StringTieToBallgown <- function(path.prefix,
       for( i in seq_len(iteration.num)){
         # '-e' only estimate the abundance of given reference transcripts
         # (requires -G)
-        whole.command <- paste("-e -B -p", num.parallel.threads.stringtie.2.ballgown,
+        whole.command <- paste("-e -B -p", Stringtie.2.Ballgown.num.parallel.threads,
                                "-G", "merged/stringtie_merged.gtf",
                                "-o", paste0("ballgown/", sample.name[i],
                                             "/", sample.name[i], ".gtf"),
@@ -1070,6 +1060,7 @@ StringTieToBallgown <- function(path.prefix,
 }
 
 # Examine how the transcripts compare with the reference annotation
+# Parameters: 3
 GffcompareRefSample <- function(path.prefix,
                                 genome.name,
                                 sample.pattern) {
@@ -1115,6 +1106,7 @@ GffcompareRefSample <- function(path.prefix,
 }
 
 # converting stringtie ballogwn preprocessed data to count table
+# Parameters: 6
 PreDECountTable <- function(path.prefix,
                             sample.pattern,
                             python.variable.answer,
@@ -1243,83 +1235,3 @@ PreDECountTable <- function(path.prefix,
     return(TRUE)
   }
 }
-
-#
-# # Report Hisat2 assemble rate
-# Hisat2ReportAssemble <- function(path.prefix,
-#                                  genome.name,
-#                                  sample.pattern){
-#   check.results <- ProgressGenesFiles(path.prefix,
-#                                       genome.name,
-#                                       sample.pattern,
-#                                       print=FALSE)
-#   message("\n************** Reporting Hisat2 Alignment **************\n")
-#   if (check.results$phenodata.file.df &&
-#       check.results$bam.files.number.df != 0){
-#     file.read <- paste0(path.prefix, "Rscript_out/Read_Process.Rout")
-#     sample.name <- sort(gsub(paste0(".bam$"),
-#                              replacement = "",
-#                              check.results$bam.files.df))
-#     iteration.num <- length(sample.name)
-#     load.data <- readChar(file.read, file.info(file.read)$size)
-#     # overall alignment rate
-#     overall.alignment <- strsplit(load.data, "\n")
-#     overall.alignment.with.NA <-
-#       stringr::str_extract(overall.alignment[[1]],
-#                            "[0-9]*.[0-9]*% overall alignment rate")
-#     overall.alignment.result <-
-#       overall.alignment.with.NA[!is.na(overall.alignment.with.NA)]
-#     overall.alignment.result.cut <- gsub(" overall alignment rate",
-#                                          " ",
-#                                          overall.alignment.result)
-#     # different mapping rate
-#     first.split <- strsplit(load.data,
-#                             paste0("\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
-#                                    "\\* Hisat2 Alignment \\*",
-#                                    "\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\n"))
-#     second.split <- strsplit(first.split[[1]][2],
-#                              paste0("\n\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
-#                                     "\\* Current progress of RNA-seq files in"))
-#     split.lines <- strsplit(second.split[[1]][1], "\n")
-#     alignment.rate.with.NA <-
-#       stringr::str_extract(split.lines[[1]],
-#                            "[0-9]* \\([0-9]*.[0-9]*%\\) aligned concordantly")
-#     alignment.first.result <-
-#       alignment.rate.with.NA[!is.na(alignment.rate.with.NA)]
-#     alignment.first.result.cut1 <- gsub(") aligned concordantly",
-#                                         " ",
-#                                         alignment.first.result)
-#     alignment.first.result.cut2 <- gsub("[0-9]* \\(",
-#                                         " ",
-#                                         alignment.first.result.cut1)
-#     report.data.frame <- data.frame(matrix(0, ncol = 0, nrow = 3))
-#     row.names(report.data.frame) <- c("Unique mapping rate",
-#                                       "Multiple mapping rate",
-#                                       "Overall alignment rate")
-#     for( i in seq_len(iteration.num)){
-#       add.column <- c()
-#       for( j in (i*3-1):(i*3)){
-#         add.column <- c(add.column, alignment.first.result.cut2[j])
-#       }
-#       add.column <- c(add.column, overall.alignment.result.cut[i])
-#       report.data.frame[[(sample.name[i])]] <- add.column
-#     }
-#     if(!dir.exists(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))){
-#       dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
-#     }
-#     write.csv(report.data.frame,
-#               file = paste0(path.prefix,
-#                             "RNASeq_results/",
-#                             "Alignment_Report/Alignment_report.csv"))
-#     png(paste0(path.prefix,
-#                "RNASeq_results/Alignment_Report/Alignment_report.png"),
-#         width = iteration.num*100 + 200, height = 40*4)
-#     p <- gridExtra::grid.table(report.data.frame)
-#     print(p)
-#     dev.off()
-#     message("Results are in ",
-#             paste0("'", path.prefix, "RNASeq_results/Alignment_Report/'"),
-#             "\n\n")
-#   }
-# }
-
