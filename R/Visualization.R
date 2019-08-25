@@ -4,7 +4,8 @@
 AlignmentPlot <- function(path.prefix,
                           independent.variable,
                           case.group,
-                          control.group) {
+                          control.group,
+                          phenoData.result) {
   Alignment_report_reads <- read.csv(paste0(path.prefix,
                                             "RNASeq_results/Alignment_Report/",
                                             "Alignment_report_reads.csv"),
@@ -43,10 +44,10 @@ AlignmentPlot <- function(path.prefix,
          width = 7,
          height = 7)
 
-  phenoData.result<- phenoDataWrap(path.prefix,
-                                   independent.variable,
-                                   case.group,
-                                   control.group)
+  # phenoData.result<- phenoDataWrap(path.prefix,
+  #                                  independent.variable,
+  #                                  case.group,
+  #                                  control.group)
   my_colors=c("#00AFBB", "#E7B800")
   color.group <- c(rep(1, phenoData.result$case.group.size),
                    rep(2, phenoData.result$case.group.size))
@@ -84,22 +85,23 @@ FrequencyPlot <- function(which.analysis,
                           path.prefix,
                           independent.variable,
                           case.group,
-                          control.group) {
+                          control.group,
+                          independent.variable.data.frame) {
   message("\u25CF Plotting  Frequency plot\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/",
                         which.analysis, "/images/preDE/Frequency"))){
     dir.create(paste0(path.prefix, "RNASeq_results/",
                       which.analysis, "/images/preDE/Frequency"))
   }
-  csv.results <- ParseResultCSV(which.analysis,
-                                which.count.normalization,
-                                path.prefix,
-                                independent.variable,
-                                case.group,
-                                control.group)
-  case.normalized <- csv.results$case
-  control.normalized <- csv.results$control
-  independent.variable.data.frame <- cbind(case.normalized, control.normalized)
+  # csv.results <- ParseResultCSV(which.analysis,
+  #                               which.count.normalization,
+  #                               path.prefix,
+  #                               independent.variable,
+  #                               case.group,
+  #                               control.group)
+  # case.normalized <- csv.results$case
+  # control.normalized <- csv.results$control
+  # independent.variable.data.frame <- cbind(case.normalized, control.normalized)
   rafalib::mypar(1, 1)
   sample.size <- length(independent.variable.data.frame)
   # , ylim = (-5, )
@@ -165,24 +167,26 @@ BoxViolinPlot <- function(which.analysis,
                           path.prefix,
                           independent.variable,
                           case.group,
-                          control.group) {
+                          control.group,
+                          independent.variable.data.frame,
+                          phenoData.result) {
   # load gene name for further usage
-  csv.results <- ParseResultCSV(which.analysis,
-                                which.count.normalization,
-                                path.prefix,
-                                independent.variable,
-                                case.group,
-                                control.group)
-  case.normalized <- csv.results$case
-  control.normalized <- csv.results$control
-  phenoData.result<- phenoDataWrap(path.prefix,
-                                   independent.variable,
-                                   case.group,
-                                   control.group)
+  # csv.results <- ParseResultCSV(which.analysis,
+  #                               which.count.normalization,
+  #                               path.prefix,
+  #                               independent.variable,
+  #                               case.group,
+  #                               control.group)
+  # case.normalized <- csv.results$case
+  # control.normalized <- csv.results$control
+  # phenoData.result<- phenoDataWrap(path.prefix,
+  #                                  independent.variable,
+  #                                  case.group,
+  #                                  control.group)
+  # independent.variable.data.frame <- cbind(case.normalized, control.normalized)
   my_colors=c("#00AFBB", "#E7B800")
   color.group <- c(rep(1, phenoData.result$case.group.size),
                    rep(2, phenoData.result$case.group.size))
-  independent.variable.data.frame <- cbind(case.normalized, control.normalized)
   log2.normalized.value = log2(independent.variable.data.frame+1)
   log2.normalized.value <- reshape2::melt(log2.normalized.value)
   colnames(log2.normalized.value) <- c("samples", which.count.normalization)
@@ -251,36 +255,37 @@ PCAPlot <- function(which.analysis,
                     path.prefix,
                     independent.variable,
                     case.group,
-                    control.group){
+                    control.group,
+                    independent.variable.data.frame,
+                    phenoData.result){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-
   #practical-guide/112-pca-principal-component-analysis-essentials/
   # load gene name for further usage
   message("\u25CF Plotting PCA related plot\n")
-  csv.results <- ParseResultCSV(which.analysis,
-                                which.count.normalization,
-                                path.prefix,
-                                independent.variable,
-                                case.group,
-                                control.group)
-  case.normalized <- csv.results$case
-  control.normalized <- csv.results$control
+  # csv.results <- ParseResultCSV(which.analysis,
+  #                               which.count.normalization,
+  #                               path.prefix,
+  #                               independent.variable,
+  #                               case.group,
+  #                               control.group)
+  # case.normalized <- csv.results$case
+  # control.normalized <- csv.results$control
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/",
                         which.analysis, "/images/preDE/PCA/"))){
     dir.create(paste0(path.prefix, "RNASeq_results/",
                       which.analysis, "/images/preDE/PCA/"))
   }
-  phenoData.result<- phenoDataWrap(path.prefix,
-                                   independent.variable,
-                                   case.group,
-                                   control.group)
-  # The independent.variable group
+  # phenoData.result<- phenoDataWrap(path.prefix,
+  #                                  independent.variable,
+  #                                  case.group,
+  #                                  control.group)
+  # independent.variable.data.frame <- cbind(case.normalized, control.normalized)
   grp = factor(c(rep(case.group, phenoData.result$case.group.size),
                  rep(control.group,  phenoData.result$case.group.size)),
                levels = c(case.group, control.group))
   # color group
   color.group <- c(rep(1, phenoData.result$case.group.size),
                    rep(2, phenoData.result$case.group.size))
-  independent.variable.data.frame <- cbind(case.normalized, control.normalized)
   normalized.trans <- data.frame(t(independent.variable.data.frame))
   normalized.trans$attribute <- grp
   pca <- FactoMineR::PCA(normalized.trans,
@@ -387,27 +392,29 @@ CorrelationPlot <- function(which.analysis,
                             path.prefix,
                             independent.variable,
                             case.group,
-                            control.group){
+                            control.group,
+                            independent.variable.data.frame,
+                            phenoData.result){
   # load gene name for further usage
   message("\u25CF Plotting Correlation plot\n")
-  csv.results <- ParseResultCSV(which.analysis,
-                                which.count.normalization,
-                                path.prefix,
-                                independent.variable,
-                                case.group,
-                                control.group)
-  case.normalized <- csv.results$case
-  control.normalized <- csv.results$control
+  # csv.results <- ParseResultCSV(which.analysis,
+  #                               which.count.normalization,
+  #                               path.prefix,
+  #                               independent.variable,
+  #                               case.group,
+  #                               control.group)
+  # case.normalized <- csv.results$case
+  # control.normalized <- csv.results$control
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/",
                         which.analysis, "/images/preDE/Correlation/"))){
     dir.create(paste0(path.prefix, "RNASeq_results/",
                       which.analysis, "/images/preDE/Correlation/"))
   }
-  phenoData.result<- phenoDataWrap(path.prefix,
-                                   independent.variable,
-                                   case.group,
-                                   control.group)
-  independent.variable.data.frame <- cbind(case.normalized, control.normalized)
+  # phenoData.result<- phenoDataWrap(path.prefix,
+  #                                  independent.variable,
+  #                                  case.group,
+  #                                  control.group)
+  # independent.variable.data.frame <- cbind(case.normalized, control.normalized)
   res <- round(stats::cor(independent.variable.data.frame,
                           method = c("pearson", "kendall", "spearman")), 3)
   max.value <- max(res)
@@ -494,13 +501,14 @@ VolcanoPlot <- function(which.analysis,
                         case.group,
                         control.group,
                         condition.pval,
-                        condition.log2FC) {
+                        condition.log2FC,
+                        normalized_dataset) {
   # load gene name for further usage
   message("\u25CF Plotting Volcano plot\n")
-  normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/",
-                                        which.analysis, "/",
-                                        strsplit(which.analysis, "_")[[1]][1],
-                                        "_normalized_result.csv"))
+  # normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/",
+  #                                       which.analysis, "/",
+  #                                       strsplit(which.analysis, "_")[[1]][1],
+  #                                       "_normalized_result.csv"))
   ## Volcano plot
   # Make a basic volcano plot
   log2FC.pval <- data.frame("log2FC" = normalized_dataset$log2FC,
@@ -565,23 +573,28 @@ MAPlot <- function(which.analysis,
                    independent.variable,
                    case.group,
                    control.group,
-                   condition.pval) {
+                   condition.pval,
+                   csv.results,
+                   normalized_dataset) {
   # load gene name for further usage
-  csv.results <- ParseResultCSV(which.analysis,
-                                which.count.normalization,
-                                path.prefix,
-                                independent.variable,
-                                case.group,
-                                control.group)
+  # csv.results <- ParseResultCSV(which.analysis,
+  #                               which.count.normalization,
+  #                               path.prefix,
+  #                               independent.variable,
+  #                               case.group,
+  #                               control.group,
+  #                               case.normalized,
+  #                               control.normalized,
+  #                               normalized_dataset)
   case.normalized <- csv.results$case
   case.size <- length(case.normalized)
   control.normalized <- csv.results$control
   control.size <- length(control.normalized)
   message("\u25CF Plotting MA plot\n")
-  normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/",
-                                        which.analysis, "/",
-                                        strsplit(which.analysis, "_")[[1]][1],
-                                        "_normalized_result.csv"))
+  # normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/",
+  #                                       which.analysis, "/",
+  #                                       strsplit(which.analysis, "_")[[1]][1],
+  #                                       "_normalized_result.csv"))
   ## Ma plot
   ggplot(normalized_dataset,
          aes(x = log2(normalized_dataset[,1+case.size+control.size+3]),
@@ -616,20 +629,22 @@ DEPCAPlot <- function(which.analysis,
                       path.prefix,
                       independent.variable,
                       case.group,
-                      control.group){
+                      control.group,
+                      DE.csv.results,
+                      phenoData.result){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-
   #practical-guide/112-pca-principal-component-analysis-essentials/
   # load gene name for further usage
   message("\u25CF Plotting PCA related plot\n")
-  DE.csv.results <- read.csv(paste0(path.prefix, "RNASeq_results/",
-                                    which.analysis, "/",
-                                    strsplit(which.analysis,
-                                             split = "_")[[1]][1],
-                                    "_normalized_DE_result.csv"))
-  phenoData.result<- phenoDataWrap(path.prefix,
-                                   independent.variable,
-                                   case.group,
-                                   control.group)
+  # DE.csv.results <- read.csv(paste0(path.prefix, "RNASeq_results/",
+  #                                   which.analysis, "/",
+  #                                   strsplit(which.analysis,
+  #                                            split = "_")[[1]][1],
+  #                                   "_normalized_DE_result.csv"))
+  # phenoData.result<- phenoDataWrap(path.prefix,
+  #                                  independent.variable,
+  #                                  case.group,
+  #                                  control.group)
   # This is to get the result of normalized count
   DE.csv.normalized.count.only <-
     DE.csv.results[,2:(phenoData.result$case.group.size +
@@ -750,18 +765,20 @@ DEHeatmap <- function(which.analysis,
                       path.prefix,
                       independent.variable,
                       case.group,
-                      control.group) {
+                      control.group,
+                      DE.csv.results,
+                      phenoData.result) {
   # load gene name for further usage
   message("\u25CF Plotting Differential Expressed Heatmap related plot\n")
-  DE.csv.results <- read.csv(paste0(path.prefix, "RNASeq_results/",
-                                    which.analysis, "/",
-                                    strsplit(which.analysis,
-                                             split = "_")[[1]][1],
-                                    "_normalized_DE_result.csv"))
-  phenoData.result<- phenoDataWrap(path.prefix,
-                                   independent.variable,
-                                   case.group,
-                                   control.group)
+  # DE.csv.results <- read.csv(paste0(path.prefix, "RNASeq_results/",
+  #                                   which.analysis, "/",
+  #                                   strsplit(which.analysis,
+  #                                            split = "_")[[1]][1],
+  #                                   "_normalized_DE_result.csv"))
+  # phenoData.result<- phenoDataWrap(path.prefix,
+  #                                  independent.variable,
+  #                                  case.group,
+  #                                  control.group)
   ## Maybe change !!!! temp !!
   DE.csv.results <- DE.csv.results[DE.csv.results$gene.name != ".",]
   message("     \u25CF Checking found differential express transcript term.\n")
@@ -810,11 +827,6 @@ DEHeatmap <- function(which.analysis,
             "+1) minus average of control.\n")
     log.data.frame.minus <- log.data.frame - control.log.average
     df.new <- scale(log.data.frame.minus)
-    phenoData.result<- phenoDataWrap(path.prefix,
-                                     independent.variable,
-                                     case.group,
-                                     control.group)
-    # The independent.variable group
     # Do for annotation ! (grouping in pheatmap)
     annotation_list = factor(c(rep(case.group,
                                    phenoData.result$case.group.size),

@@ -3,7 +3,8 @@ edgeRRawCountAnalysis <- function(path.prefix,
                                   case.group,
                                   control.group,
                                   edgeR.pval,
-                                  edgeR.log2FC) {
+                                  edgeR.log2FC,
+                                  phenoData.result) {
   message("\n\u2618\u2618 edgeR analysis ...\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/edgeR_analysis"))){
     dir.create(paste0(path.prefix, "RNASeq_results/edgeR_analysis"))
@@ -157,34 +158,57 @@ edgeRRawCountAnalysis <- function(path.prefix,
         dir.create(paste0(path.prefix,
                           "RNASeq_results/edgeR_analysis/images/preDE/"))
       }
+
+      csv.results <- ParseResultCSV("edgeR_analysis",
+                                    "TMM&CPM",
+                                    path.prefix,
+                                    independent.variable,
+                                    case.group,
+                                    control.group)
+      case.normalized <- csv.results$case
+      control.normalized <- csv.results$control
+      independent.variable.data.frame <- cbind(case.normalized,
+                                               control.normalized)
+      normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/",
+                                            "edgeR_analysis", "/",
+                                            strsplit("edgeR_analysis", "_")[[1]][1],
+                                            "_normalized_result.csv"))
       # Frequency
       FrequencyPlot("edgeR_analysis",
                     "TMM&CPM",
                     path.prefix,
                     independent.variable,
                     case.group,
-                    control.group)
+                    control.group,
+                    independent.variable.data.frame)
       # Bax and Violin
       BoxViolinPlot("edgeR_analysis",
                     "TMM&CPM",
                     path.prefix,
                     independent.variable,
                     case.group,
-                    control.group)
+                    control.group,
+                    independent.variable.data.frame,
+                    phenoData.result)
       # PCA
       PCAPlot("edgeR_analysis",
               "TMM&CPM",
               path.prefix,
               independent.variable,
               case.group,
-              control.group)
+              control.group,
+              independent.variable.data.frame,
+              phenoData.result)
+
       #Correlation
       CorrelationPlot("edgeR_analysis",
                       "TMM&CPM",
                       path.prefix,
                       independent.variable,
                       case.group,
-                      control.group)
+                      control.group,
+                      independent.variable.data.frame,
+                      phenoData.result)
 
       # MDS plot
       message("\u25CF Plotting MDS plot ... \n")
@@ -266,7 +290,8 @@ edgeRRawCountAnalysis <- function(path.prefix,
                   case.group,
                   control.group,
                   edgeR.pval,
-                  edgeR.log2FC)
+                  edgeR.log2FC,
+                  normalized_dataset)
 
       # Plot Smear plot !!
       fit <- edgeR::glmFit(dgList)
@@ -298,7 +323,9 @@ edgeRRawCountAnalysis <- function(path.prefix,
                   path.prefix,
                   independent.variable,
                   case.group,
-                  control.group)
+                  control.group,
+                  normalized_dataset,
+                  phenoData.result)
 
         # Heatmap
         DEHeatmap("edgeR_analysis",
@@ -306,7 +333,9 @@ edgeRRawCountAnalysis <- function(path.prefix,
                   path.prefix,
                   independent.variable,
                   case.group,
-                  control.group)
+                  control.group,
+                  normalized_dataset,
+                  phenoData.result)
 
       } else {
         message("(\u26A0) Less than one differential expressed gene term found",

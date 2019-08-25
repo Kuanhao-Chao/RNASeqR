@@ -31,6 +31,10 @@
 #'   this value.
 #' @param INSIDE.path.prefix Default value is \code{NA}. User should not change
 #'   this value.
+#' @param Pre_DE.visualization Default \code{TRUE}. Whether to visualize pre-DE
+#' analysis results.
+#' @param Post_DE.visualization Default \code{TRUE}. Whether to visualize
+#' post-DE analysis results.
 #' @param ballgown.run Default \code{TRUE}. Logical value whether to run
 #'   ballgown differential analysis.
 #' @param ballgown.pval Default \code{0.05}. Set the threshold of ballgown
@@ -69,6 +73,8 @@
 RNASeqDifferentialAnalysis_CMD <- function(RNASeqRParam,
                                            which.trigger      = "OUTSIDE",
                                            INSIDE.path.prefix = NA,
+                                           Pre_DE.visualization = TRUE,
+                                           Post_DE.visualization = TRUE,
                                            ballgown.run    = TRUE,
                                            ballgown.pval   = 0.05,
                                            ballgown.log2FC = 1,
@@ -189,6 +195,8 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqRParam,
 RNASeqDifferentialAnalysis <- function(RNASeqRParam,
                                        which.trigger      = "OUTSIDE",
                                        INSIDE.path.prefix = NA,
+                                       Pre_DE.visualization = TRUE,
+                                       Post_DE.visualization = TRUE,
                                        ballgown.run    = TRUE,
                                        ballgown.pval   = 0.05,
                                        ballgown.log2FC = 1,
@@ -223,8 +231,17 @@ RNASeqDifferentialAnalysis <- function(RNASeqRParam,
   independent.variable <- "@"(RNASeqRParam, independent.variable)
   case.group <- "@"(RNASeqRParam, case.group)
   control.group <- "@"(RNASeqRParam, control.group)
-  PreRNASeqDifferentialAnalysis(path.prefix = path.prefix,
-                                sample.pattern = sample.pattern)
+
+
+  # 1. Pre-DE assessment visualization
+  phenoData.result<- phenoDataWrap(path.prefix,
+                                   independent.variable,
+                                   case.group,
+                                   control.group)
+  if (Pre_DE.visualization) {
+    PreRNASeqDifferentialAnalysis(path.prefix = path.prefix,
+                                  sample.pattern = sample.pattern)
+  }
   if (file.exists(paste0(path.prefix,
                          "RNASeq_results/Alignment_Report/",
                          "Alignment_report_reads.csv")) &
@@ -234,11 +251,13 @@ RNASeqDifferentialAnalysis <- function(RNASeqRParam,
     AlignmentPlot(path.prefix,
                   independent.variable,
                   case.group,
-                  control.group)
+                  control.group,
+                  phenoData.result)
   }
   message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  ",
           "Start Differential Expression Analysis  ",
           "\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
+  # 2. DE analysis
   if (ballgown.run) {
     BallgownAnalysis(path.prefix,
                      genome.name,
@@ -247,7 +266,8 @@ RNASeqDifferentialAnalysis <- function(RNASeqRParam,
                      case.group,
                      control.group,
                      ballgown.pval,
-                     ballgown.log2FC)
+                     ballgown.log2FC,
+                     phenoData.result)
   }
   raw.read.avail <- RawReadCountAvailability(path.prefix)
   if (raw.read.avail) {
@@ -257,7 +277,8 @@ RNASeqDifferentialAnalysis <- function(RNASeqRParam,
                              case.group,
                              control.group,
                              DESeq2.pval,
-                             DESeq2.log2FC)
+                             DESeq2.log2FC,
+                             phenoData.result)
     }
     if (edgeR.run) {
       edgeRRawCountAnalysis(path.prefix,
@@ -265,11 +286,15 @@ RNASeqDifferentialAnalysis <- function(RNASeqRParam,
                             case.group,
                             control.group,
                             edgeR.pval,
-                            edgeR.log2FC)
+                            edgeR.log2FC,
+                            phenoData.result)
     }
   }
-  PostRNASeqDifferentialAnalysis(path.prefix = path.prefix,
-                                 sample.pattern = sample.pattern)
+  if (Post_DE.visualization) {
+    # 3. Post-DE assessment visualization
+    PostRNASeqDifferentialAnalysis(path.prefix = path.prefix,
+                                   sample.pattern = sample.pattern)
+  }
 }
 
 

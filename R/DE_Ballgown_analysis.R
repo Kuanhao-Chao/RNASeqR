@@ -6,7 +6,8 @@ BallgownAnalysis <- function(path.prefix,
                              case.group,
                              control.group,
                              ballgown.pval,
-                             ballgown.log2FC) {
+                             ballgown.log2FC,
+                             phenoData.result) {
   message("\n\u2618\u2618 ballgown analysis ...\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/ballgown_analysis/"))){
     dir.create(paste0(path.prefix, "RNASeq_results/ballgown_analysis/"))
@@ -205,33 +206,56 @@ BallgownAnalysis <- function(path.prefix,
         dir.create(paste0(path.prefix,
                           "RNASeq_results/ballgown_analysis/images/preDE/"))
       }
+      csv.results <- ParseResultCSV("ballgown_analysis",
+                                    "FPKM",
+                                    path.prefix,
+                                    independent.variable,
+                                    case.group,
+                                    control.group)
+      case.normalized <- csv.results$case
+      control.normalized <- csv.results$control
+      independent.variable.data.frame <- cbind(case.normalized,
+                                               control.normalized)
+      normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/",
+                                            "ballgown_analysis", "/",
+                                            strsplit("ballgown_analysis", "_")[[1]][1],
+                                            "_normalized_result.csv"))
       # Frequency
       FrequencyPlot("ballgown_analysis",
                     "FPKM",
                     path.prefix,
                     independent.variable,
                     case.group,
-                    control.group)
+                    control.group,
+                    independent.variable.data.frame)
       # Bax and Violin
       BoxViolinPlot("ballgown_analysis",
                     "FPKM",
                     path.prefix,
                     independent.variable,
                     case.group,
-                    control.group)
+                    control.group,
+                    independent.variable.data.frame,
+                    phenoData.result)
       # PCA
       PCAPlot("ballgown_analysis",
-              "FPKM", path.prefix,
+              "FPKM",
+              path.prefix,
               independent.variable,
               case.group,
-              control.group)
+              control.group,
+              independent.variable.data.frame,
+              phenoData.result)
+
       #Correlation
       CorrelationPlot("ballgown_analysis",
                       "FPKM",
                       path.prefix,
                       independent.variable,
                       case.group,
-                      control.group)
+                      control.group,
+                      independent.variable.data.frame,
+                      phenoData.result)
 
       ############
       #### DE ####
@@ -241,6 +265,7 @@ BallgownAnalysis <- function(path.prefix,
         dir.create(paste0(path.prefix,
                           "RNASeq_results/ballgown_analysis/images/DE/"))
       }
+
       # Volcano
       VolcanoPlot("ballgown_analysis",
                   "FPKM",
@@ -249,7 +274,9 @@ BallgownAnalysis <- function(path.prefix,
                   case.group,
                   control.group,
                   ballgown.pval,
-                  ballgown.log2FC)
+                  ballgown.log2FC,
+                  normalized_dataset)
+
       # MA
       MAPlot("ballgown_analysis",
              "FPKM",
@@ -257,7 +284,9 @@ BallgownAnalysis <- function(path.prefix,
              independent.variable,
              case.group,
              control.group,
-             ballgown.pval)
+             ballgown.pval,
+             csv.results,
+             normalized_dataset)
 
       if (nrow(ballgown.result.DE) > 1) {
         # DE PCA plot
@@ -266,14 +295,18 @@ BallgownAnalysis <- function(path.prefix,
                   path.prefix,
                   independent.variable,
                   case.group,
-                  control.group)
+                  control.group,
+                  normalized_dataset,
+                  phenoData.result)
         # Heatmap
         DEHeatmap("ballgown_analysis",
                   "FPKM",
                   path.prefix,
                   independent.variable,
                   case.group,
-                  control.group)
+                  control.group,
+                  normalized_dataset,
+                  phenoData.result)
       } else {
         message("(\u26A0) Less than one differential expressed gene terms ",
                 "found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")

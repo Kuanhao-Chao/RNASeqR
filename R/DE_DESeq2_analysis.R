@@ -3,7 +3,8 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                                    case.group,
                                    control.group,
                                    DESeq2.pval,
-                                   DESeq2.log2FC) {
+                                   DESeq2.log2FC,
+                                   phenoData.result) {
   message("\n\u2618\u2618 DESeq2 analysis ...\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/DESeq2_analysis"))){
     dir.create(paste0(path.prefix, "RNASeq_results/DESeq2_analysis"))
@@ -158,34 +159,58 @@ DESeq2RawCountAnalysis <- function(path.prefix,
         dir.create(paste0(path.prefix,
                           "RNASeq_results/DESeq2_analysis/images/preDE/"))
       }
+
+      csv.results <- ParseResultCSV("DESeq2_analysis",
+                                    "MRN",
+                                    path.prefix,
+                                    independent.variable,
+                                    case.group,
+                                    control.group)
+      case.normalized <- csv.results$case
+      control.normalized <- csv.results$control
+      independent.variable.data.frame <- cbind(case.normalized,
+                                               control.normalized)
+      normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/",
+                                            "DESeq2_analysis", "/",
+                                            strsplit("DESeq2_analysis", "_")[[1]][1],
+                                            "_normalized_result.csv"))
+
       # Frequency
       FrequencyPlot("DESeq2_analysis",
                     "MRN",
                     path.prefix,
                     independent.variable,
                     case.group,
-                    control.group)
+                    control.group,
+                    independent.variable.data.frame)
       # Bax and Violin
       BoxViolinPlot("DESeq2_analysis",
                     "MRN",
                     path.prefix,
                     independent.variable,
                     case.group,
-                    control.group)
+                    control.group,
+                    independent.variable.data.frame,
+                    phenoData.result)
       # PCA
       PCAPlot("DESeq2_analysis",
               "MRN",
               path.prefix,
               independent.variable,
               case.group,
-              control.group)
+              control.group,
+              independent.variable.data.frame,
+              phenoData.result)
+
       #Correlation
       CorrelationPlot("DESeq2_analysis",
                       "MRN",
                       path.prefix,
                       independent.variable,
                       case.group,
-                      control.group)
+                      control.group,
+                      independent.variable.data.frame,
+                      phenoData.result)
       # dispersion plot
       message("\u25CF Plotting  Dispersion plot\n")
       png(paste0(path.prefix,
@@ -221,7 +246,8 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                   case.group,
                   control.group,
                   DESeq2.pval,
-                  DESeq2.log2FC)
+                  DESeq2.log2FC,
+                  normalized_dataset)
 
       # MA plot
       message("\u25CF Plotting  MA plot\n")
@@ -250,7 +276,9 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                   path.prefix,
                   independent.variable,
                   case.group,
-                  control.group)
+                  control.group,
+                  normalized_dataset,
+                  phenoData.result)
 
         # Heatmap
         DEHeatmap("DESeq2_analysis",
@@ -258,7 +286,9 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                   path.prefix,
                   independent.variable,
                   case.group,
-                  control.group)
+                  control.group,
+                  normalized_dataset,
+                  phenoData.result)
 
       } else {
         message("(\u26A0) Less than one differential expressed gene term ",
