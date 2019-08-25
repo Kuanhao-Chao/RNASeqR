@@ -407,7 +407,7 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
                                   PreDECountTable.run       = TRUE,
                                   run                       = TRUE,
                                   check.s4.print            = TRUE) {
-  CheckS4Object(RNASeqRParam, check.s4.print)
+  which.s4.object <- CheckS4Object_All(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
   path.prefix <- "@"(RNASeqRParam, path.prefix)
   INSIDE.path.prefix <- "@"(RNASeqRParam, path.prefix)
@@ -416,19 +416,133 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
                         "gene_data/RNASeqRParam.rds"))
   fileConn<-file(paste0(path.prefix, "Rscript/Read_Process.R"))
   first <- "library(RNASeqR)"
+  if (which.s4.object == "RNASeqRParam") {
+  } else if (which.s4.object == "RNASeqRParam_Sam") {
+    Hisat2.Index.run = FALSE
+    Hisat2.Alignment.run = FALSE
+    STAR.Alignment.run = FALSE
+  }
   second <- paste0("RNASeqReadProcess(RNASeqRParam = 'INSIDE'",
                    ", which.trigger = 'INSIDE'",
                    ", INSIDE.path.prefix = '", INSIDE.path.prefix,
-                   "', SAMtools.or.Rsamtools = '", SAMtools.or.Rsamtools,
-                   ", Rsamtools.nCores = ", Rsamtools.nCores,
-                   ", Hisat2.Index.run = ", Hisat2.Index.run,
-                   ", Hisat2.Alignment.run = ", Hisat2.Alignment.run,
-                   ", Rsamtools.Bam.run = ", Rsamtools.Bam.run,
-                   ", StringTie.Assemble.run = ", StringTie.Assemble.run,
-                   ", StringTie.Merge.Trans.run = ", StringTie.Merge.Trans.run,
-                   ", Gffcompare.Ref.Sample.run = ", Gffcompare.Ref.Sample.run,
+                   "', SAMtools.or.Rsamtools ='", SAMtools.or.Rsamtools,
+                   "', Hisat2.Index.run =", Hisat2.Index.run,
+                   ", Hisat2.Index.num.parallel.threads = '", Hisat2.Index.num.parallel.threads,
+                   "', Hisat2.Index.large.index = ", Hisat2.Index.large.index,
+                   ", Hisat2.Index.local.ftab.chars = '", Hisat2.Index.local.ftab.chars,
+                   "', Hisat2.Index.local.off.rate = '", Hisat2.Index.local.off.rate,
+                   "', Hisat2.Index.ftab.chars = '", Hisat2.Index.ftab.chars,
+                   "', Hisat2.Index.off.rate = '", Hisat2.Index.off.rate,
+                   "', Hisat2.Alignment.run  = ", Hisat2.Alignment.run,
+                   ", Hisat2.Alignment.num.parallel.threads = '", Hisat2.Alignment.num.parallel.threads,
+                   "', Hisat2.Alignment.skip = '", Hisat2.Alignment.skip,
+                   "', Hisat2.Alignment.trim5 = '", Hisat2.Alignment.trim5,
+                   "', Hisat2.Alignment.trim3 = '", Hisat2.Alignment.trim3,
+                   "', Hisat2.Alignment.n.ceil.1.function.type = '", Hisat2.Alignment.n.ceil.1.function.type,
+                   "', Hisat2.Alignment.n.ceil.2.constant.term = '", Hisat2.Alignment.n.ceil.2.constant.term,
+                   "', Hisat2.Alignment.n.ceil.3.coefficient = '", Hisat2.Alignment.n.ceil.3.coefficient,
+                   "', Hisat2.Alignment.mp.MX = '", Hisat2.Alignment.mp.MX,
+                   "', Hisat2.Alignment.mp.MN = '", Hisat2.Alignment.mp.MN,
+                   "', Hisat2.Alignment.sp.MX = '", Hisat2.Alignment.sp.MX,
+                   "', Hisat2.Alignment.sp.MN = '", Hisat2.Alignment.sp.MN,
+                   "', Hisat2.Alignment.np = '", Hisat2.Alignment.np,
+                   "', Hisat2.Alignment.rdg.1 = '", Hisat2.Alignment.rdg.1,
+                   "', Hisat2.Alignment.rdg.2 = '", Hisat2.Alignment.rdg.2,
+                   "', Hisat2.Alignment.rfg.1 = '", Hisat2.Alignment.rfg.1,
+                   "', Hisat2.Alignment.rfg.2 = '", Hisat2.Alignment.rfg.2,
+                   "', Hisat2.Alignment.score.min.1.function.type = '", Hisat2.Alignment.score.min.1.function.type,
+                   "', Hisat2.Alignment.score.min.2.constant.term = '", Hisat2.Alignment.score.min.2.constant.term,
+                   "', Hisat2.Alignment.score.min.3.coefficient = '", Hisat2.Alignment.score.min.3.coefficient,
+                   "', Hisat2.Alignment.pen.cansplice = '", Hisat2.Alignment.pen.cansplice,
+                   "', Hisat2.Alignment.penc.noncansplice = '", Hisat2.Alignment.penc.noncansplice,
+                   "', Hisat2.Alignment.pen.canintronlen.1.function.type = '", Hisat2.Alignment.pen.canintronlen.1.function.type,
+                   "', Hisat2.Alignment.pen.canintronlen.2.constant.term = '", Hisat2.Alignment.pen.canintronlen.2.constant.term,
+                   "', Hisat2.Alignment.pen.canintronlen.3.coefficient = '", Hisat2.Alignment.pen.canintronlen.3.coefficient,
+                   "', Hisat2.Alignment.pen.noncanintronlen.1.function.type = '", Hisat2.Alignment.pen.noncanintronlen.1.function.type,
+                   "', Hisat2.Alignment.pen.noncanintronlen.2.constant.term = '", Hisat2.Alignment.pen.noncanintronlen.2.constant.term,
+                   "', Hisat2.Alignment.pen.noncanintronlen.3.coefficient = '", Hisat2.Alignment.pen.noncanintronlen.3.coefficient,
+                   "', Hisat2.Alignment.min.intronlen = '", Hisat2.Alignment.min.intronlen,
+                   "', Hisat2.Alignment.max.intronlen = '", Hisat2.Alignment.max.intronlen,
+                   "', Hisat2.Alignment.rna.strandness = '", Hisat2.Alignment.rna.strandness,
+                   "', Hisat2.Alignment.k = '", Hisat2.Alignment.k,
+                   "', Hisat2.Alignment.max.seeds = '", Hisat2.Alignment.max.seeds,
+                   "', Hisat2.Alignment.secondary = ", Hisat2.Alignment.secondary,
+                   ", Hisat2.Alignment.minins = '", Hisat2.Alignment.minins,
+                   "', Hisat2.Alignment.maxins = '", Hisat2.Alignment.maxins,
+                   "', Hisat2.Alignment.seed = '", Hisat2.Alignment.seed,
+                   "', STAR.Index.num.parallel.threads = '", STAR.Index.num.parallel.threads,
+                   "', STAR.Index.sjdbOverhang.Read.length = '", STAR.Index.sjdbOverhang.Read.length,
+                   "', STAR.Index.genomeSAindexNbases = '", STAR.Index.genomeSAindexNbases,
+                   "', STAR.Index.genomeChrBinNbits = '", STAR.Index.genomeChrBinNbits,
+                   "', STAR.Index.genomeSAsparseD = '", STAR.Index.genomeSAsparseD,
+                   "', STAR.Alignment.run = ", STAR.Alignment.run,
+                   ", STAR.Alignment.num.parallel.threads = '", STAR.Alignment.num.parallel.threads,
+                   "', STAR.Alignment.genomeLoad = '", STAR.Alignment.genomeLoad,
+                   "', STAR.Alignment.readMapNumber = '", STAR.Alignment.readMapNumber,
+                   "', STAR.Alignment.clip3pNbases = '", STAR.Alignment.clip3pNbases,
+                   "', STAR.Alignment.clip5pNbases = '", STAR.Alignment.clip5pNbases,
+                   "', STAR.Alignment.clip3pAdapterSeq = '", STAR.Alignment.clip3pAdapterSeq,
+                   "', STAR.Alignment.clip3pAdapterMMp = '", STAR.Alignment.clip3pAdapterMMp,
+                   "', STAR.Alignment.clip3pAfterAdapterNbases = '", STAR.Alignment.clip3pAfterAdapterNbases,
+                   "', STAR.Alignment.limitGenomeGenerateRAM = '", STAR.Alignment.limitGenomeGenerateRAM,
+                   "', STAR.Alignment.limitIObufferSize = '", STAR.Alignment.limitIObufferSize,
+                   "', STAR.Alignment.limitOutSAMoneReadBytes = '", STAR.Alignment.limitOutSAMoneReadBytes,
+                   "', STAR.Alignment.limitOutSJoneRead = '", STAR.Alignment.limitOutSJoneRead,
+                   "', STAR.Alignment.limitOutSJcollapsed = '", STAR.Alignment.limitOutSJcollapsed,
+                   "', STAR.Alignment.limitBAMsortRAM = '", STAR.Alignment.limitBAMsortRAM,
+                   "', STAR.Alignment.outReadsUnmapped = '", STAR.Alignment.outReadsUnmapped,
+                   "', STAR.Alignment.outQSconversionAdd = '", STAR.Alignment.outQSconversionAdd,
+                   "', STAR.Alignment.outSAMprimaryFlag = '", STAR.Alignment.outSAMprimaryFlag,
+                   "', STAR.Alignment.outSAMmapqUnique = '", STAR.Alignment.outSAMmapqUnique,
+                   "', STAR.Alignment.scoreGap = '", STAR.Alignment.scoreGap,
+                   "', STAR.Alignment.scoreGapNoncan = '", STAR.Alignment.scoreGapNoncan,
+                   "', STAR.Alignment.scoreGapGCAG = '", STAR.Alignment.scoreGapGCAG,
+                   "', STAR.Alignment.scoreGapATAC = '", STAR.Alignment.scoreGapATAC,
+                   "', STAR.Alignment.scoreGenomicLengthLog2scale = '", STAR.Alignment.scoreGenomicLengthLog2scale,
+                   "', STAR.Alignment.scoreDelOpen = '", STAR.Alignment.scoreDelOpen,
+                   "', STAR.Alignment.scoreDelBase = '", STAR.Alignment.scoreDelBase,
+                   "', STAR.Alignment.scoreInsOpen = '", STAR.Alignment.scoreInsOpen,
+                   "', STAR.Alignment.scoreInsBase = '", STAR.Alignment.scoreInsBase,
+                   "', STAR.Alignment.scoreStitchSJshift = '", STAR.Alignment.scoreStitchSJshift,
+                   "', STAR.Alignment.seedSearchStartLmax = '", STAR.Alignment.seedSearchStartLmax,
+                   "', STAR.Alignment.seedSearchStartLmaxOverLread = '", STAR.Alignment.seedSearchStartLmaxOverLread,
+                   "', STAR.Alignment.seedSearchLmax = '", STAR.Alignment.seedSearchLmax,
+                   "', STAR.Alignment.seedMultimapNmax = '", STAR.Alignment.seedMultimapNmax,
+                   "', STAR.Alignment.seedPerReadNmax = '", STAR.Alignment.seedPerReadNmax,
+                   "', STAR.Alignment.seedPerWindowNmax = '", STAR.Alignment.seedPerWindowNmax,
+                   "', STAR.Alignment.seedNoneLociPerWindow = '", STAR.Alignment.seedNoneLociPerWindow,
+                   "', STAR.Alignment.alignIntronMin = '", STAR.Alignment.alignIntronMin,
+                   "', STAR.Alignment.alignIntronMax = '", STAR.Alignment.alignIntronMax,
+                   "', STAR.Alignment.alignMatesGapMax = '", STAR.Alignment.alignMatesGapMax,
+                   "', STAR.Alignment.alignSJoverhangMin = '", STAR.Alignment.alignSJoverhangMin,
+                   "', STAR.Alignment.alignSJDBoverhangMin = '", STAR.Alignment.alignSJDBoverhangMin,
+                   "', STAR.Alignment.alignSplicedMateMapLmin = '", STAR.Alignment.alignSplicedMateMapLmin,
+                   "', STAR.Alignment.alignSplicedMateMapLminOverLmate = '", STAR.Alignment.alignSplicedMateMapLminOverLmate,
+                   "', STAR.Alignment.alignWindowsPerReadNmax = '", STAR.Alignment.alignWindowsPerReadNmax,
+                   "', STAR.Alignment.alignTranscriptsPerWindowNmax = '", STAR.Alignment.alignTranscriptsPerWindowNmax,
+                   "', STAR.Alignment.alignTranscriptsPerReadNmax = '", STAR.Alignment.alignTranscriptsPerReadNmax,
+                   "', STAR.Alignment.alignEndsType = '", STAR.Alignment.alignEndsType,
+                   "', STAR.Alignment.winAnchorMultimapNmax = '", STAR.Alignment.winAnchorMultimapNmax,
+                   "', STAR.Alignment.winBinNbits = '", STAR.Alignment.winBinNbits,
+                   "', STAR.Alignment.winAnchorDistNbins = '", STAR.Alignment.winAnchorDistNbins,
+                   "', STAR.Alignment.winFlankNbins = '", STAR.Alignment.winFlankNbins,
+                   "', Rsamtools.Bam.run = ", Rsamtools.Bam.run,
+                   ", Samtools.Bam.num.parallel.threads = '", Samtools.Bam.num.parallel.threads,
+                   "', Rsamtools.nCores = '", Rsamtools.nCores,
+                   "', StringTie.Assemble.run = ", StringTie.Assemble.run,
+                   ", Stringtie.Assembly.num.parallel.threads = '", Stringtie.Assembly.num.parallel.threads,
+                   "', Stringtie.Assembly.f = '", Stringtie.Assembly.f,
+                   "', Stringtie.Assembly.m = '", Stringtie.Assembly.m,
+                   "', Stringtie.Assembly.c = '", Stringtie.Assembly.c,
+                   "', Stringtie.Assembly.g = '", Stringtie.Assembly.g,
+                   "', Stringtie.Assembly.M = '", Stringtie.Assembly.M,
+                   "', StringTie.Merge.Trans.run = ", StringTie.Merge.Trans.run,
+                   ", Stringtie.Merge.num.parallel.threads = '", Stringtie.Merge.num.parallel.threads,
+                   "', Gffcompare.Ref.Sample.run = ", Gffcompare.Ref.Sample.run,
                    ", StringTie.Ballgown.run = ", StringTie.Ballgown.run,
-                   ", PreDECountTable.run = ", PreDECountTable.run, ")")
+                   ", Stringtie.2.Ballgown.num.parallel.threads = '", Stringtie.2.Ballgown.num.parallel.threads,
+                   "', PreDECountTable.run = ", PreDECountTable.run,
+                   ", check.s4.print = ", check.s4.print, ")")
   writeLines(c(first, second), fileConn)
   close(fileConn)
   message("\u2605 '", path.prefix,
@@ -872,7 +986,6 @@ RNASeqReadProcess <- function(RNASeqRParam,
       is.na(INSIDE.path.prefix)) {
     # This is an external call!!
     # Check the S4 object(user input)
-    CheckS4Object(RNASeqRParam, check.s4.print)
   } else if (RNASeqRParam == "INSIDE" &
              which.trigger == "INSIDE" &
              !is.na(INSIDE.path.prefix)) {
@@ -881,6 +994,8 @@ RNASeqReadProcess <- function(RNASeqRParam,
     RNASeqRParam <- readRDS(paste0(INSIDE.path.prefix,
                                    "gene_data/RNASeqRParam.rds"))
   }
+
+  which.s4.object <- CheckS4Object_All(RNASeqRParam, check.s4.print)
   # To find 'HISAT2', 'StringTie' and 'Gffcompare'
   path.prefix <- "@"(RNASeqRParam, path.prefix)
   input.path.prefix <- "@"(RNASeqRParam, input.path.prefix)
@@ -893,154 +1008,152 @@ RNASeqReadProcess <- function(RNASeqRParam,
   python.variable.answer <- python.variable$check.answer
   python.variable.version <- python.variable$python.version
   python.2to3 <- "@"(RNASeqRParam, python.2to3)
-  indices.optional <- "@"(RNASeqRParam, indices.optional)
   ExportPath(path.prefix)
-  PreRNASeqReadProcess(path.prefix, genome.name, sample.pattern)
   check.results <- ProgressGenesFiles(path.prefix,
                                       genome.name,
                                       sample.pattern,
                                       print=FALSE)
-
-
-  # Check alignemnt selection first !
-  if (isTRUE(Hisat2.Alignment.run) && isTRUE(STAR.Alignment.run)) {
-    stop("Hisat2 and STAR can not run at the same time !")
-  } else if (isTRUE(Hisat2.Alignment.run) && !isTRUE(STAR.Alignment.run)) {
-    message("Hisat2 is selected as aligner in the pipeline !")
-  } else if (!isTRUE(Hisat2.Alignment.run) && isTRUE(STAR.Alignment.run)) {
-    message("STAR is selected as aligner in the pipeline !")
-  }
-
-
-  if (check.results$ht2.files.number.df == 0 &&
-      !indices.optional & Hisat2.Index.run) {
-    # Parameters: 11
-    CreateHisat2Index(path.prefix,
-                      genome.name,
-                      sample.pattern,
-                      splice.site.info = TRUE,
-                      exon.info = TRUE,
-                      Hisat2.Index.num.parallel.threads,
-                      Hisat2.Index.large.index,
-                      Hisat2.Index.local.ftab.chars,
-                      Hisat2.Index.local.off.rate,
-                      Hisat2.Index.ftab.chars,
-                      Hisat2.Index.off.rate)
-  }
-
-  if (Hisat2.Alignment.run) {
-    # Parameters: 43
-    Hisat2AlignmentDefault(path.prefix,
-                           genome.name,
-                           sample.pattern,
-                           independent.variable,
-                           case.group,
-                           control.group,
-                           Hisat2.Alignment.num.parallel.threads,
-                           Hisat2.Alignment.skip,
-                           Hisat2.Alignment.trim5,
-                           Hisat2.Alignment.trim3,
-                           Hisat2.Alignment.n.ceil.1.function.type,
-                           Hisat2.Alignment.n.ceil.2.constant.term,
-                           Hisat2.Alignment.n.ceil.3.coefficient,
-                           Hisat2.Alignment.mp.MX,
-                           Hisat2.Alignment.mp.MN,
-                           Hisat2.Alignment.sp.MX,
-                           Hisat2.Alignment.sp.MN,
-                           Hisat2.Alignment.np,
-                           Hisat2.Alignment.rdg.1,
-                           Hisat2.Alignment.rdg.2,
-                           Hisat2.Alignment.rfg.1,
-                           Hisat2.Alignment.rfg.2,
-                           Hisat2.Alignment.score.min.1.function.type,
-                           Hisat2.Alignment.score.min.2.constant.term,
-                           Hisat2.Alignment.score.min.3.coefficient,
-                           Hisat2.Alignment.pen.cansplice,
-                           Hisat2.Alignment.penc.noncansplice,
-                           Hisat2.Alignment.pen.canintronlen.1.function.type,
-                           Hisat2.Alignment.pen.canintronlen.2.constant.term,
-                           Hisat2.Alignment.pen.canintronlen.3.coefficient,
-                           Hisat2.Alignment.pen.noncanintronlen.1.function.type,
-                           Hisat2.Alignment.pen.noncanintronlen.2.constant.term,
-                           Hisat2.Alignment.pen.noncanintronlen.3.coefficient,
-                           Hisat2.Alignment.min.intronlen,
-                           Hisat2.Alignment.max.intronlen,
-                           Hisat2.Alignment.rna.strandness,
-                           Hisat2.Alignment.k,
-                           Hisat2.Alignment.max.seeds,
-                           Hisat2.Alignment.secondary,
-                           Hisat2.Alignment.minins,
-                           Hisat2.Alignment.maxins,
-                           Hisat2.Alignment.seed)
+  if (which.s4.object == "RNASeqRParam") {
+    indices.optional <- "@"(RNASeqRParam, indices.optional)
+    PreRNASeqReadProcess(path.prefix, genome.name, sample.pattern)
+    # Check alignemnt selection first !
+    if (isTRUE(Hisat2.Alignment.run) && isTRUE(STAR.Alignment.run)) {
+      stop("Hisat2 and STAR can not run at the same time !")
+    } else if (isTRUE(Hisat2.Alignment.run) && !isTRUE(STAR.Alignment.run)) {
+      message("Hisat2 is selected as aligner in the pipeline !")
+    } else if (!isTRUE(Hisat2.Alignment.run) && isTRUE(STAR.Alignment.run)) {
+      message("STAR is selected as aligner in the pipeline !")
+    }
+    if (check.results$ht2.files.number.df == 0 &&
+        !indices.optional & Hisat2.Index.run) {
+      # Parameters: 11
+      CreateHisat2Index(path.prefix,
+                        genome.name,
+                        sample.pattern,
+                        splice.site.info = TRUE,
+                        exon.info = TRUE,
+                        Hisat2.Index.num.parallel.threads,
+                        Hisat2.Index.large.index,
+                        Hisat2.Index.local.ftab.chars,
+                        Hisat2.Index.local.off.rate,
+                        Hisat2.Index.ftab.chars,
+                        Hisat2.Index.off.rate)
     }
 
-  if (STAR.Alignment.run) {
-    # Parameters: 8
-    CreateSTARIndex(path.prefix,
-                    genome.name,
-                    sample.pattern,
-                    STAR.Index.num.parallel.threads,
-                    STAR.Index.sjdbOverhang.Read.length,
-                    STAR.Index.genomeSAindexNbases,
-                    STAR.Index.genomeChrBinNbits,
-                    STAR.Index.genomeSAsparseD)
-    # Parameters: 53
-    STARAlignmentDefault(path.prefix,
-                         genome.name,
-                         sample.pattern,
-                         STAR.Alignment.num.parallel.threads,
-                         STAR.Alignment.genomeLoad,
-                         STAR.Alignment.readMapNumber,
-                         STAR.Alignment.clip3pNbases,
-                         STAR.Alignment.clip5pNbases,
-                         STAR.Alignment.clip3pAdapterSeq,
-                         STAR.Alignment.clip3pAdapterMMp,
-                         STAR.Alignment.clip3pAfterAdapterNbases,
-                         STAR.Alignment.limitGenomeGenerateRAM,
-                         STAR.Alignment.limitIObufferSize,
-                         STAR.Alignment.limitOutSAMoneReadBytes,
-                         STAR.Alignment.limitOutSJoneRead,
-                         STAR.Alignment.limitOutSJcollapsed,
-                         STAR.Alignment.limitBAMsortRAM,
-                         STAR.Alignment.outReadsUnmapped,
-                         STAR.Alignment.outQSconversionAdd,
-                         STAR.Alignment.outSAMprimaryFlag,
-                         STAR.Alignment.outSAMmapqUnique,
-                         STAR.Alignment.scoreGap,
-                         STAR.Alignment.scoreGapNoncan,
-                         STAR.Alignment.scoreGapGCAG,
-                         STAR.Alignment.scoreGapATAC,
-                         STAR.Alignment.scoreGenomicLengthLog2scale,
-                         STAR.Alignment.scoreDelOpen,
-                         STAR.Alignment.scoreDelBase,
-                         STAR.Alignment.scoreInsOpen,
-                         STAR.Alignment.scoreInsBase,
-                         STAR.Alignment.scoreStitchSJshift,
-                         STAR.Alignment.seedSearchStartLmax,
-                         STAR.Alignment.seedSearchStartLmaxOverLread,
-                         STAR.Alignment.seedSearchLmax,
-                         STAR.Alignment.seedMultimapNmax,
-                         STAR.Alignment.seedPerReadNmax,
-                         STAR.Alignment.seedPerWindowNmax,
-                         STAR.Alignment.seedNoneLociPerWindow,
-                         STAR.Alignment.alignIntronMin,
-                         STAR.Alignment.alignIntronMax,
-                         STAR.Alignment.alignMatesGapMax,
-                         STAR.Alignment.alignSJoverhangMin,
-                         STAR.Alignment.alignSJDBoverhangMin,
-                         STAR.Alignment.alignSplicedMateMapLmin,
-                         STAR.Alignment.alignSplicedMateMapLminOverLmate,
-                         STAR.Alignment.alignWindowsPerReadNmax,
-                         STAR.Alignment.alignTranscriptsPerWindowNmax,
-                         STAR.Alignment.alignTranscriptsPerReadNmax,
-                         STAR.Alignment.alignEndsType,
-                         STAR.Alignment.winAnchorMultimapNmax,
-                         STAR.Alignment.winBinNbits,
-                         STAR.Alignment.winAnchorDistNbins,
-                         STAR.Alignment.winFlankNbins)
+    if (Hisat2.Alignment.run) {
+      # Parameters: 43
+      Hisat2AlignmentDefault(path.prefix,
+                             genome.name,
+                             sample.pattern,
+                             independent.variable,
+                             case.group,
+                             control.group,
+                             Hisat2.Alignment.num.parallel.threads,
+                             Hisat2.Alignment.skip,
+                             Hisat2.Alignment.trim5,
+                             Hisat2.Alignment.trim3,
+                             Hisat2.Alignment.n.ceil.1.function.type,
+                             Hisat2.Alignment.n.ceil.2.constant.term,
+                             Hisat2.Alignment.n.ceil.3.coefficient,
+                             Hisat2.Alignment.mp.MX,
+                             Hisat2.Alignment.mp.MN,
+                             Hisat2.Alignment.sp.MX,
+                             Hisat2.Alignment.sp.MN,
+                             Hisat2.Alignment.np,
+                             Hisat2.Alignment.rdg.1,
+                             Hisat2.Alignment.rdg.2,
+                             Hisat2.Alignment.rfg.1,
+                             Hisat2.Alignment.rfg.2,
+                             Hisat2.Alignment.score.min.1.function.type,
+                             Hisat2.Alignment.score.min.2.constant.term,
+                             Hisat2.Alignment.score.min.3.coefficient,
+                             Hisat2.Alignment.pen.cansplice,
+                             Hisat2.Alignment.penc.noncansplice,
+                             Hisat2.Alignment.pen.canintronlen.1.function.type,
+                             Hisat2.Alignment.pen.canintronlen.2.constant.term,
+                             Hisat2.Alignment.pen.canintronlen.3.coefficient,
+                             Hisat2.Alignment.pen.noncanintronlen.1.function.type,
+                             Hisat2.Alignment.pen.noncanintronlen.2.constant.term,
+                             Hisat2.Alignment.pen.noncanintronlen.3.coefficient,
+                             Hisat2.Alignment.min.intronlen,
+                             Hisat2.Alignment.max.intronlen,
+                             Hisat2.Alignment.rna.strandness,
+                             Hisat2.Alignment.k,
+                             Hisat2.Alignment.max.seeds,
+                             Hisat2.Alignment.secondary,
+                             Hisat2.Alignment.minins,
+                             Hisat2.Alignment.maxins,
+                             Hisat2.Alignment.seed)
+    }
+
+    if (STAR.Alignment.run) {
+      # Parameters: 8
+      CreateSTARIndex(path.prefix,
+                      genome.name,
+                      sample.pattern,
+                      STAR.Index.num.parallel.threads,
+                      STAR.Index.sjdbOverhang.Read.length,
+                      STAR.Index.genomeSAindexNbases,
+                      STAR.Index.genomeChrBinNbits,
+                      STAR.Index.genomeSAsparseD)
+      # Parameters: 53
+      STARAlignmentDefault(path.prefix,
+                           genome.name,
+                           sample.pattern,
+                           STAR.Alignment.num.parallel.threads,
+                           STAR.Alignment.genomeLoad,
+                           STAR.Alignment.readMapNumber,
+                           STAR.Alignment.clip3pNbases,
+                           STAR.Alignment.clip5pNbases,
+                           STAR.Alignment.clip3pAdapterSeq,
+                           STAR.Alignment.clip3pAdapterMMp,
+                           STAR.Alignment.clip3pAfterAdapterNbases,
+                           STAR.Alignment.limitGenomeGenerateRAM,
+                           STAR.Alignment.limitIObufferSize,
+                           STAR.Alignment.limitOutSAMoneReadBytes,
+                           STAR.Alignment.limitOutSJoneRead,
+                           STAR.Alignment.limitOutSJcollapsed,
+                           STAR.Alignment.limitBAMsortRAM,
+                           STAR.Alignment.outReadsUnmapped,
+                           STAR.Alignment.outQSconversionAdd,
+                           STAR.Alignment.outSAMprimaryFlag,
+                           STAR.Alignment.outSAMmapqUnique,
+                           STAR.Alignment.scoreGap,
+                           STAR.Alignment.scoreGapNoncan,
+                           STAR.Alignment.scoreGapGCAG,
+                           STAR.Alignment.scoreGapATAC,
+                           STAR.Alignment.scoreGenomicLengthLog2scale,
+                           STAR.Alignment.scoreDelOpen,
+                           STAR.Alignment.scoreDelBase,
+                           STAR.Alignment.scoreInsOpen,
+                           STAR.Alignment.scoreInsBase,
+                           STAR.Alignment.scoreStitchSJshift,
+                           STAR.Alignment.seedSearchStartLmax,
+                           STAR.Alignment.seedSearchStartLmaxOverLread,
+                           STAR.Alignment.seedSearchLmax,
+                           STAR.Alignment.seedMultimapNmax,
+                           STAR.Alignment.seedPerReadNmax,
+                           STAR.Alignment.seedPerWindowNmax,
+                           STAR.Alignment.seedNoneLociPerWindow,
+                           STAR.Alignment.alignIntronMin,
+                           STAR.Alignment.alignIntronMax,
+                           STAR.Alignment.alignMatesGapMax,
+                           STAR.Alignment.alignSJoverhangMin,
+                           STAR.Alignment.alignSJDBoverhangMin,
+                           STAR.Alignment.alignSplicedMateMapLmin,
+                           STAR.Alignment.alignSplicedMateMapLminOverLmate,
+                           STAR.Alignment.alignWindowsPerReadNmax,
+                           STAR.Alignment.alignTranscriptsPerWindowNmax,
+                           STAR.Alignment.alignTranscriptsPerReadNmax,
+                           STAR.Alignment.alignEndsType,
+                           STAR.Alignment.winAnchorMultimapNmax,
+                           STAR.Alignment.winBinNbits,
+                           STAR.Alignment.winAnchorDistNbins,
+                           STAR.Alignment.winFlankNbins)
+    }
+  } else if (which.s4.object == "RNASeqRParam_Sam") {
+    PreRNASeqReadProcess_Sam(path.prefix, genome.name, sample.pattern)
   }
-
-
   if (Rsamtools.Bam.run) {
     # Parameters: 6
     RSamtoolsToBam(SAMtools.or.Rsamtools,
@@ -1097,9 +1210,15 @@ RNASeqReadProcess <- function(RNASeqRParam,
                     python.2to3,
                     print=TRUE)
   }
-  PostRNASeqReadProcess(path.prefix,
-                        genome.name,
-                        sample.pattern)
+  if (which.s4.object == "RNASeqRParam") {
+    PostRNASeqReadProcess(path.prefix,
+                          genome.name,
+                          sample.pattern)
+  } else if (which.s4.object == "RNASeqRParam_Sam") {
+    PostRNASeqReadProcess_Sam(path.prefix,
+                          genome.name,
+                          sample.pattern)
+  }
 }
 
 PreRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
@@ -1126,6 +1245,33 @@ PreRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
     (check.results$fastq.gz.files.number.df != 0)
   validity <- phenodata.csv && ref.gtf && ref.fa && check.tool.result &&
     (length(raw.fastq) != 0) && check.progress.results.bool
+  if (!isTRUE(validity)) {
+    stop("RNASeqReadProcess() environment ERROR")
+  }
+  message("(\u2714) : RNASeqReadProcess() pre-check is valid\n\n")
+}
+
+PreRNASeqReadProcess_Sam <- function(path.prefix, genome.name, sample.pattern) {
+  message("\u269C\u265C\u265C\u265C RNASeqReadProcess()' ",
+          "environment pre-check ...\n")
+  phenodata.csv <- file.exists(paste0(path.prefix, "gene_data/phenodata.csv"))
+  ref.gtf <- file.exists(paste0(path.prefix,
+                                "gene_data/ref_genes/", genome.name, ".gtf"))
+  raw.sam <- list.files(path = paste0(path.prefix, 'gene_data/raw_sam/'),
+                          pattern = sample.pattern,
+                          all.files = FALSE,
+                          full.names = FALSE,
+                          recursive = FALSE,
+                          ignore.case = FALSE)
+  check.tool.result <- CheckToolSam(path.prefix)
+  check.results <- ProgressGenesFiles(path.prefix,
+                                      genome.name,
+                                      sample.pattern,
+                                      print=FALSE)
+  check.progress.results.bool <- check.results$gtf.file.logic.df &&
+    (check.results$sam.files.number.df != 0)
+  validity <- phenodata.csv && ref.gtf && check.tool.result &&
+    (length(raw.sam) != 0) && check.progress.results.bool
   if (!isTRUE(validity)) {
     stop("RNASeqReadProcess() environment ERROR")
   }
@@ -1165,3 +1311,34 @@ PostRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
           "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n")
 }
 
+PostRNASeqReadProcess_Sam <- function(path.prefix, genome.name, sample.pattern) {
+  message("\u269C\u265C\u265C\u265C RNASeqReadProcess()' ",
+          "environment post-check ...\n")
+  # Still need to add condition
+  gene_abundance <- dir.exists(paste0(path.prefix, "gene_data/gene_abundance/"))
+  check.results <- ProgressGenesFiles(path.prefix,
+                                      genome.name,
+                                      sample.pattern,
+                                      print=FALSE)
+  sam.bool <- (check.results$sam.files.number.df) != 0
+  bam.bool <- (check.results$bam.files.number.df) != 0
+  gtf.bool <- (check.results$gtf.files.number.df) != 0
+  merged.bool <- check.results$stringtie_merged.gtf.file.df
+  gffcompare.bool <- (check.results$gffcompare.related.dirs.number.df) != 0
+  ballgown.bool <- (check.results$ballgown.dirs.number.df) != 0
+  validity <- gene_abundance && sam.bool && bam.bool && gtf.bool &&
+    merged.bool && gffcompare.bool && ballgown.bool
+  if (!isTRUE(validity)) {
+    stop("RNASeqReadProcess() post-check ERROR")
+  }
+  message("(\u2714) : RNASeqReadProcess() post-check is valid\n\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n")
+}

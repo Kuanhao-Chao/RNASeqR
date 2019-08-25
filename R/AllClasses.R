@@ -614,19 +614,4 @@ CheckCaseControlGroup <- function(input.path.prefix,
   }
 }
 
-#
-CheckS4Object <- function(RNASeqRParam, print = TRUE) {
-  if (isS4(RNASeqRParam) &&
-      class(RNASeqRParam)[1] == "RNASeqRParam") {
-    if (print) {
-      message("************** Checking validity of S4 input ************\n")
-      message("     (\u2714) : input is valid ",
-              "'RNASeqRParam' instance! \n\n")
-    }
-  } else {
-    message("(\u2718) : input is not a valid ",
-            "'RNASeqRParam' instance!.\n" )
-    stop("Invalid 'RNASeqRParam' input ERROR")
-  }
-}
 

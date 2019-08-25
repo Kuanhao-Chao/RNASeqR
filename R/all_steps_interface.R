@@ -58,7 +58,7 @@ All_Steps_Interface_CMD <- function(RNASeqRParam,
                                     KEGG.organism,
                                     run                = TRUE,
                                     check.s4.print     = TRUE) {
-  CheckS4Object(RNASeqRParam, check.s4.print)
+  CheckS4Object_All(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
   path.prefix <- "@"(RNASeqRParam, path.prefix)
   INSIDE.path.prefix <- "@"(RNASeqRParam, path.prefix)
@@ -177,7 +177,7 @@ All_Steps_Interface <- function(RNASeqRParam,
       is.na(INSIDE.path.prefix)) {
     # This is an external call!!
     # Check the S4 object(user input)
-    CheckS4Object(RNASeqRParam, check.s4.print)
+    CheckS4Object_All(RNASeqRParam, check.s4.print)
   } else if (RNASeqRParam == "INSIDE" &
              which.trigger == "INSIDE" &
              !is.na(INSIDE.path.prefix)) {

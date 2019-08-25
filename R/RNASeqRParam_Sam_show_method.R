@@ -1,6 +1,6 @@
 # the show method:
-setMethod('show', 'RNASeqRParam', function(object){
-  cat("RNASeqRParam S4 object\n",
+setMethod('show', 'RNASeqRParam_Sam', function(object){
+  cat("RNASeqRParam_Sam S4 object\n",
       "             os.type :", object@os.type, "\n",
       "     python.variable : (Availability:",
       object@python.variable$check.answer,
@@ -12,7 +12,6 @@ setMethod('show', 'RNASeqRParam', function(object){
       "      sample.pattern :", object@sample.pattern,"\n",
       "independent.variable :", object@independent.variable,"\n",
       "          case.group :", object@case.group,"\n",
-      "       control.group :", object@control.group,"\n",
-      "    indices.optional :", object@indices.optional,"\n"
-      )
+      "       control.group :", object@control.group,"\n"
+  )
 })

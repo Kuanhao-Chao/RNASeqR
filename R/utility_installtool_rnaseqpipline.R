@@ -112,8 +112,12 @@ ProgressGenesFiles <- function(path.prefix,
       message("(\u231B) : '", path.prefix, "gene_data/indices/*' is not exit\n")
     }
   }
+
+
+  pheno_data <- read.csv(paste0(path.prefix, "gene_data/phenodata.csv"))
+  levels(pheno_data$ids)
   # Target sam files !!
-  target.sam.files <- unique(gsub("_[1,2].fastq.gz", ".sam", fastq.gz.files))
+  target.sam.files <- paste0(levels(pheno_data$ids), '.sam')
   # Check whether sam file is exist !
   actual.found.sam.files <- list.files(path = paste0(path.prefix,
                                                      "gene_data", '/raw_sam/'),
@@ -145,7 +149,7 @@ ProgressGenesFiles <- function(path.prefix,
   }
 
   # Target bam file
-  target.bam.files <- unique(gsub("_[1,2].fastq.gz", ".bam", fastq.gz.files))
+  target.bam.files <- paste0(levels(pheno_data$ids), '.bam')
   actual.found.bam.files <- list.files(path = paste0(path.prefix,
                                                      "gene_data", '/raw_bam/'),
                                        pattern = paste0("*.bam$"),
@@ -176,7 +180,8 @@ ProgressGenesFiles <- function(path.prefix,
   }
 
   # Target gtf file
-  target.gtf.files <- unique(gsub("_[1,2].fastq.gz", ".gtf", fastq.gz.files))
+
+  target.gtf.files <- paste0(levels(pheno_data$ids), '.gtf')
   actual.found.gtf.files <- list.files(path = paste0(path.prefix,
                                                      "gene_data", '/raw_gtf/'),
                                        pattern = paste0("*.gtf$"),
