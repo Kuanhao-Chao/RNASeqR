@@ -56,64 +56,6 @@ setClass("RNASeqRParam_Sam",
 )
 
 
-#' @title RNASeqR
-#'
-#' @description  An S4 class for checking and storing RNA-Seq workflow
-#'  parameters starting with BAM files.
-#'
-#' @aliases RNASeq
-#'
-#' @slot os.type 'linux' or 'osx'. The operating system type.
-#' @slot python.variable A list storing python environment.
-#'    \code{(check.answer, python.version)}
-#' @slot python.2to3 Logical value whether \code{2to3} command is available
-#'    on the workstation.
-#' @slot path.prefix Path prefix of 'gene_data/', 'RNASeq_bin/',
-#'    'RNASeq_results/', 'Rscript/' and 'Rscript_out/' directories.
-#' @slot input.path.prefix Path prefix of 'input_files/' directory,
-#' @slot genome.name Variable of genome name defined in this RNA-Seq workflow
-#'   (ex. \code{genome.name}.fa, \code{genome.name}.gtf).
-#' @slot sample.pattern  Regular expression of paired-end fastq.gz files under
-#'   'input_files/raw_sam'. Expression not includes \code{_[1,2].fastq.gz}.
-#' @slot independent.variable Independent variable for the biological.
-#' experiment design of two-group RNA-Seq workflow.
-#' @slot case.group Group name of the case group.
-#' @slot control.group Group name of the control group.
-#'
-#' @name RNASeqRParam_Sam-class
-#'
-#' @rdname RNASeqRParam_Sam-class
-#'
-#' @exportClass RNASeqRParam_Sam
-#' @author Kuan-Hao Chao
-#' @examples
-#' data(yeast)
-#' "@@"(yeast, os.type)
-#' "@@"(yeast, python.variable)
-#' "@@"(yeast, python.2to3)
-#' "@@"(yeast, path.prefix)
-#' "@@"(yeast, input.path.prefix)
-#' "@@"(yeast, genome.name)
-#' "@@"(yeast, sample.pattern)
-#' "@@"(yeast, independent.variable)
-#' "@@"(yeast, case.group)
-#' "@@"(yeast, control.group)
-setClass("RNASeqRParam_Sam",
-         representation(
-           os.type              = "character",
-           python.variable      = "list",
-           python.2to3          = "logical",
-           path.prefix          = "character",
-           input.path.prefix    = "character",
-           genome.name          = "character",
-           sample.pattern       = "character",
-           independent.variable = "character",
-           case.group           = "character",
-           control.group        = "character"
-         )
-)
-
-
 #' @title RNASeqR_Sam
 #' @description  Constructor function for RNASeqRParam_Sam objects
 #'

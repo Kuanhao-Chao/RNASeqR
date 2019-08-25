@@ -36,7 +36,7 @@ RNASeqQualityAssessment_CMD <- function(RNASeqRParam,
                                         check.s4.print = TRUE) {
   # check input param
   which.s4.object <- CheckS4Object_All(RNASeqRParam, check.s4.print)
-  if (which.s4.object == "RNASeqRParam_Sam") {
+  if (which.s4.object == "RNASeqRParam_Sam" || which.s4.object == "RNASeqRParam_Bam") {
     stop("'RNASeqQualityAssessment_CMD' must use RNASeqRParam S4 object ")
   } else if (which.s4.object == "RNASeqRParam") {
     CheckOperatingSystem(FALSE)
@@ -124,7 +124,7 @@ RNASeqQualityAssessment <- function(RNASeqRParam,
                                    "gene_data/RNASeqRParam.rds"))
   }
   which.s4.object <- CheckS4Object_All(RNASeqRParam, check.s4.print)
-  if (which.s4.object == "RNASeqRParam_Sam") {
+  if (which.s4.object == "RNASeqRParam_Sam" || which.s4.object == "RNASeqRParam_Bam") {
     stop("'RNASeqQualityAssessment_CMD' must use RNASeqRParam S4 object ")
   } else if (which.s4.object == "RNASeqRParam") {
     path.prefix <- "@"(RNASeqRParam, path.prefix)

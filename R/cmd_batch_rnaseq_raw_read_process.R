@@ -421,6 +421,11 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
     Hisat2.Index.run = FALSE
     Hisat2.Alignment.run = FALSE
     STAR.Alignment.run = FALSE
+  } else if (which.s4.object == "RNASeqRParam_Bam") {
+    Hisat2.Index.run = FALSE
+    Hisat2.Alignment.run = FALSE
+    STAR.Alignment.run = FALSE
+    Rsamtools.Bam.run = FALSE
   }
   second <- paste0("RNASeqReadProcess(RNASeqRParam = 'INSIDE'",
                    ", which.trigger = 'INSIDE'",
@@ -1151,17 +1156,29 @@ RNASeqReadProcess <- function(RNASeqRParam,
                            STAR.Alignment.winAnchorDistNbins,
                            STAR.Alignment.winFlankNbins)
     }
+
+    if (Rsamtools.Bam.run) {
+      # Parameters: 6
+      RSamtoolsToBam(SAMtools.or.Rsamtools,
+                     Samtools.Bam.num.parallel.threads,
+                     path.prefix,
+                     genome.name,
+                     sample.pattern,
+                     Rsamtools.nCores)
+    }
   } else if (which.s4.object == "RNASeqRParam_Sam") {
     PreRNASeqReadProcess_Sam(path.prefix, genome.name, sample.pattern)
-  }
-  if (Rsamtools.Bam.run) {
-    # Parameters: 6
-    RSamtoolsToBam(SAMtools.or.Rsamtools,
-                   Samtools.Bam.num.parallel.threads,
-                   path.prefix,
-                   genome.name,
-                   sample.pattern,
-                   Rsamtools.nCores)
+    if (Rsamtools.Bam.run) {
+      # Parameters: 6
+      RSamtoolsToBam(SAMtools.or.Rsamtools,
+                     Samtools.Bam.num.parallel.threads,
+                     path.prefix,
+                     genome.name,
+                     sample.pattern,
+                     Rsamtools.nCores)
+    }
+  } else if (which.s4.object == "RNASeqRParam_Bam") {
+    PreRNASeqReadProcess_Bam(path.prefix, genome.name, sample.pattern)
   }
   if (StringTie.Assemble.run) {
     # Parameters: 9
@@ -1218,6 +1235,10 @@ RNASeqReadProcess <- function(RNASeqRParam,
     PostRNASeqReadProcess_Sam(path.prefix,
                           genome.name,
                           sample.pattern)
+  } else if (which.s4.object == "RNASeqRParam_Bam") {
+    PostRNASeqReadProcess_Bam(path.prefix,
+                              genome.name,
+                              sample.pattern)
   }
 }
 
@@ -1263,7 +1284,7 @@ PreRNASeqReadProcess_Sam <- function(path.prefix, genome.name, sample.pattern) {
                           full.names = FALSE,
                           recursive = FALSE,
                           ignore.case = FALSE)
-  check.tool.result <- CheckToolSam(path.prefix)
+  check.tool.result <- CheckTool_Sam_Bam(path.prefix)
   check.results <- ProgressGenesFiles(path.prefix,
                                       genome.name,
                                       sample.pattern,
@@ -1277,6 +1298,34 @@ PreRNASeqReadProcess_Sam <- function(path.prefix, genome.name, sample.pattern) {
   }
   message("(\u2714) : RNASeqReadProcess() pre-check is valid\n\n")
 }
+
+PreRNASeqReadProcess_Bam <- function(path.prefix, genome.name, sample.pattern) {
+  message("\u269C\u265C\u265C\u265C RNASeqReadProcess()' ",
+          "environment pre-check ...\n")
+  phenodata.csv <- file.exists(paste0(path.prefix, "gene_data/phenodata.csv"))
+  ref.gtf <- file.exists(paste0(path.prefix,
+                                "gene_data/ref_genes/", genome.name, ".gtf"))
+  raw.bam <- list.files(path = paste0(path.prefix, 'gene_data/raw_bam/'),
+                        pattern = sample.pattern,
+                        all.files = FALSE,
+                        full.names = FALSE,
+                        recursive = FALSE,
+                        ignore.case = FALSE)
+  check.tool.result <- CheckTool_Sam_Bam(path.prefix)
+  check.results <- ProgressGenesFiles(path.prefix,
+                                      genome.name,
+                                      sample.pattern,
+                                      print=FALSE)
+  check.progress.results.bool <- check.results$gtf.file.logic.df &&
+    (check.results$bam.files.number.df != 0)
+  validity <- phenodata.csv && ref.gtf && check.tool.result &&
+    (length(raw.bam) != 0) && check.progress.results.bool
+  if (!isTRUE(validity)) {
+    stop("RNASeqReadProcess() environment ERROR")
+  }
+  message("(\u2714) : RNASeqReadProcess() pre-check is valid\n\n")
+}
+
 
 PostRNASeqReadProcess <- function(path.prefix, genome.name, sample.pattern) {
   message("\u269C\u265C\u265C\u265C RNASeqReadProcess()' ",
@@ -1327,6 +1376,37 @@ PostRNASeqReadProcess_Sam <- function(path.prefix, genome.name, sample.pattern) 
   gffcompare.bool <- (check.results$gffcompare.related.dirs.number.df) != 0
   ballgown.bool <- (check.results$ballgown.dirs.number.df) != 0
   validity <- gene_abundance && sam.bool && bam.bool && gtf.bool &&
+    merged.bool && gffcompare.bool && ballgown.bool
+  if (!isTRUE(validity)) {
+    stop("RNASeqReadProcess() post-check ERROR")
+  }
+  message("(\u2714) : RNASeqReadProcess() post-check is valid\n\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\n")
+}
+
+PostRNASeqReadProcess_Bam <- function(path.prefix, genome.name, sample.pattern) {
+  message("\u269C\u265C\u265C\u265C RNASeqReadProcess()' ",
+          "environment post-check ...\n")
+  # Still need to add condition
+  gene_abundance <- dir.exists(paste0(path.prefix, "gene_data/gene_abundance/"))
+  check.results <- ProgressGenesFiles(path.prefix,
+                                      genome.name,
+                                      sample.pattern,
+                                      print=FALSE)
+  bam.bool <- (check.results$bam.files.number.df) != 0
+  gtf.bool <- (check.results$gtf.files.number.df) != 0
+  merged.bool <- check.results$stringtie_merged.gtf.file.df
+  gffcompare.bool <- (check.results$gffcompare.related.dirs.number.df) != 0
+  ballgown.bool <- (check.results$ballgown.dirs.number.df) != 0
+  validity <- gene_abundance && bam.bool && gtf.bool &&
     merged.bool && gffcompare.bool && ballgown.bool
   if (!isTRUE(validity)) {
     stop("RNASeqReadProcess() post-check ERROR")

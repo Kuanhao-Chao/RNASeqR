@@ -78,7 +78,7 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqRParam,
                      ", install.STAR = ", install.STAR,
                      ", install.stringtie = ", install.stringtie,
                      ", install.gffcompare = ", install.gffcompare,")")
-  } else if (which.s4.object == "RNASeqRParam_Sam") {
+  } else if (which.s4.object == "RNASeqRParam_Sam" || which.s4.object == "RNASeqRParam_Bam") {
     second <- paste0("RNASeqEnvironmentSet(RNASeqRParam = 'INSIDE'",
                      ", which.trigger = 'INSIDE'",
                      ", INSIDE.path.prefix = '", INSIDE.path.prefix,
@@ -193,14 +193,12 @@ RNASeqEnvironmentSet <- function(RNASeqRParam,
   sample.pattern <- "@"(RNASeqRParam, sample.pattern)
   PreRNASeqEnvironmentSet(path.prefix, sample.pattern)
   if (which.s4.object == "RNASeqRParam") {
-    print("Inside RNASeqRParam")
     indices.optional <- "@"(RNASeqRParam, indices.optional)
     CopyInputDir(path.prefix,
                  input.path.prefix,
                  genome.name,
                  sample.pattern,
                  indices.optional)
-    print("Finish CopyInputDir_Sam")
     InstallAll(path.prefix,
                os.type,
                install.hisat2,
@@ -212,12 +210,10 @@ RNASeqEnvironmentSet <- function(RNASeqRParam,
                              genome.name,
                              sample.pattern)
   } else if (which.s4.object == "RNASeqRParam_Sam") {
-    print("Inside RNASeqRParam_Sam")
     CopyInputDir_Sam(path.prefix,
                      input.path.prefix,
                      genome.name,
                      sample.pattern)
-    print("Finish CopyInputDir_Sam")
     InstallAll(path.prefix,
                os.type,
                FALSE,
@@ -226,6 +222,21 @@ RNASeqEnvironmentSet <- function(RNASeqRParam,
                install.gffcompare)
     ExportPath(path.prefix)
     PostRNASeqEnvironmentSet_Sam(path.prefix,
+                                 genome.name,
+                                 sample.pattern)
+  }  else if (which.s4.object == "RNASeqRParam_Bam") {
+    CopyInputDir_Bam(path.prefix,
+                     input.path.prefix,
+                     genome.name,
+                     sample.pattern)
+    InstallAll(path.prefix,
+               os.type,
+               FALSE,
+               FALSE,
+               install.stringtie,
+               install.gffcompare)
+    ExportPath(path.prefix)
+    PostRNASeqEnvironmentSet_Bam(path.prefix,
                                  genome.name,
                                  sample.pattern)
   }
@@ -498,6 +509,45 @@ CopyInputDir_Sam <- function(path.prefix,
          FUN.VALUE = TRUE)
   message("     \u25CF           To :",
           path.prefix, "gene_data/raw_sam/\n")
+  message("     \u25CF Copying From :",
+          input.path.prefix, "input_files/phenodata.csv\n")
+  pheno.des <- paste0(path.prefix, "gene_data/phenodata.csv")
+  file.remove(pheno.des)
+  file.symlink(paste0(input.path.prefix, "input_files/phenodata.csv"),
+               pheno.des)
+  message("     \u25CF           To :", pheno.des, "\n")
+}
+
+
+# inner function : Copy input files directory
+CopyInputDir_Bam <- function(path.prefix,
+                             input.path.prefix,
+                             genome.name,
+                             sample.pattern) {
+  message("************** Directory Copying ************\n")
+  message("     \u25CF Copying From :",input.path.prefix,
+          "input_files/", genome.name, ".gtf\n")
+  gtf.des <- paste0(path.prefix, "gene_data/ref_genes/", genome.name, ".gtf")
+  file.remove(gtf.des)
+  file.symlink(paste0(input.path.prefix, "input_files/", genome.name, ".gtf"),
+               gtf.des)
+  message("     \u25CF           To :", gtf.des, "\n")
+  message("     \u25CF Copying From :",
+          input.path.prefix, "input_files/", "raw_bam/",  "\n")
+  unlink(paste0(path.prefix, "gene_data/raw_bam/"), recursive = TRUE)
+  dir.create(paste0(path.prefix, "gene_data/raw_bam/"))
+  raw_bam.subfiles <- list.files(path = paste0(input.path.prefix,
+                                               "input_files/",
+                                               "raw_bam"),
+                                 pattern = sample.pattern,
+                                 recursive = TRUE,
+                                 full.names = TRUE)
+  vapply(raw_bam.subfiles,
+         function(x) file.symlink(x, paste0(path.prefix,
+                                            "gene_data/raw_bam")),
+         FUN.VALUE = TRUE)
+  message("     \u25CF           To :",
+          path.prefix, "gene_data/raw_bam/\n")
   message("     \u25CF Copying From :",
           input.path.prefix, "input_files/phenodata.csv\n")
   pheno.des <- paste0(path.prefix, "gene_data/phenodata.csv")
@@ -980,7 +1030,7 @@ CheckToolAll <- function(path.prefix, print=TRUE) {
 }
 
 
-CheckToolSam <- function(path.prefix, print=TRUE) {
+CheckTool_Sam_Bam <- function(path.prefix, print=TRUE) {
   message("************** Checking Availability of Commands ************\n")
   ExportPath(path.prefix)
   stringtie.check <- CheckStringTie(print)
@@ -1061,9 +1111,44 @@ PostRNASeqEnvironmentSet_Sam <- function(path.prefix,
                         full.names = FALSE,
                         recursive = FALSE,
                         ignore.case = FALSE)
-  check.tool.result <- CheckToolSam(path.prefix)
+  check.tool.result <- CheckTool_Sam_Bam(path.prefix)
   validity <- phenodata.csv && ref.gtf &&
     check.tool.result && (length(raw.sam) != 0)
+  if (!isTRUE(validity)) {
+    stop("RNASeqEnvironmentSet() post-check ERROR")
+  }
+  message("(\u2714) : RNASeqEnvironmentSet() post-check is valid\n\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\n")
+  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
+          "\u2605\n")
+}
+
+PostRNASeqEnvironmentSet_Bam <- function(path.prefix,
+                                         genome.name,
+                                         sample.pattern) {
+  message("\u269C\u265C\u265C\u265C RNASeqEnvironmentSet()' ",
+          "environment post-check ...\n")
+  phenodata.csv <- file.exists(paste0(path.prefix, "gene_data/phenodata.csv"))
+  ref.gtf <- file.exists(paste0(path.prefix,
+                                "gene_data/ref_genes/",
+                                genome.name, ".gtf"))
+  raw.bam <- list.files(path = paste0(path.prefix, "gene_data/raw_bam/"),
+                        pattern = sample.pattern,
+                        all.files = FALSE,
+                        full.names = FALSE,
+                        recursive = FALSE,
+                        ignore.case = FALSE)
+  check.tool.result <- CheckTool_Sam_Bam(path.prefix)
+  validity <- phenodata.csv && ref.gtf &&
+    check.tool.result && (length(raw.bam) != 0)
   if (!isTRUE(validity)) {
     stop("RNASeqEnvironmentSet() post-check ERROR")
   }
@@ -1099,6 +1184,14 @@ CheckS4Object_All <- function(RNASeqRParam, print = TRUE) {
               "'RNASeqRParam_Sam' instance! \n\n")
     }
     return("RNASeqRParam_Sam")
+  } else if (isS4(RNASeqRParam) &&
+             class(RNASeqRParam)[1] == "RNASeqRParam_Bam") {
+    if (print) {
+      message("************** Checking validity of S4 input ************\n")
+      message("     (\u2714) : input is valid ",
+              "'RNASeqRParam_Bam' instance! \n\n")
+    }
+    return("RNASeqRParam_Bam")
   } else {
     message("(\u2718) : input is not a valid ",
             "'RNASeqRParam' or 'RNASeqRParam_Sam' instance!.\n" )
