@@ -1,59 +1,13 @@
-#' @title RNASeqDifferentialAnalysis
+#' @title Update_Fastq_gz
 #'
 #' @description
-#'   This function will run differential analysis on ballgown,
-#'   DESeq2 and edgeR in background. \cr
-#'   This function do following things : \cr
-#'   \enumerate{
-#'     \item ballgown analysis \cr
-#'     Raw reads are normalized into FPKM values \cr
-#'     The main statistic test in ballgown is paramatic F-test comparing nested
-#'     linear models \cr
-#'     \item DESeq2 analysis  \cr
-#'      Median of rations normalization(MRN) is used in DESeq2 for raw reads
-#'       count normalization.  \cr
-#'      Sequencing depth and RNA composition is taken into consideration is this
-#'       normalization method.  \cr
-#'      The main statistic test in DESeq2 is negative binomial distribution. \cr
-#'     \item edgeR analysis  \cr
-#'      Raw reads are normalized by TMM and library size.
-#'       (run \code{calcNormFactors()} to get a DGEList,
-#'      and then run \code{cpm()} on that DGEList)  \cr
-#'      The main statistic test in edgeR is trimmed mean of M-values(TMM).\cr
-#'   }
-#'   If you want to run differential analysis on ballgown,
-#'   DESeq2, edgeR for the following RNA-Seq workflow in background,
-#'   please see \code{RNASeqDifferentialAnalysis()} function.
-#'
+#'   This function let users update their trimmed fastq.gz files automatically.
 #' @param RNASeqRParam S4 object instance of experiment-related
 #'   parameters
-#' @param which.trigger Default value is \code{OUTSIDE}. User should not change
-#'   this value.
-#' @param INSIDE.path.prefix Default value is \code{NA}. User should not change
-#'   this value.
-#' @param ballgown.run Default \code{TRUE}. Logical value whether to run
-#'   ballgown differential analysis.
-#' @param ballgown.pval Default \code{0.05}. Set the threshold of ballgown
-#'   p-value to filter out differential expressed gene.
-#' @param ballgown.log2FC Default \code{1}. Set the threshold of ballgown
-#'   log2 fold change to filter out differential expressed gene.
-#' @param DESeq2.run Default \code{TRUE}. Logical value whether to run
-#'   DESeq2 differential analysis.
-#' @param DESeq2.pval Default \code{0.05}. Set the threshold of DESeq2 p-value
-#'   to filter out differential expressed gene.
-#' @param DESeq2.log2FC Default \code{1}. Set the threshold of DESeq2 log2
-#'   fold change to filter out differential expressed gene.
-#' @param edgeR.run Default \code{TRUE}. Logical value whether to run
-#'   edgeR differential analysis.
-#' @param edgeR.pval Default \code{0.05}. Set the threshold of edgeR p-value
-#'   to filter out differential expressed gene.
-#' @param edgeR.log2FC Default \code{1}. Set the threshold of edgeR log2
-#'   fold change to filter out differential expressed gene.
-#' @param check.s4.print Default \code{TRUE}. If \code{TRUE}, the result of
-#'   checking \code{RNASeqRParam} will be reported in
-#'   'Rscript_out/Environment_Set.Rout'. If \code{FALSE}, the result of checking
-#'   \code{RNASeqRParam} will not be in
-#'   'Rscript_out/Environment_Set.Rout'.
+#' @param prepared_fastq_gz absolute path to the prepared 'raw_fastq.gz' 
+#'  directory.
+#' @param target_samples list of samples that are going to update. Default
+#'  value is \code{ALL}
 #'
 #' @return None
 #' @export
@@ -62,139 +16,86 @@
 #' data(yeast)
 #' \dontrun{
 #' RNASeqDifferentialAnalysis(RNASeqRParam = yeast)}
-RNASeqDifferentialAnalysis <- function(RNASeqRParam,
-                                       which.trigger      = "OUTSIDE",
-                                       INSIDE.path.prefix = NA,
-                                       Pre_DE.visualization = TRUE,
-                                       Post_DE.visualization = TRUE,
-                                       ballgown.run    = TRUE,
-                                       ballgown.pval   = 0.05,
-                                       ballgown.log2FC = 1,
-                                       DESeq2.run      = TRUE,
-                                       DESeq2.pval     = 0.1,
-                                       DESeq2.log2FC   = 1,
-                                       edgeR.run       = TRUE,
-                                       edgeR.pval      = 0.05,
-                                       edgeR.log2FC    = 1,
-                                       check.s4.print     = TRUE) {
-  CheckOperatingSystem(FALSE)
-  # If `which.trigger` is OUTSIDE, then directory must be built
-  # If `which.trigger` is INSIDE, then directory must not be
-  #  built here(will created in CMD)
-  if (isS4(RNASeqRParam) &
-      which.trigger == "OUTSIDE" &
-      is.na(INSIDE.path.prefix)) {
-    # This is an external call!!
-    # Check the S4 object(user input)
-    CheckS4Object_All(RNASeqRParam, check.s4.print)
-  } else if (RNASeqRParam == "INSIDE" &
-             which.trigger == "INSIDE" &
-             !is.na(INSIDE.path.prefix)) {
-    # This is an internal call!!
-    # Load the S4 object that saved in CMD process
-    RNASeqRParam <- readRDS(paste0(INSIDE.path.prefix,
-                                   "gene_data/RNASeqRParam.rds"))
-  }
-  path.prefix <- "@"(RNASeqRParam, path.prefix)
-  genome.name <- "@"(RNASeqRParam, genome.name)
-  sample.pattern <- "@"(RNASeqRParam, sample.pattern)
-  independent.variable <- "@"(RNASeqRParam, independent.variable)
-  case.group <- "@"(RNASeqRParam, case.group)
-  control.group <- "@"(RNASeqRParam, control.group)
-
-
-  # 1. Pre-DE assessment visualization
-  phenoData.result<- phenoDataWrap(path.prefix,
-                                   independent.variable,
-                                   case.group,
-                                   control.group)
-  if (Pre_DE.visualization) {
-    PreRNASeqDifferentialAnalysis(path.prefix = path.prefix,
-                                  sample.pattern = sample.pattern)
-  }
-  if (file.exists(paste0(path.prefix,
-                         "RNASeq_results/Alignment_Report/",
-                         "Alignment_report_reads.csv")) &
-      file.exists(paste0(path.prefix,
-                         "RNASeq_results/Alignment_Report/",
-                         "Overall_Mapping_rate.csv"))) {
-    AlignmentPlot(path.prefix,
-                  independent.variable,
-                  case.group,
-                  control.group,
-                  phenoData.result)
-  }
-  message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  ",
-          "Start Differential Expression Analysis  ",
-          "\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618\n")
-  # 2. DE analysis
-  if (ballgown.run) {
-    BallgownAnalysis(path.prefix,
-                     genome.name,
-                     sample.pattern,
-                     independent.variable,
-                     case.group,
-                     control.group,
-                     ballgown.pval,
-                     ballgown.log2FC,
-                     phenoData.result)
-  }
-  raw.read.avail <- RawReadCountAvailability(path.prefix)
-  if (raw.read.avail) {
-    if (DESeq2.run) {
-      DESeq2RawCountAnalysis(path.prefix,
-                             independent.variable,
-                             case.group,
-                             control.group,
-                             DESeq2.pval,
-                             DESeq2.log2FC,
-                             phenoData.result)
-    }
-    if (edgeR.run) {
-      edgeRRawCountAnalysis(path.prefix,
-                            independent.variable,
-                            case.group,
-                            control.group,
-                            edgeR.pval,
-                            edgeR.log2FC,
-                            phenoData.result)
+Update_Fastq_gz <- function(RNASeqRParam, 
+                            prepared_fastq_gz, 
+                            target_samples     = "ALL") {
+  path.prefix <- RNASeqRParam@path.prefix
+  independent.variable <- RNASeqRParam@independent.variable
+  case.group <- RNASeqRParam@case.group
+  control.group <- RNASeqRParam@control.group
+  bool_prepared_fastq_gz <- dir.exists(prepared_fastq_gz)
+  if(bool_prepared_fastq_gz) {
+    if (target_samples != "ALL") {
+      Checker_result <- TRUE
+      phenoData.result<- phenoDataWrap(path.prefix,
+                                       independent.variable,
+                                       case.group,
+                                       control.group)
+      all.samples <- levels(phenoData.result$pheno_data$ids)
+      for (i in target_samples) {
+        each_checker <- any(i == all.samples)
+        if (!each_checker) {
+          Checker_result <- FALSE
+        }
+      }
+      if (Checker_result) {
+        # Input samples list is valid. Now check files are inside input_files
+        prepared.files <- list.files(prepared_fastq_gz)
+        for (i in target_samples) {
+          message("Checking '", i, "' sample validity ...")
+          each_checker_1 <- any(paste0(i, "_1.fastq.gz") == prepared.files)
+          each_checker_2 <- any(paste0(i, "_2.fastq.gz") == prepared.files)
+          if (!each_checker_1 || !each_checker_2) {
+            message(paste0("target_samples list is invalid. Please check all target ",
+                        "samples are inside 'phenodata.csv'."))
+            stop(paste0(i, " file does not match. Please check your target", 
+                        " file naming is correct."))
+          }
+        }
+        # Pass every check! Now update files.
+        for (i in target_samples) {
+          message("Moving '", i, "' sample into project ...")
+          unlink(paste0(path.prefix, "gene_data/raw_fastq.gz/", i, "_1.fastq.gz"))
+          unlink(paste0(path.prefix, "gene_data/raw_fastq.gz/", i, "_2.fastq.gz"))
+          paste0(prepared_fastq_gz, '/', i, "_1.fastq.gz")
+          file.symlink(paste0(prepared_fastq_gz, '/', i, "_1.fastq.gz"),
+                       paste0(path.prefix, "gene_data/raw_fastq.gz"))
+          file.symlink(paste0(prepared_fastq_gz, '/', i, "_2.fastq.gz"),
+                       paste0(path.prefix, "gene_data/raw_fastq.gz"))
+          message("    ", i, " fastq.gz files are updated.")
+        }
+        message("Fastq.gz files are updated!")
+      } else {
+        stop(paste0("target_samples list is invalid. Please check all target ",
+                    "samples are inside 'phenodata.csv'."))
+      }
+    } else if (target_samples == "ALL") {
+      message("Checking all samples validity ...")
+      prepared.files <- list.files(prepared_fastq_gz)
+      origin.files <- list.files(paste0(path.prefix, "gene_data/raw_fastq.gz"))
+      if (prepared.files == origin.files) {
+        different_number <- length(setdiff(prepared.files, origin.files))
+        if(different_number == 0) {
+          message("   Samples are valid. Start to update .fastq.gz files")
+          
+          
+          unlink(paste0(path.prefix, "gene_data/raw_fastq.gz/"), recursive = TRUE)
+          
+          dir.create(paste0(path.prefix, "gene_data/raw_fastq.gz/"))
+          raw_fastq.gz.subfiles <- list.files(path = prepared_fastq_gz,
+                                              pattern = sample.pattern,
+                                              recursive = TRUE,
+                                              full.names = TRUE)
+          vapply(raw_fastq.gz.subfiles,
+                 function(x) file.symlink(x, paste0(path.prefix,
+                                                    "gene_data/raw_fastq.gz")),
+                 FUN.VALUE = TRUE)
+          message("All fastq.gz files are updated.")
+        } else {
+          stop("   Samples do not match. Please check your fastq.gz files in",
+               " 'prepared_fastq_gz':", prepared_fastq_gz)
+        }
+      } 
     }
   }
-  if (Post_DE.visualization) {
-    # 3. Post-DE assessment visualization
-    PostRNASeqDifferentialAnalysis(path.prefix = path.prefix,
-                                   sample.pattern = sample.pattern)
-  }
-}
-
-
-PreRNASeqDifferentialAnalysis <- function(path.prefix, sample.pattern) {
-  message("\u269C\u265C\u265C\u265C RNASeqDifferentialAnalysis()' ",
-          "environment pre-check ...\n")
-  validity <- TRUE
-  if (!isTRUE(validity)) {
-    stop("RNASeqDifferentialAnalysis() environment ERROR")
-  }
-  message("(\u2714) : RNASeqDifferentialAnalysis() pre-check is valid\n\n")
-}
-
-PostRNASeqDifferentialAnalysis <- function(path.prefix, sample.pattern) {
-  message("\u269C\u265C\u265C\u265C RNASeqDifferentialAnalysis()' ",
-          "environment post-check ...\n")
-  validity <- TRUE
-  if (!isTRUE(validity)) {
-    stop("RNASeqDifferentialAnalysis() post-check ERROR")
-  }
-  message("(\u2714) : RNASeqDifferentialAnalysis() post-check is valid\n\n")
-  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-          "\u2605\n")
-  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-          "\u2605\u2605 Success!! \u2605\u2605\u2605\u2605\u2605\u2605",
-          "\u2605\u2605\u2605\u2605\u2605\u2605\n")
-  message("\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-          "\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605\u2605",
-          "\u2605\n")
 }
