@@ -61,6 +61,8 @@ RNASeqEnvironmentSet_CMD <- function(RNASeqRParam,
   # check input param
   which.s4.object <- CheckS4Object_All(RNASeqRParam, check.s4.print)
   CheckOperatingSystem(FALSE)
+  # Remove all the files and restart !!
+  unlink(paste0(RNASeqRParam@path.prefix, "*"), recursive = TRUE)
   # Create the main directory for RNA-Seq analysis
   MkdirAll(RNASeqRParam@path.prefix)
   path.prefix <- "@"(RNASeqRParam, path.prefix)
@@ -174,6 +176,8 @@ RNASeqEnvironmentSet <- function(RNASeqRParam,
   if (isS4(RNASeqRParam) &
       which.trigger == "OUTSIDE" &
       is.na(INSIDE.path.prefix)) {
+    # Remove all the files and restart !!
+    unlink(paste0(RNASeqRParam@path.prefix, "*"), recursive = TRUE)
     # This is an external call!!
     MkdirAll(RNASeqRParam@path.prefix)
     # Check the S4 object(user input)

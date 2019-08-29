@@ -23,6 +23,8 @@
 #' @slot control.group Group name of the control group.
 #' @slot indices.optional Logical value whether 'indices/' is exit in
 #'   'input_files/'.
+#' @slot fastq.gz.type Specify the fastq.gz file type. 'PE' represents 
+#'   paired-end and 'SE' represents single-end.
 #'
 #' @name RNASeqRParam-class
 #'
@@ -43,6 +45,7 @@
 #' "@@"(yeast, case.group)
 #' "@@"(yeast, control.group)
 #' "@@"(yeast, indices.optional)
+#' "@@"(yeast, fastq.gz.type)
 setClass("RNASeqRParam",
          representation(
            os.type              = "character",
@@ -55,7 +58,8 @@ setClass("RNASeqRParam",
            independent.variable = "character",
            case.group           = "character",
            control.group        = "character",
-           indices.optional     = "logical"
+           indices.optional     = "logical",
+           fastq.gz.type        = "character"
          )
 )
 
@@ -77,6 +81,8 @@ setClass("RNASeqRParam",
 #'   experiment design of two-group RNA-Seq workflow.
 #' @param case.group Group name of the case group.
 #' @param control.group Group name of the control group.
+#' @param fastq.gz.type Specify the fastq.gz file type. 'PE' represents 
+#'   paired-end and 'SE' represents single-end.
 #'
 #' @return an object of class \code{RNASeqRParam}
 #'
@@ -95,14 +101,16 @@ setClass("RNASeqRParam",
 #'                     sample.pattern       = "SRR[0-9]*_XV",
 #'                     independent.variable = "state",
 #'                     case.group           = "60mins_ID20_amphotericin_B",
-#'                     control.group        = "60mins_ID20_control")
+#'                     control.group        = "60mins_ID20_control",
+#'                     fastq.gz.type        = "PE")
 RNASeqRParam <- function(path.prefix          = NA,
                          input.path.prefix    = NA,
                          genome.name          = NA,
                          sample.pattern       = NA,
                          independent.variable = NA,
                          case.group           = NA,
-                         control.group        = NA) {
+                         control.group        = NA,
+                         fastq.gz.type        = NA) {
   # check input parameters
   CheckInputParamNa(path.prefix,
                     input.path.prefix,
@@ -110,7 +118,11 @@ RNASeqRParam <- function(path.prefix          = NA,
                     sample.pattern,
                     independent.variable,
                     case.group,
-                    control.group)
+                    control.group,
+                    fastq.gz.type)
+  if (fastq.gz.type != 'PE' && fastq.gz.type !='SE') {
+    stop("'fastq.gz.type' must be 'PE' or 'SE'. Please check your input again.")
+  }
   # 1. check operating system
   characters.os.type <- CheckOperatingSystem()
   # 2. check python version
@@ -151,13 +163,12 @@ RNASeqRParam <- function(path.prefix          = NA,
   # 6. check 'input_files/' necessary files with 'genome.name', 'sample.pattern'
   input.dir.files.list <- CheckInputDirFiles(input.path.prefix,
                                              genome.name,
-                                             sample.pattern)
+                                             sample.pattern,
+                                             fastq.gz.type)
   bool.input.dir.files <- input.dir.files.list$check.answer
   # This determine whether to run 'CreateHisat2Index'
   bool.input.dir.indices <- input.dir.files.list$optional.indices.bool
   # below still need to fix
-
-
   # 7. check 'case.group' and 'control.group'
   bool.control.control.group <- CheckCaseControlGroup(input.path.prefix,
                                                       independent.variable,
@@ -180,19 +191,20 @@ RNASeqRParam <- function(path.prefix          = NA,
         independent.variable = independent.variable,
         case.group           = case.group,
         control.group        = control.group,
-        indices.optional     = bool.input.dir.indices)
+        indices.optional     = bool.input.dir.indices,
+        fastq.gz.type        = fastq.gz.type)
   }
 }
 
 # inner function : check whether input values are NA
 CheckInputParamNa <- function(path.prefix, input.path.prefix, genome.name,
                               sample.pattern, independent.variable,
-                              case.group, control.group) {
+                              case.group, control.group, fastq.gz.type) {
   message("************** Checking input parameters ************\n")
   if (is.na(path.prefix) || is.na(input.path.prefix) ||
       is.na(genome.name) || is.na(sample.pattern) ||
       is.na(independent.variable) ||
-      is.na(case.group) || is.na(control.group)) {
+      is.na(case.group) || is.na(control.group) || is.na(fastq.gz.type)) {
     if (is.na(path.prefix)) {
       message("(\u2718) : 'path.prefix' is missing.\n\n")
     }
@@ -213,6 +225,9 @@ CheckInputParamNa <- function(path.prefix, input.path.prefix, genome.name,
     }
     if (is.na(control.group)) {
       message("(\u2718) : 'control.group' is missing.\n\n")
+    }
+    if (is.na(fastq.gz.type)) {
+      message("(\u2718) : 'fastq.gz.type' is missing.\n\n")
     }
     stop("Input parameters ERROR")
   } else {
@@ -342,7 +357,8 @@ CheckInputPrefixPath <- function(input.path.prefix) {
 }
 
 # inner function : check input.path.prefix
-CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
+CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern,
+                               fastq.gz.type) {
   message("************** Checking hierarchy of '",
           input.path.prefix, "input_files/' ************\n")
   # only check whether exist
@@ -365,46 +381,77 @@ CheckInputDirFiles <- function(input.path.prefix, genome.name, sample.pattern) {
   optional.indices.bool <- FALSE
   # check whether sample pattern matches the file names~
   if (raw.fastq.dir) {
-    raw.fastq <- list.files(path = paste0(input.path.prefix,
-                                          "input_files/raw_fastq.gz/"),
-                            pattern = sample.pattern, all.files = FALSE,
-                            full.names = FALSE,
-                            recursive = FALSE,
-                            ignore.case = FALSE)
-    extract.fastq.gz.sample.names <- unique(gsub("_[1-2]*.fastq.gz", "",
-                                                 raw.fastq))
-    check.fastq.gz.1 <- vapply(extract.fastq.gz.sample.names,
-                               function(x) paste0(x, "_1.fastq.gz"),
-                               USE.NAMES = FALSE,
-                               FUN.VALUE = "a")
-    check.fastq.gz.2 <- vapply(extract.fastq.gz.sample.names,
-                               function(x) paste0(x, "_2.fastq.gz"),
-                               USE.NAMES = FALSE,
-                               FUN.VALUE = "a")
-    # checking the valid file naming of '.fastq.gz'
-    for ( i in seq_along(check.fastq.gz.1)) {
-      bool.check.1 <- check.fastq.gz.1[i] %in% raw.fastq
-      if (!bool.check.1) {
-        message("(\u2718) : ",
-                check.fastq.gz.1[i],
-                " is not found in 'input_files/raw_fastq.gz/\n")
-        stop("Pair-end file ERROR")
-      }
-    }
-    for ( i in seq_along(check.fastq.gz.2)) {
-      bool.check.2 <- check.fastq.gz.2[i] %in% raw.fastq
-      if (!bool.check.2) {
-        message("(\u2718) : ",
-                check.fastq.gz.2[i],
-                " is not found in 'input_files/raw_fastq.gz/\n")
-        stop("Pair-end file ERROR")
+    if (fastq.gz.type == 'SE') {
+      raw.fastq <- list.files(path = paste0(input.path.prefix,
+                                            "input_files/raw_fastq.gz/"),
+                              pattern = sample.pattern, all.files = FALSE,
+                              full.names = FALSE,
+                              recursive = FALSE,
+                              ignore.case = FALSE)
+      extract.fastq.gz.sample.names <- unique(gsub("_1.fastq.gz", "",
+                                                   raw.fastq))
+      check.fastq.gz.1 <- vapply(extract.fastq.gz.sample.names,
+                                 function(x) paste0(x, "_1.fastq.gz"),
+                                 USE.NAMES = FALSE,
+                                 FUN.VALUE = "a")
+      # checking the valid file naming of '.fastq.gz'
+      for ( i in seq_along(check.fastq.gz.1)) {
+        bool.check.1 <- check.fastq.gz.1[i] %in% raw.fastq
+        if (!bool.check.1) {
+          message("(\u2718) : ",
+                  gsub("_1.fastq.gz", "",
+                       check.fastq.gz.1[i]),
+                  " should not be found in 'input_files/raw_fastq.gz/\n")
+          stop("Single-end file ERROR")
         }
+      }
+      if (sample.pattern == "") {
+        message("(\u2718) : The value of 'sample.pattern' is \"\" !!\n")
+        stop("'sample.pattern' ERROR")
+      }
+      raw.fastq.number <- length(raw.fastq)
+    } else if (fastq.gz.type == 'PE') {
+      raw.fastq <- list.files(path = paste0(input.path.prefix,
+                                            "input_files/raw_fastq.gz/"),
+                              pattern = sample.pattern, all.files = FALSE,
+                              full.names = FALSE,
+                              recursive = FALSE,
+                              ignore.case = FALSE)
+      extract.fastq.gz.sample.names <- unique(gsub("_[1-2]*.fastq.gz", "",
+                                                   raw.fastq))
+      check.fastq.gz.1 <- vapply(extract.fastq.gz.sample.names,
+                                 function(x) paste0(x, "_1.fastq.gz"),
+                                 USE.NAMES = FALSE,
+                                 FUN.VALUE = "a")
+      check.fastq.gz.2 <- vapply(extract.fastq.gz.sample.names,
+                                 function(x) paste0(x, "_2.fastq.gz"),
+                                 USE.NAMES = FALSE,
+                                 FUN.VALUE = "a")
+      # checking the valid file naming of '.fastq.gz'
+      for ( i in seq_along(check.fastq.gz.1)) {
+        bool.check.1 <- check.fastq.gz.1[i] %in% raw.fastq
+        if (!bool.check.1) {
+          message("(\u2718) : ",
+                  check.fastq.gz.1[i],
+                  " is not found in 'input_files/raw_fastq.gz/\n")
+          stop("Pair-end file ERROR")
+        }
+      }
+      for ( i in seq_along(check.fastq.gz.2)) {
+        bool.check.2 <- check.fastq.gz.2[i] %in% raw.fastq
+        if (!bool.check.2) {
+          message("(\u2718) : ",
+                  check.fastq.gz.2[i],
+                  " is not found in 'input_files/raw_fastq.gz/\n")
+          stop("Pair-end file ERROR")
+        }
+      }
+      if (sample.pattern == "") {
+        message("(\u2718) : The value of 'sample.pattern' is \"\" !!\n")
+        stop("'sample.pattern' ERROR")
+      }
+      raw.fastq.number <- length(raw.fastq) 
     }
-    if (sample.pattern == "") {
-      message("(\u2718) : The value of 'sample.pattern' is \"\" !!\n")
-      stop("'sample.pattern' ERROR")
-    }
-    raw.fastq.number <- length(raw.fastq)
   }
   if (isTRUE(ht2.dir)) {
     ht2.files <- list.files(path = paste0(input.path.prefix,

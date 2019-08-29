@@ -168,6 +168,7 @@ CreateHisat2Index <- function (path.prefix,
 # hisat2 alignment default
 # Parameters: 42
 Hisat2AlignmentDefault <- function(path.prefix,
+                                   fastq.gz.type,
                                    genome.name,
                                    sample.pattern,
                                    independent.variable,
@@ -223,11 +224,19 @@ Hisat2AlignmentDefault <- function(path.prefix,
       # Map reads to each alignment
       current.path <- getwd()
       setwd(paste0(path.prefix, "gene_data/"))
-      deleteback <- gsub("[1-2]*.fastq.gz$", replacement = "",
-                         check.results$fastq.gz.files.df)
-      sample.table.r.value <- gsub(paste0("[A-Z, a-z]*[0-9]*_"),
-                                   replacement = "",
-                                   deleteback)
+      if (fastq.gz.type == "SE") {
+        deleteback <- gsub("1.fastq.gz$", replacement = "",
+                           check.results$fastq.gz.files.df)
+        sample.table.r.value <- gsub(paste0("[A-Z, a-z]*[0-9]*_"),
+                                     replacement = "",
+                                     deleteback)
+      } else if (fastq.gz.type == "PE") {
+        deleteback <- gsub("[1-2]*.fastq.gz$", replacement = "",
+                           check.results$fastq.gz.files.df)
+        sample.table.r.value <- gsub(paste0("[A-Z, a-z]*[0-9]*_"),
+                                     replacement = "",
+                                     deleteback)
+      }
       if (isTRUE(length(unique(sample.table.r.value)) != 1)){
         on.exit(setwd(current.path))
         stop("(\u2718) Inconsistent formats. Please check files are all",
@@ -239,18 +248,33 @@ Hisat2AlignmentDefault <- function(path.prefix,
         iteration.num <- length(sample.table)
         sample.name <- names(sample.table)
         sample.value <- as.vector(sample.table)
-        alignment.result <- data.frame(matrix(0, ncol = 0, nrow = 5))
+        if (fastq.gz.type == "SE") {
+          alignment.result <- data.frame(matrix(0, ncol = 0, nrow = 4))
+        } else if (fastq.gz.type == "PE") {
+          alignment.result <- data.frame(matrix(0, ncol = 0, nrow = 5))
+        }
         total.map.rates <- c()
         for( i in seq_len(iteration.num)){
           current.sub.command <- ""
           total.sub.command <- ""
-          for ( j in seq_len(sample.value[i])){
-            current.sub.command <- paste(paste0("-", j),
-                                         paste0("raw_fastq.gz/",
-                                                sample.name[i], "_",
-                                                sample.table.r.value[1],
-                                                j, ".fastq.gz"))
-            total.sub.command <- paste(total.sub.command, current.sub.command)
+          if (fastq.gz.type == "SE") {
+            for ( j in seq_len(sample.value[i])){
+              current.sub.command <- paste(paste0("-U"),
+                                           paste0("raw_fastq.gz/",
+                                                  sample.name[i], "_",
+                                                  sample.table.r.value[1],
+                                                  j, ".fastq.gz"))
+              total.sub.command <- paste(total.sub.command, current.sub.command)   
+            }
+          } else if (fastq.gz.type == "PE") {
+            for ( j in seq_len(sample.value[i])){
+              current.sub.command <- paste(paste0("-", j),
+                                           paste0("raw_fastq.gz/",
+                                                  sample.name[i], "_",
+                                                  sample.table.r.value[1],
+                                                  j, ".fastq.gz"))
+              total.sub.command <- paste(total.sub.command, current.sub.command)
+            }
           }
           if (Hisat2.Alignment.rna.strandness == "FR") {
             Hisat2.Alignment.rna.strandness.value = "--rna-strandness FR"
@@ -317,30 +341,54 @@ Hisat2AlignmentDefault <- function(path.prefix,
           command.result <- system2(command = main.command,
                                     args = whole.command,
                                     stderr = TRUE, stdout = TRUE)
-          # Total reads
-          total.reads <- gsub(" reads; of these:", "", command.result[1])
-          # aligned concordantly exactly 1 time
-          concordantly_1_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned concordantly exactly 1 time", "", command.result[4]))
-          # aligned concordantly >1 times
-          concordantly_more_1_times <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned concordantly >1 times", "", command.result[5]))
-          # aligned dicordantly 1 time
-          dicordantly_1_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned discordantly 1 time", "", command.result[8]))
-          # aligned 0 times concordantly or discordantly
-          not_dicordantly_concordantly <- as.numeric(gsub(" pairs aligned 0 times concordantly or discordantly; of these:", "", command.result[10]))
-          # Total mapping rate
-          total.map.rate <- as.numeric(gsub("% overall alignment rate", "", command.result[15]))
-          total.map.rates <- c(total.map.rates, total.map.rate)
-          one.result <- c(total.reads, concordantly_1_time, concordantly_more_1_times, dicordantly_1_time, not_dicordantly_concordantly)
-          alignment.result[[sample.name[i]]] <- one.result
-          if (length(command.result) == 0) {
-            on.exit(setwd(current.path))
-            message("(\u2718) '", main.command, "' is failed !!")
-            stop("'", main.command, "' ERROR")
+          print(command.result)
+          if (fastq.gz.type == "SE") {
+            total.reads <- gsub(" reads; of these:", "", command.result[4])
+            # aligned concordantly exactly 1 time
+            zero_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned 0 times", "", command.result[6]))
+            one_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned exactly 1 time", "", command.result[7]))
+            more_one_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned >1 times", "", command.result[8]))
+            total.map.rate <- as.numeric(gsub("% overall alignment rate", "", command.result[9]))
+            total.map.rates <- c(total.map.rates, total.map.rate)
+            one.result <- c(total.reads, zero_time, one_time, more_one_time)
+            alignment.result[[sample.name[i]]] <- one.result
+            if (length(command.result) == 0) {
+              on.exit(setwd(current.path))
+              message("(\u2718) '", main.command, "' is failed !!")
+              stop("'", main.command, "' ERROR")
+            } 
+          } else if (fastq.gz.type == "PE") {
+            # Total reads
+            total.reads <- gsub(" reads; of these:", "", command.result[4])
+            # aligned concordantly exactly 1 time
+            concordantly_1_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned concordantly exactly 1 time", "", command.result[7]))
+            # aligned concordantly >1 times
+            concordantly_more_1_times <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned concordantly >1 times", "", command.result[8]))
+            # aligned dicordantly 1 time
+            dicordantly_1_time <- as.numeric(gsub(" \\([0-9]*.[0-9]*%) aligned discordantly 1 time", "", command.result[11]))
+            # aligned 0 times concordantly or discordantly
+            not_dicordantly_concordantly <- as.numeric(gsub(" pairs aligned 0 times concordantly or discordantly; of these:", "", command.result[13]))
+            # Total mapping rate
+            total.map.rate <- as.numeric(gsub("% overall alignment rate", "", command.result[18]))
+            total.map.rates <- c(total.map.rates, total.map.rate)
+            one.result <- c(total.reads, concordantly_1_time, concordantly_more_1_times, dicordantly_1_time, not_dicordantly_concordantly)
+            alignment.result[[sample.name[i]]] <- one.result
+            if (length(command.result) == 0) {
+              on.exit(setwd(current.path))
+              message("(\u2718) '", main.command, "' is failed !!")
+              stop("'", main.command, "' ERROR")
+            } 
           }
         }
-        row.names(alignment.result) <- c("total_reads", "concordantly_1", "concordantly_more_1", "dicordantly_1", "not_both")
-        alignment.result[] <- lapply(alignment.result, as.character)
-        alignment.result[] <- lapply(alignment.result, as.numeric)
+        if (fastq.gz.type == "SE") {
+          row.names(alignment.result) <- c("total_reads", "map_0_time", "map_1_time", "more_than_1_times")
+          alignment.result[] <- lapply(alignment.result, as.character)
+          alignment.result[] <- lapply(alignment.result, as.numeric)
+        } else if (fastq.gz.type == "PE") {
+          row.names(alignment.result) <- c("total_reads", "concordantly_1", "concordantly_more_1", "dicordantly_1", "not_both")
+          alignment.result[] <- lapply(alignment.result, as.character)
+          alignment.result[] <- lapply(alignment.result, as.numeric)
+        }
         if(!dir.exists(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))){
           dir.create(paste0(path.prefix, "RNASeq_results/Alignment_Report/"))
         }
@@ -350,11 +398,18 @@ Hisat2AlignmentDefault <- function(path.prefix,
                                 "RNASeq_results/",
                                 "Alignment_Report/Alignment_report_reads.csv"),
                   row.names = TRUE)
-        trans.df.portion  <- data.frame(t(alignment.result))
-        trans.df.portion$concordantly_1 <- round(trans.df.portion$concordantly_1 / trans.df.portion$total_reads, 4)
-        trans.df.portion$concordantly_more_1 <- round(trans.df.portion$concordantly_more_1 / trans.df.portion$total_reads, 4)
-        trans.df.portion$dicordantly_1 <- round(trans.df.portion$dicordantly_1 / trans.df.portion$total_reads, 4)
-        trans.df.portion$not_both <- round(trans.df.portion$not_both / trans.df.portion$total_reads, 4)
+        if (fastq.gz.type == "SE") {
+          trans.df.portion  <- data.frame(t(alignment.result))
+          trans.df.portion$map_0_time <- round(trans.df.portion$map_0_time / trans.df.portion$total_reads, 4)
+          trans.df.portion$map_1_time <- round(trans.df.portion$map_1_time / trans.df.portion$total_reads, 4)
+          trans.df.portion$more_than_1_times <- round(trans.df.portion$more_than_1_times / trans.df.portion$total_reads, 4)
+        } else if (fastq.gz.type == "PE") {
+          trans.df.portion  <- data.frame(t(alignment.result))
+          trans.df.portion$concordantly_1 <- round(trans.df.portion$concordantly_1 / trans.df.portion$total_reads, 4)
+          trans.df.portion$concordantly_more_1 <- round(trans.df.portion$concordantly_more_1 / trans.df.portion$total_reads, 4)
+          trans.df.portion$dicordantly_1 <- round(trans.df.portion$dicordantly_1 / trans.df.portion$total_reads, 4)
+          trans.df.portion$not_both <- round(trans.df.portion$not_both / trans.df.portion$total_reads, 4)
+        }
         write.csv(trans.df.portion,
                   file = paste0(path.prefix,
                                 "RNASeq_results/",
@@ -372,7 +427,10 @@ Hisat2AlignmentDefault <- function(path.prefix,
         fileConn <- paste0(path.prefix, "RNASeq_results/COMMAND.txt")
         write(command.list, fileConn, append = TRUE)
         on.exit(setwd(current.path))
-      }
+      } 
+      
+      
+      
     } else {
       on.exit(setwd(current.path))
       stop("(\u2718) '", genome.name, "_tran.*.ht2' ",
@@ -448,6 +506,7 @@ CreateSTARIndex <- function (path.prefix,
 # STAR alignment default
 # Parameters: 53
 STARAlignmentDefault <- function(path.prefix,
+                                 fastq.gz.type,
                                  genome.name,
                                  sample.pattern,
                                  STAR.Alignment.num.parallel.threads,
@@ -552,7 +611,6 @@ STARAlignmentDefault <- function(path.prefix,
                                                 j, ".fastq.gz"))
             total.sub.command <- paste(total.sub.command, current.sub.command)
           }
-
           samples.star.dir.in <- dir.create(file.path(paste0(path.prefix,
                                                              "gene_data/raw_star/",
                                                              sample.name[i])),
@@ -670,7 +728,7 @@ STARAlignmentDefault <- function(path.prefix,
                                  paste0(path.prefix, "gene_data/indices/"),
                                  "--readFilesIn", total.sub.command,
                                  "--outFileNamePrefix", samples.star.dir.output,
-                                 "--readFilesCommand", "zcat")
+                                 "--readFilesCommand", "'zcat <'")
           if (i != 1) message("\n")
           main.command <- "STAR"
           message("Input command : ", paste(main.command, whole.command), "\n")
@@ -682,6 +740,9 @@ STARAlignmentDefault <- function(path.prefix,
           Log.final.out <-  paste0(path.prefix, "gene_data/raw_star/", sample.name[i], "/Log.final.out")
           Log.final.out.read.in <- read.delim(Log.final.out, header = FALSE, sep = "\t", dec = ".")
           Log.final.out.read.in.num <- suppressWarnings(as.numeric(levels(Log.final.out.read.in["V2"][[1]])[as.integer(Log.final.out.read.in["V2"][[1]])]))
+          print(Log.final.out)
+          print(Log.final.out.read.in)
+          print(Log.final.out.read.in.num)
           # Total reads
           total.reads <- Log.final.out.read.in.num[5]
           # Uniquely_mapped
@@ -690,7 +751,7 @@ STARAlignmentDefault <- function(path.prefix,
           multi_mapping_multiple_loci <- Log.final.out.read.in.num[23]
           # mapped to too many loci
           multi_mapping_many_loci <- Log.final.out.read.in.num[25]
-
+          
           # reads unmapped: too many mismatches
           unmapped_many_mismatches <- Log.final.out.read.in.num[28]
           # reads unmapped: too short
@@ -706,7 +767,6 @@ STARAlignmentDefault <- function(path.prefix,
                           multi_mapping_multiple_loci, multi_mapping_many_loci,
                           unmapped_many_mismatches, unmapped_short,
                           unmapped_other, chimeric_reads)
-
           alignment.result[[sample.name[i]]] <- one.result
           if (length(command.result) == 0) {
             on.exit(setwd(current.path))
@@ -741,7 +801,7 @@ STARAlignmentDefault <- function(path.prefix,
         trans.df.portion$unmapped_too_many_mismatches <- round(trans.df.portion$unmapped_too_many_mismatches / trans.df.portion$total_reads, 4)
         trans.df.portion$unmapped_too_short <- round(trans.df.portion$unmapped_too_short / trans.df.portion$total_reads, 4)
         trans.df.portion$unmapped_other <- round(trans.df.portion$unmapped_other / trans.df.portion$total_reads, 4)
-        trans.df.portion$chimeric_reads <- round(trans.df.portion$chimeric_reads / trans.df.portion$total_reads, 4)
+        trans.df.portion$chimeric_reads <- round(trans.df.portion$chimeric_reads / trans.df.portion$total_reads, 4) 
         write.csv(trans.df.portion,
                   file = paste0(path.prefix,
                                 "RNASeq_results/",

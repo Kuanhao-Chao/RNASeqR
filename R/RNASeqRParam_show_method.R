@@ -13,6 +13,7 @@ setMethod('show', 'RNASeqRParam', function(object){
       "independent.variable :", object@independent.variable,"\n",
       "          case.group :", object@case.group,"\n",
       "       control.group :", object@control.group,"\n",
-      "    indices.optional :", object@indices.optional,"\n"
+      "    indices.optional :", object@indices.optional,"\n",
+      "       fastq.gz.type :", object@fastq.gz.type,"\n"
       )
 })

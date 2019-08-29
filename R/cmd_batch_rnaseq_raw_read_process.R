@@ -1013,11 +1013,13 @@ RNASeqReadProcess <- function(RNASeqRParam,
   python.variable.answer <- python.variable$check.answer
   python.variable.version <- python.variable$python.version
   python.2to3 <- "@"(RNASeqRParam, python.2to3)
+  fastq.gz.type <- "@"(RNASeqRParam, fastq.gz.type)
   ExportPath(path.prefix)
   check.results <- ProgressGenesFiles(path.prefix,
                                       genome.name,
                                       sample.pattern,
                                       print=FALSE)
+
   if (which.s4.object == "RNASeqRParam") {
     indices.optional <- "@"(RNASeqRParam, indices.optional)
     PreRNASeqReadProcess(path.prefix, genome.name, sample.pattern)
@@ -1048,6 +1050,7 @@ RNASeqReadProcess <- function(RNASeqRParam,
     if (Hisat2.Alignment.run) {
       # Parameters: 43
       Hisat2AlignmentDefault(path.prefix,
+                             fastq.gz.type,
                              genome.name,
                              sample.pattern,
                              independent.variable,
@@ -1103,6 +1106,7 @@ RNASeqReadProcess <- function(RNASeqRParam,
                       STAR.Index.genomeSAsparseD)
       # Parameters: 53
       STARAlignmentDefault(path.prefix,
+                           fastq.gz.type,
                            genome.name,
                            sample.pattern,
                            STAR.Alignment.num.parallel.threads,
