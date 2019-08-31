@@ -26,36 +26,80 @@ knitr::opts_chunk$set(tidy = FALSE,
 ```
 
 # Introduction
+## RNA-Seq Overview
+RNA-Seq is a revolutionary approach for discovering and investigating the transcriptome using next-generation sequencing technologies(Wang et al. 2009).
+Typically, this transcriptome analysis aims to identify genes differentially expressed across different conditions, treatments or tissues, resulting in an understanding of the important pathways that are associated with the conditions(Wang et al. 2009). Following are the overview steps of RNA-Seq technique.
 
-RNA-Seq is a revolutionary approach for discovering and investigating the transcriptome using next-generation sequencing technologies(Wang et al. 2009). Typically, this transcriptome analysis aims to identify genes differentially expressed across different conditions or tissues, resulting in an understanding of the important pathways that are associated with the conditions(Wang et al. 2009).
+1. **Set up experiment**: 
+    * First, scientists make their hypotheses and choose their target samples for 
+  RNA extraction.
+2. **RNA isolation & purify**: 
+    * RNA is extracted and isolated from sample tissue. Then quality and total amount
+  of RNA are checked including the amount of RNA degradation in order to assess
+  the samples.
+3. **RNA filteration**:
+    * Ribosomal RNA (rRNA) which accounts for around 90% of transcriptome from total
+  RNA-Seq sample needs to be removed. The interest areas of RNA-Seq analysis 
+  are mRNAs, small RNAs as well as lincRNAs.
+4. **Reverse-transcribed to cDNA**: 
+    * cDNA is more stable than RNA, thus would be a better polymer to do PCR
+  amplification and storage.
+5. **Sequencing**:
+    * Samples are sequenced by next generation sequencing machine. Raw fastq reads 
+  files are generated. 
+6. **Reads alignment & Transcript assembly**: 
+    * Sequenced reads are algined to reference genome (traditional mapping) and then 
+  assembled into potential transcripts by assembler. Another different approach 
+  is to directly compare reads with target transcripts (pseudo alignment
+  method) to quantify estimated expression quickly.
+7. **Differential expression gene analysis**: 
+    * Statistical methods are used in this step in order to get potential differential
+  expressed genes.
+8. **Functional Analysis**: 
+    * Differential expressed genes are selected as inputs of GO functional analysis as 
+  well as KEGG pathway analysis in order to get further biology information.
+  
+## RNASeqR Overview
+RNASeqR is an user-friendly R-based tool for running a six-step automation RNA-Seq analysis pipeline including quality assessment, read alignment and transcript quantification, differential expression analysis, and functional analysis. The main features of this package are an automated workflow and comprehensive reports with data visualization. In this package, the new tuxedo pipeline published in Nature Protocols in 2016 can be fully implemented in the R environment, including extra functions such as reads quality assessment and functional analysis. RNASeqR is beneficial for clinical researchers without significant computational background. There are only six lines of code that users need to execute in order to finish an end-to-end RNA-Seq analysis. 
 
-RNASeqR is an user-friendly R-based tool for running an RNA-Seq analysis pipeline including quality assessment, read alignment and quantification, differential expression analysis, and functional analysis. The main features of this package are an automated workflow, comprehensive reports with data visualization, and an extendable file structure. In this package, the new tuxedo pipeline published in Nature Protocols in 2016 can be fully implemented in the R environment, including extra functions such as reads quality assessment and functional analysis.
+The central concept behind this package is that **each step involved in RNA-Seq data analysis is a function call in R**. For the subsequent parts of this documentation, inputs, outputs as well as detail implementation for these six steps will be elaborated by order. Following are six steps and each corresponding function that users need to execute.
 
-The following are the main tools that are used in this package: '[HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml)' for read alignment(Kim et al. 2015); '[StringTie](https://ccb.jhu.edu/software/stringtie/)' for alignment assembly and transcripts quantification(Pertea et al. 2015); '[Rsamtools](https://bioconductor.org/packages/release/bioc/html/Rsamtools.html)' for converting `SAM` files to `BAM` files(Morgan et al. 2018); '[Gffcompare](https://ccb.jhu.edu/software/stringtie/gffcompare.shtml)' for comparing merged `GTF` files with reference `GTF` files; '[systemPipeR](https://bioconductor.org/packages/release/bioc/html/systemPipeR.html)' for quality assessment(Backman et al. 2016); '[ballgown](https://bioconductor.org/packages/release/bioc/html/ballgown.html)' (Fu et al. 2018), '[DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)' (Love et al. 2014) and '[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)' (Robinson et al. 2010;McCarthy et al. 2012) for finding potential differentially expressed genes; and '[clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)' (Yu et al. 2012) for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis.
+1. **`RNASeqRParam` S4 Object Creation**
+    * **Function: `RNASeqRParam()`** 
+    * In the beginning, users will create a `RNASeqRParam` S4 object by running the `RNASeqRParam()` constructor function for all variable checking. After the creation of `RNASeqRParam` S4 object, it will be used as input to the following analysis functions.
 
-The central concept behind this package is that **each step involved in RNA-Seq data analysis is a function call in R**. At the beginning, users will create a `RNASeqRParam` S4 object by running the `RNASeqRParam()` constructor function for all variable checking. After the creation of `RNASeqRParam`, it will be used as input to the following analysis functions.
+2. **Environment Setup**
+    * **Function: `RNASeqEnvironmentSet_CMD()` or `RNASeqEnvironmentSet()`**
+    * In second step, the environemnt would be set up automatically with necessary tools installed for the subsequent steps in RNASeqR.
 
-1. `RNASeqEnvironmentSet_CMD()` or `RNASeqEnvironmentSet()`: to setup the RNA-Seq environment.
+3. **Quality Assessment (optional)**
+    * **Function: `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()`** 
+    * In third step (optional), users check the quality of raw fastq files.
 
-2. `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()`: (optional) to run a quality assessment step.
+4. **Reads alignment and transcripts quantification**
+    * **Function: `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`**
+    * In fourth step, raw reads would be processed and all intermediate files would be stored properly.
 
-3. `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`: to run reads alignment and quantification.
+5. **Differential Expression Gene Analysis**
+    * **Function: `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`**
+    * In fifth step, differential analysis would be done by edgeR, DESeq2 and ballgown R / Bioconductor packages.
 
-4. `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`: to run differential analysis via different R packages.
-
-5. `RNASeqGoKegg_CMD()` or `RNASeqGoKegg()`: to conduct GO and KEGG analysis.
+6. **Functional Analysis**
+    * **Function: `RNASeqGoKegg_CMD()` or `RNASeqGoKegg()`**
+    * In sixth step, differential expressed genes would be used as input of GO functional analysis and KEGG pathway analysis. Enriched pathways would be visualized.
 
 Functions with the `CMD` suffix create an R script and run `nohup R CMD BATCH script.R` in the background. Functions with no `CMD` suffix process in the R shell. After running the above functions, the whole RNA-Seq analysis is done and the files generated in each step are stored in an organized file directory. The `RNASeqR` package makes two-group comparative RNA-Seq analysis **more efficient** and **easier** for users.
 
-Functions with `CMD` suffix will create an R script and  run `nohup R CMD BATCH script.R` in background while functions with no `CMD` suffix will be processed in R  shell. Files generated in each step will be kept in proper directory. Once the workflow is completed, a comprehensive RNA-Seq analysis is done. Additionally, this package is mainly designed for a two-group comparison setting, i.e. differential expression profile between two conditions.
+The following are the main tools that are used in this package: '[HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml)' (Kim et al. 2015) and '[STAR](https://github.com/alexdobin/STAR)' (Dobin et al. 2013) for read alignment; '[StringTie](https://ccb.jhu.edu/software/stringtie/)' (Pertea et al. 2015) for alignment assembly and transcripts quantification; '[Rsamtools](https://bioconductor.org/packages/release/bioc/html/Rsamtools.html)' (Morgan et al. 2018) for converting `SAM` files to `BAM` files; '[Gffcompare](https://ccb.jhu.edu/software/stringtie/gffcompare.shtml)' for comparing merged `GTF` files with reference `GTF` files; '[systemPipeR](https://bioconductor.org/packages/release/bioc/html/systemPipeR.html)' (Backman et al. 2016) for quality assessment; '[ballgown](https://bioconductor.org/packages/release/bioc/html/ballgown.html)' (Fu et al. 2018), '[DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)' (Love et al. 2014) and '[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)' (Robinson et al. 2010;McCarthy et al. 2012) for finding potential differentially expressed genes; and '[clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)' (Yu et al. 2012) for Gene Ontology(GO) functional analysis and Kyoto Encyclopedia of Genes and Genomes(KEGG) pathway analysis.
 
-# Sample Definition
+
+## Sample Definition
 
 Sample data used in this vignette can be downloaded from the `RNASeqRData` experiment package. It originated from [NCBI's Sequence Read Archive](http://www.ncbi.nlm.nih.gov/sra) for the entries SRR3396381, SRR3396382, SRR3396384, SRR3396385, SRR3396386, and SRR3396387. These samples are from Saccharomyces cerevisiae. Suitable reference genome and gene annotation files for this species can be further downloaded from iGenomes, Ensembl, R64-1-1. To create a mini dataset for demonstration purposes, reads aligned to the region from 0 to 100000 on chromosome XV were extracted. The analysis of this mini dataset will be shown in this vignette. The experimental data package is located [here](https://github.com/HowardChao/RNASeqRData).
 
 For more real case-control data and RNA-Seq analysis results from this package, please go to this website: https://github.com/HowardChao/RNASeqR_analysis_result.
 
-# System Requirements
+## System Requirements
 
 Necessary:
 
@@ -81,7 +125,7 @@ Recommended:
 3. HISAT2 indexex: Users are advised to provide an *'indices/'* directory in *'inputfiles/'*. HISAT2 requires at least 160 GB of RAM and several hours to index the entire human genome.
 
 
-# Installation
+## Installation
 
 ```{r install, eval=FALSE, warning=FALSE}
 if (!require("BiocManager")) {
@@ -180,7 +224,8 @@ library(RNASeqRData)
 
 ```{r}
 input_files.path <- system.file("extdata/", package = "RNASeqRData")
-rnaseq_result.path <- tempdir(check = TRUE)
+# rnaseq_result.path <- tempdir(check = TRUE)
+rnaseq_result.path <- "/Users/chaokuan-hao/TRY"
 list.files(input_files.path, recursive = TRUE)
 ```
 
@@ -193,7 +238,8 @@ exp <- RNASeqRParam(path.prefix = rnaseq_result.path,
                     sample.pattern = "SRR[0-9]*_XV",
                     independent.variable = "state", 
                     case.group = "60mins_ID20_amphotericin_B", 
-                    control.group = "60mins_ID20_control")
+                    control.group = "60mins_ID20_control",
+                    fastq.gz.type = "PE")
 ```
 ```{r, warning=FALSE}
 show(exp)
@@ -250,15 +296,15 @@ Here is the version information of each software binary.
 
 Run `RNASeqEnvironmentSet_CMD()` or `RNASeqEnvironmentSet()`. 
 
-1. For runs in the background, the results will be reported in *'Rscript_out/Environment_Set.Rout'*. Make sure the environment is successfully set up before running the subsequent steps.
+1. For running in background, the results will be reported in *'Rscript_out/Environment_Set.Rout'*. Make sure the environment is successfully set up before running the subsequent steps.
 
 ```{r, eval=FALSE}
 RNASeqEnvironmentSet_CMD(exp)
 ```
 
-2. For runs in the R shell, the results will be reported in the R shell. Make sure the environment is successfully setup before running the subsequent steps.
+2. For running in R shell, the results will be reported in the R shell. Make sure the environment is successfully set up before running the subsequent steps.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 RNASeqEnvironmentSet(exp)
 ```
 
@@ -291,7 +337,7 @@ grid.raster(img, just = "center")
 
 Run `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()`. 
 
-1. For runs in the background, the results will be reported in *'Rscriptout/Quality_Assessment.Rout'*. Make sure the quality assessment is successfully done before running the subsequent steps.
+1. For running in background, the results will be reported in *'Rscriptout/Quality_Assessment.Rout'*. Make sure the quality assessment is successfully done before running the subsequent steps.
 
 ```{r, eval=FALSE}
 RNASeqQualityAssessment_CMD(exp)
@@ -299,7 +345,7 @@ RNASeqQualityAssessment_CMD(exp)
 
 2. Results fo runs in R shell will be reported in the R shell. Make sure the quality assessment is successfully done before running the subsequent steps.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 RNASeqQualityAssessment(exp)
 ```
 
@@ -309,7 +355,7 @@ This is the **fourth step** of the RNA-Seq analysis workflow in this package. To
 
 ## The *HISAT2* Indexer
 
-In a preparation step (the `RNASeqRParam` creation step), the *'indices/'* directory is checked for whether `HT2` index files already exist. If not, the following commands will be executed:
+The defalt indexer is Hisat2. In a preparation step (the `RNASeqRParam` creation step), the *'indices/'* directory is checked for whether `HT2` index files already exist. If not, the following commands will be executed:
 
 * Input: '`genome.name`.gtf', '`genome.name`.fa'
 
@@ -326,12 +372,15 @@ In a preparation step (the `RNASeqRParam` creation step), the *'indices/'* direc
 
 ## The *HISAT2* Aligner
 
+
 * Input: '`genome.name`_tran.{number}.ht2', '`sample.pattern`.fastq.gz'
 
 * Output: '`sample.pattern`.sam'
 
+The defalt Aligner is Hisat2. 
+
 1. `hisat2` command is executed on paired end `FASTQ` files. `SAM` files will be created.
-    * `SAM` files are stored in *'gene_data/raw_bam/'*.
+    * `SAM` files are stored in *'gene_data/raw_sam/'*.
 
 2. Write *'RNASeq_results/COMMAND.txt'*
     * The shell command that run in this step will be documented into *'RNASeq_results/COMMAND.txt'*.
@@ -339,6 +388,13 @@ In a preparation step (the `RNASeqRParam` creation step), the *'indices/'* direc
 
 3. The summary dataframe for alignment reads and mapping rates in terms of tabular(`CSV`) and picture (`PNG`) format is created and kept in the directory 'RNASeq_results/Alignment_Report'.
 
+## The *STAR* Indexer and Aligner 
+
+* Input: '`genome.name`.gtf', '`genome.name`.fa', '`sample.pattern`.fastq.gz'
+
+* Output: '``sample.pattern`.sam`'
+
+Users could select *STAR* as their aligner in this pipeline by setting `STAR.Alignment.run` to `TRUE` and `Hisat2.Index.run`, `Hisat2.Alignment.run` to `FALSE`. Indexed results would be stored in *'indices/'* directory, and generated `SAM` files are stored in *'gene_data/raw_sam/'*.
 
 ```{r fig.width=6,fig.height=6, echo=FALSE}
 img <- readPNG("figure/Alignment_Report/Alignment_Result_ggplot2.png")
@@ -446,17 +502,31 @@ Whether this step is executed depends on the availability of Python on your work
 
 ## Example
 
-Run `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`. 
+Run `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`. Parameters for index, alignmet and assembly are set by default. Only S4 `RNASeqRParam` object is need. If users want to change their parameters, please check function inputs of `RNASeqReadProcess_CMD()` and `RNASeqReadProcess()`.
 
-1. For runs in the background, the results will be reported in *'Rscriptout/Raw_Read_Process.Rout'*. Make sure the raw read process is successfully done before running the subsequent steps.
+1. For running in background, the results will be reported in *'Rscriptout/Raw_Read_Process.Rout'*. Make sure the raw read process is successfully done before running the subsequent steps. Default indexer would be `HISAT2`.
 
 ```{r, eval=FALSE}
 RNASeqReadProcess_CMD(exp)
 ```
 
-2. For runs in the R shell, the results will be reported in R shell. Make sure the raw read process is successfully done before running the subsequent steps.
-```{r, warning=FALSE}
+* If users would like to change to `STAR` and run in the background, run this one
+```{r, eval=FALSE}
+RNASeqReadProcess_CMD(exp, STAR.Alignment.run=TRUE, 
+                      Hisat2.Index.run=FALSE, 
+                      Hisat2.Alignment.run = FALSE)
+```
+
+2. For running in R shell, the results will be reported in R shell. Make sure the raw read process is successfully done before running the subsequent steps. Default aligner would be `HISAT2`.
+```{r, warning=FALSE, eval=FALSE}
 RNASeqReadProcess(exp)
+```
+
+* If users would like to change to `STAR` and run in the R shell, then run this one
+```{r, eval=FALSE}
+RNASeqReadProcess(exp, STAR.Alignment.run=TRUE, 
+                  Hisat2.Index.run=FALSE, 
+                  Hisat2.Alignment.run = FALSE)
 ```
 
 # Gene-level Differential Analysis
@@ -709,13 +779,13 @@ grid.raster(img, just = "center")
 
 Run `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`. 
 
-1. For runs in the background, the results will be reported in *'Rscriptout/Differential_Analysis.Rout'*. Make sure the differential expression analysis is successfully finished before running subsequent steps.
+1. For running in background, the results will be reported in *'Rscriptout/Differential_Analysis.Rout'*. Make sure the differential expression analysis is successfully finished before running subsequent steps.
 ```{r, eval=FALSE}
 RNASeqDifferentialAnalysis_CMD(exp)
 ```
 
-2. For runs in the R shell, the results will be reported in the R shell. Make sure the differential expression analysis is successfully finished before running subsequent steps.
-```{r, warning=FALSE}
+2. For running in R shell, the results will be reported in the R shell. Make sure the differential expression analysis is successfully finished before running subsequent steps.
+```{r, warning=FALSE, eval=FALSE}
 RNASeqDifferentialAnalysis(exp)
 ```
 
@@ -759,7 +829,7 @@ In this example, due to the limited number of DEGs, no over-represented pathways
 
 Run `RNASeqGoKegg_CMD()` or `RNASeqGoKegg()`. 
 
-1. For runs in the background, the results will be reported in *'Rscriptout/GO_KEGG_Analysis.Rout'*. 
+1. For running in background, the results will be reported in *'Rscriptout/GO_KEGG_Analysis.Rout'*. 
 ```{r, eval = FALSE}
 RNASeqGoKegg_CMD(exp, 
                  OrgDb.species = "org.Sc.sgd.db",
@@ -769,13 +839,49 @@ RNASeqGoKegg_CMD(exp,
 ```
 
 2. Results from runs in the R shell will be reported in R shell.
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 RNASeqGoKegg(exp, 
              OrgDb.species = "org.Sc.sgd.db", 
              go.level = 3, 
              input.TYPE.ID = "GENENAME",
              KEGG.organism = "sce")
 ```
+
+# Wrapper function to run RNASeqR 
+
+We also provide a funtion which wraps all the analyses into one function. Users also have to create `RNASeqRParam` S4 object and set up the environment first.
+```{r, warning=FALSE, eval=FALSE}
+exp <- RNASeqRParam(path.prefix          = rnaseq_result.path, 
+                    input.path.prefix    = input_files.path, 
+                    genome.name          = "Saccharomyces_cerevisiae_XV_Ensembl", 
+                    sample.pattern       = "SRR[0-9]*_XV",
+                    independent.variable = "state", 
+                    case.group           = "60mins_ID20_amphotericin_B", 
+                    control.group        = "60mins_ID20_control",
+                    fastq.gz.type        = "PE")
+```
+```{r, warning=FALSE, eval=FALSE}
+RNASeqEnvironmentSet(exp)
+```
+
+Then users can choose to execute `All_Steps_Interface_CMD` which runs in background or `All_Steps_Interface` which runs in R interface. These two functions wraps from quality assessment to functional analysis (step 3 to step 6 mentioned above). Default parameters would be applied if users do not specify. Although we provide this wrapper function, we still strongly recommend users to run RNASeqR step by step and check outputs correctness before running next function to prevent any potential errors.
+
+```{r, warning=FALSE, eval=FALSE}
+All_Steps_Interface_CMD(exp,
+                        OrgDb.species = "org.Sc.sgd.db",
+                        go.level      = 3, 
+                        input.TYPE.ID = "GENENAME",
+                        KEGG.organism = "sce")
+```
+
+```{r, warning=FALSE, eval=FALSE}
+All_Steps_Interface(exp,
+                    OrgDb.species = "org.Sc.sgd.db",
+                    go.level      = 3, 
+                    input.TYPE.ID = "GENENAME",
+                    KEGG.organism = "sce")
+```
+
 
 # Conlusion
 
@@ -794,6 +900,8 @@ Wang, Z., Gerstein, M., & Snyder, M. (2009). RNA-Seq: a revolutionary tool for t
 Pang CN et al., "Transcriptome and network analyses in Saccharomyces cerevisiae reveal that amphotericin B and lactoferrin synergy disrupt metal homeostasis and stress response.", Sci Rep, 2017 Jan 12;7:40232
 
 Kim D, Langmead B and Salzberg SL. HISAT: a fast spliced aligner with low memory requirements. Nature Methods 2015
+
+Dobin, Alexander, et al. "STAR: ultrafast universal RNA-seq aligner." Bioinformatics 29.1 (2013): 15-21.
 
 Pertea M, Pertea GM, Antonescu CM, Chang TC, Mendell JT & Salzberg SL. StringTie enables improved reconstruction of a transcriptome from RNA-seq reads Nature Biotechnology 2015, doi:10.1038/nbt.3122
 
