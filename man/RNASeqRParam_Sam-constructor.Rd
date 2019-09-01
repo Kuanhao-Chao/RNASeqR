@@ -43,7 +43,8 @@ exp <- RNASeqRParam_Sam(path.prefix          = rnaseq_result.path,
                         sample.pattern       = "SRR[0-9]*_XV",
                         independent.variable = "state",
                         case.group           = "60mins_ID20_amphotericin_B",
-                        control.group        = "60mins_ID20_control")
+                        control.group        = "60mins_ID20_control",
+                        fastq.gz.type        = "PE")
 }
 \author{
 Kuan-Hao Chao

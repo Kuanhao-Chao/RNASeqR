@@ -99,7 +99,9 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqRParam,
   second <- paste0("RNASeqDifferentialAnalysis(RNASeqRParam = 'INSIDE'",
                    ", which.trigger = 'INSIDE'",
                    ", INSIDE.path.prefix = '", INSIDE.path.prefix,
-                   "', ballgown.run = ", ballgown.run,
+                   "', Pre_DE.visualization = ", Pre_DE.visualization,
+                   ", Post_DE.visualization = ", Post_DE.visualization,
+                   ", ballgown.run = ", ballgown.run,
                    ", ballgown.pval = ", ballgown.pval,
                    ", ballgown.log2FC = ", ballgown.log2FC,
                    ", DESeq2.run = ", DESeq2.run,
@@ -108,6 +110,7 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqRParam,
                    ", edgeR.run = ", edgeR.run,
                    ", edgeR.pval = ", edgeR.pval,
                    ", edgeR.log2FC = ", edgeR.log2FC,")")
+  
   writeLines(c(first, second), fileConn)
   close(fileConn)
   message("\u2605 '", path.prefix,
@@ -161,6 +164,10 @@ RNASeqDifferentialAnalysis_CMD <- function(RNASeqRParam,
 #'   this value.
 #' @param INSIDE.path.prefix Default value is \code{NA}. User should not change
 #'   this value.
+#' @param Pre_DE.visualization Default \code{TRUE}. Whether to visualize pre-DE
+#' analysis results.
+#' @param Post_DE.visualization Default \code{TRUE}. Whether to visualize
+#' post-DE analysis results.
 #' @param ballgown.run Default \code{TRUE}. Logical value whether to run
 #'   ballgown differential analysis.
 #' @param ballgown.pval Default \code{0.05}. Set the threshold of ballgown
@@ -197,6 +204,7 @@ RNASeqDifferentialAnalysis <- function(RNASeqRParam,
                                        INSIDE.path.prefix = NA,
                                        Pre_DE.visualization = TRUE,
                                        Post_DE.visualization = TRUE,
+                                       Post_DE.unannotated.gene.show = TRUE,
                                        ballgown.run    = TRUE,
                                        ballgown.pval   = 0.05,
                                        ballgown.log2FC = 1,

@@ -40,6 +40,9 @@ experiment design of two-group RNA-Seq workflow.}
 
 \item{\code{indices.optional}}{Logical value whether 'indices/' is exit in
 'input_files/'.}
+
+\item{\code{fastq.gz.type}}{Specify the fastq.gz file type. 'PE' represents 
+paired-end and 'SE' represents single-end.}
 }}
 
 \examples{
@@ -55,6 +58,7 @@ data(yeast)
 "@"(yeast, case.group)
 "@"(yeast, control.group)
 "@"(yeast, indices.optional)
+"@"(yeast, fastq.gz.type)
 }
 \author{
 Kuan-Hao Chao

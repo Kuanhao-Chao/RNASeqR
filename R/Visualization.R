@@ -871,4 +871,3 @@ DEHeatmap <- function(which.analysis,
     }
   }
 }
-

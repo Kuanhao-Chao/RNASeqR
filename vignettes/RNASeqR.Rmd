@@ -164,9 +164,9 @@ grid.raster(img, just = "center")
     
     * **raw_fastq.gz/**: Directory storing `FASTQ` files. 
         
-        * Supports paired-end read files only.
+        * Supports both paired-end and single-end reads files.
         
-        * Names of paired-end `FASTQ` files : '`sample.pattern`_1.fastq.gz' and '`sample.pattern`_2.fastq.gz'. `sample.pattern` must be distinct for each sample.
+        * Names of `FASTQ` files : '`sample.pattern`_1.fastq.gz' and '`sample.pattern`_2.fastq.gz'. `sample.pattern` must be distinct for each sample.
         
     * **phenodata.csv**: Information about the RNA-Seq experiment design.
     
@@ -188,7 +188,7 @@ grid.raster(img, just = "center")
 
 6. `genome.name` : The genome name defined in this RNA-Seq workflow (ex. '`genome.name`.fa', '`genome.name`.gtf')  
 
-7. `sample.pattern` : A regular expression of paired-end fastq.gz files under *'input_files/raw_fastq.gz/'*. **IMPORTANT!!** The expression shouldn't have `_[1,2].fastq.gz` at the end.
+7. `sample.pattern` : A regular expression of paired-end or single-end fastq.gz files under *'input_files/raw_fastq.gz/'*. **IMPORTANT!!** The expression shouldn't have `_[1,2].fastq.gz` at the end.
 
 8. `independent.variable`: Independent variable for the biological experiment design of a two-group RNA-Seq analysis workflow.
 
@@ -349,6 +349,18 @@ RNASeqQualityAssessment_CMD(exp)
 RNASeqQualityAssessment(exp)
 ```
 
+## Update fastq.gz files
+Sliding through quality score in each base would be computational-intensive. Moreover, due to R package limitation, it is not suitable to trim large RNA-Seq fastq.gz in R environment and is not supported in RNASeqR. Sample with an average quality score below Q30 is suggested to be omitted from the sub-sequent analyses. 
+
+In order to let users update trimmed fastq.gz files easily, an update function is provided. User need the `RNASeqRParam` S4 object created at the first step, the prepared new *'raw_fasrq.gz/'* directory with trimmed files and the samples stored in list as `Update_Fastq_gz` function inputs.
+
+```{r, warning=FALSE, eval=FALSE}
+Update_Fastq_gz (RNASeqRParam       = exp, 
+                 prepared_fastq_gz  = paste0(input_files.path,
+                                             "/input_files/raw_fastq.gz/"), 
+                 target_samples     = "ALL") 
+```
+
 # Read Alignment and Quantification
 
 This is the **fourth step** of the RNA-Seq analysis workflow in this package. To process raw reads in `FASTQ` files, users can either run `RNASeqRawReadProcess_CMD()` to execute  the process in background or run `RNASeqRawReadProcess()` to execute the process in the R shell. For further details about the commands and parameters that executed during each step, please check the reported *'RNASeq_results/COMMAND.txt'*.
@@ -379,7 +391,7 @@ The defalt indexer is Hisat2. In a preparation step (the `RNASeqRParam` creation
 
 The defalt Aligner is Hisat2. 
 
-1. `hisat2` command is executed on paired end `FASTQ` files. `SAM` files will be created.
+1. `hisat2` command is executed on paired-end or single-end `FASTQ` files. `SAM` files will be created.
     * `SAM` files are stored in *'gene_data/raw_sam/'*.
 
 2. Write *'RNASeq_results/COMMAND.txt'*
@@ -533,10 +545,19 @@ RNASeqReadProcess(exp, STAR.Alignment.run=TRUE,
 
 This is the **fifth step** of the RNA-Seq analysis workflow in this package. To identify differentially expressed genes, users can either run `RNASeqDifferentialAnalysis_CMD()` to execute the process in the background or run `RNASeqDifferentialAnalysis()` to execute the process in the R shell. In this package, we provide three normalized expression values: fragments per kilobase per million reads (FPKM) (Mortazavi et al. 2008), normalized counts by means of median of ratios normalization (MRN), or trimmed mean of m-values (TMM), each with proper statistical analyses using the R packages, ballgown, DESeq2, and edgeR. Gene IDs from StringTie and the ballgown R package will be mapped to 'gene_name' in the GTF file for further functional analysis.
 
-## General Data Visualization
+## Gene Annotations
 
+For each differential expression analysis tool, all statistical results would be stored properly under '*ballgown_analysis/*', '*DESeq2_analysis/*' and '*edgeR_analysis/*'. In the file, known gene annotations would be listed in the front rows while unknown gene annotations would be listed in the back rows. The following picture shows partial result of an example dataset where ‘.’ represents unknow gene id. 
+```{r fig.width=6, height=6, echo=FALSE}
+img <- readPNG("figure/DE/Statistical_Results.png")
+ grid.raster(img, just = "center")
+```
+
+
+## General Data Visualization
 Here we illustrate general data visualization before and after differential expression analysis. The results based on each differential analysis tool(*ballgown*, *DESeq2*, *edgeR*) are kept in the directory 'RNASeq_results/'. The plots shown below are the statistical results visualization of example data in the `RNASeqRData` package based on MRN-normalized expression values from DESeq2.
 For real data analysis results, please go to this website: https://howardchao.github.io/RNASeqR_analysis_result/.
+
 
 ### Before Differential Expression Analysis
 

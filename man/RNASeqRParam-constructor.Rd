@@ -7,7 +7,7 @@
 \usage{
 RNASeqRParam(path.prefix = NA, input.path.prefix = NA,
   genome.name = NA, sample.pattern = NA, independent.variable = NA,
-  case.group = NA, control.group = NA)
+  case.group = NA, control.group = NA, fastq.gz.type = NA)
 }
 \arguments{
 \item{path.prefix}{Path prefix of 'gene_data/', 'RNASeq_bin/',
@@ -27,6 +27,9 @@ experiment design of two-group RNA-Seq workflow.}
 \item{case.group}{Group name of the case group.}
 
 \item{control.group}{Group name of the control group.}
+
+\item{fastq.gz.type}{Specify the fastq.gz file type. 'PE' represents 
+paired-end and 'SE' represents single-end.}
 }
 \value{
 an object of class \code{RNASeqRParam}
@@ -43,7 +46,8 @@ exp <- RNASeqRParam(path.prefix          = rnaseq_result.path,
                     sample.pattern       = "SRR[0-9]*_XV",
                     independent.variable = "state",
                     case.group           = "60mins_ID20_amphotericin_B",
-                    control.group        = "60mins_ID20_control")
+                    control.group        = "60mins_ID20_control",
+                    fastq.gz.type        = "PE")
 }
 \author{
 kuan-hao Chao
