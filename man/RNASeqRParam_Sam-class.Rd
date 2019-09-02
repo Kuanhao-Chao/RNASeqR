@@ -4,7 +4,7 @@
 \name{RNASeqRParam_Sam-class}
 \alias{RNASeqRParam_Sam-class}
 \alias{RNASeqRParam_Sam}
-\title{RNASeqR}
+\title{RNASeqRParam_Sam}
 \description{
 An S4 class for checking and storing RNA-Seq workflow
  parameters starting with SAM files.

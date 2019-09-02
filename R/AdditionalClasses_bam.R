@@ -1,4 +1,4 @@
-#' @title RNASeqR
+#' @title RNASeqRParam_Bam
 #'
 #' @description  An S4 class for checking and storing RNA-Seq workflow
 #'  parameters starting with BAM files.
@@ -107,7 +107,8 @@ RNASeqRParam_Bam <- function(path.prefix          = NA,
                     sample.pattern,
                     independent.variable,
                     case.group,
-                    control.group)
+                    control.group,
+                    "")
   # 1. check operating system
   characters.os.type <- CheckOperatingSystem()
   # 2. check python version
