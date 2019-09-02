@@ -186,7 +186,7 @@
 #' '--scoreStitchSJshift' option. Default value is \code{"50"}
 #' @param STAR.Alignment.seedSearchStartLmaxOverLread STAR alignment terminal
 #' '--seedSearchStartLmaxOverLread' option. Default value is \code{"1.0"}
-#' @param STAR.Alignment.seedSearchLmaxSTAR STAR alignment terminal
+#' @param STAR.Alignment.seedSearchLmax STAR alignment terminal
 #' '--seedSearchLmax' option. Default value is \code{"0"}
 #' @param STAR.Alignment.seedMultimapNmax STAR alignment terminal
 #' '--seedMultimapNmax' option. Default value is \code{"10000"}
@@ -762,7 +762,7 @@ RNASeqReadProcess_CMD <- function(RNASeqRParam,
 #' '--scoreStitchSJshift' option. Default value is \code{"50"}
 #' @param STAR.Alignment.seedSearchStartLmaxOverLread STAR alignment terminal
 #' '--seedSearchStartLmaxOverLread' option. Default value is \code{"1.0"}
-#' @param STAR.Alignment.seedSearchLmaxSTAR STAR alignment terminal
+#' @param STAR.Alignment.seedSearchLmax STAR alignment terminal
 #' '--seedSearchLmax' option. Default value is \code{"0"}
 #' @param STAR.Alignment.seedMultimapNmax STAR alignment terminal
 #' '--seedMultimapNmax' option. Default value is \code{"10000"}

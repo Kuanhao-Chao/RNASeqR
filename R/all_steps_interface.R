@@ -29,6 +29,15 @@
 #' to skip "RNASeq Differential Analysis" step.
 #' @param RNASeqGoKegg.RUN Default value is \code{TRUE}. Set \code{FALSE}
 #' to skip "RNASeq Go & Kegg" step.
+#' @param OrgDb.species the genome wide annotation packages of species on
+#'   Bioconductor. Currently, there are 19 supported genome wide annotation
+#'   packages of species.
+#' @param go.level the depth of acyclic graph in GO analysis
+#' @param input.TYPE.ID The gene name type in OrgDb.species annotation packahge.
+#' @param KEGG.organism the species that are supported for KEGG analysis.
+#'   Currently, there are more than 5000 supported species genome.
+#'   Check the valid species terms on
+#'   https://www.genome.jp/kegg/catalog/org_list.html
 #' @param run Default value is \code{TRUE}. If \code{TRUE},
 #'   'Rscript/Environment_Set.R' will be created and executed.
 #'   The output log will be stored in 'Rscript_out/Environment_Set.Rout'.

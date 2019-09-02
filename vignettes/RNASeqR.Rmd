@@ -170,9 +170,10 @@ grid.raster(img, just = "center")
         
     * **phenodata.csv**: Information about the RNA-Seq experiment design.
     
-        * First column : Distinct ids for each sample. The value of each sample of this column must match `sample.pattern` in `FASTQ` files in *'raw_fastq.gz/'*. Column names must be **ids**.
+        * First column : Distinct ids for each sample. The value of each sample of this column must match `sample.pattern` in `FASTQ` files in *'raw_fastq.gz/'*. The column name must be **ids**.
         
-        * Second column : An independent variable for the RNA-Seq experiment. Values of each sample of this column can only be parameter `case.group` or `control.group`. The column name is the parameter `independent.variable`.
+        * Second column : An independent variable for the RNA-Seq experiment. Values of each sample of this column can only be parameter `case.group` or `control.group`. The column name is the parameter `independent.variable` which can be any string defined by users.
+        * Third column : The color coding for `case.group` and `control.group`. Samples in the same group must have same color coding and their values are HEX color code. The column name must be **color**.
         
     * **indices/** : The directory storing `HT2` index files for the HISAT2 alignment tool. 
     
@@ -183,6 +184,12 @@ grid.raster(img, just = "center")
 
 ```{r fig.width=10, echo=FALSE}
 img <- readPNG("figure/input_files_structure.png")
+grid.raster(img, just = "center")
+```
+
+An example '*phenodata.csv*' file. File is stored in 'CSV' format.
+```{r fig.width=10, echo=FALSE}
+img <- readPNG("figure/phenodata_csv.png")
 grid.raster(img, just = "center")
 ```
 

@@ -358,6 +358,9 @@ option. Default value is \code{"0.1"}}
 \item{STAR.Alignment.seedSearchStartLmaxOverLread}{STAR alignment terminal
 '--seedSearchStartLmaxOverLread' option. Default value is \code{"1.0"}}
 
+\item{STAR.Alignment.seedSearchLmax}{STAR alignment terminal
+'--seedSearchLmax' option. Default value is \code{"0"}}
+
 \item{STAR.Alignment.seedMultimapNmax}{STAR alignment terminal
 '--seedMultimapNmax' option. Default value is \code{"10000"}}
 
@@ -474,9 +477,6 @@ the result of checking \code{RNASeqRParam}
 will be reported in 'Rscript_out/Environment_Set.Rout'. If \code{FALSE},
 the result of checking \code{RNASeqRParam} will not be in
 'Rscript_out/Environment_Set.Rout'.}
-
-\item{STAR.Alignment.seedSearchLmaxSTAR}{STAR alignment terminal
-'--seedSearchLmax' option. Default value is \code{"0"}}
 }
 \value{
 None

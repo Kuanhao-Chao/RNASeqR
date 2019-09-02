@@ -3,7 +3,7 @@
 #' @description  An S4 class for checking and storing RNA-Seq workflow
 #'  parameters starting with BAM files.
 #'
-#' @aliases RNASeq
+#' @aliases RNASeqRParam_Bam
 #'
 #' @slot os.type 'linux' or 'osx'. The operating system type.
 #' @slot python.variable A list storing python environment.
@@ -84,7 +84,8 @@ setClass("RNASeqRParam_Bam",
 #' @author Kuan-Hao Chao
 #' @examples
 #' input_files.path <- system.file("extdata/", package = "RNASeqRData")
-#' rnaseq_result.path <- tempdir(check = TRUE)
+#' rnaseq_result.path <- "/Users/chaokuan-hao/TRY"
+#' # rnaseq_result.path <- tempdir(check = TRUE)
 #' exp <- RNASeqRParam_Bam(path.prefix          = rnaseq_result.path,
 #'                         input.path.prefix    = input_files.path,
 #'                         genome.name          = "Saccharomyces_cerevisiae_XV_Ensembl",

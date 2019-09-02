@@ -3,7 +3,7 @@
 \docType{class}
 \name{RNASeqRParam_Bam-class}
 \alias{RNASeqRParam_Bam-class}
-\alias{RNASeq}
+\alias{RNASeqRParam_Bam}
 \title{RNASeqR}
 \description{
 An S4 class for checking and storing RNA-Seq workflow
