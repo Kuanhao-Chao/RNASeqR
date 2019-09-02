@@ -29,10 +29,6 @@ BallgownAnalysis <- function(path.prefix,
   ###############################################
   ## Creating "ballgown_normalized_result.csv" ##
   ##############################################
-  phenoData.result<- phenoDataWrap(path.prefix,
-                                   independent.variable,
-                                   case.group,
-                                   control.group)
   pheno_data <- phenoData.result$pheno_data
   # Order in ID!!
   pheno_data <- pheno_data[order(pheno_data$ids),]
@@ -84,7 +80,7 @@ BallgownAnalysis <- function(path.prefix,
   # save case and control group size
   case.group.size <- phenoData.result$case.group.size
   control.group.size <- phenoData.result$control.group.size
-
+  my_colors <- phenoData.result$my_colors
   # Select FPKM sum not 0!!
   tmp <- seq_len(case.group.size+control.group.size)
   ballgown.result <- ballgown.result[rowSums(ballgown.result[,tmp]) > 0, ]
@@ -227,7 +223,8 @@ BallgownAnalysis <- function(path.prefix,
                     independent.variable,
                     case.group,
                     control.group,
-                    independent.variable.data.frame)
+                    independent.variable.data.frame,
+                    my_colors)
       # Bax and Violin
       BoxViolinPlot("ballgown_analysis",
                     "FPKM",
@@ -236,7 +233,8 @@ BallgownAnalysis <- function(path.prefix,
                     case.group,
                     control.group,
                     independent.variable.data.frame,
-                    phenoData.result)
+                    phenoData.result,
+                    my_colors)
       # PCA
       PCAPlot("ballgown_analysis",
               "FPKM",
@@ -245,7 +243,8 @@ BallgownAnalysis <- function(path.prefix,
               case.group,
               control.group,
               independent.variable.data.frame,
-              phenoData.result)
+              phenoData.result,
+              my_colors)
 
       #Correlation
       CorrelationPlot("ballgown_analysis",
@@ -297,7 +296,8 @@ BallgownAnalysis <- function(path.prefix,
                   case.group,
                   control.group,
                   normalized_dataset,
-                  phenoData.result)
+                  phenoData.result,
+                  my_colors)
         # Heatmap
         DEHeatmap("ballgown_analysis",
                   "FPKM",
@@ -306,7 +306,8 @@ BallgownAnalysis <- function(path.prefix,
                   case.group,
                   control.group,
                   normalized_dataset,
-                  phenoData.result)
+                  phenoData.result,
+                  my_colors)
       } else {
         message("(\u26A0) Less than one differential expressed gene terms ",
                 "found !!! Skip DE_PCA and DE_Heatmap visualization !!! \n\n")

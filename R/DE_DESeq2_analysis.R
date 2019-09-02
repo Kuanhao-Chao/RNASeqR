@@ -168,6 +168,7 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                                     control.group)
       case.normalized <- csv.results$case
       control.normalized <- csv.results$control
+      my_colors <- phenoData.result$my_colors
       independent.variable.data.frame <- cbind(case.normalized,
                                                control.normalized)
       normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/",
@@ -182,7 +183,8 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                     independent.variable,
                     case.group,
                     control.group,
-                    independent.variable.data.frame)
+                    independent.variable.data.frame,
+                    my_colors)
       # Bax and Violin
       BoxViolinPlot("DESeq2_analysis",
                     "MRN",
@@ -191,7 +193,8 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                     case.group,
                     control.group,
                     independent.variable.data.frame,
-                    phenoData.result)
+                    phenoData.result,
+                    my_colors)
       # PCA
       PCAPlot("DESeq2_analysis",
               "MRN",
@@ -200,7 +203,8 @@ DESeq2RawCountAnalysis <- function(path.prefix,
               case.group,
               control.group,
               independent.variable.data.frame,
-              phenoData.result)
+              phenoData.result,
+              my_colors)
 
       #Correlation
       CorrelationPlot("DESeq2_analysis",
@@ -278,7 +282,8 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                   case.group,
                   control.group,
                   normalized_dataset,
-                  phenoData.result)
+                  phenoData.result,
+                  my_colors)
 
         # Heatmap
         DEHeatmap("DESeq2_analysis",
@@ -288,7 +293,8 @@ DESeq2RawCountAnalysis <- function(path.prefix,
                   case.group,
                   control.group,
                   normalized_dataset,
-                  phenoData.result)
+                  phenoData.result,
+                  my_colors)
 
       } else {
         message("(\u26A0) Less than one differential expressed gene term ",

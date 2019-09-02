@@ -17,10 +17,6 @@ edgeRRawCountAnalysis <- function(path.prefix,
   #############################################
   ## Creating "edgeR_normalized_result.csv" ##
   ############################################
-  phenoData.result<- phenoDataWrap(path.prefix,
-                                   independent.variable,
-                                   case.group,
-                                   control.group)
   pheno.data <- phenoData.result$pheno_data
   rawCount.result <- RawCountWrap(path.prefix)
   raw.count <- rawCount.result$gene.count.matrix
@@ -167,6 +163,8 @@ edgeRRawCountAnalysis <- function(path.prefix,
                                     control.group)
       case.normalized <- csv.results$case
       control.normalized <- csv.results$control
+      my_colors <- phenoData.result$my_colors
+      my_colors_list <- my_colors
       independent.variable.data.frame <- cbind(case.normalized,
                                                control.normalized)
       normalized_dataset <- read.csv(paste0(path.prefix, "RNASeq_results/",
@@ -180,7 +178,8 @@ edgeRRawCountAnalysis <- function(path.prefix,
                     independent.variable,
                     case.group,
                     control.group,
-                    independent.variable.data.frame)
+                    independent.variable.data.frame,
+                    my_colors)
       # Bax and Violin
       BoxViolinPlot("edgeR_analysis",
                     "TMM&CPM",
@@ -189,7 +188,8 @@ edgeRRawCountAnalysis <- function(path.prefix,
                     case.group,
                     control.group,
                     independent.variable.data.frame,
-                    phenoData.result)
+                    phenoData.result,
+                    my_colors)
       # PCA
       PCAPlot("edgeR_analysis",
               "TMM&CPM",
@@ -198,7 +198,8 @@ edgeRRawCountAnalysis <- function(path.prefix,
               case.group,
               control.group,
               independent.variable.data.frame,
-              phenoData.result)
+              phenoData.result,
+              my_colors)
 
       #Correlation
       CorrelationPlot("edgeR_analysis",
@@ -325,7 +326,8 @@ edgeRRawCountAnalysis <- function(path.prefix,
                   case.group,
                   control.group,
                   normalized_dataset,
-                  phenoData.result)
+                  phenoData.result,
+                  my_colors_list)
 
         # Heatmap
         DEHeatmap("edgeR_analysis",
@@ -335,7 +337,8 @@ edgeRRawCountAnalysis <- function(path.prefix,
                   case.group,
                   control.group,
                   normalized_dataset,
-                  phenoData.result)
+                  phenoData.result,
+                  my_colors_list)
 
       } else {
         message("(\u26A0) Less than one differential expressed gene term found",

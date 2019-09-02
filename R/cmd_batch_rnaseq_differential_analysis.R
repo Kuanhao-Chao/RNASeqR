@@ -246,6 +246,7 @@ RNASeqDifferentialAnalysis <- function(RNASeqRParam,
                                    independent.variable,
                                    case.group,
                                    control.group)
+  my_colors <- phenoData.result$my_colors
   if (Pre_DE.visualization) {
     PreRNASeqDifferentialAnalysis(path.prefix = path.prefix,
                                   sample.pattern = sample.pattern)
@@ -260,7 +261,8 @@ RNASeqDifferentialAnalysis <- function(RNASeqRParam,
                   independent.variable,
                   case.group,
                   control.group,
-                  phenoData.result)
+                  phenoData.result,
+                  my_colors)
   }
   message("\u2618\u2618\u2618\u2618\u2618\u2618\u2618\u2618  ",
           "Start Differential Expression Analysis  ",

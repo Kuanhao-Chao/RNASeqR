@@ -325,12 +325,30 @@ phenoDataWrap <- function(path.prefix,
     pheno_data[pheno_data[independent.variable] == control.group, ]
   case.group.size <- length(row.names(case.group.data.frame))
   control.group.size <- length(row.names(control.group.data.frame))
+  my_colors=c("#00AFBB", "#E7B800")
+  if ("color" %in% colnames(pheno_data)) {
+    case.color <- unique(as.character(case.group.data.frame$color))
+    if (length(case.color) != 1) {
+      stop("All case group should be the same color !",
+           " Please check your pheodata.csv.")
+    }
+    control.color <- unique(as.character(control.group.data.frame$color))
+    if (length(control.color) != 1) {
+      stop("All case group should be the same color !",
+           " Please check your pheodata.csv.")
+    }
+    case.color <- gsub(" ", "", case.color, fixed = TRUE)
+    control.color <- gsub(" ", "", control.color, fixed = TRUE)
+    my_colors <- c(case.color, control.color)
+  }
   return(list("pheno_data" = pheno_data,
               "case.group.data.frame" = case.group.data.frame,
               "control.group.data.frame" = control.group.data.frame,
               "case.group.size" = case.group.size,
-              "control.group.size" = control.group.size))
+              "control.group.size" = control.group.size,
+              "my_colors" = my_colors))
 }
+
 
 RawCountWrap <- function(path.prefix) {
   # read in gene count table

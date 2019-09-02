@@ -229,8 +229,9 @@ rnaseq_result.path <- "/Users/chaokuan-hao/TRY"
 list.files(input_files.path, recursive = TRUE)
 ```
 
-Check the files in *'inputfiles/'* directory.
+Check the reads files in *'input_files/'* directory. Users could set *fastq.gz.type* as "PE" (paired-end) or "SE" (single-end) to specify which kinds of fastq.gz types they are.
 
+* For paired-end, set fastq.gz.type as "PE"
 ```{r, warning=FALSE}
 exp <- RNASeqRParam(path.prefix = rnaseq_result.path, 
                     input.path.prefix = input_files.path, 
@@ -241,6 +242,19 @@ exp <- RNASeqRParam(path.prefix = rnaseq_result.path,
                     control.group = "60mins_ID20_control",
                     fastq.gz.type = "PE")
 ```
+
+* For single-end, set fastq.gz.type as "SE"
+```{r, warning=FALSE, eval=FALSE}
+exp <- RNASeqRParam(path.prefix = rnaseq_result.path, 
+                    input.path.prefix = input_files.path, 
+                    genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", 
+                    sample.pattern = "SRR[0-9]*_XV",
+                    independent.variable = "state", 
+                    case.group = "60mins_ID20_amphotericin_B", 
+                    control.group = "60mins_ID20_control",
+                    fastq.gz.type = "SE")
+```
+
 ```{r, warning=FALSE}
 show(exp)
 ```
@@ -308,7 +322,7 @@ RNASeqEnvironmentSet_CMD(exp)
 RNASeqEnvironmentSet(exp)
 ```
 
-# Quality Assessment of `FASTQ` sequence data
+# Quality Assessment of `FASTQ` Sequence Data
 
 This is the **third step** of the RNA-Seq analysis workflow in this package. Different from other necessary steps, it is optional and can be run several times with each result stored separately. Although this step can be skipped, it is strongly recommended that it be performed before processing the alignment step. To evaluate the quality of the raw reads in the `FASTQ` files, run `RNASeqQualityAssessment_CMD()` in the background or run `RNASeqQualityAssessment()` to execute the process in the R shell.
 
@@ -867,6 +881,61 @@ RNASeqGoKegg(exp,
              input.TYPE.ID = "GENENAME",
              KEGG.organism = "sce")
 ```
+
+# Other Starting Points
+
+The main analysis workflow of RNASeqR starts from  raw fastq.gz files. However, we also allow users to run the pipeline from `SAM` files or `BAM` files. Similar to the first step mentioned in section **"RNASeqRParam S4 Object Creation"**, users need to create a different S4 Object: `RNASeqRParam_Sam` for starting from `SAM` files or `RNASeqRParam_Bam` starting from `BAM` files.
+
+Following are the steps for running pipeline from SAM or BAM files:
+
+1. **`RNASeqRParam_Sam` or `RNASeqRParam_Bam` S4 Object Creation**
+    * **Function: `RNASeqRParam_Sam()` or `RNASeqRParam_Bam()`** 
+    * In the beginning, users will create a `RNASeqRParam_Sam` or `RNASeqRParam_Bam` S4 object by running the `RNASeqRParam_Sam()` or `RNASeqRParam_Bam()` constructor function for all variable checking. After the creation of `RNASeqRParam_Sam()` or `RNASeqRParam_Bam()` S4 object, it will be used as input to the following analysis functions.
+    
+* Starting from `SAM` files. Users first need to create a `RNASeqRParam_Sam` S4 object.
+```{r, warning=FALSE, eval=FALSE}
+exp_Sam <- RNASeqRParam_Sam(path.prefix = rnaseq_result.path, 
+                            input.path.prefix = input_files.path, 
+                            genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", 
+                            sample.pattern = "SRR[0-9]*_XV",
+                            independent.variable = "state", 
+                            case.group = "60mins_ID20_amphotericin_B", 
+                            control.group = "60mins_ID20_control")
+```
+
+* Starting from `BAM` files. Users first need to create a `RNASeqRParam_Bam` S4 object.
+```{r, warning=FALSE, eval=FALSE}
+exp_Bam <- RNASeqRParam_Bam(path.prefix = rnaseq_result.path, 
+                            input.path.prefix = input_files.path, 
+                            genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", 
+                            sample.pattern = "SRR[0-9]*_XV",
+                            independent.variable = "state", 
+                            case.group = "60mins_ID20_amphotericin_B", 
+                            control.group = "60mins_ID20_control")
+```
+
+Then, subsequent steps would be similar as starting pipeline from `FASTQ.gz` files just to replace `RNASeqRParam` by `RNASeqRParam_Sam` or `RNASeqRParam_Bam` as input.
+
+2. **Environment Setup**
+    * **Function: `RNASeqEnvironmentSet_CMD()` or `RNASeqEnvironmentSet()`**
+    * In second step, the environemnt would be set up automatically with necessary tools installed for the subsequent steps in RNASeqR.
+
+3. **Quality Assessment (optional)**
+    * **Function: `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()`** 
+    * In third step (optional), users check the quality of raw fastq files.
+
+4. **Transcripts quantification**
+    * **Function: `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`**
+    * In fourth step, raw reads would be processed and all intermediate files would be stored properly.
+
+5. **Differential Expression Gene Analysis**
+    * **Function: `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`**
+    * In fifth step, differential analysis would be done by edgeR, DESeq2 and ballgown R / Bioconductor packages.
+
+6. **Functional Analysis**
+    * **Function: `RNASeqGoKegg_CMD()` or `RNASeqGoKegg()`**
+    * In sixth step, differential expressed genes would be used as input of GO functional analysis and KEGG pathway analysis. Enriched pathways would be visualized.
+
 
 # Wrapper function to run RNASeqR 
 

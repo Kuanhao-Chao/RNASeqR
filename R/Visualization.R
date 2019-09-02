@@ -5,7 +5,8 @@ AlignmentPlot <- function(path.prefix,
                           independent.variable,
                           case.group,
                           control.group,
-                          phenoData.result) {
+                          phenoData.result,
+                          my_colors) {
   Alignment_report_reads <- read.csv(paste0(path.prefix,
                                             "RNASeq_results/Alignment_Report/",
                                             "Alignment_report_reads.csv"),
@@ -48,7 +49,6 @@ AlignmentPlot <- function(path.prefix,
   #                                  independent.variable,
   #                                  case.group,
   #                                  control.group)
-  my_colors=c("#00AFBB", "#E7B800")
   color.group <- c(rep(1, phenoData.result$case.group.size),
                    rep(2, phenoData.result$case.group.size))
   Overall.map.rates$samples <- row.names(Overall.map.rates)
@@ -86,7 +86,8 @@ FrequencyPlot <- function(which.analysis,
                           independent.variable,
                           case.group,
                           control.group,
-                          independent.variable.data.frame) {
+                          independent.variable.data.frame,
+                          my_colors) {
   message("\u25CF Plotting  Frequency plot\n")
   if(!dir.exists(paste0(path.prefix, "RNASeq_results/",
                         which.analysis, "/images/preDE/Frequency"))){
@@ -169,7 +170,8 @@ BoxViolinPlot <- function(which.analysis,
                           case.group,
                           control.group,
                           independent.variable.data.frame,
-                          phenoData.result) {
+                          phenoData.result,
+                          my_colors) {
   # load gene name for further usage
   # csv.results <- ParseResultCSV(which.analysis,
   #                               which.count.normalization,
@@ -184,7 +186,6 @@ BoxViolinPlot <- function(which.analysis,
   #                                  case.group,
   #                                  control.group)
   # independent.variable.data.frame <- cbind(case.normalized, control.normalized)
-  my_colors=c("#00AFBB", "#E7B800")
   color.group <- c(rep(1, phenoData.result$case.group.size),
                    rep(2, phenoData.result$case.group.size))
   log2.normalized.value = log2(independent.variable.data.frame+1)
@@ -257,7 +258,8 @@ PCAPlot <- function(which.analysis,
                     case.group,
                     control.group,
                     independent.variable.data.frame,
-                    phenoData.result){
+                    phenoData.result,
+                    my_colors){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-
   #practical-guide/112-pca-principal-component-analysis-essentials/
   # load gene name for further usage
@@ -335,7 +337,7 @@ PCAPlot <- function(which.analysis,
                            legend.position = "top",
                            pointshape = 21, pointsize = 3.5, geom.ind = "point",
                            fill.ind = normalized.trans$attribute,
-                           palette = c("#00AFBB", "#E7B800"),
+                           palette = my_colors,
                            habillage = normalized.trans$attribute,
                            addEllipses = TRUE) +
     labs(title ="PCA Plot (factoextra)") +
@@ -363,7 +365,7 @@ PCAPlot <- function(which.analysis,
     geom_point(aes(color = factor(groups[as.numeric(color.group)],
                                   levels = c(case.group, control.group))),
                size = 3.5) +
-    scale_color_manual(values = c("#00AFBB", "#E7B800")) +
+    scale_color_manual(values = my_colors) +
     theme_bw() +
     xlab(paste0("PC1(", round(normalized.res.PCA$eig[,2][1], 2), "%)")) +
     ylab(paste0("PC2(", round(normalized.res.PCA$eig[,2][2], 2), "%)")) +
@@ -631,7 +633,8 @@ DEPCAPlot <- function(which.analysis,
                       case.group,
                       control.group,
                       DE.csv.results,
-                      phenoData.result){
+                      phenoData.result,
+                      my_colors){
   # http://www.sthda.com/english/articles/31-principal-component-methods-in-r-
   #practical-guide/112-pca-principal-component-analysis-essentials/
   # load gene name for further usage
@@ -654,7 +657,6 @@ DEPCAPlot <- function(which.analysis,
     dir.create(paste0(path.prefix, "RNASeq_results/",
                       which.analysis, "/images/DE/PCA/"))
   }
-  my_colors=c("#00AFBB", "#E7B800")
   # The independent.variable group
   grp = factor(c(rep(case.group, phenoData.result$case.group.size),
                  rep(control.group,  phenoData.result$case.group.size)),
@@ -708,7 +710,7 @@ DEPCAPlot <- function(which.analysis,
                            legend.position = "top",
                            pointshape = 21, pointsize = 3.5, geom.ind = "point",
                            fill.ind = normalized.trans$attribute,
-                           palette = c("#00AFBB", "#E7B800"),
+                           palette = my_colors,
                            habillage = normalized.trans$attribute,
                            addEllipses = TRUE
   ) +
@@ -737,7 +739,7 @@ DEPCAPlot <- function(which.analysis,
     geom_point(aes(color = factor(groups[as.numeric(color.group)],
                                   levels = c(case.group, control.group))),
                size = 3.5) +
-    scale_color_manual(values = c("#00AFBB", "#E7B800")) +
+    scale_color_manual(values = my_colors) +
     theme_bw() +
     xlab(paste0("PC1(", round(normalized.res.PCA$eig[,2][1], 2), "%)")) +
     ylab(paste0("PC2(", round(normalized.res.PCA$eig[,2][2], 2), "%)")) +
@@ -767,7 +769,8 @@ DEHeatmap <- function(which.analysis,
                       case.group,
                       control.group,
                       DE.csv.results,
-                      phenoData.result) {
+                      phenoData.result,
+                      my_colors) {
   # load gene name for further usage
   message("\u25CF Plotting Differential Expressed Heatmap related plot\n")
   # DE.csv.results <- read.csv(paste0(path.prefix, "RNASeq_results/",
@@ -838,7 +841,7 @@ DEHeatmap <- function(which.analysis,
     # check out the row names of annotation
     rownames(annotation) <- colnames(df.new)
 
-    my_colors_list <- c("#00AFBB","#E7B800")
+    my_colors_list <- my_colors
     names(my_colors_list) <- c(case.group, control.group)
     anno_colors <- list(Var1 = my_colors_list)
     names(anno_colors) <- independent.variable
