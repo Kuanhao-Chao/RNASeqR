@@ -38,14 +38,15 @@ Constructor function for RNASeqRParam_Sam objects
 input_files.path <- system.file("extdata/", package = "RNASeqRData")
 rnaseq_result.path <- "/Users/chaokuan-hao/TRY"
 # rnaseq_result.path <- tempdir(check = TRUE)
+\dontrun{
 exp <- RNASeqRParam_Sam(path.prefix          = rnaseq_result.path,
                         input.path.prefix    = input_files.path,
                         genome.name          = "Saccharomyces_cerevisiae_XV_Ensembl",
                         sample.pattern       = "SRR[0-9]*_XV",
                         independent.variable = "state",
                         case.group           = "60mins_ID20_amphotericin_B",
-                        control.group        = "60mins_ID20_control",
-                        fastq.gz.type        = "PE")
+                        control.group        = "60mins_ID20_control")
+}
 }
 \author{
 Kuan-Hao Chao

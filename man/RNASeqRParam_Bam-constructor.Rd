@@ -38,6 +38,7 @@ Constructor function for RNASeqRParam_Bam objects
 input_files.path <- system.file("extdata/", package = "RNASeqRData")
 rnaseq_result.path <- "/Users/chaokuan-hao/TRY"
 # rnaseq_result.path <- tempdir(check = TRUE)
+\dontrun{
 exp <- RNASeqRParam_Bam(path.prefix          = rnaseq_result.path,
                         input.path.prefix    = input_files.path,
                         genome.name          = "Saccharomyces_cerevisiae_XV_Ensembl",
@@ -45,6 +46,7 @@ exp <- RNASeqRParam_Bam(path.prefix          = rnaseq_result.path,
                         independent.variable = "state",
                         case.group           = "60mins_ID20_amphotericin_B",
                         control.group        = "60mins_ID20_control")
+}
 }
 \author{
 Kuan-Hao Chao

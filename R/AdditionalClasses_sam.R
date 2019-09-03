@@ -3,7 +3,6 @@
 #' @description  An S4 class for checking and storing RNA-Seq workflow
 #'  parameters starting with SAM files.
 #'
-#' @aliases RNASeqRParam_Sam
 #'
 #' @slot os.type 'linux' or 'osx'. The operating system type.
 #' @slot python.variable A list storing python environment.
@@ -85,14 +84,15 @@ setClass("RNASeqRParam_Sam",
 #' input_files.path <- system.file("extdata/", package = "RNASeqRData")
 #' rnaseq_result.path <- "/Users/chaokuan-hao/TRY"
 #' # rnaseq_result.path <- tempdir(check = TRUE)
+#' \dontrun{
 #' exp <- RNASeqRParam_Sam(path.prefix          = rnaseq_result.path,
 #'                         input.path.prefix    = input_files.path,
 #'                         genome.name          = "Saccharomyces_cerevisiae_XV_Ensembl",
 #'                         sample.pattern       = "SRR[0-9]*_XV",
 #'                         independent.variable = "state",
 #'                         case.group           = "60mins_ID20_amphotericin_B",
-#'                         control.group        = "60mins_ID20_control",
-#'                         fastq.gz.type        = "PE")
+#'                         control.group        = "60mins_ID20_control")
+#' }
 RNASeqRParam_Sam <- function(path.prefix          = NA,
                              input.path.prefix    = NA,
                              genome.name          = NA,

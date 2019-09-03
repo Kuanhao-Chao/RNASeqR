@@ -3,7 +3,6 @@
 #' @description  An S4 class for checking and storing RNA-Seq workflow
 #'  parameters of this package.
 #'
-#' @aliases RNASeqRParam
 #'
 #' @slot os.type 'linux' or 'osx'. The operating system type.
 #' @slot python.variable A list storing python environment.
