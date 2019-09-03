@@ -36,8 +36,7 @@ Constructor function for RNASeqRParam_Sam objects
 }
 \examples{
 input_files.path <- system.file("extdata/", package = "RNASeqRData")
-rnaseq_result.path <- "/Users/chaokuan-hao/TRY"
-# rnaseq_result.path <- tempdir(check = TRUE)
+rnaseq_result.path <- tempdir(check = TRUE)
 \dontrun{
 exp <- RNASeqRParam_Sam(path.prefix          = rnaseq_result.path,
                         input.path.prefix    = input_files.path,
