@@ -231,8 +231,9 @@ library(RNASeqRData)
 
 ```{r}
 input_files.path <- system.file("extdata/", package = "RNASeqRData")
-rnaseq_result.path <- tempdir(check = TRUE)
-#rnaseq_result.path <- "/Users/chaokuan-hao/TRY"
+#rnaseq_result.path <- "/Users/chaokuan-hao/Documents/ANU_2019_Semester_2/Lanfear_Lab/HI"
+rnaseq_result.path <- "/tmp/RNASeqR/"
+dir.create(rnaseq_result.path, recursive = TRUE)
 list.files(input_files.path, recursive = TRUE)
 ```
 
