@@ -27,8 +27,8 @@ knitr::opts_chunk$set(tidy = FALSE,
 
 # Introduction
 ## RNA-Seq Overview
-RNA-Seq is a revolutionary approach for discovering and investigating the transcriptome using next-generation sequencing technologies(Wang et al. 2009).
-Typically, this transcriptome analysis aims to identify genes differentially expressed across different conditions, treatments or tissues, resulting in an understanding of the important pathways that are associated with the conditions(Wang et al. 2009). Following are the overview steps of RNA-Seq technique.
+RNA-Seq is a revolutionary approach for discovering and investigating the transcriptome using next-generation sequencing technologies (Wang et al. 2009).
+Typically, this transcriptome analysis aims to identify genes differentially expressed across different conditions, treatments or tissues, resulting in an understanding of the important pathways that are associated with the conditions (Wang et al. 2009). Following are the overview steps of RNA-Seq technique.
 
 1. **Set up experiment**: 
     * First, scientists make their hypotheses and choose their target samples for 
@@ -37,7 +37,7 @@ Typically, this transcriptome analysis aims to identify genes differentially exp
     * RNA is extracted and isolated from sample tissue. Then quality and total amount
   of RNA are checked including the amount of RNA degradation in order to assess
   the samples.
-3. **RNA filteration**:
+3. **RNA filtration**:
     * Ribosomal RNA (rRNA) which accounts for around 90% of transcriptome from total
   RNA-Seq sample needs to be removed. The interest areas of RNA-Seq analysis 
   are mRNAs, small RNAs as well as lincRNAs.
@@ -47,9 +47,9 @@ Typically, this transcriptome analysis aims to identify genes differentially exp
 5. **Sequencing**:
     * Samples are sequenced by next generation sequencing machine. Raw fastq reads 
   files are generated. 
-6. **Reads alignment & Transcript assembly**: 
+6. **Reads alignment & transcript assembly**: 
     * Sequenced reads are algined to reference genome (traditional mapping) and then 
-  assembled into potential transcripts by assembler. Another different approach 
+  assembled into potential transcripts by assembler. A different approach 
   is to directly compare reads with target transcripts (pseudo alignment
   method) to quantify estimated expression quickly.
 7. **Differential expression gene analysis**: 
@@ -62,31 +62,31 @@ Typically, this transcriptome analysis aims to identify genes differentially exp
 ## RNASeqR Overview
 RNASeqR is an user-friendly R-based tool for running a six-step automation RNA-Seq analysis pipeline including quality assessment, read alignment and transcript quantification, differential expression analysis, and functional analysis. The main features of this package are an automated workflow and comprehensive reports with data visualization. In this package, the new tuxedo pipeline published in Nature Protocols in 2016 can be fully implemented in the R environment, including extra functions such as reads quality assessment and functional analysis. RNASeqR is beneficial for clinical researchers without significant computational background. There are only six lines of code that users need to execute in order to finish an end-to-end RNA-Seq analysis. 
 
-The central concept behind this package is that **each step involved in RNA-Seq data analysis is a function call in R**. For the subsequent parts of this documentation, inputs, outputs as well as detail implementation for these six steps will be elaborated by order. Following are six steps and each corresponding function that users need to execute.
+The central concept behind this package is that **each step involved in RNA-Seq data analysis is a function call in R**. For the subsequent parts of this documentation, inputs, outputs as well as detail implementation for these six steps will be elaborated upon in order. Following are the six steps and the each corresponding function that users need to execute.
 
 1. **`RNASeqRParam` S4 Object Creation**
     * **Function: `RNASeqRParam()`** 
-    * In the beginning, users will create a `RNASeqRParam` S4 object by running the `RNASeqRParam()` constructor function for all variable checking. After the creation of `RNASeqRParam` S4 object, it will be used as input to the following analysis functions.
+    * In the beginning, users will create an `RNASeqRParam` S4 object by running the `RNASeqRParam()` constructor function for all variables being checked. This object will be used as input for the following steps.
 
 2. **Environment Setup**
-    * **Function: `RNASeqEnvironmentSet_CMD()` or `RNASeqEnvironmentSet()`**
-    * In second step, the environemnt would be set up automatically with necessary tools installed for the subsequent steps in RNASeqR.
+    * **Function: `RNASeqEnvironmenenvironmenttSet_CMD()` or `RNASeqEnvironmentSet()`**
+    * In the second step, the environment is set up automatically with necessary tools installed for the subsequent steps in RNASeqR.
 
 3. **Quality Assessment (optional)**
     * **Function: `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()`** 
-    * In third step (optional), users check the quality of raw fastq files.
+    * In the third step (optional), users check the quality of raw fastq files.
 
 4. **Reads alignment and transcripts quantification**
     * **Function: `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`**
-    * In fourth step, raw reads would be processed and all intermediate files would be stored properly.
+    * In the fourth step, raw reads are processed and all intermediate files are stored properly.
 
 5. **Differential Expression Gene Analysis**
     * **Function: `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`**
-    * In fifth step, differential analysis would be done by edgeR, DESeq2 and ballgown R / Bioconductor packages.
+    * In the fifth step, differential analysis is done by edgeR, DESeq2 and ballgown R / Bioconductor packages.
 
 6. **Functional Analysis**
     * **Function: `RNASeqGoKegg_CMD()` or `RNASeqGoKegg()`**
-    * In sixth step, differential expressed genes would be used as input of GO functional analysis and KEGG pathway analysis. Enriched pathways would be visualized.
+    * In the sixth step, differential expressed genes are used as the input for the GO functional analysis and KEGG pathway analysis. Enriched pathways are displayed visually.
 
 Functions with the `CMD` suffix create an R script and run `nohup R CMD BATCH script.R` in the background. Functions with no `CMD` suffix process in the R shell. After running the above functions, the whole RNA-Seq analysis is done and the files generated in each step are stored in an organized file directory. The `RNASeqR` package makes two-group comparative RNA-Seq analysis **more efficient** and **easier** for users.
 
@@ -237,7 +237,7 @@ dir.create(rnaseq_result.path, recursive = TRUE)
 list.files(input_files.path, recursive = TRUE)
 ```
 
-Check the reads files in *'input_files/'* directory. Users could set *fastq.gz.type* as "PE" (paired-end) or "SE" (single-end) to specify which kinds of fastq.gz types they are.
+Check the reads files in *'input_files/'* directory. Users can set *fastq.gz.type* as "PE" (paired-end) or "SE" (single-end) to specify which kinds of fastq.gz types they are.
 
 * For paired-end, set fastq.gz.type as "PE"
 ```{r, warning=FALSE}
@@ -892,13 +892,14 @@ RNASeqGoKegg(exp,
 
 # Other Starting Points
 
-The main analysis workflow of RNASeqR starts from  raw fastq.gz files. However, we also allow users to run the pipeline from `SAM` files or `BAM` files. Similar to the first step mentioned in section **"RNASeqRParam S4 Object Creation"**, users need to create a different S4 Object: `RNASeqRParam_Sam` for starting from `SAM` files or `RNASeqRParam_Bam` starting from `BAM` files.
+The main analysis workflow of RNASeqR starts from  raw fastq.gz files. However, we also allow users to run the pipeline from `SAM` files or `BAM` files. Similar to the first step mentioned in section **"RNASeqRParam S4 Object Creation"**, users need to create a different S4 Object: `RNASeqRParam_Sam` for starting from `SAM` files or `RNASeqRParam_Bam` for starting from `BAM` files.
 
 Following are the steps for running pipeline from SAM or BAM files:
 
 1. **`RNASeqRParam_Sam` or `RNASeqRParam_Bam` S4 Object Creation**
     * **Function: `RNASeqRParam_Sam()` or `RNASeqRParam_Bam()`** 
-    * In the beginning, users will create a `RNASeqRParam_Sam` or `RNASeqRParam_Bam` S4 object by running the `RNASeqRParam_Sam()` or `RNASeqRParam_Bam()` constructor function for all variable checking. After the creation of `RNASeqRParam_Sam()` or `RNASeqRParam_Bam()` S4 object, it will be used as input to the following analysis functions.
+    * At the beginning, users create a `RNASeqRParam_Sam` or `RNASeqRParam_Bam` S4 object by running the `RNASeqRParam_Sam()` or `RNASeqRParam_Bam()` constructor function for all variable checking. The S4 object will be used as the input for the remaining analysis functions. Then, subsequent steps are similar to starting the pipeline from FASTQ.gz files, with the RNASeqRParam input replaced by `RNASeqRParam_sam` or `RNASeqRParam_Bam`.
+
     
 * Starting from `SAM` files. Users first need to create a `RNASeqRParam_Sam` S4 object.
 ```{r, warning=FALSE, eval=FALSE}
@@ -926,24 +927,24 @@ Then, subsequent steps would be similar as starting pipeline from `FASTQ.gz` fil
 
 2. **Environment Setup**
     * **Function: `RNASeqEnvironmentSet_CMD()` or `RNASeqEnvironmentSet()`**
-    * In second step, the environemnt would be set up automatically with necessary tools installed for the subsequent steps in RNASeqR.
+    * In the second step, the environment is set up automatically with the necessary tools installed for the subsequent steps in RNASeqR.
 
 3. **Quality Assessment (optional)**
     * **Function: `RNASeqQualityAssessment_CMD()` or `RNASeqQualityAssessment()`** 
-    * In third step (optional), users check the quality of raw fastq files.
+    * In the third step (optional), users check the quality of raw fastq files.
 
 4. **Transcripts quantification**
     * **Function: `RNASeqReadProcess_CMD()` or `RNASeqReadProcess()`**
-    * In fourth step, raw reads would be processed and all intermediate files would be stored properly.
+    * In the fourth step, raw reads are processed, and all intermediate files are stored properly.
 
 5. **Differential Expression Gene Analysis**
     * **Function: `RNASeqDifferentialAnalysis_CMD()` or `RNASeqDifferentialAnalysis()`**
-    * In fifth step, differential analysis would be done by edgeR, DESeq2 and ballgown R / Bioconductor packages.
+    * In the fifth step, differential analysis is done by edgeR, DESeq2 and ballgown R / Bioconductor packages.
 
 6. **Functional Analysis**
     * **Function: `RNASeqGoKegg_CMD()` or `RNASeqGoKegg()`**
-    * In sixth step, differential expressed genes would be used as input of GO functional analysis and KEGG pathway analysis. Enriched pathways would be visualized.
-
+    * In the sixth step, differential expressed genes are used as input for the GO functional analysis and KEGG pathway analysis. Enriched pathways are displayed visually.
+    
 
 # Wrapper function to run RNASeqR 
 
@@ -962,7 +963,7 @@ exp <- RNASeqRParam(path.prefix          = rnaseq_result.path,
 RNASeqEnvironmentSet(exp)
 ```
 
-Then users can choose to execute `All_Steps_Interface_CMD` which runs in background or `All_Steps_Interface` which runs in R interface. These two functions wraps from quality assessment to functional analysis (step 3 to step 6 mentioned above). Default parameters would be applied if users do not specify. Although we provide this wrapper function, we still strongly recommend users to run RNASeqR step by step and check outputs correctness before running next function to prevent any potential errors.
+Then users can choose to execute `All_Steps_Interface_CMD` which runs in background or `All_Steps_Interface` which runs in R interface. These two functions wrap from quality assessment to functional analysis (step 3 to step 6 mentioned above). Default parameters will be applied if users do not specify. Although we provide this wrapper function, we still strongly recommend users to run RNASeqR step by step and check outputs correctness before running next function to prevent any potential errors.
 
 ```{r, warning=FALSE, eval=FALSE}
 All_Steps_Interface_CMD(exp,
