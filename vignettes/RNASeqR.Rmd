@@ -552,7 +552,7 @@ RNASeqReadProcess_CMD(exp, STAR.Alignment.run=TRUE,
 ```
 
 2. For running in R shell, the results will be reported in R shell. Make sure the raw read process is successfully done before running the subsequent steps. Default aligner would be `HISAT2`.
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 RNASeqReadProcess(exp)
 ```
 
@@ -828,7 +828,7 @@ RNASeqDifferentialAnalysis_CMD(exp)
 ```
 
 2. For running in R shell, the results will be reported in the R shell. Make sure the differential expression analysis is successfully finished before running subsequent steps.
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 RNASeqDifferentialAnalysis(exp)
 ```
 
@@ -882,7 +882,7 @@ RNASeqGoKegg_CMD(exp,
 ```
 
 2. Results from runs in the R shell will be reported in R shell.
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 RNASeqGoKegg(exp, 
              OrgDb.species = "org.Sc.sgd.db", 
              go.level = 3, 
