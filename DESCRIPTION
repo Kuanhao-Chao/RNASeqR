@@ -53,6 +53,7 @@ Imports:
   parallel
 Suggests:
   knitr,
+  rmarkdown,
   png,
   grid,
   RNASeqRData
