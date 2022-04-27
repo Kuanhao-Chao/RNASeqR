@@ -240,7 +240,7 @@ list.files(input_files.path, recursive = TRUE)
 Check the reads files in *'input_files/'* directory. Users can set *fastq.gz.type* as "PE" (paired-end) or "SE" (single-end) to specify which kinds of fastq.gz types they are.
 
 * For paired-end, set fastq.gz.type as "PE"
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 exp <- RNASeqRParam(path.prefix = rnaseq_result.path, 
                     input.path.prefix = input_files.path, 
                     genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", 
@@ -252,7 +252,7 @@ exp <- RNASeqRParam(path.prefix = rnaseq_result.path,
 ```
 
 * For single-end, set fastq.gz.type as "SE"
-```{r, warning=FALSE, eval=FALSE}
+```{r, warning=FALSE, eval=FALSE, eval=FALSE}
 exp <- RNASeqRParam(path.prefix = rnaseq_result.path, 
                     input.path.prefix = input_files.path, 
                     genome.name = "Saccharomyces_cerevisiae_XV_Ensembl", 
@@ -263,7 +263,7 @@ exp <- RNASeqRParam(path.prefix = rnaseq_result.path,
                     fastq.gz.type = "SE")
 ```
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 show(exp)
 ```
 
@@ -326,7 +326,7 @@ RNASeqEnvironmentSet_CMD(exp)
 
 2. For running in R shell, the results will be reported in the R shell. Make sure the environment is successfully set up before running the subsequent steps.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 RNASeqEnvironmentSet(exp)
 ```
 
@@ -367,7 +367,7 @@ RNASeqQualityAssessment_CMD(exp)
 
 2. Results fo runs in R shell will be reported in the R shell. Make sure the quality assessment is successfully done before running the subsequent steps.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, eval=FALSE}
 RNASeqQualityAssessment(exp)
 ```
 
